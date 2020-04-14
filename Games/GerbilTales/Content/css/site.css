@@ -1,0 +1,175 @@
+﻿body {
+    background-color: rgb(72, 140, 192);
+}
+
+
+.unselectable {
+    user-select: none;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+}
+
+.image-text {
+    margin-top: -60px;
+    display: inline;
+    margin-left: -50%;
+    margin-right: -50%;
+}
+
+.hidden {
+    display: none !important;
+}
+
+textarea {
+    height: 60px;
+    resize: none;
+}
+
+#MenuContainer {
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.menuButton {
+    background-color: rgb(32,156,156);
+    margin: 20px;
+    padding: 10px;
+    border-style:solid;
+    border-width:2px;
+    border-color:rgb(48, 192, 192);
+    cursor: pointer;
+    font-family: Arial;
+    color: lightblue;
+    font-weight: bolder;
+    font-size: 20px;
+}
+.menuButton:hover {
+    background-color: rgb(48, 192, 192);
+}
+.menuButtonSmall {
+    background-color: rgb(32,156,156);
+    font-size: 16px;
+    border-style:solid;
+    border-width:2px;
+    border-color:rgb(48, 192, 192);
+    cursor: pointer;
+    font-family: Arial;
+    padding: 4px;
+    color: lightblue;
+    font-weight: bolder;
+}
+.menuButtonSmall:hover {
+    background-color: rgb(48, 192, 192);
+}
+
+.menu {
+    background-color:rgba(122, 172, 209, 0.7);
+    border-style:solid;
+    border-width:2px;
+    border-color:rgba(160, 195, 222, 0.7);
+    position:absolute;
+    text-align: center;
+}
+
+.menu-no-back {
+    position:absolute;
+    text-align: center;
+}
+
+table {
+    margin: auto;
+    width: 100%;
+}
+
+#CanvasTable {
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#editCell {
+    width: 300px;
+    vertical-align:top;
+}
+
+.editorBox {
+    width: 100%;
+}
+
+#editSprites {
+    margin-left:20px;
+    margin-top:50px;
+    display: flex;
+    flex-wrap: wrap;
+}
+.editorObject {
+    cursor:pointer;
+    margin: 5px;
+    padding: 7px;
+    background-color: rgba(255, 255, 255, 0.29);
+}
+.editorObject.selected {
+    font-weight: bold;
+    color: white;
+    background-color: rgb(34, 67, 93);
+}
+
+#editables {
+    width: 300px;
+    text-align: left;
+    padding: 5px;
+}
+
+canvas {
+    display: block;
+    outline: 5px solid white;
+    outline-offset: 3px;
+}
+
+li {
+    text-align: left;
+}
+
+.touchButton {
+    width: 80px;
+    height: 80px;
+    background-color: rgba(200,200,200,0.5);
+    position:fixed;
+    -webkit-border-radius: 40px;
+    border-radius: 40px;
+    -webkit-user-select: none !important;
+}
+
+#touchLeftButton {
+    left: 20px;
+    bottom: 40px;
+}
+#touchRightButton {
+    left: 120px;
+    bottom: 20px;
+}
+#touchJumpButton {
+    right: 20px;
+    bottom: 20px;
+}
+
+.editorLink {
+    background-color: rgb(32,156,156);
+    font-size: 16px;
+    border-style:solid;
+    border-width:2px;
+    border-color:rgb(48, 192, 192);
+    cursor: pointer;
+    font-family: Arial;
+    padding: 4px;
+    color: lightblue;
+    font-weight: bolder;
+}
+.editorLink:hover {
+    background-color: rgb(48, 192, 192);
+}
+
+.image-StudioLogo {
+    cursor: pointer;
+}

@@ -1,0 +1,60 @@
+﻿body {
+    background-color: rgb(30, 130, 80);
+}
+
+
+.unselectable {
+    user-select: none;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+}
+
+
+.hidden {
+    display: none !important;
+}
+table {
+    border-spacing: 30px;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+}
+td {
+    outline: 5px solid white;
+    outline-offset: 3px;
+}
+
+canvas {
+    display: block;
+}
+
+#items > div {
+    background-color: palegoldenrod;
+    padding: 10px 10px;
+    margin: 20px 10px;
+    cursor: pointer;
+    border: 2px solid black;
+    font-weight: bold;
+}
+
+#items > div.activeItemType {
+    background-color: goldenrod;
+}
+
+#moneyContainer {
+    background-color: #6b351a;
+}
+
+#FreeMoneyContainer {
+    background-color:#10462b;
+}
+
+#money, #freeMoney {
+    font-weight: bold;
+    color: white;
+    margin: 5px;
+    text-align: right;
+}
+

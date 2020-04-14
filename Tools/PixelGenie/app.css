@@ -1,0 +1,78 @@
+body {
+    background-color: #47444e;
+}
+
+.sidebarContainer {
+    display: inline-block;
+    width: 450px;
+    vertical-align: top;
+}
+.sidebar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    align-content: center;
+    justify-content: space-between;
+}
+
+.row {
+    display: block;
+}
+
+.panel {
+    flex-grow: 1;
+    padding: 10px;
+    margin: 10px;
+    background-color: #a8b2bf;
+}
+
+.full {
+    width: 100%;
+}
+
+.right {
+    float: right;
+}
+
+input[type="number"] {
+    width: 75px;
+    margin: 1px;
+}
+
+input[type="color"] {
+    height: 17px;
+    width: 30px;
+    margin: 1px;
+    position: relative;
+    margin-right: 46px;
+}
+
+input[type="color"]::after {
+    content: "hex";
+    width:30px;
+    height:17px;
+    background-color: buttonface;
+    color:buttontext;
+    text-align: center;
+    border-width: 2px;
+    border-style: outset;
+    border-color: buttonface;
+    position: absolute;
+    left: 44px;
+    top: 0px;
+}
+
+hr {
+    width: 100%;
+}
+
+#generatorParameters span {
+    margin: auto 10px;
+}
+
+.close {
+    color: red;
+    display: inline-block;
+    font-weight: bolder;
+    cursor: pointer;
+}

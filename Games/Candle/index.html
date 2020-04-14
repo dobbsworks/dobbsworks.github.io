@@ -1,0 +1,66 @@
+<html>
+	<head></head>
+	<body></body>
+	<script type="text/javascript">
+let baseSize = Math.min(window.innerWidth, window.innerHeight);
+
+let canvas = document.createElement("canvas");
+let canvasSize = baseSize;
+let cellSize = baseSize*0.2;
+let canvasRadius = baseSize*0.4;
+canvas.height = canvasSize;
+canvas.width = canvasSize;
+canvas.style.position = "fixed";
+canvas.style.left = "0";
+canvas.style.top = "0";
+document.body.appendChild(canvas);
+let ctx = canvas.getContext("2d");
+document.body.style.backgroundColor = "black";
+
+var size = 12;
+
+canvas.addEventListener("click", (e) => {onTouchPoint(e.clientX, e.clientY);});
+canvas.addEventListener("touchstart", (e) => {console.log(e)});
+
+function onTouchPoint(x, y) {
+	x -= canvasSize/2;
+	y -= canvasSize/2;
+	let angle = mod(Math.atan2(y, x), Math.PI * 2);
+	let index = Math.floor(size * angle / (Math.PI * 2) + 0.5);
+	toggle(index);
+}
+
+function draw() {
+	ctx.clearRect(0,0,canvasSize, canvasSize);
+	for (let i=0; i<size; i++) {
+		let angle = (i) * Math.PI * 2 / size;
+		let x = canvasSize/2 + canvasRadius * Math.cos(angle);
+		let y = canvasSize/2 + canvasRadius * Math.sin(angle);
+		let color = myList[i] ? "gray" : "red";
+		ctx.fillStyle = color;
+		ctx.beginPath();
+		ctx.arc(x,y,cellSize/2,0,2*Math.PI);
+		ctx.fill();
+	}
+}
+
+
+var myList = [];
+for (let i=0; i<size; i++) myList.push(0);
+
+function mod(a, b) {
+	while (a < 0) a += b;
+	return a % b;
+}
+
+function toggle(index) {
+	var toggles = [0, 1, 6, 11];
+	for (let tog of toggles) {
+		let togIdx = mod(index + tog, size);
+		myList[togIdx] = 1 - myList[togIdx];
+	}
+	draw();
+}
+draw();
+	</script>
+</html>

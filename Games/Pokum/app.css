@@ -1,0 +1,16 @@
+﻿body {
+    background-color: rgb(10, 40, 140);
+}
+
+span {
+    font-style: italic;
+}
+
+canvas {
+    display: block;
+    margin-top: 50px;
+    margin-left:auto;
+    margin-right:auto;
+    outline: 5px solid white;
+    outline-offset: 3px;
+}

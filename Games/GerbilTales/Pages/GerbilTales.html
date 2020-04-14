@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Gerbil Tales!</title>
+
+    <link rel="stylesheet" type="text/css" href="../Content/css/site.css">
+
+    <!--<script type="text/javascript" src="../Content/javascript/LogHandler.js"></script>-->
+    <script type="text/javascript" src="../Content/javascript/Linq.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Version.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Debug.js"></script>
+    <script type="text/javascript" src="../Content/javascript/ColorHandler.js"></script>
+    <script type="text/javascript" src="../Content/javascript/KeyboardHandler.js"></script>
+    <script type="text/javascript" src="../Content/javascript/MouseHandler.js"></script>
+
+    <script type="text/javascript" src="../Content/javascript/Texture.js"></script>
+
+    <script type="text/javascript" src="../Content/javascript/EditorAnchors.js"></script>
+    <script type="text/javascript" src="../Content/javascript/EditorBase.js"></script>
+
+    <script type="text/javascript" src="../Content/javascript/EditorHandler.js"></script>
+    <script type="text/javascript" src="../Content/javascript/EditorExport.js"></script>
+    <script type="text/javascript" src="../Content/javascript/EditorValidation.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Menu.js"></script>
+    <script type="text/javascript" src="../Content/javascript/CameraHandler.js"></script>
+
+    <script type="text/javascript" src="../Content/javascript/LevelHandler.js"></script>
+
+    <script type="text/javascript" src="../Content/javascript/SpriteBase.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/Gerbil.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/ExitDoor.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/SpikeBlock.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/Button.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/Clock.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/Wall.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/BackgroundWall.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/Coin.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/LogicAnd.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/LogicOr.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/LogicNot.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/Peekablock.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/Wheel.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/Fan.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/Cell.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/TextBox.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/Lever.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/Cannonball.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/Cannon.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/Conveyor.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/TrackNode.js"></script>
+    <script type="text/javascript" src="../Content/javascript/Sprites/TrackEngine.js"></script>
+
+    <script type="text/javascript" src="../Content/javascript/ParticleEffects/ParticleEffectBase.js"></script>
+    <script type="text/javascript" src="../Content/javascript/ParticleEffects/Cannonblast.js"></script>
+
+    <script type="text/javascript" src="../Content/javascript/Main.js"></script>
+    <script type="text/javascript" src="../Content/javascript/MobileHandler.js"></script>
+    <style>
+        @font-face {
+            font-family: 'Candy Shop Black';
+            src: url('../Content/Fonts/Candy Shop Black.ttf');
+        }
+    </style>
+</head>
+<body class="unselectable" unselectable="on">
+    <div id="gameViewContainer" style="position: relative; width: 1000px;">
+        <div id="MenuContainer">
+        </div>
+        <canvas id="gameView" width="1000" height="800" unselectable="on" class="unselectable">
+            Your browser does not support HTML5 canvases.
+        </canvas>
+        <span style="font-family:'Candy Shop Black'; position:fixed;">&nbsp;</span>
+    </div>
+
+    <div id="touchLeftButton" class="touchButton hidden"></div>
+    <div id="touchRightButton" class="touchButton hidden"></div>
+    <div id="touchJumpButton" class="touchButton hidden"></div>
+
+
+    <!-- Image files -->
+    <div class="hidden">
+        <canvas id="textDraw" width="800" height="120"></canvas>
+        <img class="graphicSheet" id="Gerbil" data-cellwidth="16" data-cellheight="16" src="../Content/Images/gerbil.png" />
+        <img class="graphicSheet" id="Coin" data-cellwidth="16" data-cellheight="16" src="../Content/Images/coin.png" />
+        <img class="graphicSheet" id="Background1" src="../Content/Images/background1.jpg" />
+        <img class="graphicSheet" id="StudioLogo" src="../Content/Images/StudioLogo.png" />
+        <img class="graphicSheet" id="TextureGrassy" src="../Content/Images/TextureGrassy.png" />
+        <img class="graphicSheet" id="TextureDirtBackground" src="../Content/Images/TextureDirtBackground.png" />
+        <img class="graphicSheet" id="TextureStone" src="../Content/Images/TextureStone.png" />
+        <img class="graphicSheet" id="TextureStoneRecessed" src="../Content/Images/TextureStoneRecessed.png" />
+        <img class="graphicSheet" id="SpikeBlock" src="../Content/Images/SpikeBlock.png" />
+        <img class="graphicSheet" id="LogicGates" src="../Content/Images/LogicGates.png" />
+        <img class="graphicSheet" id="Lever" src="../Content/Images/Lever.png" />
+        <img class="graphicSheet" id="Button" src="../Content/Images/Button.png" />
+        <img class="graphicSheet" id="Fan" src="../Content/Images/TextureFan.png" />
+        <img class="graphicSheet" id="Cannon" src="../Content/Images/Cannon.png" />
+        <img class="graphicSheet" id="Cannonball" src="../Content/Images/Cannonball.png" />
+        <img class="graphicSheet" id="Cannonblast" src="../Content/Images/Cannonblast.png" />
+        <img class="graphicSheet" id="Cannonblast-left" src="../Content/Images/Cannonblast-left.png" />
+        <img class="graphicSheet" id="Cannonblast-up" src="../Content/Images/Cannonblast-up.png" />
+        <img class="graphicSheet" id="Cannonblast-down" src="../Content/Images/Cannonblast-down.png" />
+        <img class="graphicSheet" id="Conveyor" src="../Content/Images/Conveyor.png" />
+        <img class="graphicSheet" id="Engine" src="../Content/Images/Engine.png" />
+        <img class="graphicSheet" id="TrackNode" src="../Content/Images/TrackNode.png" />
+        <img class="graphicSheet" id="TrackPath" src="../Content/Images/TrackPath.png" />
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Pixel Genie</title>
+    <link rel="stylesheet" href="app.css" type="text/css" />
+    <script src="util.js"></script>
+    <script src="color.js"></script>
+    <script src="colorStop.js"></script>
+    <script src="shape.js"></script>
+    <script src="generator.js"></script>
+    <script src="renderer.js"></script>
+    <script src="app.js"></script>
+</head>
+<body>
+    <canvas id="outputCanvas" width="32" height="32" style="display:none;"></canvas>
+    <div class="sidebarContainer">
+        <div class="sidebar">
+            <div class="panel" style="width:100%">
+                <h2 style="margin: 0;font-family: 'Segoe UI', sans-serif;">Pixel Genie</h2>
+                <span class="right">v1.0</span>
+            </div>
+
+            <div class="panel">
+                <span>Tiling preview</span>
+                <hr/>
+                <canvas id="tileCanvas" ></canvas>
+            </div>
+
+            <div class="panel">
+                <span>Result image</span>
+                <hr/>
+                <img id="output" />
+            </div>
+
+            <div class="panel">
+                <span>Tile dimensions</span>
+                <hr/>
+                <div class="row">
+                    <input id="tileWidth" type="number" value="32" />
+                    <span>Width</span>
+                </div>
+                <div class="row">
+                    <input id="tileHeight" type="number" value="32" />
+                    <span>Height</span>
+                </div>
+                <input type="button" value="Resize Tile" onclick="ResizeCanvases();"/>
+            </div>
+
+            <div class="panel" id="generatorButtons">
+                <select id="generatorType" onchange="UpdateGeneratorParameterPanel(); Regenerate();"></select>
+                <select id="shapeType" onchange="UpdateGeneratorParameterPanel(); Regenerate();" style="display:none;"></select>
+                <input class="right" type="button" value="Regenerate Height Map" onclick="Regenerate();"/>
+                <hr/>
+                <span id="generatorDescription"></span>
+                <hr/>
+                <div id="generatorParameters"></div>
+            </div>
+
+            <div class="panel">
+                <input type="button" value="Regenerate Palette" onclick="GeneratePalette();"/>
+                <hr/>
+                <div class="row">
+                    <input id="colorGenStart" type="color" value="#ffdb92" onclick="HandleHexPseudoButton(event, this)" />
+                    <span>Highlight</span>
+                </div>
+                <div class="row">
+                    <input id="colorGenShadow" type="color" value="#060106" onclick="HandleHexPseudoButton(event, this)"/>
+                    <span>Shadow</span>
+                </div>
+                <div class="row">
+                    <input type="number" id="colorGenFade" min="0" max="1" step="0.001" value="0.7" />
+                    <span>Fade Ratio</span>
+                </div>
+                <div class="row">
+                    <input type="number" id="colorGenSteps" min="1" max="20" step="1" value="5" />
+                    <span>Step Count</span>
+                </div>
+                <div class="row" style="display:none">
+                    <input id="useShorterHueDistance" type="checkbox" checked />
+                    <span>User shorter hue distance</span>
+                </div>
+                <div class="row">
+                <label>
+                    <input id="transparentPalette" type="checkbox" />
+                    Maintain Transparency
+                </label>
+                </div>
+            </div>
+
+
+            <div class="panel" id="colorThresholds">
+                <input type="button" value="Add color stop" onclick="AddNewColorStop('#000000',0);"/>
+                <hr />
+            </div>
+            
+            <div class="panel">
+                <select id="renderType"></select>
+                <hr/>
+                <label>
+                    <input id="lockLight" type="checkbox" />
+                    Lock light origin
+                </label>
+                <br/>
+                <div class="row">
+                    <input class="lightVector" type="number" id="lightVectorX" min="-1" max="1" step="0.001" value="-0.75" />
+                    <span>Light origin X</span>
+                </div>
+                <div class="row">
+                    <input class="lightVector" type="number" id="lightVectorY" min="-1" max="1" step="0.001" value="-0.35" />
+                    <span>Light origin Y</span>
+                </div>
+                <div class="row">
+                    <input class="lightVector" type="number" id="lightVectorZ" min="-1" max="1" step="0.001" value="0.5" />
+                    <span>Light origin Z</span>
+                </div>
+                <span>Mouse over the large canvas to move the light origin. Click the large canvas to toggle locking the light in place.</span>
+            </div>
+
+            <div id="colorThresholdTemplate" style="display:none;">
+                <div class="colorStop row">
+                    <input class="colorStopColor" type="color" value="#000000" onclick="HandleHexPseudoButton(event, this)" />
+                    <input class="colorStopValue" type="number" value="0.0" step="0.01" min="0" max="1" />
+                    <div class="close" onclick="DeleteColorStop(this)">×</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <canvas class="panel" id="canvas1" width="640" height="640"></canvas>
+</body>
+</html>

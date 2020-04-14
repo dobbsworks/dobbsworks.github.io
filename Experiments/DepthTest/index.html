@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>DepthTest</title>
+    <link rel="stylesheet" href="app.css" type="text/css" />
+    <script src="InputHandler.js"></script>
+    <script src="Map.js"></script>
+    <script src="Sprites.js"></script>
+    <script src="EncodeUtility.js"></script>
+    <script src="app.js"></script>
+</head>
+<body>
+    <input id="overlay" type="number" value="0.0000" step="0.01" style="display:none;"  />
+    <input id="cellSize" type="number" value="64" step="1" style="display:none;"  />
+    <div id="tileContainer"></div>
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <img id="Tiles" src="Tiles.png" style="display:none;" />
+    <h4>Controls</h4>
+    <ul>
+        <li>A: left</li>
+        <li>D: right</li>
+        <li>Space: jump</li>
+        <li>W: "forwards" (when on a forward arrow tile)</li>
+        <li>D: "backwards" (when on a backward arrow tile)</li>
+    </ul>
+</body>
+</html>

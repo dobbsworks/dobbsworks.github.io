@@ -1,0 +1,78 @@
+html, body {
+    background-color: #feccb1;
+    background: linear-gradient(150deg, #c5deea 0%,#8abbd7 31%,#066dab 100%);
+    height:100%;
+}
+
+.bump {
+    border: 6px solid #ccc;
+    border-right-color: #aaa;
+    border-bottom-color: #999;
+    width: 450px;
+    height: 500px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+}
+
+.gameContainer{
+    position: relative;
+    background-color: #ddd;
+    width: 1000px;
+    height: 600px;
+
+    border: 6px solid darkred;
+    outline: 14px outset #B01E1E;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    top: 50px;
+}
+
+#canvas {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 30px;
+}
+
+.text {
+    text-decoration: none;
+    opacity: 0.8;
+    position: absolute;
+    font-family: "Verdana";
+    text-transform: uppercase;
+    font-weight: bolder;
+    text-align: center;
+    color: #444;
+}
+
+.bordered {
+    border-radius: 10px;
+    border: 2px solid #444;
+    padding: 10px;
+}
+
+.button {
+    z-index:10;
+    cursor: pointer;
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background-color: #a40;
+	border-radius: 50%;
+}
+.button.touch {
+    box-shadow: 0 7px 0 0 #740;
+}
+.button.touch:active {
+    box-shadow: 0 2px 0 0 #740;
+    transform: translateY(5px);
+}
+.button.border {
+    z-index: 5;
+    background-color: #800;
+    width: 140px;
+    height: 140px;
+}

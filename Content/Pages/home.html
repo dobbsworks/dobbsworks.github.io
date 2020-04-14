@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>The Dobbsworks</title>
+
+    <style>
+		* {
+			-webkit-transition-property: all;
+			transition-property: all;
+			-webkit-transition-duration: 0.2s;
+			transition-duration: 0.2s;
+		}
+		html, body {
+			margin: 0px;
+			background-color: #222f26;
+		}
+        #mainContainer {
+			background-color: #607c8a;
+			background: linear-gradient(#607c8a, #222f26);
+			display: flex;
+			flex-flow: row wrap;
+			justify-content: center;
+			align-content: flex-start;
+			padding: 25px;
+			margin: 0px auto;
+		}
+		.cell {
+			width: 260px;
+			height: 235px;
+			background-color: #c2cfd6;
+			margin:20px;
+			text-align: center;
+			position: relative;
+			overflow-y: hidden;
+			color: #394a52;
+			font-size: 18px;
+			z-index: 1;
+		}
+		.cell.big {
+			width: 560px;
+		}
+		.cell:hover {
+			box-shadow: 0 0 30px 5px rgb(213,222,217);
+		}
+		#header {
+			background-color: #112833;
+			text-align: center;
+			z-index: 2;
+			font-weight: bold;
+			font-size: 36px;
+			color: #c2cfd6;
+			padding: 20px;
+		}
+		.cell > img {
+			display: block;
+			padding: 30px;
+		}
+		a:link {
+			text-decoration: none;
+		}
+		.title {
+			font-weight: bold;
+		}
+		.subtitle {
+			margin: 0px;
+		}
+		.description {
+			position: absolute;
+			top: 0px;
+			margin: 30px 10px;
+			text-align: justify;
+		}
+		.big > .description {
+			margin-left: 260px;
+		}
+		.cell.small:not(:hover) > .description {
+			top: 250px;
+		}
+		.cell.small:hover > img {
+			opacity: 0.1;
+		}
+
+		.gearFooter {
+    		position: fixed;
+			bottom:-64px;
+    		left: -64px;
+			white-space: nowrap
+		}
+
+		@keyframes clockwise {
+			0% {transform: rotate(0deg);}
+			100% {transform: rotate(60deg);}
+		}
+		@keyframes counter-clockwise {
+			0% {transform: rotate(30deg);}
+			100% {transform: rotate(-30deg);}
+		}
+
+		.gear {
+    		opacity: 0.2;
+			display: inline-block;
+			margin: -8px;
+			width: 128px;
+			height: 128px;
+			background-image: url("../Images/gear1.png");
+			animation-iteration-count: infinite;
+			animation-duration: 1s;
+			animation-timing-function: cubic-bezier(0.29,-0.23, 0.71, 1.26);
+		}
+
+		.clockwise {
+			animation-name: clockwise;
+		}
+		.counter-clockwise {
+			animation-name: counter-clockwise;
+		}
+		
+    </style>
+</head>
+<body>
+	<div id="header">
+		<div>
+			<span>The Dobbsworks</span>
+		</div>
+	</div>
+    <div id="mainContainer">
+		<a class="cell small tool" href="../../Tools/SSBUBingo/">
+			<img src="../Images/thumb_bingo.png" />
+			<span class="title">SSBU Bingo</span>
+			<p class="description">A quick and dirty random bingo card for versus matches in Nintendo's Super Smash Bros. Ultimate.</p>
+			<p class="subtitle">Tool</p>
+		</a>
+		<a class="cell small video" href="https://youtu.be/9lV_dCdP0O8">
+			<img src="../Images/thumb_general.png" />
+			<span class="title">You Need a Hobby (50:51)</span>
+			<p class="description">My first conference talk! Presented at CodeStock 2018, this talk delves into something I have a pretty good handle on: hobby projects. I talk about how to keep motivated with interesting hobby projects.</p>
+			<p class="subtitle">Video</p>
+		</a>
+		<a class="cell big game" href="../../Games/Spinball/index.html">
+			<img src="../Images/thumb_spinball.png" />
+			<span class="title">Spinball</span>
+			<p class="description">My take on an old arcade game called Cameltry. This was made with PlanckJS (a JavaScript port of the Box2d physics engine), and is my first time using a full physics engine.</p>
+		</a>
+		<a class="cell small game" href="../../Games/SayWhen/index.html">
+			<img src="../Images/thumb_sayWhen.png" />
+			<span class="title">Say When</span>
+			<p class="description">Another Ludum Dare challenge! I tried something different this time and made a Game & Watch style toy. Technically not pixel art but still definitely "programmer art" :P</p>
+		</a>
+		<a class="cell small tool" href="../../Tools/PixelGenie/index.html">
+			<img src="../Images/thumb_genie.png" />
+			<span class="title">Pixel Genie</span>
+			<p class="description">A tool built to make quick pixel art for games. It handles creating color palettes and maintaining consistent light.</p>
+			<p class="subtitle">Tool</p>
+		</a>
+		<a class="cell small experiment" href="../../Experiments/DepthTest/index.html">
+			<img src="../Images/thumb_depthTest.png" />
+			<span class="title">Depth</span>
+			<p class="description">Created as an experiment in creating a 3d experience in a series of parallel 2d worlds. This was an optimization challenge wherein I learned a lot of the restrictions of HTML5 canvases.</p>
+			<p class="subtitle">Experiment</p>
+		</a>
+		<a class="cell small game" href="../../Games/Pokum/index.html">
+			<img src="../Images/thumb_pokum.png" />
+			<span class="title">Pokum</span>
+			<p class="description">A quick game I built while playing around with TypeScript. Though not much to look at, it gave me an opportunity to do some quick prototyping using the strong-typing.</p>
+		</a>
+		<a class="cell small tool" href="../../Tools/ImageGrid/index.html">
+			<img src="../Images/thumb_general.png" />
+			<span class="title">Image Grid</span>
+			<p class="description">A tool built to help my wife with some of her woodcrafting projects. This was one of my first stabs at a useful web app outside of work.</p>
+			<p class="subtitle">Tool</p>
+		</a>
+		<a class="cell small experiment" href="../../Experiments/CssColorCube/CssColorCube.html">
+			<img src="../Images/thumb_cssColorCube.png" />
+			<span class="title">CSS Color Cube</span>
+			<p class="description">While flipping through the CSS titled colors, I noticed there were a ton of slight variants of white and started to wonder how the colors could be graphed out. I was exploring CSS animations at the time, and this was the result.</p>
+			<p class="subtitle">Experiment</p>
+		</a>
+		<a class="cell small experiment" href="../../Games/TerrainTest/Index.html">
+			<img src="../Images/thumb_terrainTest.png" />
+			<span class="title">Terrain Generator</span>
+			<p class="description">My first stab at three.js. OpenGL and its similar libraries have always been unintuitive to me, but I managed to plug an old organic noise generator in to make this.</p>
+			<p class="subtitle">Experiment</p>
+		</a>
+		<a class="cell small game" href="../../Games/ZombieCity/Tank.html">
+			<img src="../Images/thumb_zombieCity.png" />
+			<span class="title">Zombie City</span>
+			<p class="description">A small game thrown together in SGDK2, one of my favorite IDEs for making games. This was built from a friend's idea. It plays more like the old quarter-gobbling arcade games than I usually like, but it's still fun.</p>
+		</a>
+		<a class="cell small game" href="../../Games/ShapeDrifter/Pages/ShapeDrifter.html">
+			<img src="../Images/thumb_shapeDrifter.png" />
+			<span class="title">Shape Drifter</span>
+			<p class="description">This was my first attempt at the Ludum Dare, a challenge to build a game in 24 hours from the provided theme. I didn't get as far with it as I had hoped, but I did manage to complete the base game in time.</p>
+		</a>
+		<a class="cell big game" href="../../Games/GerbilTales/Pages/GerbilTales.html">
+			<img src="../Images/thumb_gerbilTales.png" />
+			<span class="title">Gerbil Tales</span>
+			<p class="description">This was one of my absolute favorites to build. I focused on building out a level editor upfront, so every game element had to be managed by other systems. It was a huge challenge in the loosely-typed world of pure JavaScript.</p>
+		</a>
+		<a class="cell small game" href="../../Games/Pixeliens/Pages/SpaceShooter.html">
+			<img src="../Images/thumb_pixeliens.png" />
+			<span class="title">Pixeliens</span>
+			<p class="description">One of my first webgames, this was a personal challenge to complete in a month of evenings. It's perhaps one of the more polished games here despite being the first I built compeltely from scratch.</p>
+		</a>
+		<a class="cell small game" href="https://sites.google.com/site/dobbsworks/">
+			<img src="../Images/thumb_runawayRabbit.png" />
+			<span class="title">Runaway Rabbit</span>
+			<p class="description">Built with the Scrolling Game Development Kit 2 over the course of 8 months. I kept a dev log chronicling the small challenges and victories along the way, which helped keep me going strong.</p>
+			<p class="subtitle">Download</p>
+		</a>
+		<div class="gearFooter">
+			<div class="gear clockwise"></div>
+			<div class="gear counter-clockwise"></div>
+			<div class="gear clockwise"></div>
+			<div class="gear counter-clockwise"></div>
+			<div class="gear clockwise"></div>
+			<div class="gear counter-clockwise"></div>
+			<div class="gear clockwise"></div>
+			<div class="gear counter-clockwise"></div>
+			<div class="gear clockwise"></div>
+			<div class="gear counter-clockwise"></div>
+			<div class="gear clockwise"></div>
+			<div class="gear counter-clockwise"></div>
+			<div class="gear clockwise"></div>
+			<div class="gear counter-clockwise"></div>
+			<div class="gear clockwise"></div>
+			<div class="gear counter-clockwise"></div>
+			<div class="gear clockwise"></div>
+			<div class="gear counter-clockwise"></div>
+		</div>
+    </div>
+
+
+</body>
+</html>

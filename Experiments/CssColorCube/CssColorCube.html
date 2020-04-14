@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head></head>
+<body>
+<div id="container"><div id="cube"></div></div>
+<div id="ex"><b>Named CSS colors mapped in 3d space</b><br/>Smaller datapoints were introduced in CSS3<br/>Datapoints placed with JavaScript, animation done in CSS<br/>Eric Dobbs - 2016</div>
+</body>
+<style type="text/css">
+    body {
+        background-color: gray;
+        margin: 0px;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+    .paused {
+        animation-play-state: paused !important;
+    }
+    #container {
+        perspective: 600px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+    }
+    .cell {
+        position: fixed;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        margin: -8px;
+        animation: spin 24s linear infinite;
+        transform-style: preserve-3d;
+        animation-direction: reverse;
+        animation-play-state: inherit;
+    }
+    .cell.color:hover {
+        left: -4px;
+        top: -4px;
+        border: 4px solid white;
+    }
+    .cell.grid {
+        width: 2px;
+        height: 2px;
+        margin: -1px;
+    }
+    .cell.big {
+        width: 30px;
+        height: 30px;
+        margin: -15px;
+    }
+    .cell.color::after {
+        transition: all 0.5s ease;
+        margin-left: 25px;
+        font-weight: bold;
+        opacity: 0;
+    }
+    .cell.big.color::after {
+        margin-left: 40px;
+    }
+    .cell.color:hover::after {
+        opacity: 1;
+        content: attr(id);
+    }
+    .cellHolder {
+        animation-play-state: inherit;
+        transform-style: preserve-3d;
+    }
+    #cube {
+        animation: spin 24s linear infinite;
+        transform-style: preserve-3d;
+    }
+    @keyframes spin {
+        to {transform: rotateY(360deg) rotateZ(0deg) rotateX(0deg);}
+    }
+    #ex{
+        color:white;
+        position:absolute;
+        bottom:3px;
+        left:3px;
+    }
+</style>
+<script type="text/javascript">
+    setTimeout(go, 100);
+    
+    function togglePause() {
+        var cube = document.getElementById("cube");
+        if (cube.classList.contains("paused"))
+            cube.classList.remove("paused");
+        else cube.classList.add("paused");
+    }
+    
+    function go() {
+        document.body.onclick = togglePause;
+        var cube = document.getElementById("cube");
+        for (var color of colors) {
+            var holder = document.createElement("div");
+            holder.classList.add("cellHolder");
+            var div = document.createElement("div");
+            div.classList.add("cell");
+            if (color.grid) {
+                div.classList.add("grid");
+                div.style.background = "black";
+            } else {
+                div.classList.add("color");
+                div.id = color.name;
+                div.style.background = "radial-gradient(circle at 30% 30%, " + color.name + " 20%, #000 90%)";
+            }
+            var transform = "translate3d(" + (color.r-128)*2 + "px," + (color.g-128)*2 + "px," + (color.b-128)*2 + "px)";
+            holder.style.transform = transform;
+            if (color.v < 3) div.classList.add("big");
+            holder.appendChild(div);
+            cube.appendChild(holder);
+        }
+    }    
+    
+    var colors = [];
+    var css1Colors = ["black","silver","gray","white","maroon","red","purple","fuchsia",
+                      "green","lime","olive","yellow","navy","blue","teal","aqua"];
+    var css2Colors = ["orange"];
+    var css3Colors = ["aliceblue","antiquewhite","aquamarine","azure","beige","bisque",
+                      "blanchedalmond","blueviolet","brown","burlywood","cadetblue",
+                      "chartreuse","chocolate","coral","cornflowerblue","cornsilk",
+                      "crimson","darkblue","darkcyan","darkgoldenrod","darkgray","darkgreen",
+                      "darkgrey","darkkhaki","darkmagenta","darkolivegreen","darkorange",
+                      "darkorchid","darkred","darksalmon","darkseagreen","darkslateblue",
+                      "darkslategray","darkslategrey","darkturquoise","darkviolet",
+                      "deeppink","deepskyblue","dimgray","dimgrey","dodgerblue","firebrick",
+                      "floralwhite","forestgreen","gainsboro","ghostwhite","gold","goldenrod",
+                      "greenyellow","grey","honeydew","hotpink","indianred","indigo","ivory",
+                      "khaki","lavender","lavenderblush","lawngreen","lemonchiffon",
+                      "lightblue","lightcoral","lightcyan","lightgoldenrodyellow",
+                      "lightgray","lightgreen","lightgrey","lightpink","lightsalmon",
+                      "lightseagreen","lightskyblue","lightslategray","lightslategrey",
+                      "lightsteelblue","lightyellow","limegreen","linen","mediumaquamarine",
+                      "mediumblue","mediumorchid","mediumpurple","mediumseagreen",
+                      "mediumslateblue","mediumspringgreen","mediumturquoise","mediumvioletred",
+                      "midnightblue","mintcream","mistyrose","moccasin","navajowhite",
+                      "oldlace","olivedrab","orangered","orchid","palegoldenrod","palegreen",
+                      "paleturquoise","palevioletred","papayawhip","peachpuff","peru","pink",
+                      "plum","powderblue","rosybrown","royalblue","saddlebrown","salmon",
+                      "sandybrown","seagreen","seashell","sienna","skyblue","slateblue",
+                      "slategray","slategrey","snow","springgreen","steelblue","tan",
+                      "thistle","tomato","turquoise","violet","wheat","whitesmoke","yellowgreen"];
+    
+    function AppendColors(list, v) {
+        for(var c of list) {
+            var d = document.createElement("div");
+            d.style.color = c;
+            document.body.appendChild(d)
+            var rgb = window.getComputedStyle(d).color.split(', ');
+            document.body.removeChild(d);
+            var color = {name: c, r: +(rgb[0].split('(')[1]), g: +(rgb[1]), b: +(rgb[2].split(')')[0]), v: v};
+            colors.push(color);
+        }
+    }
+    AppendColors(css1Colors, 1);
+    AppendColors(css2Colors, 2);
+    AppendColors(css3Colors, 3);
+    
+    for (var i=5; i<255; i+=15) 
+    for (var j of [0,255])
+    for (var k of [0,255]) {    
+        colors.push({grid:true,r:j,g:k,b:i,v:3});
+        colors.push({grid:true,r:j,g:i,b:k,v:3});
+        colors.push({grid:true,r:i,g:j,b:k,v:3});
+    }
+</script>
+</html>

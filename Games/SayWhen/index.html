@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Say When</title>
+    <link rel="stylesheet" href="app.css" type="text/css" />
+    <script src="app.js"></script>
+</head>
+<body>
+    &nbsp;
+    <div class="gameContainer">
+        <a class="text bordered" style="left:50px; top:50px; width:150px; font-size: 2em;" href="http://dobbsworks.com">
+            D<img width="30px" src="image/5.png" style="position:relative;top:4px;">bbs            
+            Works
+        </a>
+        <div class="text" style="right:60px; top:60px; font-size:1.7em;">Say When</div>
+        <div class="bump"><canvas id="canvas" width="400" height="450"></canvas></div>
+        <div class="text" style="left:60px; top:350px;">&lt;&lt; Left</div>
+        <div class="text" style="right:60px; top:350px;">Right &gt;&gt;</div>
+
+        <div class="button touch" style="left:60px; top:400px;" onclick="Left();" ontouch="Left();"></div>
+        <div class="button border" style="left:40px; top:385px;"></div>
+
+        <div class="button touch" style="right:60px; top:400px;" onclick="Right();" ontouch="Right();"></div>
+        <div class="button border" style="right:40px; top:385px;"></div>
+
+        <div class="text" style="right:130px; top:220px;">Sound <br/>on/off</div>
+        <div class="button touch" style="right:60px; top:200px; width:60px; height:60px;" onclick="Mute();" ontouch="Mute();"></div>
+    </div>
+
+    <div style="position:absolute; left: 0px; bottom: 0px;">
+        Made in 4 hours for <a href="https://ldjam.com/">Ludum Dare 40</a>
+
+    </div>
+
+    <div style="display:none;">
+        <audio id="audio0" src="audio/low.mp3"></audio>
+        <audio id="audio1" src="audio/high.mp3"></audio>
+        <img id="img0" src="image/0.png"/>
+        <img id="img1" src="image/1.png"/>
+        <img id="img2" src="image/2.png"/>
+        <img id="img3" src="image/3.png"/>
+        <img id="img4" src="image/4.png"/>
+        <img id="img5" src="image/5.png"/>
+        <img id="img6" src="image/6.png"/>
+        <img id="img7" src="image/7.png"/>
+    </div>
+</body>
+</html>
