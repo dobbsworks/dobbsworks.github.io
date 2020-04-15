@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>SSBU Bingo</title>
+    <link rel="stylesheet" href="app.css?v=1.02" type="text/css" />
+    <script src="js/app.js?v=1.02"></script>
+</head>
+<body>
+    <div id="main"></div>
+    <br/>
+    <div class="button" onclick="ToggleNames()">Toggle Names</div>
+    <div class="button" onclick="NewRandomBoard()">New Random Board</div>
+    <div class="button" onclick="GetTodaysBoard()" id="todayButton">Get Today's Board</div>
+    <div style="padding-top:10px;">
+        <label>
+            Random seed
+            <input type="number" id="seed" value="0">
+        </label>
+    </div>
+    <div class="button" onclick="BoardFromSeed()">New Board From Seed</div>
+    <img id="icons" style="display:none;" crossorigin="anonymous" src="https://i.imgur.com/PdWjmOL.png" />
+    <!-- <img id="icons" style="display:none;" src="icons.png" /> -->
+
+    <div class="credits">
+        <p>SSBU Bingo card v1.02 by <a href="http://dobbsworks.com">Eric Dobbs</a>, 2019</p>
+    </div>
+</body>
+</html>
