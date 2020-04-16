@@ -289,15 +289,11 @@ function MainMenu() {
     logo.style.float = 'left';
     logo.style.margin = '20px';
 
-    var subredditButton = new MenuActionButtonSmall("Visit the Subreddit!", function () {
-        window.open("https://www.reddit.com/r/gerbiltales/");
-    });
-
     MenuBase.call(this, 600, null, [
         gameLogo,
         levelSelect,
         startLevelEditor,
-        new MenuTable([[logo, new MenuTable([[survey.toNode()], [subredditButton.toNode()], [changelog.toNode()]]).toNode()]])
+        new MenuTable([[logo, new MenuTable([[survey.toNode()], [changelog.toNode()]]).toNode()]])
     ]);
 }
 MainMenu.prototype = new MenuBase();

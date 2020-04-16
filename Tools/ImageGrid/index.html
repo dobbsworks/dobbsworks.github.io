@@ -8,18 +8,18 @@
     <script src="app.js"></script>
 </head>
 <body>
-    <div id="extra" style="color:white; padding:20px;background-color:teal;position:fixed;bottom:0px;left:0px;z-index:8" onclick="document.getElementById('controls').style.visibility = 'hidden';">Love you!</div>
+    <!-- <div id="extra" style="color:white; padding:20px;background-color:teal;position:fixed;bottom:0px;left:0px;z-index:8" onclick="document.getElementById('controls').style.visibility = 'hidden';">Love you!</div> -->
     <div id="expand" onclick="document.getElementById('controls').style.visibility = 'visible';">+</div>
     <div id="controls">
         <div id="hide" onclick="document.getElementById('controls').style.visibility = 'hidden';">x</div>
         <div class="controlLine">
             <label>
                 <span>Left offset</span>
-                <input type="number" id="leftOffset" step:"1" value="0" />
+                <input type="number" id="leftOffset" step="1" value="0" />
             </label>
             <label>
                 <span>Top offset</span>
-                <input type="number" id="topOffset" step:"1" value="0" />
+                <input type="number" id="topOffset" step="1" value="0" />
             </label>
             <label>
                 <span>Pixels Per Row</span>
@@ -31,7 +31,7 @@
             </label>
             <label>
                 <span>Zoom</span>
-                <input type="number" id="zoom" step:"0.5" value="1" />
+                <input type="number" id="zoom" step="0.5" value="1" />
             </label>
             <label>
                 <span>Grid Color</span>
@@ -41,11 +41,11 @@
         <div class="controlLine">
             <label>
                 <span>Right offset</span>
-                <input type="number" id="rightOffset" step:"1" value="0" />
+                <input type="number" id="rightOffset" step="1" value="0" />
             </label>
             <label>
                 <span>Bottom offset</span>
-                <input type="number" id="bottomOffset" step:"1" value="0" />
+                <input type="number" id="bottomOffset" step="1" value="0" />
             </label>
             <label>
                 <span>Rows</span>
