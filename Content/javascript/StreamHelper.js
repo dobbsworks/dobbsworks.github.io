@@ -679,7 +679,11 @@ function DrawOverlayContent(w) {
 		}		
 	} else {
 		w.document.writeln("<hr/>");
-		w.document.writeln("<div>No pending levels, add yours now with !add</div>");
+		if (isQueueOpen) {
+			w.document.writeln("<div>No pending levels, add yours now with !add</div>");
+		} else {
+			w.document.writeln("<div>The queue is closed.</div>");
+		}
 	}
 }
 
@@ -735,7 +739,9 @@ function DrawMarqueeContent(w) {
 	let elements = [
 		"Dobbs's maker ID: S2C-HX7-01G",
 		"!help for common commands",
-		"Stream schedule (ET): Mon 8:30pm, Wed 5pm, Sat 2pm"
+		"Stream schedule (ET): Mon 8:30pm, Wed 5pm, Sat 2pm",
+		"YTD charity donations: $515",
+		"Super world completion: ~31%"
 	];
 	let text = elements.join("  ●  ") + "  ●  ";
 	
