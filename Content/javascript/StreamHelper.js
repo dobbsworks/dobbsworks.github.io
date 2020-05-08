@@ -169,7 +169,7 @@ function CommandAddLevel(username, args) {
 			return " VoteNay VoteNay VoteNay For some reason you were flagged for possible spam/botting. Type !notSpam and then try again.";
 		} else {
 			let userInputCode = args[0];
-			let strippedCode = userInputCode.replace(/-/g, "");
+			let strippedCode = StripLevelCode(userInputCode);
 			if (strippedCode.length === 9) {
 				if (DoesUserHaveQueueSpace(username)) {
 					if (forbiddenCodes.indexOf(strippedCode.toLowerCase()) > -1) {
@@ -193,6 +193,14 @@ function CommandAddLevel(username, args) {
 	} else {
 		return "The queue is closed right now. :(";
 	}	
+}
+function StripLevelCode(rawCodeText) {
+    let ret = "";
+    let validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toLowerCase();
+    for (let char of rawCodeText) {
+        if (validChars.indexOf(char.toLowerCase()) > -1) ret += char;
+    }
+    return ret;
 }
 function PushQueueEntry(username, strippedCode) {
 	let formattedCode = strippedCode.match(/.{1,3}/g).join('-').toUpperCase();
