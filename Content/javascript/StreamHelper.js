@@ -155,7 +155,7 @@ function CommandNotSpam(username, args) {
 }
 
 function CommandReserve(username, args) {
-	let ret = CommandAddLevel(username, ["RES-ERV-ED_"]);
+	let ret = CommandAddLevel(username, ["RES-ERV-ED0"]);
 	if (ret.startsWith("Your level has been queued")) {
 		ret = "Your spot is saved! Use !change if you want to swap the placeholder level code with a real one.";
 	}
