@@ -82,7 +82,6 @@ let commands = [
     Command("complete", CommandComplete,	commandPermission.streamer, commandDisplay.panel),
     Command("skip", 	CommandSkip, 		commandPermission.streamer, commandDisplay.panel),
     Command("next", 	CommandNext, 		commandPermission.streamer, commandDisplay.panel),
-    Command("randomnext",CommandRandomNext, commandPermission.streamer, commandDisplay.panel),
     Command("resettimer",CommandResetTimer, commandPermission.streamer, commandDisplay.panel),
     Command("roll", 	CommandRoll, 		commandPermission.all,      commandDisplay.chat,    "Roll the dice! Usage: !roll d6, !roll d20+3"),
     Command("open", 	CommandOpenQueue, 	commandPermission.streamer, commandDisplay.panel),
@@ -306,17 +305,6 @@ function CommandNext(username, args) {
 	}
 }
 
-function CommandRandomNext(username, args) {
-	let currentLevel = queue.find(x => x.status === levelStatus.live);
-	if (currentLevel) {
-		return "There's still a level going on, mark it as complete/skipped first.";
-	} else {
-		let randomNextLevel = RandomFrom(queue.filter(x => x.status === levelStatus.pending));
-		MoveLevelToFront(randomNextLevel);
-		return CommandNext(username, args);
-	}
-}
-
 function CommandResetTimer(username, args) {
 	let currentLevel = queue.find(x => x.status === levelStatus.live);
 	if (currentLevel) {
@@ -397,19 +385,13 @@ function CommandPriority(username, args) {
 	if (userLevels.length === 0) return "There are no valid levels to prioritize.";
 	let levelToPrioritze = userLevels[0];
 	
-	let errorStr = MoveLevelToFront(levelToPrioritze);
-	if (errorStr) return errorStr;
-	levelToPrioritze.isPriority = true;
-	
-	return "Your level has been moved to the priority queue.";
-}
-
-function MoveLevelToFront(level) {
 	let oldIndex = queue.indexOf(levelToPrioritze);
 	let targetIndex = queue.filter(x => x.status !== levelStatus.pending || x.isPriority).length;
 	if (oldIndex <= -1 || targetIndex <= -1) return "Uh, something went wrong here, ask Dobbs to fix it, idk";
+	levelToPrioritze.isPriority = true;
+	
 	queue.splice(targetIndex, 0, queue.splice(oldIndex, 1)[0]);
-	return false;
+	return "Your level has been moved to the priority queue.";
 }
 
 function CommandQueueSlot(username, args) {
@@ -766,8 +748,8 @@ function DrawMarqueeContent(w) {
 		"Dobbs's maker ID: S2C-HX7-01G",
 		"!help for common commands",
 		"Stream schedule (ET): Mon 8:30pm, Wed 5pm, Sat 2pm",
-		"YTD charity donations: $565",
-		"Super world completion: ~34%"
+		"YTD charity donations: $540",
+		"Super world completion: ~31%"
 	];
 	let text = elements.join("  ●  ") + "  ●  ";
 	
