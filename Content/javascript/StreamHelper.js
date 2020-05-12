@@ -22,7 +22,6 @@ let queue = [];
 let isQueueOpen = true;
 let queueWindow = null;
 let overlayWindow = null;
-let chatLogWindow = null;
 let marqueeWindow = null;
 let streamerName = "dobbsworks";
 let voice = null;
@@ -54,7 +53,6 @@ function Initialize() {
 	//window.resizeTo(222, 759);
 	queueWindow = CreateQueueWindow();	
 	overlayWindow = CreateOverlayWindow();
-	chatLogWindow = CreateChatLogWindow();
 	marqueeWindow = CreateMarqueeWindow();
 	let bc = new BroadcastChannel('helper');
 	bc.onmessage = OnBroadcastMessage;	
@@ -82,6 +80,7 @@ let commands = [
     Command("complete", CommandComplete,	commandPermission.streamer, commandDisplay.panel),
     Command("skip", 	CommandSkip, 		commandPermission.streamer, commandDisplay.panel),
     Command("next", 	CommandNext, 		commandPermission.streamer, commandDisplay.panel),
+    Command("randomnext",CommandRandomNext, commandPermission.streamer, commandDisplay.panel),
     Command("resettimer",CommandResetTimer, commandPermission.streamer, commandDisplay.panel),
     Command("roll", 	CommandRoll, 		commandPermission.all,      commandDisplay.chat,    "Roll the dice! Usage: !roll d6, !roll d20+3"),
     Command("open", 	CommandOpenQueue, 	commandPermission.streamer, commandDisplay.panel),
@@ -92,6 +91,7 @@ let commands = [
     Command("addcom",	CommandAddCommand,	commandPermission.mod, 		commandDisplay.hidden),
 	
     Command("as",		CommandAs,			commandPermission.streamer, commandDisplay.hidden),
+    Command("exportchat",CreateChatLogWindow,commandPermission.streamer, commandDisplay.panel),
 	
 	MessageCommand("maker", "My maker id is: S2C-HX7-01G"),
 	MessageCommand("makerid", "My maker id is: S2C-HX7-01G"),
@@ -99,6 +99,8 @@ let commands = [
 	MessageCommand("priority", "Your level will cut ahead of any level that isn't in the priority queue. Note that you need to already have your level in the queue before redeeming this reward!"),
 	MessageCommand("bot", "Hello there, I'm the bot! Dobbs wrote me in JavaScript of all things. I handle the level queue and stuff. Sometimes I break for no good reason! Kappa"),
 	
+	MessageCommand("random", "Sometimes instead of taking levels in order, we'll go randomly. If your level doesn't get picked, it'll be more likely to get drawn next time."),
+
 	//MessageCommand("race", "I'm racing today on the SpeedGaming2 channel starting at 2PM Eastern. Want to learn more? Check the !discord, or learn the !format."),
 	//MessageCommand("discord", "Get involved with the SMM2 weekly race here: https://discord.gg/VX7fHcC"),
 	//MessageCommand("format", "The race has 3 phases: !blind, !optimize, and !endless. Players compete for the fastest/best score in each round."),
@@ -211,7 +213,8 @@ function PushQueueEntry(username, strippedCode) {
 		timeAdded: new Date(),
 		timeStarted: null,
 		timeEnded: null,
-		isPriority: false
+		isPriority: false,
+		weight: 1 //weighting to be used for !randomnext
 	}
 	queue.push(level);
 }
@@ -305,6 +308,21 @@ function CommandNext(username, args) {
 	}
 }
 
+function CommandRandomNext(username, args) {
+	let currentLevel = queue.find(x => x.status === levelStatus.live);
+	if (currentLevel) {
+		return "There's still a level going on, mark it as complete/skipped first.";
+	} else {
+		let availableLevels = queue.filter(x => x.status === levelStatus.pending);
+		let randomNextLevel = RandomWeightedFrom(availableLevels, a => a.weight);
+		MoveLevelToFront(randomNextLevel);
+		for (let level of availableLevels) {
+			if (level !== randomNextLevel) level.weight += 1;
+		}
+		return CommandNext(username, args);
+	}
+}
+
 function CommandResetTimer(username, args) {
 	let currentLevel = queue.find(x => x.status === levelStatus.live);
 	if (currentLevel) {
@@ -384,14 +402,24 @@ function CommandPriority(username, args) {
 	let userLevels = queue.filter(x => x.username === username && x.status === levelStatus.pending && !x.isPriority);
 	if (userLevels.length === 0) return "There are no valid levels to prioritize.";
 	let levelToPrioritze = userLevels[0];
-	
-	let oldIndex = queue.indexOf(levelToPrioritze);
+
+	let errorStr = MoveLevelToFront(levelToPrioritze);
+	if (errorStr) return errorStr;
+	levelToPrioritze.isPriority = true;
+
+	return "Your level has been moved to the priority queue.";
+}
+
+
+function MoveLevelToFront(level) {
+	let oldIndex = queue.indexOf(level);
 	let targetIndex = queue.filter(x => x.status !== levelStatus.pending || x.isPriority).length;
 	if (oldIndex <= -1 || targetIndex <= -1) return "Uh, something went wrong here, ask Dobbs to fix it, idk";
-	levelToPrioritze.isPriority = true;
-	
+	level.isPriority = true;
+
 	queue.splice(targetIndex, 0, queue.splice(oldIndex, 1)[0]);
 	return "Your level has been moved to the priority queue.";
+	return false;
 }
 
 function CommandQueueSlot(username, args) {
@@ -720,11 +748,32 @@ function GetOverlayContentFromLevel(level) {
 
 function CreateChatLogWindow() {
 	let w = window.open("", "Chat Log", "width=172,height=476");
-	return w;
+	let currentLog = localStorage.getItem("log");
+	if (currentLog) {
+		let logMessages = JSON.parse(currentLog);
+		w.document.writeln("<table>");
+		for (let m of logMessages) 
+			w.document.writeln("<tr><td>" + (new Date(m.timestamp)).toLocaleDateString() + " " + 
+				(new Date(m.timestamp)).toLocaleTimeString() + 
+				"</td><td>" + m.username + "</td><td>" + m.reward + "</td><td>" + m.text + "</td></tr>");
+		w.document.writeln("</table>");
+	}
+	ClearChatLog();
+}
+function ClearChatLog() {
+	localStorage.setItem("log","");
 }
 function LogChatMessage(m) {
-	chatLogWindow.document.writeln("<table><tr><td>" + m.timestamp.toLocaleDateString() + " " + m.timestamp.toLocaleTimeString() + 
-	"</td><td>" + m.username + "</td><td>" + m.reward + "</td><td>" + m.text + "</td></tr></table>");
+	let currentLog = localStorage.getItem("log");
+	if (currentLog) {
+		let logMessages = JSON.parse(currentLog);
+		logMessages.push(m);
+		localStorage.setItem("log", JSON.stringify(logMessages));
+	} else {
+		localStorage.setItem("log", JSON.stringify([m]));
+	}
+	// chatLogWindow.document.writeln("<table><tr><td>" + m.timestamp.toLocaleDateString() + " " + m.timestamp.toLocaleTimeString() + 
+	// "</td><td>" + m.username + "</td><td>" + m.reward + "</td><td>" + m.text + "</td></tr></table>");
 }
 
 
@@ -748,8 +797,8 @@ function DrawMarqueeContent(w) {
 		"Dobbs's maker ID: S2C-HX7-01G",
 		"!help for common commands",
 		"Stream schedule (ET): Mon 8:30pm, Wed 5pm, Sat 2pm",
-		"YTD charity donations: $540",
-		"Super world completion: ~31%"
+		"YTD charity donations: $590",
+		"Super world completion: ~34%"
 	];
 	let text = elements.join("  ●  ") + "  ●  ";
 	
@@ -764,9 +813,28 @@ function DrawMarqueeContent(w) {
 }
 
 
+function RandomNumber(min, max) {
+	if (max === undefined) {
+		max = min;
+		min = 0;
+	}
+	return min + Math.floor(Math.random() * (1+max-min))
+}
+
 function RandomFrom(list) {
-	let index = Math.floor(Math.random() * list.length);
+	let index = RandomNumber(list.length);
 	return list[index];
+}
+
+function RandomWeightedFrom(list, weightFunc) {
+	let weightTotal = list.map(weightFunc).reduce((a,b) => a+b, 0);
+	let randomIndex = RandomNumber(1, weightTotal);
+	let cumulativeWeight = 0;
+	for (let item of list) {
+		cumulativeWeight += weightFunc(item);
+		if (cumulativeWeight >= randomIndex) return item;
+	}
+	return null;
 }
 
 Initialize();
