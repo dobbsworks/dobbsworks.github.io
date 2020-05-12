@@ -776,6 +776,20 @@ function LogChatMessage(m) {
 	// "</td><td>" + m.username + "</td><td>" + m.reward + "</td><td>" + m.text + "</td></tr></table>");
 }
 
+/////////////////////////////////////////////////
+// WHEEL OF LEVELS
+/////////////////////////////////////////////////
+function CreateWheelOfLevels() {
+	let w = window.open("", "WheelOfLevels", "width=1000,height=900");
+	
+	let request = new XMLHttpRequest();
+	request.open("GET", "https://dobbsworks.github.io/Content/Pages/wheel.html", true);
+	request.onload = () => {
+		w.document.write(request.responseText);
+	}
+	request.send();
+}
+
 
 /////////////////////////////////////////////////
 // MARQUEE PANEL

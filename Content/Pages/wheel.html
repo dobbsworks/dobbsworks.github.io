@@ -1,0 +1,243 @@
+<html>
+	<head>
+    <title>Wheel of Levels</title>
+	</head>
+	<body></body>
+	<script type="text/javascript">
+	
+let baseSize = Math.floor(Math.min(window.innerWidth, window.innerHeight));
+let margin = 50;
+let r = (baseSize / 2) - margin;
+let center = (baseSize / 2);
+
+let canvas = document.createElement("canvas");
+canvas.height = baseSize;
+canvas.width = baseSize;
+canvas.style.position = "fixed";
+canvas.style.left = "0";
+canvas.style.top = "0";
+document.body.appendChild(canvas);
+let ctx = canvas.getContext("2d");
+document.body.style.backgroundColor = "magenta";
+
+let items = [
+	{name: "Long User 1", weight: 1}, 
+	{name: "newboomerangmiaro777", weight: 3}, 
+	{name: "User 1", weight: 1}, 
+	{name: "Long User 2", weight: 3}, 
+	{name: "Long User 3", weight: 3}, 
+	{name: "x", weight: 2}
+];
+
+// need to avoid color offset to allow for chroma-key
+let colorOffset = Math.random()*360;
+colorOffset = 0;
+let rotation = 0;
+let rotationSpeed = 0;
+
+
+let confetti = [];
+
+function init() {
+	for (let i = 0; i < 100; i++) {
+		confetti.push({
+			x: Math.random() * window.innerWidth,
+			y: Math.random() * window.innerHeight,
+			timer: 100 * Math.random(),
+			color: ["red","blue","lime"][Math.floor(Math.random()*3)]
+		});
+	}
+	
+	let cumulativeWeight = items.map(x => x.weight).reduce((a,b) => a+b, 0);
+	let weightScale = 1;
+	if (cumulativeWeight < 16) {
+		weightScale = Math.pow(2, 4 - Math.floor(Math.log2(cumulativeWeight)));
+		if (weightScale < 1) weightScale = 1;
+	}
+	
+	for (let item of items) {
+		item.text = item.name.substring(0,14);
+		item.weight *= weightScale;
+	}
+
+	setInterval(loop, 1000/60);
+	setupTimers();
+}
+
+function draw() {
+	ctx.clearRect(0,0,baseSize, baseSize);
+	
+	let totalWeight = items.map(x => x.weight).reduce((a,b)=>a+b,0);
+	let cumulativeWeight = 0;
+	for (let index = 0; index < items.length; index++) {
+		let item = items[index];
+		// 270 instead of 360 and +20 to aoid magentas (chroma-key)
+		let hue = Math.floor(270 / items.length * index + colorOffset) % 360 + 20;
+		let sat = "75%";
+		let lum = "50%";
+		if (winnerIndex > -1 && winnerIndex !== index) {
+			sat = "25%";
+			lum = "75%";
+		}
+		let color = "hsl(" + hue + ", " + sat + "," + lum + ")";
+		item.t1 = cumulativeWeight / totalWeight * (2*Math.PI);
+		item.t2 = (cumulativeWeight + item.weight) / totalWeight * (2*Math.PI);
+		
+		cumulativeWeight += item.weight;	
+		ctx.fillStyle = color;
+		ctx.beginPath();
+		ctx.moveTo(center, center);
+		ctx.arc(center, center, r, item.t1+rotation, item.t2+rotation);
+		ctx.lineTo(center, center);
+		ctx.fill();
+	}
+	ctx.fillStyle = "black";
+	for (let i=0; i<cumulativeWeight; i++) {
+		let theta = Math.PI*2 / cumulativeWeight * i + rotation;
+		let x = center + r * Math.cos(theta);
+		let y = center + r * Math.sin(theta);
+		ctx.beginPath();
+		ctx.arc(x, y, 5, 0, 2*Math.PI);
+		ctx.fill();
+	}
+	ctx.beginPath();
+	ctx.moveTo(center, margin);
+	ctx.lineTo(center+15, 5);
+	ctx.lineTo(center, 0);
+	ctx.lineTo(center-15, 5);
+	ctx.fill();
+	
+	
+	// outlines
+	ctx.lineWidth = 2;
+	ctx.strokeStyle = "black";	
+	ctx.beginPath();
+	ctx.arc(center, center, r, 0, 2*Math.PI);
+	ctx.stroke();
+	for (let item of items) {	
+		ctx.beginPath();
+		ctx.moveTo(center, center);
+		ctx.lineTo(center + r * Math.cos(item.t1+rotation), center + r * Math.sin(item.t1+rotation));
+		ctx.stroke();
+	}
+	
+	
+	// name labels
+	ctx.fillStyle = "white";
+	ctx.strokeStyle = "black";	
+	ctx.lineWidth = 5;
+	let textHeight = 30;
+	ctx.font = textHeight + "px Arial";
+	for (let nameIndex = 0; nameIndex < items.length; nameIndex++) {
+		if (nameIndex >= nameRevealCount) break;
+		if (nameIndex < nameHideCount) continue;
+		let item = items[nameIndex];
+		let textWidth = ctx.measureText(item.text).width;
+		let centerX = center + 0.75 * r * Math.cos((item.t1+item.t2)/2+rotation);
+		let centerY = center + 0.75 * r * Math.sin((item.t1+item.t2)/2+rotation);
+		ctx.strokeText(item.text, centerX - textWidth/2, centerY + textHeight/4);
+		ctx.fillText(item.text, centerX - textWidth/2, centerY + textHeight/4);
+	}	
+	
+	// winner name text
+	ctx.font = "50px Arial";
+	if (winnerIndex > -1) {
+		let winner = items[winnerIndex];
+		let text = winner.name;
+		let textWidth = ctx.measureText(text).width;
+		ctx.strokeText(text, center - textWidth/2, center);
+		ctx.fillText(text, center - textWidth/2, center);
+		
+		text = "wins!"
+		textWidth = ctx.measureText(text).width;
+		ctx.strokeText(text, center - textWidth/2, center + 60);
+		ctx.fillText(text, center - textWidth/2, center + 60);
+		
+		// confetti
+		for (let c of confetti) {
+			ctx.fillStyle = c.color;
+			for (let a =0; a<4; a++)
+				ctx.fillRect(c.x, c.y + a * window.innerHeight/4, 3, 3);
+		}
+	}
+}
+
+function determineWinner() {
+	// PI/2 == bottom
+	let targetAngle = 3*Math.PI/2;
+	let winner = items.find(x => (x.t1 + rotation) % (Math.PI*2) < targetAngle && (x.t2 + rotation) % (Math.PI*2) >= targetAngle)
+	winnerIndex = items.indexOf(winner);
+}
+
+let nameRevealCount = 0;
+let nameHideCount = 0;
+let rotationAccel = 1;
+let winnerIndex = -1;
+function setupTimers() {
+	let timer = 0;
+	
+	timer += 2000;
+	
+	// show and hide name tags
+	for (let i=0; i<items.length; i++) {
+		setTimeout(() => {nameRevealCount++}, timer);
+		timer += 200;
+	}
+	timer += 3000;
+	for (let i=0; i<items.length; i++) {
+		setTimeout(() => {nameHideCount++}, timer);
+		timer += 200;
+	}
+	timer += 500;
+
+	// start spinning
+	setTimeout(() => {rotationSpeed = 0.01}, timer);
+	timer += 5;
+	// speed up
+	setTimeout(() => {rotationAccel = 1.02}, timer);
+	timer += 2000;
+	
+	// steady speed for a random duration
+	setTimeout(() => {rotationAccel = 1.00}, timer);
+	timer += 2000 + 1000*Math.random();
+	
+	// dampen speed
+	setTimeout(() => {rotationAccel = 0.99}, timer);
+	timer += 9000;
+	setTimeout(() => {rotationAccel = 0.9}, timer);
+	timer += 1000;
+	
+	// hard stop
+	setTimeout(() => {rotationSpeed = 0; rotationAccel = 1.00;}, timer);
+	timer += 1000;
+	
+	// highlight winner cell
+	setTimeout(determineWinner, timer);
+	timer += 1000;
+}
+
+function SendCode(code) {
+	(new BroadcastChannel('helper')).postMessage('!randomwinner ' + code);
+}
+
+
+function loop() {	
+
+	rotationSpeed *= rotationAccel;
+	rotation += rotationSpeed;
+	
+	for (let c of confetti) {
+		c.y += c.timer/100 + 1;
+		if (c.y > window.innerHeight/4) c.y -= window.innerHeight/4;
+		c.x += (c.timer - 50)/50;
+		c.timer +=1;
+		if (c.timer > 100) c.timer -= 100;
+	}
+	
+	draw();
+}
+
+init();
+
+	</script>
+</html>
