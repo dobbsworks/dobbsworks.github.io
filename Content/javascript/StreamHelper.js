@@ -81,6 +81,7 @@ let commands = [
     Command("skip", 	CommandSkip, 		commandPermission.streamer, commandDisplay.panel),
     Command("next", 	CommandNext, 		commandPermission.streamer, commandDisplay.panel),
     Command("randomnext",CommandRandomNext, commandPermission.streamer, commandDisplay.panel),
+    Command("randomwin",CommandRandomWin,	commandPermission.streamer, commandDisplay.hidden),
     Command("resettimer",CommandResetTimer, commandPermission.streamer, commandDisplay.panel),
     Command("roll", 	CommandRoll, 		commandPermission.all,      commandDisplay.chat,    "Roll the dice! Usage: !roll d6, !roll d20+3"),
     Command("open", 	CommandOpenQueue, 	commandPermission.streamer, commandDisplay.panel),
@@ -314,13 +315,18 @@ function CommandRandomNext(username, args) {
 		return "There's still a level going on, mark it as complete/skipped first.";
 	} else {
 		let availableLevels = queue.filter(x => x.status === levelStatus.pending);
-		let randomNextLevel = RandomWeightedFrom(availableLevels, a => a.weight);
-		MoveLevelToFront(randomNextLevel);
-		for (let level of availableLevels) {
-			if (level !== randomNextLevel) level.weight += 1;
-		}
-		return CommandNext(username, args);
+		CreateWheelOfLevels(availableLevels);
+		// let randomNextLevel = RandomWeightedFrom(availableLevels, a => a.weight);
+		// MoveLevelToFront(randomNextLevel);
+		// for (let level of availableLevels) {
+		// 	if (level !== randomNextLevel) level.weight += 1;
+		// }
+		// return CommandNext(username, args);
 	}
+}
+
+function CommandRandomWin(username, args) {
+	console.log(args);
 }
 
 function CommandResetTimer(username, args) {
@@ -779,15 +785,15 @@ function LogChatMessage(m) {
 /////////////////////////////////////////////////
 // WHEEL OF LEVELS
 /////////////////////////////////////////////////
-function CreateWheelOfLevels() {
+function CreateWheelOfLevels(levels) {
 	let w = window.open("", "WheelOfLevels", "width=1000,height=900");
 	
 	let request = new XMLHttpRequest();
 	request.open("GET", "https://dobbsworks.github.io/Content/Pages/wheel.html", true);
 	request.onload = () => {
 		w.document.write(request.responseText);
-		w.items = [{name: "test", weight: 3}, {name: "test2", weight: 3}, {name: "test3", weight: 3}, {name: "test4", weight: 3}];
-		w.init();
+		w.window.items = levels.map(x => {return {name: x.username, weight: x.weight, code: x.code}});
+		w.window.init();
 	}
 	request.send();
 	return w;
