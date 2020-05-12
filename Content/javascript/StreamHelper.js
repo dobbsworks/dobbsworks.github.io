@@ -786,8 +786,11 @@ function CreateWheelOfLevels() {
 	request.open("GET", "https://dobbsworks.github.io/Content/Pages/wheel.html", true);
 	request.onload = () => {
 		w.document.write(request.responseText);
+		w.items = [{name: "test", weight: 3}, {name: "test2", weight: 3}, {name: "test3", weight: 3}, {name: "test4", weight: 3}];
+		w.init();
 	}
 	request.send();
+	return w;
 }
 
 
