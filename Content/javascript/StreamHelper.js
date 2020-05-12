@@ -486,7 +486,7 @@ function ProcessChatMessages() {
 	DrawOverlayContent(overlayWindow);
 }
 function FindChatMessagesToProcess() {
-	let chatMessages = Array.from(document.getElementsByClassName("chat-line__message")).filter(m => m.parentElement.classList.contains("chat-list__list-container"));
+	let chatMessages = Array.from(document.getElementsByClassName("chat-line__message")); //.filter(m => m.parentElement.classList.contains("chat-list__list-container"));
 	let rewardMessages = Array.from(document.getElementsByClassName("channel-points-reward-line"))
 	let allMessages = [...chatMessages, ...rewardMessages];
 	let toProcess = allMessages.filter(m => !m.classList.contains("processed"));
