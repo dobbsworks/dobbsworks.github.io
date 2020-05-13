@@ -793,6 +793,7 @@ function CreateWheelOfLevels(levels) {
 		setTimeout(() => {
 			w.window.SetItems(levels.map(x => {return {name: x.username, weight: x.weight, code: x.code}}));
 			w.window.init();
+			for (l of levels) l.weight++;
 		}, 100);
 	}
 	request.send();

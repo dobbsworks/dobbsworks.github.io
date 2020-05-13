@@ -20,14 +20,7 @@ document.body.appendChild(canvas);
 let ctx = canvas.getContext("2d");
 document.body.style.backgroundColor = "magenta";
 
-let items = [
-	// {name: "Long User 1", weight: 1}, 
-	// {name: "newboomerangmiaro777", weight: 3}, 
-	// {name: "User 1", weight: 1}, 
-	// {name: "Long User 2", weight: 3}, 
-	// {name: "Long User 3", weight: 3}, 
-	// {name: "x", weight: 2}
-];
+let items = [];
 
 // need to avoid color offset to allow for chroma-key
 let colorOffset = Math.random()*360;
@@ -166,7 +159,6 @@ function draw() {
 }
 
 function determineWinner() {
-	cheer = PlayAudio("barWV7RWkq0");
 	// PI/2 == bottom
 	let targetAngle = 3*Math.PI/2;
 	let winner = items.find(x => (x.t1 + rotation) % (Math.PI*2) < targetAngle && (x.t2 + rotation) % (Math.PI*2) >= targetAngle)
@@ -220,6 +212,7 @@ function setupTimers() {
 	timer += 1000;
 	
 	// hard stop
+	setTimeout(() => {cheer = PlayAudio("barWV7RWkq0");}, timer);
 	setTimeout(() => {rotationSpeed = 0; rotationAccel = 1.00;}, timer);
 	timer += 1000;
 	
