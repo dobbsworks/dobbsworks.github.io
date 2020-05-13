@@ -797,6 +797,7 @@ function CreateWheelOfLevels(levels) {
 		}, 100);
 	}
 	request.send();
+	window.focus();
 	return w;
 }
 
