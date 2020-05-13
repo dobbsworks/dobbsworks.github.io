@@ -37,8 +37,11 @@ let rotationSpeed = 0;
 
 
 let confetti = [];
+let music = null;
+let cheer = null;
 
 function init() {
+	music = PlayAudio("gDn4NRVkG4Y");
 	for (let i = 0; i < 100; i++) {
 		confetti.push({
 			x: Math.random() * window.innerWidth,
@@ -163,13 +166,19 @@ function draw() {
 }
 
 function determineWinner() {
-	console.log("Determining winner");
+	cheer = PlayAudio("barWV7RWkq0");
 	// PI/2 == bottom
 	let targetAngle = 3*Math.PI/2;
 	let winner = items.find(x => (x.t1 + rotation) % (Math.PI*2) < targetAngle && (x.t2 + rotation) % (Math.PI*2) >= targetAngle)
 	winnerIndex = items.indexOf(winner);
 	
-	setTimeout(() => {SendCode(winner.code)}, 200);
+	setTimeout(() => {SendCode(winner.code)}, 100);
+
+	setTimeout(() => {
+		if (music) music.close();
+		if (cheer) cheer.close();
+		window.close();
+	}, 1000);
 }
 
 let nameRevealCount = 0;
@@ -244,6 +253,12 @@ function loop() {
 function SetItems(x) {
 	items = x;
 }
+
+function PlayAudio(ytid) {
+	let w = window.open("https://www.youtube.com/watch?v=" + ytid + "?t=0");
+	return w;
+}
+
 
 //init();
 

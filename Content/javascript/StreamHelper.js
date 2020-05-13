@@ -320,7 +320,13 @@ function CommandRandomNext(username, args) {
 }
 
 function CommandRandomWin(username, args) {
-	console.log(args);
+	let levelCode = args[0];
+	let availableLevels = queue.filter(x => x.status === levelStatus.pending);
+	let level = availableLevels.filter(x => x.code === levelCode);
+	if (level) {
+		MoveLevelToFront(level);
+		return CommandNext();
+	}
 }
 
 function CommandResetTimer(username, args) {
@@ -446,8 +452,6 @@ function CommandChangeLevel(username, args) {
     } else {
         return "This level code has the wrong number of characters, can you double check it?";
     }
-	
-	return "Your level id has been changed.";
 }
 
 function CommandLeaveQueue(username, args) {
@@ -792,6 +796,11 @@ function CreateWheelOfLevels(levels) {
 		}, 100);
 	}
 	request.send();
+	return w;
+}
+
+function PlayAudio(ytid) {
+	let w = window.open("https://www.youtube.com/watch?v=" + ytid + "?t=0");
 	return w;
 }
 
