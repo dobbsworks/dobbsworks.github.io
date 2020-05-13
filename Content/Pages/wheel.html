@@ -163,6 +163,7 @@ function draw() {
 }
 
 function determineWinner() {
+	console.log("Determining winner");
 	// PI/2 == bottom
 	let targetAngle = 3*Math.PI/2;
 	let winner = items.find(x => (x.t1 + rotation) % (Math.PI*2) < targetAngle && (x.t2 + rotation) % (Math.PI*2) >= targetAngle)
@@ -217,12 +218,12 @@ function setupTimers() {
 }
 
 function SendCode(code) {
+	console.log("Sending code " + code);
 	(new BroadcastChannel('helper')).postMessage('!randomwin ' + code);
 }
 
 
 function loop() {	
-
 	rotationSpeed *= rotationAccel;
 	rotation += rotationSpeed;
 	

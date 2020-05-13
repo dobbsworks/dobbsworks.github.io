@@ -316,12 +316,6 @@ function CommandRandomNext(username, args) {
 	} else {
 		let availableLevels = queue.filter(x => x.status === levelStatus.pending);
 		CreateWheelOfLevels(availableLevels);
-		// let randomNextLevel = RandomWeightedFrom(availableLevels, a => a.weight);
-		// MoveLevelToFront(randomNextLevel);
-		// for (let level of availableLevels) {
-		// 	if (level !== randomNextLevel) level.weight += 1;
-		// }
-		// return CommandNext(username, args);
 	}
 }
 
@@ -792,8 +786,10 @@ function CreateWheelOfLevels(levels) {
 	request.open("GET", "https://dobbsworks.github.io/Content/Pages/wheel.html", true);
 	request.onload = () => {
 		w.document.write(request.responseText);
-		w.window.SetItems(levels.map(x => {return {name: x.username, weight: x.weight, code: x.code}}));
-		w.window.init();
+		setTimeout(() => {
+			w.window.SetItems(levels.map(x => {return {name: x.username, weight: x.weight, code: x.code}}));
+			w.window.init();
+		}, 100);
 	}
 	request.send();
 	return w;
