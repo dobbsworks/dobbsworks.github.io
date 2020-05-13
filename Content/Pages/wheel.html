@@ -168,6 +168,8 @@ function determineWinner() {
 	let targetAngle = 3*Math.PI/2;
 	let winner = items.find(x => (x.t1 + rotation) % (Math.PI*2) < targetAngle && (x.t2 + rotation) % (Math.PI*2) >= targetAngle)
 	winnerIndex = items.indexOf(winner);
+	
+	setTimeout(() => {SendCode(winner.code)}, 200);
 }
 
 let nameRevealCount = 0;
