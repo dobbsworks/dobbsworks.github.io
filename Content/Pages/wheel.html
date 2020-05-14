@@ -33,6 +33,8 @@ let confetti = [];
 let music = null;
 let cheer = null;
 
+let totalWeight = 0;
+
 function init() {
 	music = PlayAudio("gDn4NRVkG4Y");
 	for (let i = 0; i < 100; i++) {
@@ -55,15 +57,16 @@ function init() {
 		item.text = item.name.substring(0,14);
 		item.weight *= weightScale;
 	}
+	totalWeight = items.map(x => x.weight).reduce((a,b)=>a+b,0);
 
 	setInterval(loop, 1000/60);
 	setupTimers();
 }
 
+
 function draw() {
 	ctx.clearRect(0,0,baseSize, baseSize);
 	
-	let totalWeight = items.map(x => x.weight).reduce((a,b)=>a+b,0);
 	let cumulativeWeight = 0;
 	for (let index = 0; index < items.length; index++) {
 		let item = items[index];
@@ -234,6 +237,7 @@ function SendCode(code) {
 
 
 function loop() {	
+	draw();
 	rotationSpeed *= rotationAccel;
 	rotation += rotationSpeed;
 	
@@ -244,8 +248,13 @@ function loop() {
 		c.timer +=1;
 		if (c.timer > 100) c.timer -= 100;
 	}
+
+	let currentPie = Math.floor(rotation / (Math.PI*2 / totalWeight));
+	let previousPie = Math.floor((rotation-rotationSpeed) / (Math.PI*2 / totalWeight));
+	if (currentPie !== previousPie) {
+		PlayTone(440);
+	}
 	
-	draw();
 }
 
 
@@ -255,9 +264,26 @@ function SetItems(x) {
 
 function PlayAudio(ytid) {
 	let w = window.open("https://www.youtube.com/watch?v=" + ytid + "?t=0");
-	w.blur();
-	window.focus();
 	return w;
+}
+
+let context = new (window.AudioContext || window.webkitAudioContext)();
+let volume = 1;
+function PlayTone(frequency) {
+    let oscillator = context.createOscillator();
+    let gainNode = context.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(context.destination);
+    oscillator.type = 'sine';
+	
+    oscillator.frequency.value = frequency;
+    gainNode.gain.setValueAtTime(0, context.currentTime);
+    gainNode.gain.linearRampToValueAtTime(volume/2, context.currentTime + 0.01);
+            
+    oscillator.start(context.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.5);
+    oscillator.stop(context.currentTime + 0.5);
 }
 
 

@@ -322,7 +322,7 @@ function CommandRandomNext(username, args) {
 function CommandRandomWin(username, args) {
 	let levelCode = args[0];
 	let availableLevels = queue.filter(x => x.status === levelStatus.pending);
-	let level = availableLevels.filter(x => x.code === levelCode);
+	let level = availableLevels.find(x => x.code === levelCode);
 	if (level) {
 		MoveLevelToFront(level);
 		return CommandNext();
@@ -797,7 +797,6 @@ function CreateWheelOfLevels(levels) {
 		}, 100);
 	}
 	request.send();
-	window.focus();
 	return w;
 }
 
