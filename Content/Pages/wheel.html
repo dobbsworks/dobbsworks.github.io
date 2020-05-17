@@ -305,6 +305,13 @@ function RandomFrom(list) {
 	let index = RandomNumber(list.length);
 	return list[index];
 }
+function RandomNumber(min, max) {
+	if (max === undefined) {
+		max = min;
+		min = 0;
+	}
+	return min + Math.floor(Math.random() * (1+max-min))
+}
 
 
 	</script>
