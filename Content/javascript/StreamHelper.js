@@ -91,6 +91,7 @@ let commands = [
 	Command("secondqueueslot",CommandQueueSlot,commandPermission.reward,commandDisplay.hidden),
     Command("addcom",	CommandAddCommand,	commandPermission.mod, 		commandDisplay.hidden),
 	
+    Command("debugadd",	CommandDebugAdd,	commandPermission.streamer, commandDisplay.hidden),
     Command("as",		CommandAs,			commandPermission.streamer, commandDisplay.hidden),
     Command("exportchat",CreateChatLogWindow,commandPermission.streamer, commandDisplay.panel),
 	
@@ -421,7 +422,6 @@ function MoveLevelToFront(level) {
 	let oldIndex = queue.indexOf(level);
 	let targetIndex = queue.filter(x => x.status !== levelStatus.pending || x.isPriority).length;
 	if (oldIndex <= -1 || targetIndex <= -1) return "Uh, something went wrong here, ask Dobbs to fix it, idk";
-	level.isPriority = true;
 
 	queue.splice(targetIndex, 0, queue.splice(oldIndex, 1)[0]);
 	return "Your level has been moved to the priority queue.";
@@ -787,11 +787,13 @@ function CreateWheelOfLevels(levels) {
 	let w = window.open("", "WheelOfLevels", "width=1000,height=900");
 	
 	let request = new XMLHttpRequest();
-	request.open("GET", "https://dobbsworks.github.io/Content/Pages/wheel.html", true);
+	let wheelData = levels.map(x => {return {name: x.username, weight: x.weight, code: x.code}});
+	let url = "https://dobbsworks.github.io/Content/Pages/wheel.html";
+	request.open("GET", url, true);
 	request.onload = () => {
 		w.document.write(request.responseText);
 		setTimeout(() => {
-			w.window.SetItems(levels.map(x => {return {name: x.username, weight: x.weight, code: x.code}}));
+			w.window.SetItems(wheelData);
 			w.window.init();
 			for (l of levels) l.weight++;
 		}, 100);
@@ -803,6 +805,13 @@ function CreateWheelOfLevels(levels) {
 function PlayAudio(ytid) {
 	let w = window.open("https://www.youtube.com/watch?v=" + ytid + "?t=0");
 	return w;
+}
+
+function CommandDebugAdd() {
+	let username = "user" + Math.ceil(100*Math.random());
+	let getLevelSegment = () => Math.floor(16*16*16*Math.random()).toString(16).padStart(3,"000");
+	let levelCode = getLevelSegment() + "-" + getLevelSegment() + "-" + getLevelSegment();
+	CommandAddLevel(username, [levelCode]);
 }
 
 

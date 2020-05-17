@@ -36,7 +36,19 @@ let cheer = null;
 let totalWeight = 0;
 
 function init() {
-	music = PlayAudio("gDn4NRVkG4Y");
+	let ytid = RandomFrom([
+		"gDn4NRVkG4Y", // BK Furnace Fun
+		"RMhhcz8wfEU", // SMRPG victory
+		"OhLVrfMKiKg", // DK64 bonus
+		"72qGczM5OTs", // runaway 5
+		"WV_0d4KfpK0", // Pilotwings intro
+		"3EjSwg-eNAo", // DKC3 bonus
+		"ABr_f0pV_y0", // SM64 slide
+		"yIFloLCk_Y0", // MK64 time trial
+		"g5qo57gwn9s", // SSB64 bonus,
+		"bcTk-xyIkug", // BKN&B bonus
+	])
+	music = PlayAudio(ytid);
 	for (let i = 0; i < 100; i++) {
 		confetti.push({
 			x: Math.random() * window.innerWidth,
@@ -127,16 +139,18 @@ function draw() {
 	ctx.lineWidth = 5;
 	let textHeight = 30;
 	ctx.font = textHeight + "px Arial";
-	for (let nameIndex = 0; nameIndex < items.length; nameIndex++) {
-		if (nameIndex >= nameRevealCount) break;
-		if (nameIndex < nameHideCount) continue;
-		let item = items[nameIndex];
-		let textWidth = ctx.measureText(item.text).width;
-		let centerX = center + 0.75 * r * Math.cos((item.t1+item.t2)/2+rotation);
-		let centerY = center + 0.75 * r * Math.sin((item.t1+item.t2)/2+rotation);
-		ctx.strokeText(item.text, centerX - textWidth/2, centerY + textHeight/4);
-		ctx.fillText(item.text, centerX - textWidth/2, centerY + textHeight/4);
-	}	
+	if (winnerIndex <= -1) {
+		for (let nameIndex = 0; nameIndex < items.length; nameIndex++) {
+			if (nameIndex >= nameRevealCount) break;
+			if (nameIndex < nameHideCount) continue;
+			let item = items[nameIndex];
+			let textWidth = ctx.measureText(item.text).width;
+			let centerX = center + 0.75 * r * Math.cos((item.t1+item.t2)/2+rotation);
+			let centerY = center + 0.75 * r * Math.sin((item.t1+item.t2)/2+rotation);
+			ctx.strokeText(item.text, centerX - textWidth/2, centerY + textHeight/4);
+			ctx.fillText(item.text, centerX - textWidth/2, centerY + textHeight/4);
+		}	
+	}
 	
 	// winner name text
 	ctx.font = "50px Arial";
@@ -197,11 +211,11 @@ function setupTimers() {
 		timer += 200;
 	}
 	timer += 3000;
-	for (let i=0; i<items.length; i++) {
-		setTimeout(() => {nameHideCount++}, timer);
-		timer += 200;
-	}
-	timer += 500;
+	// for (let i=0; i<items.length; i++) {
+	// 	setTimeout(() => {nameHideCount++}, timer);
+	// 	timer += 200;
+	// }
+	// timer += 500;
 
 	// start spinning
 	setTimeout(() => {rotationSpeed = 0.01}, timer);
@@ -287,7 +301,11 @@ function PlayTone(frequency) {
 }
 
 
-//init();
+function RandomFrom(list) {
+	let index = RandomNumber(list.length);
+	return list[index];
+}
+
 
 	</script>
 </html>
