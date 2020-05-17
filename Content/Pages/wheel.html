@@ -2,7 +2,9 @@
 	<head>
     <title>Wheel of Levels</title>
 	</head>
-	<body></body>
+	<body>
+		<canvas height="100" width="100" id="pattern" style="display:none;"></canvas>
+	</body>
 	<script type="text/javascript">
 	
 let baseSize = Math.floor(Math.min(window.innerWidth, window.innerHeight));
@@ -42,12 +44,12 @@ function init() {
 		"OhLVrfMKiKg", // DK64 bonus
 		"72qGczM5OTs", // runaway 5
 		"WV_0d4KfpK0", // Pilotwings intro
-		"3EjSwg-eNAo", // DKC3 bonus
+		"3EjSwg-eNAo&t=11", // DKC3 bonus
 		"ABr_f0pV_y0", // SM64 slide
 		"yIFloLCk_Y0", // MK64 time trial
 		"g5qo57gwn9s", // SSB64 bonus,
 		"bcTk-xyIkug", // BKN&B bonus
-	])
+	]);
 	music = PlayAudio(ytid);
 	for (let i = 0; i < 100; i++) {
 		confetti.push({
@@ -71,10 +73,26 @@ function init() {
 	}
 	totalWeight = items.map(x => x.weight).reduce((a,b)=>a+b,0);
 
+	createPatterns();
 	setInterval(loop, 1000/60);
 	setupTimers();
 }
 
+let starPattern = null;
+function createPatterns() {
+	let c = document.getElementById("pattern");
+	let patternCtx = c.getContext("2d");
+	patternCtx.translate(50,50);
+	patternCtx.fillStyle = "rgba(0,0,0,0.2)";
+	patternCtx.beginPath()
+	patternCtx.moveTo(0,0)
+	for (let i=0; i<6; i++) {
+		let rad = (2 * Math.PI*2 / 5 * i) - Math.PI/2;
+		patternCtx.lineTo(50 * Math.cos(rad),50 * Math.sin(rad));
+	}
+	patternCtx.fill();
+	starPattern = ctx.createPattern(c, "repeat");
+}
 
 function draw() {
 	ctx.clearRect(0,0,baseSize, baseSize);
@@ -101,6 +119,10 @@ function draw() {
 		ctx.arc(center, center, r, item.t1+rotation, item.t2+rotation);
 		ctx.lineTo(center, center);
 		ctx.fill();
+		if (item.badges.some(x => x.toLowerCase().indexOf("subscriber") > -1)) {
+			ctx.fillStyle = starPattern;
+			ctx.fill();
+		}
 	}
 	ctx.fillStyle = "black";
 	for (let i=0; i<cumulativeWeight; i++) {
@@ -277,7 +299,7 @@ function SetItems(x) {
 }
 
 function PlayAudio(ytid) {
-	let w = window.open("https://www.youtube.com/watch?v=" + ytid + "?t=0");
+	let w = window.open("https://www.youtube.com/watch?v=" + ytid);
 	return w;
 }
 
@@ -302,7 +324,7 @@ function PlayTone(frequency) {
 
 
 function RandomFrom(list) {
-	let index = RandomNumber(list.length);
+	let index = RandomNumber(list.length)-1;
 	return list[index];
 }
 function RandomNumber(min, max) {

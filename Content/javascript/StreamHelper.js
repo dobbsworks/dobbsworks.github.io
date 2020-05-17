@@ -127,7 +127,7 @@ function MessageCommand(...args) {
 	return Command(args[0], () => {return args[1]}, commandPermission.all, commandDisplay.hidden);
 }
 
-function CommandHelp(username, args) {
+function CommandHelp(user, args) {
     let commName = args[0];
     if (commName) {
         let command = commands.find(x => x.name.toLowerCase() === commName.toLowerCase());
@@ -143,10 +143,10 @@ function CommandHelp(username, args) {
     }
 }
 
-function CommandNotSpam(username, args) {
+function CommandNotSpam(user, args) {
 	let userRemovedFromSpamList = false;
 	for (let i=0; i<forbiddenUsers.length; i++) {
-		if (forbiddenUsers[i].toLowerCase() === username.toLowerCase()) {
+		if (forbiddenUsers[i].toLowerCase() === user.username.toLowerCase()) {
 			forbiddenUsers.splice(i, 1);
 			userRemovedFromSpamList = true;
 		}
@@ -158,24 +158,24 @@ function CommandNotSpam(username, args) {
 	}
 }
 
-function CommandReserve(username, args) {
-	let ret = CommandAddLevel(username, ["RES-ERV-ED0"]);
+function CommandReserve(user, args) {
+	let ret = CommandAddLevel(user, ["RES-ERV-ED0"]);
 	if (ret.startsWith("Your level has been queued")) {
 		ret = "Your spot is saved! Use !change if you want to swap the placeholder level code with a real one.";
 	}
 	return ret;
 }
 
-function CommandAddLevel(username, args) {
+function CommandAddLevel(user, args) {
 	if (isQueueOpen) {
-		let userIsBlocked = forbiddenUsers.map(x => x.toLowerCase()).indexOf(username.toLowerCase()) > -1;
+		let userIsBlocked = forbiddenUsers.map(x => x.toLowerCase()).indexOf(user.username.toLowerCase()) > -1;
 		if (userIsBlocked) {
 			return " VoteNay VoteNay VoteNay For some reason you were flagged for possible spam/botting. Type !notSpam and then try again.";
 		} else {
 			let userInputCode = args[0];
 			let strippedCode = StripLevelCode(userInputCode);
 			if (strippedCode.length === 9) {
-				if (DoesUserHaveQueueSpace(username)) {
+				if (DoesUserHaveQueueSpace(user.username)) {
 					if (forbiddenCodes.indexOf(strippedCode.toLowerCase()) > -1) {
 						return RandomFrom([
 							"Weird, this code doesn't want to go in the queue, better try again.",
@@ -183,7 +183,7 @@ function CommandAddLevel(username, args) {
 							"Abort, do it again, fail?"
 						]);
 					} else {
-						PushQueueEntry(username, strippedCode);
+						PushQueueEntry(user, strippedCode);
 						let queuePosition = queue.filter(x => x.status === levelStatus.pending).length;
 						return "Your level has been queued! It's in position " + queuePosition + ".";
 					}
@@ -206,11 +206,12 @@ function StripLevelCode(rawCodeText) {
     }
     return ret;
 }
-function PushQueueEntry(username, strippedCode) {
+function PushQueueEntry(user, strippedCode) {
 	let formattedCode = strippedCode.match(/.{1,3}/g).join('-').toUpperCase();
 	let level = {
 		code: formattedCode,
-		username: username,
+		username: user.username,
+		badges: user.badges,
 		status: levelStatus.pending,
 		timeAdded: new Date(),
 		timeStarted: null,
@@ -235,7 +236,7 @@ function DoesUserHaveQueueSpace(username) {
 	}
 }
 
-function CommandCurrent(username, args) {
+function CommandCurrent(user, args) {
 	let currentLevel = queue.find(x => x.status === levelStatus.live);
 	let pendingLevels = queue.filter(x => x.status === levelStatus.pending);
 	let ret = "";
@@ -250,7 +251,7 @@ function CommandCurrent(username, args) {
 	return ret;
 }
 
-function CommandList(username, args) {
+function CommandList(user, args) {
 	let maxLevelsToList = 5;
 	let liveAndPendingLevels = [
 		...queue.filter(x => x.status === levelStatus.live),
@@ -265,10 +266,10 @@ function CommandList(username, args) {
 	return ret;
 }
 
-function CommandComplete(username, args) {
+function CommandComplete(user, args) {
 	return FinishCurrentLevel(levelStatus.completed);
 }
-function CommandSkip(username, args) {
+function CommandSkip(user, args) {
 	return FinishCurrentLevel(levelStatus.skipped);
 }
 function FinishCurrentLevel(newStatus) {
@@ -294,7 +295,7 @@ function GetTimeDiff(t0, t1) {
     return displayMinutes.toString().padStart(2, "0") + ":" + displaySeconds.toString().padStart(2, "0");
 }
 
-function CommandNext(username, args) {
+function CommandNext(user, args) {
 	let currentLevel = queue.find(x => x.status === levelStatus.live);
 	if (currentLevel) {
 		return "There's still a level going on, mark it as complete/skipped first.";
@@ -310,7 +311,7 @@ function CommandNext(username, args) {
 	}
 }
 
-function CommandRandomNext(username, args) {
+function CommandRandomNext(user, args) {
 	let currentLevel = queue.find(x => x.status === levelStatus.live);
 	if (currentLevel) {
 		return "There's still a level going on, mark it as complete/skipped first.";
@@ -320,7 +321,7 @@ function CommandRandomNext(username, args) {
 	}
 }
 
-function CommandRandomWin(username, args) {
+function CommandRandomWin(user, args) {
 	let levelCode = args[0];
 	let availableLevels = queue.filter(x => x.status === levelStatus.pending);
 	let level = availableLevels.find(x => x.code === levelCode);
@@ -330,7 +331,7 @@ function CommandRandomWin(username, args) {
 	}
 }
 
-function CommandResetTimer(username, args) {
+function CommandResetTimer(user, args) {
 	let currentLevel = queue.find(x => x.status === levelStatus.live);
 	if (currentLevel) {
 		currentLevel.timeStarted = new Date();
@@ -338,16 +339,16 @@ function CommandResetTimer(username, args) {
 	return "";
 }
 
-function CommandCloseQueue(username, args) {
+function CommandCloseQueue(user, args) {
     isQueueOpen = false;
     return "The queue is closed.";
 }
-function CommandOpenQueue(username, args) {
+function CommandOpenQueue(user, args) {
     isQueueOpen = true;
     return "The queue is open!";
 }
 
-function CommandRoll(username, args) {
+function CommandRoll(user, args) {
     let rawRollString = args.join('').replace(/\s/g, '').toLowerCase();
     let hasInvalidChars = rawRollString.replace(/[\d,d,+,-]/g, '').length > 0;
     if (hasInvalidChars) {
@@ -388,7 +389,7 @@ function RollDice(n, d) {
     return ret;
 }
 
-function CommandTTS(username, args) {
+function CommandTTS(user, args) {
 	let text = args.join(" ");
 	let msg = new SpeechSynthesisUtterance(text);
 	msg.volume = 0.5;
@@ -404,9 +405,9 @@ function GetVoice() {
 	return voice;
 }
 
-function CommandPriority(username, args) {
+function CommandPriority(user, args) {
 	// find all levels for this user that are pending and not priority
-	let userLevels = queue.filter(x => x.username === username && x.status === levelStatus.pending && !x.isPriority);
+	let userLevels = queue.filter(x => x.username === user.username && x.status === levelStatus.pending && !x.isPriority);
 	if (userLevels.length === 0) return "There are no valid levels to prioritize.";
 	let levelToPrioritze = userLevels[0];
 
@@ -428,18 +429,18 @@ function MoveLevelToFront(level) {
 	return false;
 }
 
-function CommandQueueSlot(username, args) {
-	let user = GetUser(username);
-	if (user.queueSlots > 1) {
+function CommandQueueSlot(user, args) {
+	let userObj = GetUser(user.username);
+	if (userObj.queueSlots > 1) {
 		return "You already have this upgrade!";
 	} else {
-		user.queueSlots++;
-		return "You can now have " + user.queueSlots + " levels in the queue at once!";
+		userObj.queueSlots++;
+		return "You can now have " + userObj.queueSlots + " levels in the queue at once!";
 	}
 }
 
-function CommandChangeLevel(username, args) {
-	let userLevels = queue.filter(x => x.username === username && x.status === levelStatus.pending);
+function CommandChangeLevel(user, args) {
+	let userLevels = queue.filter(x => x.username === user.username && x.status === levelStatus.pending);
 	if (userLevels.length === 0) return "You have no levels in the queue, use !add instead.";
 	let levelToChange = userLevels[0];
     
@@ -454,8 +455,8 @@ function CommandChangeLevel(username, args) {
     }
 }
 
-function CommandLeaveQueue(username, args) {
-	let userLevels = queue.filter(x => x.username === username && x.status === levelStatus.pending);
+function CommandLeaveQueue(user, args) {
+	let userLevels = queue.filter(x => x.username === user.username && x.status === levelStatus.pending);
 	if (userLevels.length === 0) return "You have no levels in the queue.";
     
     for (let level of userLevels) {
@@ -465,7 +466,7 @@ function CommandLeaveQueue(username, args) {
     return "Your level" + (userLevels.length > 1 ? "s have" : " has") + " been removed from the queue.";
 }
 
-function CommandAddCommand(username, args) {
+function CommandAddCommand(user, args) {
 	let newCommandName = args[0];
 	let newCommandResponse = args.slice(1).join(" ");
 	let newCommand = Command(newCommandName, () => {return newCommandResponse}, commandPermission.all, commandDisplay.hidden);
@@ -475,15 +476,15 @@ function CommandAddCommand(username, args) {
 
 
 
-function CommandAs(username, args) {
+function CommandAs(user, args) {
 	let asUser = args[0];
 	let asCommandText = args.slice(1).join(" ");
 	ProcessCommand(asUser, asCommandText, true, []);
 }
 
 
-function CommandDebug(username, args) {
-	console.log(username, args);
+function CommandDebug(user, args) {
+	console.log(user, args);
 }
 
 
@@ -549,6 +550,10 @@ function ProcessChatMessage(messageEl) {
 }
 
 function ProcessCommand(username, commandText, isReward, badges) {
+	let user = {
+		username: username,
+		badges: badges
+	};
 	if (commandText.length < 2) return;
     let commandArgs = commandText.split(" ");
     let commandName = commandArgs.splice(0,1)[0].toLowerCase();
@@ -568,7 +573,7 @@ function ProcessCommand(username, commandText, isReward, badges) {
 		
         if (hasValidPermission) {
 			try {
-				let response = command.func(username, commandArgs);
+				let response = command.func(user, commandArgs);
 				if (username !== streamerName && response != null) {
 					response = response.charAt(0).toLowerCase() + response.slice(1);
 					response = "@" + username + ", " + response;
@@ -787,7 +792,7 @@ function CreateWheelOfLevels(levels) {
 	let w = window.open("", "WheelOfLevels", "width=1000,height=900");
 	
 	let request = new XMLHttpRequest();
-	let wheelData = levels.map(x => {return {name: x.username, weight: x.weight, code: x.code}});
+	let wheelData = levels.map(x => {return {name: x.username, weight: x.weight, code: x.code, badges: x.badges}});
 	let url = "https://dobbsworks.github.io/Content/Pages/wheel.html";
 	request.open("GET", url, true);
 	request.onload = () => {
@@ -811,7 +816,7 @@ function CommandDebugAdd() {
 	let username = "user" + Math.ceil(100*Math.random());
 	let getLevelSegment = () => Math.floor(16*16*16*Math.random()).toString(16).padStart(3,"000");
 	let levelCode = getLevelSegment() + "-" + getLevelSegment() + "-" + getLevelSegment();
-	CommandAddLevel(username, [levelCode]);
+	CommandAddLevel({username: username, badges:[]}, [levelCode]);
 }
 
 
@@ -860,7 +865,7 @@ function RandomNumber(min, max) {
 }
 
 function RandomFrom(list) {
-	let index = RandomNumber(list.length);
+	let index = RandomNumber(list.length)-1;
 	return list[index];
 }
 
