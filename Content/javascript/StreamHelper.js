@@ -89,6 +89,7 @@ let commands = [
     Command("texttospeech",CommandTTS, 		commandPermission.reward, 	commandDisplay.hidden),
 	Command("priorityqueue",CommandPriority,commandPermission.reward, 	commandDisplay.hidden),
 	Command("secondqueueslot",CommandQueueSlot,commandPermission.reward,commandDisplay.hidden),
+	Command("biggerwheelslice",CommandBiggerSlice,commandPermission.reward, 	commandDisplay.hidden),
     Command("addcom",	CommandAddCommand,	commandPermission.mod, 		commandDisplay.hidden),
 	
     Command("debugadd",	CommandDebugAdd,	commandPermission.streamer, commandDisplay.hidden),
@@ -437,6 +438,14 @@ function CommandQueueSlot(user, args) {
 		userObj.queueSlots++;
 		return "You can now have " + userObj.queueSlots + " levels in the queue at once!";
 	}
+}
+
+function CommandBiggerSlice(user, args) {
+	// find all levels for this user that are pending and not priority
+	let userLevels = queue.filter(x => x.username === user.username && x.status === levelStatus.pending && !x.isPriority);
+	if (userLevels.length === 0) return "There are no valid levels to prioritize.";
+	let levelToPrioritze = userLevels[0];
+	levelToPrioritze.weight += 3;
 }
 
 function CommandChangeLevel(user, args) {
