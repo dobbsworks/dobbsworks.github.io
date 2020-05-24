@@ -849,8 +849,8 @@ function DrawMarqueeContent(w) {
 		"Dobbs's maker ID: S2C-HX7-01G",
 		"!help for common commands",
 		"Stream schedule (ET): Mon 8:30pm, Wed 5pm, Sat 2pm",
-		"YTD charity donations: $665",
-		"Super world completion: ~36%"
+		"YTD charity donations: $675",
+		"Super world completion: ~40%"
 	];
 	let text = elements.join("  ●  ") + "  ●  ";
 	
