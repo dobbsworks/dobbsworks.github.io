@@ -26,7 +26,6 @@ let marqueeWindow = null;
 let streamerName = "dobbsworks";
 let voice = null;
 let forbiddenCodes = ["t9cn93lkg"];
-let forbiddenUsers = ["marcos_brmakerr", "stelo76", "whale_smm"];
 
 let commandPermission = {       // TODO VIP?
 	"all": "all",
@@ -68,6 +67,8 @@ function Initialize() {
 let commands = [
     Command("add", 		CommandAddLevel, 	commandPermission.all, 		commandDisplay.chat,    "Add a level to the queue. Usage: !add LEV-ELC-ODE"),
     Command("notspam", 	CommandNotSpam, 	commandPermission.all, 		commandDisplay.hidden),
+    Command("spam", 	CommandSpam, 		commandPermission.mod, 		commandDisplay.hidden),
+    Command("spamlist", CommandSpamList, 	commandPermission.mod, 		commandDisplay.hidden),
     Command("reserve", 	CommandReserve, 	commandPermission.all, 		commandDisplay.chat,    "Reserve a spot in the queue without a code. Usage: !reserve"),
     Command("change", 	CommandChangeLevel, commandPermission.all, 		commandDisplay.chat,    "Change your queued level id. Usage: !change LEV-ELC-ODE"),
     Command("leave", 	CommandLeaveQueue, 	commandPermission.all, 		commandDisplay.chat,    "Remove your levels from the queue."),
@@ -144,21 +145,6 @@ function CommandHelp(user, args) {
     }
 }
 
-function CommandNotSpam(user, args) {
-	let userRemovedFromSpamList = false;
-	for (let i=0; i<forbiddenUsers.length; i++) {
-		if (forbiddenUsers[i].toLowerCase() === user.username.toLowerCase()) {
-			forbiddenUsers.splice(i, 1);
-			userRemovedFromSpamList = true;
-		}
-	}
-	if (userRemovedFromSpamList) {
-		return "You were successfully removed from the spam list! You may now resubmit your level with !add.";
-	} else {
-		return "Dude, you weren't even in the spam list. Chill.";
-	}
-}
-
 function CommandReserve(user, args) {
 	let ret = CommandAddLevel(user, ["RES-ERV-ED0"]);
 	if (ret.startsWith("Your level has been queued")) {
@@ -169,7 +155,7 @@ function CommandReserve(user, args) {
 
 function CommandAddLevel(user, args) {
 	if (isQueueOpen) {
-		let userIsBlocked = forbiddenUsers.map(x => x.toLowerCase()).indexOf(user.username.toLowerCase()) > -1;
+		let userIsBlocked = GetSpamUsers().map(x => x.toLowerCase()).indexOf(user.username.toLowerCase()) > -1;
 		if (userIsBlocked) {
 			return " VoteNay VoteNay VoteNay For some reason you were flagged for possible spam/botting. Type !notSpam and then try again.";
 		} else {
@@ -758,6 +744,63 @@ function GetOverlayContentFromLevel(level) {
 	}
 }
 
+
+
+/////////////////////////////////////////////////
+// SPAM BLOCK
+/////////////////////////////////////////////////
+
+function CommandSpam(user, args) {
+	let targetUser = args[0];
+	if (GetSpamUsers().indexOf(targetUser) > -1) {
+		return "User " + targetUser + " is already flagged for possible spam.";
+	} else {
+		AddSpamUser(targetUser);
+		return "User " + targetUser + " has been flagged for possible spam.";
+	}
+}
+
+function CommandSpamList(user, args) {
+	return "The following users have been flagged for possible spam: " + GetSpamUsers().join(", ");
+}
+
+function CommandNotSpam(user, args) {
+	if (!user.username) return "Error, couldn't detect user name.";
+	let userRemovedFromSpamList = RemoveSpamUser(user.username);
+	if (userRemovedFromSpamList) {
+		return "You were successfully removed from the spam list! You may now resubmit your level with !add.";
+	} else {
+		return "Dude, you weren't even in the spam list. Chill.";
+	}
+}
+
+function GetSpamUsers() {
+	let spamUsers = localStorage.getItem("spamusers");
+	if (spamUsers) return JSON.parse(spamUsers);
+	return [];
+}
+function AddSpamUser(user) {
+	let spamUsers = localStorage.getItem("spamusers");
+	if (!spamUsers) spamUsers = "[]";
+	let newSpamUsers = JSON.parse(spamUsers);
+	newSpamUsers.push(user);
+	localStorage.setItem("spamusers", JSON.stringify(newSpamUsers));
+}
+function RemoveSpamUser(username) {
+	let userRemovedFromSpamList = false;
+	let spamUsers = localStorage.getItem("spamusers");
+	if (spamUsers) {
+		spamUsers = JSON.parse(spamUsers);
+		for (let i=0; i<spamUsers.length; i++) {
+			if (spamUsers[i].toLowerCase() === username.toLowerCase()) {
+				spamUsers.splice(i, 1);
+				userRemovedFromSpamList = true;
+			}
+		}
+		localStorage.setItem("spamusers", JSON.stringify(spamUsers));
+	}
+	return userRemovedFromSpamList;
+}
 
 
 /////////////////////////////////////////////////
