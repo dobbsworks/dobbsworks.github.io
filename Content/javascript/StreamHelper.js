@@ -55,7 +55,7 @@ function Initialize() {
 	marqueeWindow = CreateMarqueeWindow();
 	let bc = new BroadcastChannel('helper');
 	bc.onmessage = OnBroadcastMessage;	
-	setInterval(ProcessChatMessages, 1000);
+	setInterval(ProcessMessages, 1000);
 }
 
 
@@ -91,7 +91,11 @@ let commands = [
 	Command("priorityqueue",	CommandPriority,	commandPermission.reward, 	commandDisplay.hidden),
 	Command("secondqueueslot",	CommandQueueSlot,	commandPermission.reward,	commandDisplay.hidden),
 	Command("biggerwheelslice",	CommandBiggerSlice,	commandPermission.reward, 	commandDisplay.hidden),
-    Command("addcom",			CommandAddCommand,	commandPermission.mod, 		commandDisplay.hidden),
+	Command("addcom",			CommandAddCommand,	commandPermission.mod, 		commandDisplay.hidden),
+	
+	Command("tickeradd",		CommandTickerAdd,	commandPermission.mod, 		commandDisplay.hidden),
+	Command("tickerlist",		CommandTickerList,	commandPermission.mod, 		commandDisplay.hidden),
+	Command("tickerremove",		CommandTickerRemove,commandPermission.mod, 		commandDisplay.hidden),
 	
     Command("debugadd",			CommandDebugAdd,	commandPermission.streamer, commandDisplay.hidden),
     Command("as",				CommandAs,			commandPermission.streamer, commandDisplay.hidden),
@@ -498,17 +502,23 @@ function GetUser(username) {
 // MESSAGE PROCESSING
 /////////////////////////////////////////////////
 
-function ProcessChatMessages() {
+function ProcessMessages() {
 	if (!voice) voice = GetVoice(); // keep trying to load TTS voice until it's ready
 	let toProcess = FindChatMessagesToProcess();
 	for (let message of toProcess) {
 		ProcessChatMessage(message);
 	}
+	
+	let activityToProcess = FindActivityMessagesToProcess();
+	for (let message of activityToProcess) {
+		ProcessActivityMessage(message);
+	}
+
     if (toProcess.length > 0) DrawPanelContent(queueWindow);
 	DrawOverlayContent(overlayWindow);
 }
 function FindChatMessagesToProcess() {
-	let chatMessages = Array.from(document.getElementsByClassName("chat-line__message")); //.filter(m => m.parentElement.classList.contains("chat-list__list-container"));
+	let chatMessages = Array.from(document.getElementsByClassName("chat-line__message")); 
 	let rewardMessages = Array.from(document.getElementsByClassName("channel-points-reward-line"))
 	let allMessages = [...chatMessages, ...rewardMessages];
 	let toProcess = allMessages.filter(m => !m.classList.contains("processed"));
@@ -593,6 +603,38 @@ function WriteMessage(message) {
 function OnBroadcastMessage(message) {
     // messages from the queue window panel
     ProcessCommand(streamerName, message.data);
+}
+
+function FindActivityMessagesToProcess() {
+	let messages = Array.from(document.getElementsByClassName("activity-base-list-item")); 
+	let toProcess = messages.filter(m => !m.classList.contains("processed"));
+	return toProcess;
+}
+function ProcessActivityMessage(messageEl) {
+	let line1 = messageEl.querySelector(".activity-base-list-item__title").textContent;
+	let line2 = messageEl.querySelector(".activity-base-list-item__subtitle span").textContent;
+
+	// Follows
+	if (line2 === "Followed you") {
+		let user = line1;
+		marqueeWindow.AddAlert(user + " is now following!");
+	}
+	// Bits
+	if (line2.startsWith("Cheered ") && line2.indexOf(" bit") > -1) {
+		let user = line1;
+		marqueeWindow.AddAlert(user + " " + line2.toLowerCase() + "!");
+	}
+	// Raids
+	if (line2.startsWith("Raided you ")) {
+		let user = line1;
+		marqueeWindow.AddAlert(user + " is raiding" + line2.replace("Raided you","") + "!");
+	}
+	// Subscribe
+	if (line2.startsWith("Subscribed ")) {
+		let user = line1;
+		marqueeWindow.AddAlert(user + " " + line2.toLowerCase() + "!");
+	}
+    messageEl.classList.add("processed");
 }
 
 /////////////////////////////////////////////////
@@ -870,7 +912,7 @@ function CommandDebugAdd() {
 // MARQUEE PANEL
 /////////////////////////////////////////////////
 function CreateMarqueeWindow() {
-	let w = window.open("", "Marquee", "width=1000,height=900");
+	let w = window.open("", "Marquee", "width=850,height=53");
 	
 	let request = new XMLHttpRequest();
 	let url = "https://dobbsworks.github.io/Content/Pages/marquee.html";
@@ -878,20 +920,60 @@ function CreateMarqueeWindow() {
 	request.onload = () => {
 		w.document.write(request.responseText);
 		setTimeout(() => {
-			w.window.SetScrollItems([
-				"Dobbs's maker ID: S2C-HX7-01G",
-				"!help for common commands",
-				"Stream schedule (ET): Mon 8:30pm, Wed 5pm, Sat 2pm",
-				"YTD charity donations: $675",
-				"Super world completion: ~40%"
-			]);
 			w.window.init();
-		}, 100);
+			let currentItems = localStorage.getItem("ticker");
+			if (!currentItems) currentItems = "[]";
+			let itemList = JSON.parse(currentItems);
+			w.window.SetScrollItems(itemList);
+		}, 500);
 	}
 	request.send();
 	return w;
 }
 
+function CommandTickerAdd(user, args) {
+	let newText = args.join(' ');
+	let currentItems = localStorage.getItem("ticker");
+	if (!currentItems) currentItems = "[]";
+	let itemList = JSON.parse(currentItems);
+	itemList.push(newText);
+	localStorage.setItem("ticker", JSON.stringify(itemList));
+	UpdateTickerItems();
+	return "Ticker item registered.";
+}
+function CommandTickerList(user, args) {
+	let currentItems = localStorage.getItem("ticker");
+	if (!currentItems) currentItems = "[]";
+	let itemList = JSON.parse(currentItems);
+	let requestedIndex = +(args[0]);
+	if (requestedIndex)  {
+		let item = itemList[requestedIndex-1];
+		return "Ticker item text: " + item;
+	} else {
+		return "Run this command with a number from 1 to " + itemList.length.toString() + " to get that item's text.";
+	}
+}
+function CommandTickerRemove(user, args) {
+	if (isNaN(+(args[0]))) return "Usage: !tickerRemove itemNum"
+	let currentItems = localStorage.getItem("ticker");
+	if (!currentItems) currentItems = "[]";
+	let itemList = JSON.parse(currentItems);
+	let itemNum = +(args[0]) - 1;
+	itemList.splice(itemNum, 1);
+	localStorage.setItem("ticker", JSON.stringify(itemList));
+	UpdateTickerItems();
+	return "Item removed.";
+}
+// function UpdateTickerItems() {
+// 	let tickerItems = localStorage.getItem("ticker");
+// 	if (tickerItems) {
+// 		marqueeWindow.window.SetScrollItems(JSON.parse(tickerItems));
+// 	}
+// }
+
+
+
+/////////////////////////////////////////////////
 
 function RandomFrom(list) {
 	let index = RandomNumber(list.length) - 1;

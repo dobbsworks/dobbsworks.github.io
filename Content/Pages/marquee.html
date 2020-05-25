@@ -66,9 +66,9 @@ function draw() {
 	ctx.clearRect(0,0,canvas.width, canvas.height);
 	ctx.fillStyle = "#adadb8";
 	ctx.font = fontSize + "px Arial";
+	let centerY = window.innerHeight / 2;
 
 	if (scrollItems.length) {
-		let centerY = window.innerHeight / 2;
 		let fullTickerWidth = scrollItems.map(x => x.width).reduce((a,b)=>a+b,0) + margin*scrollItems.length;
 		let repeats = Math.ceil(canvas.width / fullTickerWidth) + 1;
 
