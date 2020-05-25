@@ -613,26 +613,29 @@ function FindActivityMessagesToProcess() {
 function ProcessActivityMessage(messageEl) {
 	let line1 = messageEl.querySelector(".activity-base-list-item__title").textContent;
 	let line2 = messageEl.querySelector(".activity-base-list-item__subtitle span").textContent;
+	let time = messageEl.querySelector(".activity-base-list-item__subtitle > span:last-child").textContent;
 
-	// Follows
-	if (line2 === "Followed you") {
-		let user = line1;
-		marqueeWindow.AddAlert(user + " is now following!");
-	}
-	// Bits
-	if (line2.startsWith("Cheered ") && line2.indexOf(" bit") > -1) {
-		let user = line1;
-		marqueeWindow.AddAlert(user + " " + line2.toLowerCase() + "!");
-	}
-	// Raids
-	if (line2.startsWith("Raided you ")) {
-		let user = line1;
-		marqueeWindow.AddAlert(user + " is raiding" + line2.replace("Raided you","") + "!");
-	}
-	// Subscribe
-	if (line2.startsWith("Subscribed ")) {
-		let user = line1;
-		marqueeWindow.AddAlert(user + " " + line2.toLowerCase() + "!");
+	if (time.indexOf("day") === -1) {
+		// Follows
+		if (line2 === "Followed you") {
+			let user = line1;
+			marqueeWindow.AddAlert(user + " is now following!");
+		}
+		// Bits
+		if (line2.startsWith("Cheered ") && line2.indexOf(" bit") > -1) {
+			let user = line1;
+			marqueeWindow.AddAlert(user + " " + line2.toLowerCase() + "!");
+		}
+		// Raids
+		if (line2.startsWith("Raided you ")) {
+			let user = line1;
+			marqueeWindow.AddAlert(user + " is raiding" + line2.replace("Raided you","") + "!");
+		}
+		// Subscribe
+		if (line2.startsWith("Subscribed ")) {
+			let user = line1;
+			marqueeWindow.AddAlert(user + " " + line2.toLowerCase() + "!");
+		}
 	}
     messageEl.classList.add("processed");
 }
