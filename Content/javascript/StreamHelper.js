@@ -886,7 +886,6 @@ function CreateMarqueeWindow() {
 				"Super world completion: ~40%"
 			]);
 			w.window.init();
-			for (l of levels) l.weight++;
 		}, 100);
 	}
 	request.send();
