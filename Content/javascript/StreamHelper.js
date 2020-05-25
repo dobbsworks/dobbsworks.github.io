@@ -870,35 +870,28 @@ function CommandDebugAdd() {
 // MARQUEE PANEL
 /////////////////////////////////////////////////
 function CreateMarqueeWindow() {
-	let w = window.open("", "Marquee", "width=850,height=53");
-	DrawMarqueeContent(w);
-	let styleSheetElement = w.document.createElement("style");
-	w.document.head.appendChild(styleSheetElement);
-	let customStyleSheet = w.document.styleSheets[0];
-	customStyleSheet.insertRule("@keyframes marquee { from {transform: translateX(100%); } to {transform: translateX(-100%);}}")
-	customStyleSheet.insertRule("@keyframes marquee2 { from {transform: translateX(0%); } to {transform: translateX(-200%);}}");;
-	return w;
-}
-function DrawMarqueeContent(w) {
-	if (!w || !w.document) return;
-	StyleWindow(w);
-	let elements = [
-		"Dobbs's maker ID: S2C-HX7-01G",
-		"!help for common commands",
-		"Stream schedule (ET): Mon 8:30pm, Wed 5pm, Sat 2pm",
-		"YTD charity donations: $675",
-		"Super world completion: ~40%"
-	];
-	let text = elements.join("  ●  ") + "  ●  ";
+	let w = window.open("", "Marquee", "width=1000,height=900");
 	
-	let seconds = Math.ceil(text.length / 3) * 2;
-	let delay = seconds/2;
-	let div1 = '<div style="display: inline-block; padding: 8px; animation: marquee ' + seconds + 's linear infinite;">' + text + '</div>';
-	let div2 = '<div style="display: inline-block; padding: 8px; animation: marquee2 ' + seconds + 's linear infinite; animation-delay: -' + delay + 's;">' + text + '</div>';
-	let mainDiv = '<div style="overflow: hidden; white-space: nowrap; font-size: 24;">' + div1 + div2 + '</div>';
-	w.document.writeln(mainDiv);
-    StyleWindow(w);
-	w.document.title = "Marquee";
+	let request = new XMLHttpRequest();
+	let wheelData = levels.map(x => {return {name: x.username, weight: x.weight, code: x.code, badges: x.badges}});
+	let url = "https://dobbsworks.github.io/Content/Pages/marquee.html";
+	request.open("GET", url, true);
+	request.onload = () => {
+		w.document.write(request.responseText);
+		setTimeout(() => {
+			w.window.SetScrollItems([
+				"Dobbs's maker ID: S2C-HX7-01G",
+				"!help for common commands",
+				"Stream schedule (ET): Mon 8:30pm, Wed 5pm, Sat 2pm",
+				"YTD charity donations: $675",
+				"Super world completion: ~40%"
+			]);
+			w.window.init();
+			for (l of levels) l.weight++;
+		}, 100);
+	}
+	request.send();
+	return w;
 }
 
 

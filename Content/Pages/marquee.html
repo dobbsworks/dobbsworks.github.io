@@ -29,7 +29,7 @@ let margin = 60;
 let pendingAlerts = [];
 
 function init() {
-	SetScrollItems(["Test 1","Test message 2"]);
+	SetScrollItems([]);
 	setInterval(loop, 1000/60);
 }
 
@@ -66,20 +66,23 @@ function draw() {
 	ctx.clearRect(0,0,canvas.width, canvas.height);
 	ctx.fillStyle = "#adadb8";
 	ctx.font = fontSize + "px Arial";
-	let centerY = window.innerHeight / 2;
-	let fullTickerWidth = scrollItems.map(x => x.width).reduce((a,b)=>a+b,0) + margin*scrollItems.length;
-	let repeats = Math.ceil(canvas.width / fullTickerWidth) + 1;
 
-	for (let i=0; i<repeats; i++) {
-		for (let scrollItem of scrollItems) {
-			let xOffset = fullTickerWidth * i + scrollX;
-			ctx.beginPath();
-			ctx.arc(scrollItem.x - margin/2 + xOffset, centerY, 5, 0, 2*Math.PI);
-			ctx.fill();
-			ctx.fillText(scrollItem.text, scrollItem.x + xOffset, centerY + 8);
-		}		
+	if (scrollItems.length) {
+		let centerY = window.innerHeight / 2;
+		let fullTickerWidth = scrollItems.map(x => x.width).reduce((a,b)=>a+b,0) + margin*scrollItems.length;
+		let repeats = Math.ceil(canvas.width / fullTickerWidth) + 1;
+
+		for (let i=0; i<repeats; i++) {
+			for (let scrollItem of scrollItems) {
+				let xOffset = fullTickerWidth * i + scrollX;
+				ctx.beginPath();
+				ctx.arc(scrollItem.x - margin/2 + xOffset, centerY, 5, 0, 2*Math.PI);
+				ctx.fill();
+				ctx.fillText(scrollItem.text, scrollItem.x + xOffset, centerY + 8);
+			}		
+		}
+		if (scrollX < -fullTickerWidth) scrollX += fullTickerWidth;
 	}
-	if (scrollX < -fullTickerWidth) scrollX += fullTickerWidth;
 
 	let currentAlert = pendingAlerts[0];
 	if (currentAlert) {
@@ -128,9 +131,6 @@ function PlayAudio(ytid) {
 	let w = window.open("https://www.youtube.com/watch?v=" + ytid + "?t=0");
 	return w;
 }
-
-
-init();
 
 	</script>
 </html>
