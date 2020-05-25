@@ -1,0 +1,136 @@
+<html>
+	<head>
+    <title>Marquee</title>
+	</head>
+	<body></body>
+	<script type="text/javascript">
+	
+
+let canvas = document.createElement("canvas");
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+canvas.style.position = "fixed";
+canvas.style.left = "0";
+canvas.style.top = "0";
+document.body.appendChild(canvas);
+let ctx = canvas.getContext("2d");
+
+document.body.style.backgroundColor = "#18181b";
+document.body.style.color = "#adadb8";
+
+
+
+let music = null;
+let cheer = null;
+
+let scrollItems = [];
+let margin = 60;
+
+let pendingAlerts = [];
+
+function init() {
+	SetScrollItems(["Test 1","Test message 2"]);
+	setInterval(loop, 1000/60);
+}
+
+function SetScrollItems(texts) {
+	let cumulativeWidth = margin;
+	scrollItems = texts.map(t => {
+		ctx.font = "24px Arial";
+		let textWidth = ctx.measureText(t).width;
+		let ret = {
+			text: t,
+			x: cumulativeWidth,
+			width: textWidth
+		};
+		cumulativeWidth += textWidth + margin;
+		return ret;
+	});
+}
+
+function AddAlert(text) {
+	let textWidth = ctx.measureText(text).width;
+	pendingAlerts.push({
+		text: text,
+		textWidth: textWidth,
+		x: -9999,
+		messageX: -9999,
+		wait: 0,
+		state: "new"
+	});
+}
+
+let scrollX = 0;
+let fontSize = 24;
+function draw() {
+	ctx.clearRect(0,0,canvas.width, canvas.height);
+	ctx.fillStyle = "#adadb8";
+	ctx.font = fontSize + "px Arial";
+	let centerY = window.innerHeight / 2;
+	let fullTickerWidth = scrollItems.map(x => x.width).reduce((a,b)=>a+b,0) + margin*scrollItems.length;
+	let repeats = Math.ceil(canvas.width / fullTickerWidth) + 1;
+
+	for (let i=0; i<repeats; i++) {
+		for (let scrollItem of scrollItems) {
+			let xOffset = fullTickerWidth * i + scrollX;
+			ctx.beginPath();
+			ctx.arc(scrollItem.x - margin/2 + xOffset, centerY, 5, 0, 2*Math.PI);
+			ctx.fill();
+			ctx.fillText(scrollItem.text, scrollItem.x + xOffset, centerY + 8);
+		}		
+	}
+	if (scrollX < -fullTickerWidth) scrollX += fullTickerWidth;
+
+	let currentAlert = pendingAlerts[0];
+	if (currentAlert) {
+		if (currentAlert.state === "new") {
+			currentAlert.x = 0;
+				currentAlert.messageX = 0;
+			currentAlert.state = "drop";
+		} else if (currentAlert.state === "drop") {
+			currentAlert.x += (canvas.width - currentAlert.x) * 0.05;
+			currentAlert.messageX += (canvas.width - currentAlert.messageX) * 0.05;
+			if (currentAlert.messageX / canvas.width > 0.999) {
+				currentAlert.x = canvas.width;
+				currentAlert.messageX = canvas.width;
+				currentAlert.state = "messageWait";
+			}
+		} else if (currentAlert.state === "messageWait") {
+			currentAlert.wait++;
+			if (currentAlert.wait > 100) {
+				currentAlert.state = "messageOut";
+				currentAlert.x = canvas.width * 0.999;
+				currentAlert.messageX = canvas.width * 0.999;
+			}
+		} else if (currentAlert.state === "messageOut") {
+			currentAlert.messageX -= (canvas.width - currentAlert.messageX) * 0.05;
+			currentAlert.x -= (canvas.width - currentAlert.x) * 0.05;
+			if (currentAlert.x < 0) {
+				pendingAlerts.splice(0,1);
+			}
+		}
+
+		ctx.fillStyle = "rgb(0,255,128)";
+		ctx.fillRect(0,0,currentAlert.x,canvas.height);
+		ctx.fillStyle = "black";
+		ctx.fillText(currentAlert.text, currentAlert.messageX - canvas.width/2 - currentAlert.textWidth/2, centerY + 8);
+	}
+}
+
+
+function loop() {	
+	scrollX--;
+	draw();	
+}
+
+
+function PlayAudio(ytid) {
+	let w = window.open("https://www.youtube.com/watch?v=" + ytid + "?t=0");
+	return w;
+}
+
+
+init();
+
+	</script>
+</html>
