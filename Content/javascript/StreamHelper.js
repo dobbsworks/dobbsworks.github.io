@@ -873,7 +873,6 @@ function CreateMarqueeWindow() {
 	let w = window.open("", "Marquee", "width=1000,height=900");
 	
 	let request = new XMLHttpRequest();
-	let wheelData = levels.map(x => {return {name: x.username, weight: x.weight, code: x.code, badges: x.badges}});
 	let url = "https://dobbsworks.github.io/Content/Pages/marquee.html";
 	request.open("GET", url, true);
 	request.onload = () => {
