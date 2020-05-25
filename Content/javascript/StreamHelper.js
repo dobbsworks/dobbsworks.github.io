@@ -65,37 +65,37 @@ function Initialize() {
 // The return value of each command will be sent as a reply
 
 let commands = [
-    Command("add", 		CommandAddLevel, 	commandPermission.all, 		commandDisplay.chat,    "Add a level to the queue. Usage: !add LEV-ELC-ODE"),
-    Command("notspam", 	CommandNotSpam, 	commandPermission.all, 		commandDisplay.hidden),
-    Command("spam", 	CommandSpam, 		commandPermission.mod, 		commandDisplay.hidden),
-    Command("spamlist", CommandSpamList, 	commandPermission.mod, 		commandDisplay.hidden),
-    Command("reserve", 	CommandReserve, 	commandPermission.all, 		commandDisplay.chat,    "Reserve a spot in the queue without a code. Usage: !reserve"),
-    Command("change", 	CommandChangeLevel, commandPermission.all, 		commandDisplay.chat,    "Change your queued level id. Usage: !change LEV-ELC-ODE"),
-    Command("leave", 	CommandLeaveQueue, 	commandPermission.all, 		commandDisplay.chat,    "Remove your levels from the queue."),
-    Command("remove", 	CommandLeaveQueue, 	commandPermission.all, 		commandDisplay.hidden),
-    Command("help", 	CommandHelp, 		commandPermission.all, 		commandDisplay.hidden),
-    Command("commands", CommandHelp, 		commandPermission.all, 		commandDisplay.hidden),
-    Command("list", 	CommandList, 		commandPermission.all, 		commandDisplay.chat,    "Displays the upcoming levels from the queue."),
-    Command("queue", 	CommandList, 		commandPermission.all, 		commandDisplay.hidden),
-    Command("current", 	CommandCurrent, 	commandPermission.all, 		commandDisplay.chat,    "Displays information about the level being played."),
-    Command("complete", CommandComplete,	commandPermission.streamer, commandDisplay.panel),
-    Command("skip", 	CommandSkip, 		commandPermission.streamer, commandDisplay.panel),
-    Command("next", 	CommandNext, 		commandPermission.streamer, commandDisplay.panel),
-    Command("randomnext",CommandRandomNext, commandPermission.streamer, commandDisplay.panel),
-    Command("randomwin",CommandRandomWin,	commandPermission.streamer, commandDisplay.hidden),
-    Command("resettimer",CommandResetTimer, commandPermission.streamer, commandDisplay.panel),
-    Command("roll", 	CommandRoll, 		commandPermission.all,      commandDisplay.chat,    "Roll the dice! Usage: !roll d6, !roll d20+3"),
-    Command("open", 	CommandOpenQueue, 	commandPermission.streamer, commandDisplay.panel),
-    Command("close", 	CommandCloseQueue, 	commandPermission.streamer, commandDisplay.panel),
-    Command("texttospeech",CommandTTS, 		commandPermission.reward, 	commandDisplay.hidden),
-	Command("priorityqueue",CommandPriority,commandPermission.reward, 	commandDisplay.hidden),
-	Command("secondqueueslot",CommandQueueSlot,commandPermission.reward,commandDisplay.hidden),
-	Command("biggerwheelslice",CommandBiggerSlice,commandPermission.reward, 	commandDisplay.hidden),
-    Command("addcom",	CommandAddCommand,	commandPermission.mod, 		commandDisplay.hidden),
+    Command("add", 				CommandAddLevel, 	commandPermission.all, 		commandDisplay.chat,    "Add a level to the queue. Usage: !add LEV-ELC-ODE"),
+    Command("notspam", 			CommandNotSpam, 	commandPermission.all, 		commandDisplay.hidden),
+    Command("spam", 			CommandSpam, 		commandPermission.mod, 		commandDisplay.hidden),
+    Command("spamlist", 		CommandSpamList, 	commandPermission.mod, 		commandDisplay.hidden),
+    Command("reserve", 			CommandReserve, 	commandPermission.all, 		commandDisplay.chat,    "Reserve a spot in the queue without a code. Usage: !reserve"),
+    Command("change", 			CommandChangeLevel, commandPermission.all, 		commandDisplay.chat,    "Change your queued level id. Usage: !change LEV-ELC-ODE"),
+    Command("leave", 			CommandLeaveQueue, 	commandPermission.all, 		commandDisplay.chat,    "Remove your levels from the queue."),
+    Command("remove", 			CommandLeaveQueue, 	commandPermission.all, 		commandDisplay.hidden),
+    Command("help", 			CommandHelp, 		commandPermission.all, 		commandDisplay.hidden),
+    Command("commands", 		CommandHelp, 		commandPermission.all, 		commandDisplay.hidden),
+    Command("list", 			CommandList, 		commandPermission.all, 		commandDisplay.chat,    "Displays the upcoming levels from the queue."),
+    Command("queue", 			CommandList, 		commandPermission.all, 		commandDisplay.hidden),
+    Command("current", 			CommandCurrent, 	commandPermission.all, 		commandDisplay.chat,    "Displays information about the level being played."),
+    Command("complete", 		CommandComplete,	commandPermission.streamer, commandDisplay.panel),
+    Command("skip", 			CommandSkip, 		commandPermission.streamer, commandDisplay.panel),
+    Command("next", 			CommandNext, 		commandPermission.streamer, commandDisplay.panel),
+    Command("randomnext",		CommandRandomNext,	commandPermission.streamer, commandDisplay.panel),
+    Command("randomwin",		CommandRandomWin,	commandPermission.streamer, commandDisplay.hidden),
+    Command("resettimer",		CommandResetTimer,	commandPermission.streamer, commandDisplay.panel),
+    Command("roll", 			CommandRoll, 		commandPermission.all,      commandDisplay.chat,    "Roll the dice! Usage: !roll d6, !roll d20+3"),
+    Command("open", 			CommandOpenQueue, 	commandPermission.streamer, commandDisplay.panel),
+    Command("close", 			CommandCloseQueue, 	commandPermission.streamer, commandDisplay.panel),
+    Command("texttospeech",		CommandTTS, 		commandPermission.reward, 	commandDisplay.hidden),
+	Command("priorityqueue",	CommandPriority,	commandPermission.reward, 	commandDisplay.hidden),
+	Command("secondqueueslot",	CommandQueueSlot,	commandPermission.reward,	commandDisplay.hidden),
+	Command("biggerwheelslice",	CommandBiggerSlice,	commandPermission.reward, 	commandDisplay.hidden),
+    Command("addcom",			CommandAddCommand,	commandPermission.mod, 		commandDisplay.hidden),
 	
-    Command("debugadd",	CommandDebugAdd,	commandPermission.streamer, commandDisplay.hidden),
-    Command("as",		CommandAs,			commandPermission.streamer, commandDisplay.hidden),
-    Command("exportchat",CreateChatLogWindow,commandPermission.streamer, commandDisplay.panel),
+    Command("debugadd",			CommandDebugAdd,	commandPermission.streamer, commandDisplay.hidden),
+    Command("as",				CommandAs,			commandPermission.streamer, commandDisplay.hidden),
+    Command("exportchat",		CreateChatLogWindow,commandPermission.streamer, commandDisplay.panel),
 	
 	MessageCommand("maker", "My maker id is: S2C-HX7-01G"),
 	MessageCommand("makerid", "My maker id is: S2C-HX7-01G"),
@@ -104,13 +104,7 @@ let commands = [
 	MessageCommand("bot", "Hello there, I'm the bot! Dobbs wrote me in JavaScript of all things. I handle the level queue and stuff. Sometimes I break for no good reason! Kappa"),
 	
 	MessageCommand("random", "Sometimes instead of taking levels in order, we'll go randomly. If your level doesn't get picked, it'll be more likely to get drawn next time."),
-
-	//MessageCommand("race", "I'm racing today on the SpeedGaming2 channel starting at 2PM Eastern. Want to learn more? Check the !discord, or learn the !format."),
-	//MessageCommand("discord", "Get involved with the SMM2 weekly race here: https://discord.gg/VX7fHcC"),
-	//MessageCommand("format", "The race has 3 phases: !blind, !optimize, and !endless. Players compete for the fastest/best score in each round."),
-	//MessageCommand("blind", "Players race to be the first to complete 5 courses that they've never seen before. Charging ahead is fast, but taking a death can really slow you down!"),
-	//MessageCommand("optimize", "Players are given 15 minutes on 3 courses (45 minutes total) to try and get their best time on a course. Find the fastest route and then execute it well!"),
-	//MessageCommand("endless", "Players are given 20 minutes to complete as many expert endless levels as possible. Skips are allowed, but don't spend the whole race searching for a good level..."),
+	MessageCommand("discord", "Join the discord here: https://discord.gg/cdPmKUP"),
 	
 	MessageCommand("charity", "I'm setting aside $25 of cash every stream that you can have me spend towards the channel's selected charity. Check the channel points for what we're supporting."),
 ]
@@ -908,17 +902,16 @@ function DrawMarqueeContent(w) {
 }
 
 
+function RandomFrom(list) {
+	let index = RandomNumber(list.length) - 1;
+	return list[index];
+}
 function RandomNumber(min, max) {
 	if (max === undefined) {
 		max = min;
-		min = 0;
+		min = 1;
 	}
 	return min + Math.floor(Math.random() * (1+max-min))
-}
-
-function RandomFrom(list) {
-	let index = RandomNumber(list.length)-1;
-	return list[index];
 }
 
 function RandomWeightedFrom(list, weightFunc) {
