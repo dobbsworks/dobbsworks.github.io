@@ -52,6 +52,7 @@ function init() {
 		"yIFloLCk_Y0", // MK64 time trial
 		"g5qo57gwn9s", // SSB64 bonus,
 		"bcTk-xyIkug", // BKN&B bonus
+		"nlSBjGguILk", // Mario Golf TT speed golf
 	]);
 	if (!ytid) ytid = "gDn4NRVkG4Y";
 	music = PlayAudio(ytid);
@@ -201,20 +202,23 @@ function draw() {
 	}
 }
 
-function determineWinner() {
+function getSelectedItem() {
 	// PI/2 == bottom
 	let targetAngle = 3*Math.PI/2;
-	let winner = null;
+	let selected = null;
 	for (let x of items) {
 		let p1 = (x.t1 + rotation) % (Math.PI*2);
 		let p2 = (x.t2 + rotation) % (Math.PI*2);
 		if (p2 <= p1) p2 = p1 + Math.PI*2;
-		if (p1 < targetAngle && p2 >= targetAngle) winner = x;
+		if (p1 < targetAngle && p2 >= targetAngle) selected = x;
 	}
-	winnerIndex = items.indexOf(winner);
-	
-	setTimeout(() => {SendCode(winner.code)}, 100);
+	return selected;
+}
 
+function determineWinner() {
+	let winner = getSelectedItem();	
+	winnerIndex = items.indexOf(winner);
+	setTimeout(() => {SendCode(winner.code)}, 100);
 	setTimeout(() => {
 		if (music) music.close();
 		if (cheer) cheer.close();
@@ -227,21 +231,14 @@ let nameHideCount = 0;
 let rotationAccel = 1;
 let winnerIndex = -1;
 function setupTimers() {
-	let timer = 0;
+	let timer = 2000;
 	
-	timer += 2000;
-	
-	// show and hide name tags
+	// show name tags
 	for (let i=0; i<items.length; i++) {
 		setTimeout(() => {nameRevealCount++}, timer);
 		timer += 200;
 	}
 	timer += 3000;
-	// for (let i=0; i<items.length; i++) {
-	// 	setTimeout(() => {nameHideCount++}, timer);
-	// 	timer += 200;
-	// }
-	// timer += 500;
 
 	// start spinning
 	setTimeout(() => {rotationSpeed = 0.01}, timer);
@@ -259,6 +256,18 @@ function setupTimers() {
 	timer += 9000;
 	setTimeout(() => {rotationAccel = 0.9}, timer);
 	timer += 1000;
+
+	// random events
+	let randomRoll = Math.random();
+	if (randomRoll < 0.02) {
+		setTimeout(() => {
+			rotationSpeed = -0.02;
+			rotationAccel = 1.04;
+		}, timer);
+		timer += 680;
+		setTimeout(() => {rotationAccel = 0.9}, timer);
+		timer += 1000;
+	}
 	
 	// hard stop
 	setTimeout(() => {cheer = PlayAudio("barWV7RWkq0");}, timer);

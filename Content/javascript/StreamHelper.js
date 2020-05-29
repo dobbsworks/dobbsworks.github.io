@@ -847,7 +847,7 @@ function RemoveSpamUser(username) {
 /////////////////////////////////////////////////
 
 function CreateChatLogWindow() {
-	let w = window.open("", "Chat Log", "width=172,height=476");
+	let w = window.open("", "Chat Log", "width=872,height=476");
 	let currentLog = localStorage.getItem("log");
 	if (currentLog) {
 		let logMessages = JSON.parse(currentLog);
@@ -880,7 +880,7 @@ function LogChatMessage(m) {
 // WHEEL OF LEVELS
 /////////////////////////////////////////////////
 function CreateWheelOfLevels(levels) {
-	let w = window.open("", "WheelOfLevels", "width=1000,height=900");
+	let w = window.open("", "WheelOfLevels", "width=1000,height=900,left=700");
 	
 	let request = new XMLHttpRequest();
 	let wheelData = levels.map(x => {return {name: x.username, weight: x.weight, code: x.code, badges: x.badges}});
