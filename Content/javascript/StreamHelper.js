@@ -202,7 +202,8 @@ function PushQueueEntry(user, strippedCode) {
 		timeStarted: null,
 		timeEnded: null,
 		isPriority: false,
-		weight: 1 //weighting to be used for !randomnext
+		weight: 1, //weighting to be used for !randomnext
+		weightPriorityPurchases: 0 //priority
 	}
 	queue.push(level);
 }
@@ -232,7 +233,7 @@ function CommandCurrent(user, args) {
     }
 	ret += "There " +
 		(pendingLevels.length === 1 ? "is 1 level" : ("are " + pendingLevels.length + "levels")) +
-		"pending in the queue.";
+		" pending in the queue.";
 	return ret;
 }
 
@@ -429,7 +430,7 @@ function CommandBiggerSlice(user, args) {
 	let userLevels = queue.filter(x => x.username === user.username && x.status === levelStatus.pending && !x.isPriority);
 	if (userLevels.length === 0) return "There are no valid levels to prioritize.";
 	let levelToPrioritze = userLevels[0];
-	levelToPrioritze.weight += 3;
+	levelToPrioritze.weightPriorityPurchases += 1;
 }
 
 function CommandChangeLevel(user, args) {
@@ -883,7 +884,7 @@ function CreateWheelOfLevels(levels) {
 	let w = window.open("", "WheelOfLevels", "width=1000,height=900,left=700");
 	
 	let request = new XMLHttpRequest();
-	let wheelData = levels.map(x => {return {name: x.username, weight: x.weight, code: x.code, badges: x.badges}});
+	let wheelData = levels.map(x => {return {name: x.username, weight: CalculateLevelWeight(x), code: x.code, badges: x.badges}});
 	let url = "https://dobbsworks.github.io/Content/Pages/wheel.html?q=" + (+(new Date()));
 	request.open("GET", url, true);
 	request.onload = () => {
@@ -891,11 +892,19 @@ function CreateWheelOfLevels(levels) {
 		setTimeout(() => {
 			w.window.SetItems(wheelData);
 			w.window.init();
-			for (l of levels) l.weight++;
+			//for (l of levels) l.weight++;
 		}, 100);
 	}
 	request.send();
 	return w;
+}
+
+function CalculateLevelWeight(level) {
+	let now = new Date();
+	let timeBonusWeight = Math.floor((now - level.timeAdded) / 1000 / 60 / 5); // number of 5 minute chunks
+	let bonusScale = Math.pow(2, level.weightPriorityPurchases);
+	let ret = bonusScale * (level.weight + timeBonusWeight);
+	return ret;
 }
 
 function PlayAudio(ytid) {
