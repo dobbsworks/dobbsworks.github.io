@@ -885,7 +885,7 @@ function CreateWheelOfLevels(levels) {
 	
 	let request = new XMLHttpRequest();
 	let wheelData = levels.map(x => {return {name: x.username, weight: CalculateLevelWeight(x), code: x.code, badges: x.badges}});
-	let url = "https://dobbsworks.github.io/Content/Pages/wheel.html?q=" + (+(new Date()));
+	let url = "https://dobbsworks.github.io/Tools/Streambot/wheel.html?q=" + (+(new Date()));
 	request.open("GET", url, true);
 	request.onload = () => {
 		w.document.write(request.responseText);
@@ -927,7 +927,7 @@ function CreateMarqueeWindow() {
 	let w = window.open("", "Marquee", "width=850,height=53");
 	
 	let request = new XMLHttpRequest();
-	let url = "https://dobbsworks.github.io/Content/Pages/marquee.html?q=" + (+(new Date()));
+	let url = "https://dobbsworks.github.io/Tools/Streambot/marquee.html?q=" + (+(new Date()));
 	request.open("GET", url, true);
 	request.onload = () => {
 		w.document.write(request.responseText);
