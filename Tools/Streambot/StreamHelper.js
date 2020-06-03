@@ -1,22 +1,3 @@
-//TODO
-/*	
-    + lower text box - scrolling info
-        + recent followers/raids/subs?
-        + spend points to have message on ticker
-    + !schedule !nextstream
-    + storage
-        use localStorage to keep some kind of data available
-        allow spreadsheet export/import
-    + allow creation of commands from mods (e.g. !race, !discord, !youtube)
-    + allow querying user stats - number of submitted levels, amount of time spent on levels, complete/skip ratio
-    + Spend points on 
-        sound effects - no cors issues :)
-		Monty Python - Run away!
-
-        ?? screen animations - maybe have some kind of overlay panel in OBS
-        change SMM2 character
- */
-
 let users = [];
 let queue = [];
 let isQueueOpen = true;
@@ -55,7 +36,21 @@ function Initialize() {
 	marqueeWindow = CreateMarqueeWindow();
 	let bc = new BroadcastChannel('helper');
 	bc.onmessage = OnBroadcastMessage;	
+	LoadExternalFunctions();
 	setInterval(ProcessMessages, 1000);
+}
+
+function LoadExternalFunctions() {
+	// for cleanliness, we'll start having some functions stored in other files
+	// probably need to do some kind of error-checking on this
+	let fileList = ["LevelIdeaGenerator.js"];
+	let cacheBreaker = (+(new Date()));
+	for (let fileName of fileList) {
+		let scriptTag = document.createElement('script');
+		scriptTag.src = `https://dobbsworks.github.io/Tools/Streambot/${fileName}?q=${cacheBreaker}`;
+		console.log(scriptTag)
+		document.body.appendChild(scriptTag);
+	}
 }
 
 
@@ -616,7 +611,7 @@ function ProcessActivityMessage(messageEl) {
 	let line2 = messageEl.querySelector(".activity-base-list-item__subtitle span").textContent;
 	let time = messageEl.querySelector(".activity-base-list-item__subtitle > span:last-child").textContent;
 
-	if (time.indexOf("day") === -1) {
+	if (time.indexOf("day") === -1 && time.indexOf("month") === -1) {
 		// Follows
 		if (line2 === "Followed you") {
 			let user = line1;
