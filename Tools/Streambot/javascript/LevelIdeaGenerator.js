@@ -23,16 +23,16 @@ var LevelGenerator = {
         {value: true, weight: 1, blockedBy: "style", values:["3DW"]}
     ],
     terrains: [
-        {value: "slopes", weight: 1},
+        {value: "slopes", weight: 2},
         {value: "ice blocks", weight: 1},
-        {value: "note blocks", weight: 1},
-        {value: "donut blocks", weight: 1},
+        {value: "note blocks", weight: 0.5},
+        {value: "donut blocks", weight: 2},
         {value: "clouds", weight: 1},
-        {value: "pipes", weight: 1},
-        {value: "mushroom platforms", weight: 1},
+        {value: "pipes", weight: 5},
+        {value: "mushroom platforms", weight: 3},
         {value: "clear pipes", weight: 1, allowed: "style", values:["3DW"]},
         {value: "spike blocks", weight: 1},
-        {value: "turn blocks", weight: 1, allowed: "style", values:["SMW"]},
+        {value: "turn blocks", weight: 3, allowed: "style", values:["SMW"]},
     ],
     powerups: [
         {value: "the master sword", weight: 1, allowed: "style", values:["SMB"]},
