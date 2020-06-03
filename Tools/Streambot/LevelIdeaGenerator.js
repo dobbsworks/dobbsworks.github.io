@@ -226,9 +226,12 @@ var LevelGenerator = {
         } else if (Math.random() < 0.2) {
             let extra = LevelGenerator.GetRandomListValueByWeight(LevelGenerator.extras, level);
             levelIdea += extra; 
-        }
-        
+        }   
         return levelIdea;
     }
-
 };
+
+
+function CommandLevelIdea(user, args) {
+	return LevelGenerator.GenerateIdea();
+}

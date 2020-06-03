@@ -48,7 +48,6 @@ function LoadExternalFunctions() {
 	for (let fileName of fileList) {
 		let scriptTag = document.createElement('script');
 		scriptTag.src = `https://dobbsworks.github.io/Tools/Streambot/${fileName}?q=${cacheBreaker}`;
-		console.log(scriptTag)
 		document.body.appendChild(scriptTag);
 	}
 }
@@ -87,6 +86,8 @@ let commands = [
 	Command("secondqueueslot",	CommandQueueSlot,	commandPermission.reward,	commandDisplay.hidden),
 	Command("biggerwheelslice",	CommandBiggerSlice,	commandPermission.reward, 	commandDisplay.hidden),
 	Command("addcom",			CommandAddCommand,	commandPermission.mod, 		commandDisplay.hidden),
+
+    Command("levelidea", 		"CommandLevelIdea", commandPermission.all, 		commandDisplay.chat,    "Generates a random level idea."),
 	
 	Command("tickeradd",		CommandTickerAdd,	commandPermission.mod, 		commandDisplay.hidden),
 	Command("tickerlist",		CommandTickerList,	commandPermission.mod, 		commandDisplay.hidden),
@@ -568,7 +569,9 @@ function ProcessCommand(username, commandText, isReward, badges) {
 		
         if (hasValidPermission) {
 			try {
-				let response = command.func(user, commandArgs);
+				let func = typeof command.func === "string" ? window[command.func] : command.func;
+				if (!func) return "Uh-oh, this command went missing."
+				let response = func(user, commandArgs);
 				if (username !== streamerName && response != null) {
 					response = response.charAt(0).toLowerCase() + response.slice(1);
 					response = "@" + username + ", " + response;
