@@ -4,7 +4,7 @@ var LevelGenerator = {
         {value: "SMB3", weight: 1},
         {value: "SMW", weight: 1},
         {value: "NSMB", weight: 1},
-        {value: "3DW", weight: 1}
+        {value: "3DW", weight: 0.7}
     ],
     themes: [
         {value: "Ground", weight: 1, allowed: "style", values:["SMB"]},
@@ -19,7 +19,7 @@ var LevelGenerator = {
         {value: "Airship", weight: 0.8}
     ],
     times: [
-        {value: false, weight: 10},
+        {value: false, weight: 15},
         {value: true, weight: 1, blockedBy: "style", values:["3DW"]}
     ],
     terrains: [
@@ -31,7 +31,7 @@ var LevelGenerator = {
         {value: "pipes", weight: 5},
         {value: "mushroom platforms", weight: 3},
         {value: "clear pipes", weight: 1, allowed: "style", values:["3DW"]},
-        {value: "spike blocks", weight: 1},
+        {value: "spike blocks", weight: 2},
         {value: "turn blocks", weight: 3, allowed: "style", values:["SMW"]},
     ],
     powerups: [
@@ -40,7 +40,7 @@ var LevelGenerator = {
         {value: "a super ball", weight: 1, allowed: "style", values:["SMB"]},
         {value: "a propeller mushroom", weight: 1, allowed: "style", values:["NSMB"]},
         {value: "an acorn", weight: 1, allowed: "style", values:["NSMB"]},
-        {value: "a shoe", weight: 1, allowed: "style", values:["SMB","SMB3"]},
+        {value: "a goomba shoe", weight: 1, allowed: "style", values:["SMB","SMB3"]},
         {value: "a super bell", weight: 1, allowed: "style", values:["3DW"]},
         {value: "a super hammer", weight: 1, allowed: "style", values:["3DW"]},
         {value: "a boomerang", weight: 1, allowed: "style", values:["3DW"]},
@@ -54,7 +54,7 @@ var LevelGenerator = {
         {value: "a P-balloon", weight: 1, allowed: "style", values:["SMW"]},
     ],
     enemies: [
-        {value: "the angry sun", weight: 1, allowed: "isNight", values:[false]},
+        {value: "the sun/moon", weight: 1, blockedBy: "style", values:["3DW"]},
         {value: "ant troopers", weight: 1, allowed: "style", values:["3DW"]},
         {value: "bloopers", weight: 1},
         {value: "bob-ombs", weight: 1},
@@ -142,7 +142,7 @@ var LevelGenerator = {
         "Give the player %text%. ",
         "Hide %text% in ? blocks. ",
         "Require heavy use of %text%. ",
-        "Allow the player to grab %text% optionally. ",
+        "Allow the player the option to grab %text%. ",
         "Spit out %text% from a pipe. ",
     ],
     enemyText: [
@@ -223,7 +223,7 @@ var LevelGenerator = {
         if (Math.random() < 0.3) {
             let gizmo = LevelGenerator.GetRandomListValueByWeight(LevelGenerator.gizmos, level);
             levelIdea += "Add " + gizmo + ". ";
-        } else if (Math.random() < 0.2) {
+        } else if (Math.random() < 0.4) {
             let extra = LevelGenerator.GetRandomListValueByWeight(LevelGenerator.extras, level);
             levelIdea += extra; 
         }   
