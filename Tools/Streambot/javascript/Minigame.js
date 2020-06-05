@@ -7,7 +7,7 @@ var MinigameHandler = {
     timer: 0,
     guesses: [],
     revealIndex: 0,
-    timeBeforeStart: 20,
+    timeBeforeStart: 15,
     timeBetweenHints: 15,
     timeBetweenGuesses: 10,
 
@@ -122,7 +122,7 @@ var MinigameHandler = {
 
     AwardPrize: () => {
         let attemptPrize = CommandBiggerSlice(MinigameHandler.winner, []);
-        if (attemptPrize) {
+        if (!attemptPrize) {
             MinigameHandler.WriteMessage(`${MinigameHandler.winner.username} has received a wheel slice upgrade!`);
         } else {
             MinigameHandler.WriteMessage(`${MinigameHandler.winner.username} has no levels in the queue, so they have been awarded braggin rights.`);
@@ -171,6 +171,7 @@ MinigameHandler.Init();
 
 
 function CommandMinigame(user, args) {
+    if (!args[0]) return "Usage: !minigame {start|stop|repeat|last}";
     if (args[0].toLowerCase() === "start") {
         MinigameHandler.StartGame();
     } else if (args[0].toLowerCase() === "stop") {
@@ -182,7 +183,7 @@ function CommandMinigame(user, args) {
     } else if (args[0].toLowerCase() === "last") {
         MinigameHandler.repeatMode = false;
     } else {
-        return "Usage: !minigame {start|stop|repeat|last}"
+        return "Usage: !minigame {start|stop|repeat|last}";
     }
 }
 
