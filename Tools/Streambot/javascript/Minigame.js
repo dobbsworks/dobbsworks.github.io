@@ -1,29 +1,61 @@
-
-
-
 var MinigameHandler = {
     gameState: "inactive",
     answer: "",
     display: "",
+    winner: "",
     timer: 0,
     guesses: [],
     revealIndex: 0,
-    timeBeforeStart: 1,
-    timeBetweenHints: 1,
+    timeBeforeStart: 20,
+    timeBetweenHints: 15,
+    timeBetweenGuesses: 10,
 
     interval: null,
     Init: () => {
         MinigameHandler.interval = setInterval(MinigameHandler.ProcessGame, 1000);
     },
+    
+    GetPuzzle: () => {
+        var categories = Object.keys(minigameAnswers);
+        var categoryIndex = Math.floor(Math.random() * categories.length);
+        var category = categories[categoryIndex];
+        var puzzles = minigameAnswers[category];
+        var puzzleIndex = Math.floor(Math.random() * puzzles.length);
+        var puzzle = puzzles[puzzleIndex];
+        return {answer: puzzle, category: category};
+    },
 
     StartGame: () => {
-        //TODO randomly grab an answer
-        MinigameHandler.answer = "Final Fantasy: Crystal Chronicles"
+        let puzzle = MinigameHandler.GetPuzzle();
+        MinigameHandler.answer = puzzle.answer;
         MinigameHandler.display = MinigameHandler.ScrambleWord(MinigameHandler.answer);
-        MinigameHandler.WriteMessage(`Minigame starting in ${MinigameHandler.timeBeforeStart} seconds! When the puzzle appears, guess the answer with !guess MY ANSWER`);
-        MinigameHandler.gameState = "active";
+        MinigameHandler.WriteMessage(`Minigame starting in ${MinigameHandler.timeBeforeStart} seconds! The category is ${puzzle.category}. When the puzzle appears, guess the answer with !guess MY ANSWER`);
+        MinigameHandler.gameState = "starting";
         MinigameHandler.timer = -MinigameHandler.timeBeforeStart;
         MinigameHandler.revealIndex = 0;
+        MinigameHandler.guesses = [];
+    },
+    
+    ProcessGuess: (username, guess) => {
+        let userGuesses = MinigameHandler.guesses.filter(x => x.username.toUpperCase() === username.toUpperCase());
+        if (userGuesses.length > 0) {
+            let latestGuess = userGuesses[userGuesses.length-1];
+            let secondsSinceLastGuess = (new Date() - latestGuess.timestamp) / 1000;
+            if (secondsSinceLastGuess < MinigameHandler.timeBetweenGuesses) {
+                // guessing too soon
+                MinigameHandler.WriteMessage(`${username}, you can only guess every ${MinigameHandler.timeBetweenGuesses} seconds.`);
+                return;
+            }
+        }
+        MinigameHandler.guesses.push({username: username, guess: guess, timestamp: new Date()});
+        
+        // allow missing special characters
+        let trimmedAnswer =MinigameHandler.answer.split('').filter(MinigameHandler.IsAlphanumeric).join('').toUpperCase();
+        let trimmedGuess = guess.split('').filter(MinigameHandler.IsAlphanumeric).join('').toUpperCase();
+        let isGuessCorrect = trimmedAnswer === trimmedGuess;
+        if (isGuessCorrect) {
+            MinigameHandler.GameWin(username);
+        }
     },
 
     // Run on a loop
@@ -69,6 +101,15 @@ var MinigameHandler = {
         letters[index] = char;
         return letters.join("");
     },
+    
+    GameWin: (username) => {
+        MinigameHandler.WriteMessage(`${username} currectly guessed the answer! ${MinigameHandler.answer}`);
+        MinigameHandler.gameState = "inactive"
+        MinigameHandler.winner = username;
+        
+        // TODO
+        setTimeout( ()=>{MinigameHandler.WriteMessage(`Prizes are not yet automatic, so Dobbs will manually do something now.`)},2000);
+    },
 
     GameLoss: () => {
         MinigameHandler.WriteMessage("Too bad! The answer was... " + MinigameHandler.answer);
@@ -107,9 +148,17 @@ var MinigameHandler = {
     },
 
     WriteMessage(message) {
-        console.log(" PurpleStar " + message + " PurpleStar");
+        WriteMessage(" PurpleStar " + message + " PurpleStar");
     }
 };
-
 MinigameHandler.Init();
-MinigameHandler.StartGame();
+
+
+function CommandMinigameStart(username, args) {
+    MinigameHandler.StartGame();
+}
+
+function CommandMinigameGuess(username, args) {
+    let guess = args.join(' ');
+    MinigameHandler.ProcessGuess(username, guess);
+}
