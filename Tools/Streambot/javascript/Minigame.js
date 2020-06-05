@@ -1,8 +1,9 @@
 var MinigameHandler = {
     gameState: "inactive",
+    repeatMode: false,
     answer: "",
     display: "",
-    winner: "",
+    winner: null,
     timer: 0,
     guesses: [],
     revealIndex: 0,
@@ -26,6 +27,10 @@ var MinigameHandler = {
     },
 
     StartGame: () => {
+        if (MinigameHandler.gameState !== "inactive") {
+            MinigameHandler.WriteMessage("There's already a minigame in progress.");
+            return;
+        }
         let puzzle = MinigameHandler.GetPuzzle();
         MinigameHandler.answer = puzzle.answer;
         MinigameHandler.display = MinigameHandler.ScrambleWord(MinigameHandler.answer);
@@ -36,25 +41,26 @@ var MinigameHandler = {
         MinigameHandler.guesses = [];
     },
     
-    ProcessGuess: (username, guess) => {
-        let userGuesses = MinigameHandler.guesses.filter(x => x.username.toUpperCase() === username.toUpperCase());
+    ProcessGuess: (user, guess) => {
+        if (MinigameHandler.gameState !== "active") return;
+        let userGuesses = MinigameHandler.guesses.filter(x => x.username.toUpperCase() === user.username.toUpperCase());
         if (userGuesses.length > 0) {
             let latestGuess = userGuesses[userGuesses.length-1];
             let secondsSinceLastGuess = (new Date() - latestGuess.timestamp) / 1000;
             if (secondsSinceLastGuess < MinigameHandler.timeBetweenGuesses) {
                 // guessing too soon
-                MinigameHandler.WriteMessage(`${username}, you can only guess every ${MinigameHandler.timeBetweenGuesses} seconds.`);
+                MinigameHandler.WriteMessage(`${user.username}, you can only guess every ${MinigameHandler.timeBetweenGuesses} seconds.`);
                 return;
             }
         }
-        MinigameHandler.guesses.push({username: username, guess: guess, timestamp: new Date()});
+        MinigameHandler.guesses.push({username: user.username, guess: guess, timestamp: new Date()});
         
         // allow missing special characters
-        let trimmedAnswer =MinigameHandler.answer.split('').filter(MinigameHandler.IsAlphanumeric).join('').toUpperCase();
+        let trimmedAnswer = MinigameHandler.answer.split('').filter(MinigameHandler.IsAlphanumeric).join('').toUpperCase();
         let trimmedGuess = guess.split('').filter(MinigameHandler.IsAlphanumeric).join('').toUpperCase();
         let isGuessCorrect = trimmedAnswer === trimmedGuess;
         if (isGuessCorrect) {
-            MinigameHandler.GameWin(username);
+            MinigameHandler.GameWin(user);
         }
     },
 
@@ -102,18 +108,28 @@ var MinigameHandler = {
         return letters.join("");
     },
     
-    GameWin: (username) => {
-        MinigameHandler.WriteMessage(`${username} currectly guessed the answer! ${MinigameHandler.answer}`);
+    GameWin: (user) => {
+        MinigameHandler.WriteMessage(`${user.username} currectly guessed the answer! ${MinigameHandler.answer}`);
         MinigameHandler.gameState = "inactive"
-        MinigameHandler.winner = username;
-        
-        // TODO
-        setTimeout( ()=>{MinigameHandler.WriteMessage(`Prizes are not yet automatic, so Dobbs will manually do something now.`)},2000);
+        MinigameHandler.winner = user;
+        setTimeout( ()=>{MinigameHandler.AwardPrize(); },1000);
     },
 
     GameLoss: () => {
         MinigameHandler.WriteMessage("Too bad! The answer was... " + MinigameHandler.answer);
         MinigameHandler.gameState = "inactive"
+    },
+
+    AwardPrize: () => {
+        let attemptPrize = CommandBiggerSlice(MinigameHandler.winner, []);
+        if (attemptPrize) {
+            MinigameHandler.WriteMessage(`${MinigameHandler.winner.username} has received a wheel slice upgrade!`);
+        } else {
+            MinigameHandler.WriteMessage(`${MinigameHandler.winner.username} has no levels in the queue, so they have been awarded braggin rights.`);
+        }
+        if (MinigameHandler.repeatMode) {
+            setTimeout( ()=>{MinigameHandler.StartGame(); },1000);
+        }
     },
 
     IsAlphanumeric: (letter) => {
@@ -154,11 +170,23 @@ var MinigameHandler = {
 MinigameHandler.Init();
 
 
-function CommandMinigameStart(user, args) {
-    MinigameHandler.StartGame();
+function CommandMinigame(user, args) {
+    if (args[0].toLowerCase() === "start") {
+        MinigameHandler.StartGame();
+    } else if (args[0].toLowerCase() === "stop") {
+        MinigameHandler.repeatMode = false;
+        MinigameHandler.gameState = "inactive";
+    } else if (args[0].toLowerCase() === "repeat") {
+        MinigameHandler.repeatMode = true;
+        MinigameHandler.StartGame();
+    } else if (args[0].toLowerCase() === "last") {
+        MinigameHandler.repeatMode = false;
+    } else {
+        return "Usage: !minigame {start|stop|repeat|last}"
+    }
 }
 
 function CommandMinigameGuess(user, args) {
     let guess = args.join(' ');
-    MinigameHandler.ProcessGuess(user.username, guess);
+    MinigameHandler.ProcessGuess(user, guess);
 }

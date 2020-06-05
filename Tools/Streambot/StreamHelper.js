@@ -92,7 +92,10 @@ let commands = [
 	Command("biggerwheelslice",	CommandBiggerSlice,	commandPermission.reward, 	commandDisplay.hidden),
 	Command("addcom",			CommandAddCommand,	commandPermission.mod, 		commandDisplay.hidden),
 
-    Command("levelidea", 		"CommandLevelIdea", commandPermission.all, 		commandDisplay.chat,    "Generates a random level idea."),
+	Command("levelidea", 		"CommandLevelIdea", commandPermission.all, 		commandDisplay.chat,    "Generates a random level idea."),
+	
+    Command("minigame",			"CommandMinigame",	commandPermission.streamer, commandDisplay.hidden),
+    Command("guess", 			"CommandMinigameGuess",commandPermission.all, 	commandDisplay.hidden),
 	
 	Command("tickeradd",		CommandTickerAdd,	commandPermission.mod, 		commandDisplay.hidden),
 	Command("tickerlist",		CommandTickerList,	commandPermission.mod, 		commandDisplay.hidden),
