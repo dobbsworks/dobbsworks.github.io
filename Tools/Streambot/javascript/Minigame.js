@@ -8,7 +8,7 @@ var MinigameHandler = {
     guesses: [],
     revealIndex: 0,
     timeBeforeStart: 15,
-    timeBetweenHints: 25,
+    timeBetweenHints: 30,
     revealPerHint: 1,
     timeBetweenGuesses: 10,
 
@@ -129,7 +129,7 @@ var MinigameHandler = {
         if (!attemptPrize) {
             MinigameHandler.WriteMessage(`${MinigameHandler.winner.username} has received a wheel slice upgrade!`);
         } else {
-            MinigameHandler.WriteMessage(`${MinigameHandler.winner.username} has no levels in the queue, so they have been awarded braggin rights.`);
+            MinigameHandler.WriteMessage(`${MinigameHandler.winner.username} has no levels in the queue, so they have been awarded bragging rights.`);
         }
         if (MinigameHandler.repeatMode) {
             setTimeout( ()=>{MinigameHandler.StartGame(); },1000);
