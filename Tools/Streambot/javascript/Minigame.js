@@ -8,7 +8,8 @@ var MinigameHandler = {
     guesses: [],
     revealIndex: 0,
     timeBeforeStart: 15,
-    timeBetweenHints: 15,
+    timeBetweenHints: 25,
+    revealPerHint: 1,
     timeBetweenGuesses: 10,
 
     interval: null,
@@ -33,6 +34,7 @@ var MinigameHandler = {
         }
         let puzzle = MinigameHandler.GetPuzzle();
         MinigameHandler.answer = puzzle.answer;
+        MinigameHandler.revealPerHint = Math.ceil(puzzle.answer.length / 10);
         MinigameHandler.display = MinigameHandler.ScrambleWord(MinigameHandler.answer);
         MinigameHandler.WriteMessage(`Minigame starting in ${MinigameHandler.timeBeforeStart} seconds! The category is ${puzzle.category}. When the puzzle appears, guess the answer with !guess MY ANSWER`);
         MinigameHandler.gameState = "starting";
@@ -73,7 +75,9 @@ var MinigameHandler = {
         }
         if (MinigameHandler.gameState == "active" && MinigameHandler.timer > MinigameHandler.timeBetweenHints) {
             MinigameHandler.timer -= MinigameHandler.timeBetweenHints;
-            MinigameHandler.IncreaseReveal();
+            for (let i=0; i<MinigameHandler.revealPerHint; i++) {
+                MinigameHandler.IncreaseReveal();
+            }
             if (MinigameHandler.answer.toUpperCase() === MinigameHandler.display.toUpperCase()) {
                 MinigameHandler.GameLoss();
             } else {
@@ -164,7 +168,7 @@ var MinigameHandler = {
     },
 
     WriteMessage(message) {
-        WriteMessage(" PurpleStar " + message + " PurpleStar");
+        WriteMessageRaw(" PurpleStar " + message + " PurpleStar");
     }
 };
 MinigameHandler.Init();

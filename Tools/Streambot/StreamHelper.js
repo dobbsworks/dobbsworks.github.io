@@ -553,7 +553,10 @@ function ProcessCommand(username, commandText, isReward, badges) {
 }
 
 function WriteMessage(message) {
-	message = "BEEP! copyThis " + message;
+	WriteMessageRaw("BEEP! copyThis " + message);
+}
+
+function WriteMessageRaw(message) {
 	let chatInput = document.getElementsByTagName('textarea')[0];
 	let chatButton = [...document.getElementsByTagName('button')].find(x => x.innerText === "Chat");
 	
