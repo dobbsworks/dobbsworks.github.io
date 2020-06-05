@@ -154,11 +154,11 @@ var MinigameHandler = {
 MinigameHandler.Init();
 
 
-function CommandMinigameStart(username, args) {
+function CommandMinigameStart(user, args) {
     MinigameHandler.StartGame();
 }
 
-function CommandMinigameGuess(username, args) {
+function CommandMinigameGuess(user, args) {
     let guess = args.join(' ');
-    MinigameHandler.ProcessGuess(username, guess);
+    MinigameHandler.ProcessGuess(user.username, guess);
 }
