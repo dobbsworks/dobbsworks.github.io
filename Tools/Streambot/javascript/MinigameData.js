@@ -117,7 +117,7 @@ var minigameAnswers = {
         "Metroid Prime 2: Echoes",
         "Paper Mario: The Thousand-Year Door",
         "Pikmin",
-        "Pokémon Colosseum",
+        "Pokemon Colosseum",
         "Sonic Adventure 2 Battle",
         "Star Fox Adventures",
         "Super Mario Strikers",
