@@ -46,6 +46,8 @@ function LoadExternalFunctions() {
 	let fileList = [
 		"LevelIdeaGenerator.js",
 		"DiceRoller.js",
+		"Minigame.js",
+		"MinigameData.js"
 	];
 	let cacheBreaker = (+(new Date()));
 	for (let fileName of fileList) {
