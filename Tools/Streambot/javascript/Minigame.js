@@ -168,7 +168,7 @@ var MinigameHandler = {
     },
 
     WriteMessage(message) {
-        WriteMessageRaw(" PurpleStar " + message + " PurpleStar");
+        WriteMessageRaw(" PurpleStar " + message);
     }
 };
 MinigameHandler.Init();

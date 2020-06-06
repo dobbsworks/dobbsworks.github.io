@@ -95,6 +95,7 @@ let commands = [
 	Command("levelidea", 		"CommandLevelIdea", commandPermission.all, 		commandDisplay.chat,    "Generates a random level idea."),
 	
     Command("minigame",			"CommandMinigame",	commandPermission.streamer, commandDisplay.hidden),
+	MessageCommand("minigame", "Compete for a better shot at having your level played next! A scrambled word will appear in chat. Use !guess YOUR ANSWER to take a stab at solving the puzzle."),
     Command("guess", 			"CommandMinigameGuess",commandPermission.all, 	commandDisplay.hidden),
 	
 	Command("tickeradd",		CommandTickerAdd,	commandPermission.mod, 		commandDisplay.hidden),
@@ -520,8 +521,8 @@ function ProcessCommand(username, commandText, isReward, badges) {
 	if (commandText.length < 2) return;
     let commandArgs = commandText.split(" ");
     let commandName = commandArgs.splice(0,1)[0].toLowerCase();
-    let command = commands.find(x => "!" + x.name === commandName.toLowerCase());
-    if (command) {
+    let matchingCommands = commands.filter(x => "!" + x.name === commandName.toLowerCase());
+    for (let command of matchingCommands) {
         // todo - actual permission system, allow for all/follower/subscriber/mod/streamer
 		let hasValidPermission = false;
 		
@@ -547,6 +548,8 @@ function ProcessCommand(username, commandText, isReward, badges) {
 			} catch(err) {
 				console.error(err);
 			}
+			// run first valid command
+			break;
         }
     }
     DrawPanelContent(queueWindow);
