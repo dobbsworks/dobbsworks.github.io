@@ -48,7 +48,7 @@ function SetScrollItems(texts) {
 	});
 }
 
-function AddAlert(text) {
+function AddAlert(text, backgroundColor, textColor) {
 	let textWidth = ctx.measureText(text).width;
 	pendingAlerts.push({
 		text: text,
@@ -56,7 +56,9 @@ function AddAlert(text) {
 		x: -9999,
 		messageX: -9999,
 		wait: 0,
-		state: "new"
+		state: "new",
+		backgroundColor: backgroundColor,
+		textColor: textColor
 	});
 }
 
@@ -114,8 +116,10 @@ function draw() {
 		}
 
 		ctx.fillStyle = "rgb(0,255,128)";
+		if (currentAlert.backgroundColor) ctx.fillStyle = currentAlert.backgroundColor;
 		ctx.fillRect(0,0,currentAlert.x,canvas.height);
 		ctx.fillStyle = "black";
+		if (currentAlert.textColor) ctx.fillStyle = currentAlert.textColor;
 		ctx.fillText(currentAlert.text, currentAlert.messageX - canvas.width/2 - currentAlert.textWidth/2, centerY + 8);
 	}
 }

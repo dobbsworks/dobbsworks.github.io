@@ -591,22 +591,32 @@ function ProcessActivityMessage(messageEl) {
 		// Follows
 		if (line2 === "Followed you") {
 			let user = line1;
-			marqueeWindow.AddAlert(user + " is now following!");
+			let alertText = user + " is now following!";
+			marqueeWindow.AddAlert(alertText, "rgb(0,255,128)");
 		}
 		// Bits
 		if (line2.startsWith("Cheered ") && line2.indexOf(" bit") > -1) {
 			let user = line1;
-			marqueeWindow.AddAlert(user + " " + line2.toLowerCase() + "!");
+			let alertText = user + " " + line2.toLowerCase() + "!";
+			marqueeWindow.AddAlert(alertText, "rgb(0,128,255)");
 		}
 		// Raids
 		if (line2.startsWith("Raided you ")) {
 			let user = line1;
-			marqueeWindow.AddAlert(user + " is raiding" + line2.replace("Raided you","") + "!");
+			let alertText = user + " is raiding" + line2.replace("Raided you","") + "!";
+			marqueeWindow.AddAlert(alertText, "rgb(128,128,255)");
 		}
 		// Subscribe
 		if (line2.startsWith("Subscribed ")) {
 			let user = line1;
-			marqueeWindow.AddAlert(user + " " + line2.toLowerCase() + "!");
+			let alertText = user + " " + line2.toLowerCase() + "!";
+			marqueeWindow.AddAlert(alertText, "rgb(128,0,255)");
+		}
+		// Gift sub
+		if (line2.startsWith("Gave out ")) {
+			let user = line1;
+			let alertText = user + " " + line2.replace("Gave ","gave") + "!";
+			marqueeWindow.AddAlert(alertText, "rgb(255,0,128)");
 		}
 	}
     messageEl.classList.add("processed");
