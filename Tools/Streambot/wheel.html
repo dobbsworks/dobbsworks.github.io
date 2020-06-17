@@ -303,6 +303,7 @@ function setupTimers() {
 	let randomRoll = Math.random();
 	if (randomRoll < 0.02) {
 		setTimeout(() => {
+			PlayLaugh();
 			rotationSpeed = -0.02;
 			rotationAccel = 1.04;
 		}, timer);
