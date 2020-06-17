@@ -113,7 +113,7 @@ let commands = [
 	MessageCommand("bot", "Hello there, I'm the bot! Dobbs wrote me in JavaScript of all things. I handle the level queue and stuff. Sometimes I break for no good reason! Kappa"),
 	MessageCommand("schedule", "all times in Eastern: Mon 8:30PM, Wed 5PM, Sat 2PM. Mario Maker every stream except Monday."),
 	
-	MessageCommand("random", "Sometimes instead of taking levels in order, we'll go randomly. If your level doesn't get picked, it'll be more likely to get drawn next time."),
+	MessageCommand("wheel", "Instead of taking levels in order, we'll go randomly. Your chances of being chosen are based on how long you've been in the queue."),
 	MessageCommand("discord", "Join the discord here: https://discord.gg/cdPmKUP"),
 	
 	MessageCommand("charity", "I'm setting aside $25 of cash every stream that you can have me spend towards the channel's selected charity. Check the channel points for what we're supporting."),
