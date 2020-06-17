@@ -111,6 +111,7 @@ let commands = [
 	MessageCommand("id", "My maker id is: S2C-HX7-01G"),
 	MessageCommand("priority", "Your level will cut ahead of any level that isn't in the priority queue. Note that you need to already have your level in the queue before redeeming this reward!"),
 	MessageCommand("bot", "Hello there, I'm the bot! Dobbs wrote me in JavaScript of all things. I handle the level queue and stuff. Sometimes I break for no good reason! Kappa"),
+	MessageCommand("schedule", "all times in Eastern: Mon 8:30PM, Wed 5PM, Sat 2PM. Mario Maker every stream except Monday."),
 	
 	MessageCommand("random", "Sometimes instead of taking levels in order, we'll go randomly. If your level doesn't get picked, it'll be more likely to get drawn next time."),
 	MessageCommand("discord", "Join the discord here: https://discord.gg/cdPmKUP"),
@@ -313,9 +314,9 @@ function CommandRandomNext(user, args) {
 }
 
 function CommandRandomWin(user, args) {
-	let levelCode = args[0];
+	let winningUser = args[0];
 	let availableLevels = queue.filter(x => x.status === levelStatus.pending);
-	let level = availableLevels.find(x => x.code === levelCode);
+	let level = availableLevels.find(x => x.username === winningUser);
 	if (level) {
 		MoveLevelToFront(level);
 		return CommandNext();
@@ -865,7 +866,7 @@ function CreateWheelOfLevels(levels) {
 	let w = window.open("", "WheelOfLevels", "width=1000,height=900,left=700");
 	
 	let request = new XMLHttpRequest();
-	let wheelData = levels.map(x => {return {name: x.username, weight: CalculateLevelWeight(x), code: x.code, badges: x.badges}});
+	let wheelData = levels.map(x => {return {name: x.username, weight: CalculateLevelWeight(x), badges: x.badges}});
 	let url = "https://dobbsworks.github.io/Tools/Streambot/wheel.html?q=" + (+(new Date()));
 	request.open("GET", url, true);
 	request.onload = () => {
@@ -882,7 +883,7 @@ function CreateWheelOfLevels(levels) {
 
 function CalculateLevelWeight(level) {
 	let now = new Date();
-	let timeBonusWeight = Math.floor((now - level.timeAdded) / 1000 / 60 / 5); // number of 5 minute chunks
+	let timeBonusWeight = ((now - level.timeAdded) / 1000 / 60 / 5); // number of 5 minute chunks (use Floor for integer val)
 	let bonusScale = Math.pow(2, level.weightPriorityPurchases);
 	let ret = bonusScale * (level.weight + timeBonusWeight);
 	return ret;

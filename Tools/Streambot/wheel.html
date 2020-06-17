@@ -3,9 +3,17 @@
     <title>Wheel of Levels</title>
 	</head>
 	<body>
-		<canvas height="100" width="100" id="pattern" style="display:none;"></canvas>
 		<div style="display:none;">
+			<canvas height="100" width="100" id="pattern" ></canvas>
+
+			<div id="icons">
+				<image src="images/star-icon.png"></image>
+				<image src="images/heart-icon.png"></image>
+				<image src="images/bowser-icon.png"></image>
+			</div>
+
 			<audio id="audio1" src="https://dobbsworks.github.io/Games/SayWhen/audio/high.mp3"></audio>
+			<audio id="bowserLaugh" src="audio/sm64_bowser_laugh.wav"></audio>
 		</div>
 	</body>
 	<script type="text/javascript">
@@ -14,6 +22,7 @@ let baseSize = Math.floor(Math.min(window.innerWidth, window.innerHeight));
 let margin = 50;
 let r = (baseSize / 2) - margin;
 let center = (baseSize / 2);
+let pegCount = 12;
 
 let canvas = document.createElement("canvas");
 canvas.height = baseSize;
@@ -37,8 +46,7 @@ let rotationSpeed = 0;
 let confetti = [];
 let music = null;
 let cheer = null;
-
-let totalWeight = 0;
+let bowserEvent = (Math.random() < 0.05) ? RandomFrom(["reversal", "revolution"]) : "";
 
 function init() {
 	let ytid = RandomFrom([
@@ -58,6 +66,7 @@ function init() {
 		"b2cPvHAcFVo", // Space Station Silicon Valley - bonus
 	]);
 	if (!ytid) ytid = "gDn4NRVkG4Y";
+	if (bowserEvent) ytid = "Rz-J4WJnkIM" // 3d World Bowser theme
 	music = PlayAudio(ytid);
 	for (let i = 0; i < 100; i++) {
 		confetti.push({
@@ -68,43 +77,34 @@ function init() {
 		});
 	}
 	
-	let cumulativeWeight = items.map(x => x.weight).reduce((a,b) => a+b, 0);
-	let weightScale = 1;
-	if (cumulativeWeight < 16) {
-		weightScale = Math.pow(2, 4 - Math.floor(Math.log2(cumulativeWeight)));
-		if (weightScale < 1) weightScale = 1;
+	items.forEach(item => item.text = item.name.substring(0,14));
+
+	if (bowserEvent) {
+		if (bowserEvent === "revolution") items.forEach(item => item.targetWeight = 1);
+		if (bowserEvent === "reversal") items.forEach(item => item.targetWeight = 1 / item.weight);
 	}
-	
-	for (let item of items) {
-		item.text = item.name.substring(0,14);
-		item.weight *= weightScale;
-	}
-	totalWeight = items.map(x => x.weight).reduce((a,b)=>a+b,0);
 
 	createPatterns();
 	setInterval(loop, 1000/60);
 	setupTimers();
 }
 
-let starPattern = null;
+let patterns = {};
 function createPatterns() {
+	let iconDiv = document.getElementById("icons");
 	let c = document.getElementById("pattern");
 	let patternCtx = c.getContext("2d");
-	patternCtx.translate(50,50);
-	patternCtx.fillStyle = "rgba(0,0,0,0.2)";
-	patternCtx.beginPath()
-	patternCtx.moveTo(0,0)
-	for (let i=0; i<6; i++) {
-		let rad = (2 * Math.PI*2 / 5 * i) - Math.PI/2;
-		patternCtx.lineTo(50 * Math.cos(rad),50 * Math.sin(rad));
+	for (let iconImg of iconDiv.children) {
+		let name = iconImg.src.substring(iconImg.src.lastIndexOf("/")+1).replace("-icon.png","");
+		let pattern = ctx.createPattern(iconImg, 'repeat');
+		patterns[name] = pattern;
 	}
-	patternCtx.fill();
-	starPattern = ctx.createPattern(c, "repeat");
 }
 
 function draw() {
 	ctx.clearRect(0,0,baseSize, baseSize);
 	
+	let totalWeight = items.map(x => x.weight).reduce((a,b)=>a+b,0);
 	let cumulativeWeight = 0;
 	for (let index = 0; index < items.length; index++) {
 		let item = items[index];
@@ -127,20 +127,25 @@ function draw() {
 		ctx.arc(center, center, r, item.t1+rotation, item.t2+rotation);
 		ctx.lineTo(center, center);
 		ctx.fill();
-		if (item.badges.some(x => x.toLowerCase().indexOf("subscriber") > -1)) {
-			ctx.fillStyle = starPattern;
+		if (bowserEvent) {
+			ctx.fillStyle = patterns.bowser;
 			ctx.fill();
-		}
+		} else if (item.badges.some(x => x.toLowerCase().indexOf("subscriber") > -1)) {
+			ctx.fillStyle = patterns.star;
+			if (item.name.toLowerCase() === "peffe29") ctx.fillStyle = patterns.heart;
+			ctx.fill();
+		}  
 	}
 	ctx.fillStyle = "black";
-	for (let i=0; i<cumulativeWeight; i++) {
-		let theta = Math.PI*2 / cumulativeWeight * i + rotation;
+	for (let i=0; i<pegCount; i++) {
+		let theta = Math.PI*2 / pegCount * i + rotation;
 		let x = center + r * Math.cos(theta);
 		let y = center + r * Math.sin(theta);
 		ctx.beginPath();
 		ctx.arc(x, y, 5, 0, 2*Math.PI);
 		ctx.fill();
 	}
+
 	ctx.beginPath();
 	ctx.moveTo(center, margin);
 	ctx.lineTo(center+15, 5);
@@ -203,6 +208,22 @@ function draw() {
 				ctx.fillRect(c.x, c.y + a * window.innerHeight/4, 3, 3);
 		}
 	}
+	
+	
+	if (bowserAdjust >= 1) {
+		drawBowserTitle("BOWSER", 450);
+		drawBowserTitle(bowserEvent.toUpperCase() , 550);
+	}
+}
+
+function drawBowserTitle(text, y) {	
+	ctx.lineWidth = 15;
+	ctx.fillStyle = "red";
+	ctx.strokeStyle = "black";	
+	ctx.font = "100px Grobold";
+	let textWidth = ctx.measureText(text).width;
+	ctx.strokeText(text, center - textWidth/2, y);
+	ctx.fillText(text, center - textWidth/2, y);
 }
 
 function getSelectedItem() {
@@ -221,7 +242,7 @@ function getSelectedItem() {
 function determineWinner() {
 	let winner = getSelectedItem();	
 	winnerIndex = items.indexOf(winner);
-	setTimeout(() => {SendCode(winner.code)}, 100);
+	setTimeout(() => {SendWinner(winner.name)}, 100);
 	setTimeout(() => {
 		if (music) music.close();
 		if (cheer) cheer.close();
@@ -233,6 +254,7 @@ let nameRevealCount = 0;
 let nameHideCount = 0;
 let rotationAccel = 1;
 let winnerIndex = -1;
+let bowserAdjust = -1;
 function setupTimers() {
 	let timer = 2000;
 	
@@ -241,7 +263,24 @@ function setupTimers() {
 		setTimeout(() => {nameRevealCount++}, timer);
 		timer += 200;
 	}
-	timer += 3000;
+	timer += 1000;
+
+
+	// bowser event
+	if (bowserEvent) {
+		setTimeout(PlayLaugh, timer);
+		setTimeout(() => {bowserAdjust = 2}, timer);
+		timer += 4000;
+		setTimeout(() => {bowserAdjust = 1}, timer);
+		timer += 3000;
+		setTimeout(() => {bowserAdjust = 0}, timer);
+		timer += 1000;
+	} else {
+		timer += 2000;
+	}
+	
+
+	
 
 	// start spinning
 	setTimeout(() => {rotationSpeed = 0.01}, timer);
@@ -282,9 +321,9 @@ function setupTimers() {
 	timer += 1000;
 }
 
-function SendCode(code) {
-	console.log("Sending code " + code);
-	(new BroadcastChannel('helper')).postMessage('!randomwin ' + code);
+function SendWinner(winningUser) {
+	console.log("Sending user " + winningUser);
+	(new BroadcastChannel('helper')).postMessage('!randomwin ' + winningUser);
 }
 
 
@@ -292,6 +331,17 @@ function loop() {
 	draw();
 	rotationSpeed *= rotationAccel;
 	rotation += rotationSpeed;
+
+	if (bowserAdjust === 1) {
+		items.forEach(item => {
+			item.weight += 0.05 * (item.targetWeight - item.weight)
+		});
+	}
+	if (bowserAdjust === 0) {
+		items.forEach(item => {
+			item.weight = item.targetWeight
+		});
+	}
 	
 	for (let c of confetti) {
 		c.y += c.timer/100 + 1;
@@ -301,8 +351,8 @@ function loop() {
 		if (c.timer > 100) c.timer -= 100;
 	}
 
-	let currentPie = Math.floor(rotation / (Math.PI*2 / totalWeight));
-	let previousPie = Math.floor((rotation-rotationSpeed) / (Math.PI*2 / totalWeight));
+	let currentPie = Math.floor(rotation / (Math.PI*2 / pegCount));
+	let previousPie = Math.floor((rotation-rotationSpeed) / (Math.PI*2 / pegCount));
 	if (currentPie !== previousPie) {
 		PlayTone();
 	}
@@ -321,6 +371,13 @@ function PlayAudio(ytid) {
 
 function PlayTone() {
 	let tone = document.getElementById("audio1");
+	tone.pause();
+	tone.currentTime = 0;
+	tone.play();
+}
+
+function PlayLaugh() {
+	let tone = document.getElementById("bowserLaugh");
 	tone.pause();
 	tone.currentTime = 0;
 	tone.play();
