@@ -1,0 +1,112 @@
+let w = null;
+planck.testbed('Boxes', function(testbed) {
+    var pl = planck, Vec2 = pl.Vec2;
+    let scale = window.innerHeight/200;
+    var world = pl.World(Vec2(0, -10*scale));
+    world.setGravity(Vec2(0, -10*scale));
+
+
+    let pinStats = {userData: 'pin',restitution: 0.6,friction: 0.1};
+    let wallStats = {userData: 'wall', density: 0.0, friction: 0, restitution: 0.5 };
+    let ballStats = {userData: 'ball',mass : 10,center : Vec2(),I : 1,restitution: 0.5,friction: 0}
+
+    var bottom = world.createBody();
+    bottom.createFixture(pl.Edge(Vec2(-120, -4*scale), Vec2(120, -4*scale)));
+
+    for (let row = 0; row <= 10; row++) {
+        let y = (row-3)*scale;
+        let columnCount = 10;
+        if (row%2) columnCount += 1;
+        for (let col = 0; col <= columnCount; col++) {
+            let x = (col-5)*scale;
+            if (row%2) x-= scale/2;
+            let pin = world.createBody(Vec2(x,y));
+            pin.createFixture(pl.Circle(scale/12), pinStats);
+
+            if (row === 0) {
+                let slot = world.createBody(Vec2(x,y-scale));
+                slot.createFixture(pl.Box(scale/12, scale), wallStats);
+            }
+        }
+        
+        var leftWall = world.createBody();
+        var rightWall = world.createBody();
+        if (row%2) {
+            leftWall.createFixture(pl.Edge(Vec2(-5*scale, y+scale), Vec2(-5.5*scale,y)));
+            rightWall.createFixture(pl.Edge(Vec2(5*scale, y+scale), Vec2(5.5*scale,y)));
+        } else {
+            leftWall.createFixture(pl.Edge(Vec2(-5*scale, y), Vec2(-5.5*scale,y+scale)));
+            rightWall.createFixture(pl.Edge(Vec2(5*scale, y), Vec2(5.5*scale,y+scale)));
+        }
+        
+    }
+
+    let ball = world.createBody().setDynamic();
+    ball.createFixture(pl.Circle(scale/3), ballStats);
+    ball.setPosition(Vec2(scale*Math.random()-0.5, scale*10));
+
+    w = world;
+    return world;
+});
+
+
+
+
+
+let users = ["Level 10","Level 8","Level 6","Level 4","Level 2","Level 1","Level 3","Level 5","Level 7","Level 9"]
+setInterval(Draw, 20);
+function Draw() {
+    if (!w) return;
+    var canvas = document.getElementById("redraw");
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.strokeStyle = "black";
+    ctx.fillStyle = "white";
+    ctx.lineWidth = 4;
+    ctx.font = "40px Arial"
+
+    for (var b = w.getBodyList(); b; b = b.getNext()) {
+        var p = b.getPosition();
+        for (var f = b.getFixtureList(); f; f = f.getNext()) {
+            var type = f.getType();
+            var shape = f.getShape();
+            var userData = f.getUserData();
+            if (userData === "pin" || userData === "ball") {
+
+                var r = shape.m_radius;
+                ctx.beginPath();
+                ctx.arc(X(p.x), Y(p.y), R(r), 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            } 
+        }
+    }
+
+    ctx.lineWidth = 8;
+    for (let i=0;i<10;i++) {
+        let x = 80 + 57*i;
+        let userIndex = i % users.length;
+        let user = users[userIndex];
+        DrawRotatedText(ctx,x,630,Math.PI/2, user);
+    }
+}
+
+function DrawRotatedText(context, x, y, theta, text) { 
+    context.save();
+    context.translate(x, y);
+    context.rotate(theta);
+    context.strokeText(text, 0, 0);
+    context.fillText(text, 0, 0);
+    context.restore();
+}
+
+let drawScale = 12;
+function X(x) {
+    return x * drawScale + 350;
+}
+function Y(y) {
+    return -y * drawScale + 400;
+}
+function R(r) {
+    return r*drawScale;
+}
