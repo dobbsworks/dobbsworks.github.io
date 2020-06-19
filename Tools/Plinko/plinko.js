@@ -1,62 +1,77 @@
 let w = null;
-planck.testbed('Boxes', function(testbed) {
-    var pl = planck, Vec2 = pl.Vec2;
-    let scale = window.innerHeight/200;
-    var world = pl.World(Vec2(0, -10*scale));
-    world.setGravity(Vec2(0, -10*scale));
+
+var ball = null;
+function start() {
+    planck.testbed('Boxes', function(testbed) {
+        var pl = planck, Vec2 = pl.Vec2;
+        let scale = window.innerHeight/200;
+        var world = pl.World(Vec2(0, -10*scale));
+        world.setGravity(Vec2(0, -10*scale));
 
 
-    let pinStats = {userData: 'pin',restitution: 0.6,friction: 0.1};
-    let wallStats = {userData: 'wall', density: 0.0, friction: 0, restitution: 0.5 };
-    let ballStats = {userData: 'ball',mass : 10,center : Vec2(),I : 1,restitution: 0.5,friction: 0}
+        let pinStats = {userData: 'pin',restitution: 0.6,friction: 0.1};
+        let wallStats = {userData: 'wall', density: 0.0, friction: 0, restitution: 0.5 };
+        let ballStats = {userData: 'ball',mass : 10,center : Vec2(),I : 1,restitution: 0.5,friction: 0}
 
-    var bottom = world.createBody();
-    bottom.createFixture(pl.Edge(Vec2(-120, -4*scale), Vec2(120, -4*scale)));
+        ball = world.createBody().setDynamic();
+        ball.createFixture(pl.Circle(scale/3), ballStats);
+        ball.setPosition(Vec2(scale*Math.random()-0.5, scale*10));
 
-    for (let row = 0; row <= 10; row++) {
-        let y = (row-3)*scale;
-        let columnCount = 10;
-        if (row%2) columnCount += 1;
-        for (let col = 0; col <= columnCount; col++) {
-            let x = (col-5)*scale;
-            if (row%2) x-= scale/2;
-            let pin = world.createBody(Vec2(x,y));
-            pin.createFixture(pl.Circle(scale/12), pinStats);
+        var bottom = world.createBody();
+        bottom.createFixture(pl.Edge(Vec2(-120, -4*scale), Vec2(120, -4*scale)));
 
-            if (row === 0) {
-                let slot = world.createBody(Vec2(x,y-scale));
-                slot.createFixture(pl.Box(scale/12, scale), wallStats);
+        for (let row = 0; row <= 10; row++) {
+            let y = (row-3)*scale;
+            let columnCount = 10;
+            if (row%2) columnCount += 1;
+            for (let col = 0; col <= columnCount; col++) {
+                let x = (col-5)*scale;
+                if (row%2) x-= scale/2;
+                let pin = world.createBody(Vec2(x,y));
+                pin.createFixture(pl.Circle(scale/12), pinStats);
+
+                if (row === 0) {
+                    let slot = world.createBody(Vec2(x,y-scale));
+                    slot.createFixture(pl.Box(scale/12, scale), wallStats);
+                }
             }
+            
+            var leftWall = world.createBody();
+            var rightWall = world.createBody();
+            if (row%2) {
+                leftWall.createFixture(pl.Edge(Vec2(-5*scale, y+scale), Vec2(-5.5*scale,y)));
+                rightWall.createFixture(pl.Edge(Vec2(5*scale, y+scale), Vec2(5.5*scale,y)));
+            } else {
+                leftWall.createFixture(pl.Edge(Vec2(-5*scale, y), Vec2(-5.5*scale,y+scale)));
+                rightWall.createFixture(pl.Edge(Vec2(5*scale, y), Vec2(5.5*scale,y+scale)));
+            }
+            
         }
-        
-        var leftWall = world.createBody();
-        var rightWall = world.createBody();
-        if (row%2) {
-            leftWall.createFixture(pl.Edge(Vec2(-5*scale, y+scale), Vec2(-5.5*scale,y)));
-            rightWall.createFixture(pl.Edge(Vec2(5*scale, y+scale), Vec2(5.5*scale,y)));
-        } else {
-            leftWall.createFixture(pl.Edge(Vec2(-5*scale, y), Vec2(-5.5*scale,y+scale)));
-            rightWall.createFixture(pl.Edge(Vec2(5*scale, y), Vec2(5.5*scale,y+scale)));
-        }
-        
-    }
 
-    let ball = world.createBody().setDynamic();
-    ball.createFixture(pl.Circle(scale/3), ballStats);
-    ball.setPosition(Vec2(scale*Math.random()-0.5, scale*10));
+        w = world;
+        return world;
+    });
+}
 
-    w = world;
-    return world;
-});
+let users = null;
+
+let request = new XMLHttpRequest();
+let url = "https://api.warp.world/shinermax/warp_queue";
+request.open("GET", url, true);
+request.onload = () => {
+    let apiResults = JSON.parse(request.responseText);
+    users = apiResults.entries.map(x => x.viewerName2.replace(/"/g,''));
+    start();
+    setInterval(Draw, 20);
+}
+request.send();
 
 
 
 
-
-let users = ["Level 10","Level 8","Level 6","Level 4","Level 2","Level 1","Level 3","Level 5","Level 7","Level 9"]
-setInterval(Draw, 20);
 function Draw() {
     if (!w) return;
+
     var canvas = document.getElementById("redraw");
     var ctx = canvas.getContext("2d");
     ctx.clearRect(0,0,canvas.width,canvas.height);
