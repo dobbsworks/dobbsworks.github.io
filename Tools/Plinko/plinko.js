@@ -4,7 +4,7 @@ var ball = null;
 function start() {
     planck.testbed('Boxes', function(testbed) {
         var pl = planck, Vec2 = pl.Vec2;
-        let scale = window.innerHeight/200;
+        let scale = 4.685; //window.innerHeight/200;
         var world = pl.World(Vec2(0, -10*scale));
         world.setGravity(Vec2(0, -10*scale));
 
