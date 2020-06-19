@@ -62,14 +62,14 @@ request.onload = () => {
     let apiResults = JSON.parse(request.responseText);
     users = apiResults.entries.map(x => x.viewerName2.replace(/"/g,''));
     start();
-    setInterval(Draw, 20);
+    setInterval(Loop, 20);
 }
 request.send();
 
 
 
 
-function Draw() {
+function Loop() {
     if (!w) return;
 
     var canvas = document.getElementById("redraw");
@@ -98,12 +98,22 @@ function Draw() {
     }
 
     ctx.lineWidth = 8;
+    let winnerIndex = FindWinnerIndex();
     for (let i=0;i<10;i++) {
+        ctx.fillStyle = "white";
+        if (i===winnerIndex) ctx.fillStyle = "lime";
         let x = 80 + 57*i;
         let userIndex = i % users.length;
         let user = users[userIndex];
         DrawRotatedText(ctx,x,630,Math.PI/2, user);
     }
+}
+
+function FindWinnerIndex() {
+    let pos = ball.getPosition();
+    if (pos.y > -16) return null;
+    let index = Math.floor((pos.x + 20) / 40 * 9 + 0.5);
+    return index;
 }
 
 function DrawRotatedText(context, x, y, theta, text) { 
