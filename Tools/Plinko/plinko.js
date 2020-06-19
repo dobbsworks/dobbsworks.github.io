@@ -111,7 +111,7 @@ function Loop() {
 
 function FindWinnerIndex() {
     let pos = ball.getPosition();
-    if (pos.y > -16) return null;
+    //if (pos.y > -16) return null;
     let index = Math.floor((pos.x + 20) / 40 * 9 + 0.5);
     return index;
 }
