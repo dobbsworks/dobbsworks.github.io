@@ -557,7 +557,7 @@ function ProcessCommand(username, commandText, isReward, badges) {
 }
 
 function WriteMessage(message) {
-	WriteMessageRaw("BEEP! copyThis " + message);
+	WriteMessageRaw(" dobbswBeepBoop " + message);
 }
 
 function WriteMessageRaw(message) {
