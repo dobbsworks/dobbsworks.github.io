@@ -1,0 +1,23 @@
+<html><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="user-scalable=no, width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="./styles.css">
+  <title>Level Idea Generator</title>
+  <script src="../Streambot/javascript/LevelIdeaGenerator.js"></script>
+</head><body>
+  <script type="text/javascript">
+  
+    function Generate() {
+      let idea = LevelGenerator.GenerateIdea();
+      let div = document.getElementById("IdeaText");
+      div.innerHTML = idea;
+    }
+
+  </script>
+  
+  <h1>Super Mario Maker 2 Level Idea Generator</h1>
+  <button onclick="Generate()">Generate Idea</button>
+  <div id="IdeaText">Click the button above the generate a level idea</div>
+
+
+</body></html>
