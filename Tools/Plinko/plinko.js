@@ -1,7 +1,8 @@
 let w = null;
 
 var ball = null;
-function start() {
+
+function StartSim() {
     planck.testbed('Boxes', function(testbed) {
         var pl = planck, Vec2 = pl.Vec2;
         let scale = 4.685; //window.innerHeight/200;
@@ -53,19 +54,46 @@ function start() {
     });
 }
 
+
 let users = null;
 
-let request = new XMLHttpRequest();
-let url = "https://api.warp.world/shinermax/warp_queue";
-request.open("GET", url, true);
-request.onload = () => {
-    let apiResults = JSON.parse(request.responseText);
-    users = apiResults.entries.map(x => x.viewerName2.replace(/"/g,''));
-    start();
-    setInterval(Loop, 20);
-}
-request.send();
+function Init() {
+    var params = new URL(window.location.href).searchParams;
+    var source = params.get("source");
+    var streamer = params.get("streamer");
 
+    if (source === "warpworld") {
+        GetUsersFromUrl(`https://api.warp.world/${streamer}/warp_queue`, (res) => {
+            users = res.entries.map(x => (x.subbed ? "★" : "") + x.viewerName2.replace(/"/g,''));
+        });
+    } else if (source === "viewerlevels") {
+        GetUsersFromUrl(`https://viewerlevels.com/queue/streamer/${streamer}.txt`, (res) => {
+            users = res.queue.map(x => (x.subscriber ? "★" : "") + x.submitter);
+        });
+    } else {
+        SetText("Invalid source, url must include ?source=warpworld or ?source=viewerlevels");
+    }
+}
+
+
+function GetUsersFromUrl(url, onResponse) {
+    let request = new XMLHttpRequest();
+    request.open("GET", url, true);
+    request.onload = () => {
+        SetText("");
+        onResponse(JSON.parse(request.responseText));
+        StartSim();
+        setInterval(Loop, 20);
+    }
+    request.send();
+}
+
+
+
+function SetText(text) {
+    let div = document.getElementById("text");
+    div.innerHTML = text;
+}
 
 
 
@@ -135,3 +163,9 @@ function Y(y) {
 function R(r) {
     return r*drawScale;
 }
+
+
+
+
+
+Init();

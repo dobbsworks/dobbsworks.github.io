@@ -14,6 +14,12 @@ body {
 	z-index:2;
 }
 
+#text {
+	color: white;
+	position: fixed;
+	margin: 5px;
+}
+
 
 #stage {
 	opacity: 0;
