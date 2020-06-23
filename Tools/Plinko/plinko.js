@@ -82,8 +82,12 @@ function GetUsersFromUrl(url, onResponse) {
     request.onload = () => {
         SetText("");
         onResponse(JSON.parse(request.responseText));
-        StartSim();
-        setInterval(Loop, 20);
+        if (users.length) {
+            StartSim();
+            setInterval(Loop, 20);
+        } else {
+            SetText("No users in the queue!")
+        }
     }
     request.send();
 }
