@@ -44,6 +44,7 @@ function LoadExternalFunctions() {
 	// for cleanliness, we'll start having some functions stored in other files
 	// probably need to do some kind of error-checking on this
 	let fileList = [
+		"StorageHandler.js",
 		"LevelIdeaGenerator.js",
 		"DiceRoller.js",
 		"Minigame.js",
@@ -69,6 +70,7 @@ let commands = [
     Command("spam", 			CommandSpam, 		commandPermission.mod, 		commandDisplay.hidden),
     Command("spamlist", 		CommandSpamList, 	commandPermission.mod, 		commandDisplay.hidden),
     Command("reserve", 			CommandReserve, 	commandPermission.all, 		commandDisplay.chat,    "Reserve a spot in the queue without a code. Usage: !reserve"),
+    Command("replace", 			CommandChangeLevel, commandPermission.all, 		commandDisplay.chat,    "Change your queued level id. Usage: !change LEV-ELC-ODE"),
     Command("change", 			CommandChangeLevel, commandPermission.all, 		commandDisplay.chat,    "Change your queued level id. Usage: !change LEV-ELC-ODE"),
     Command("leave", 			CommandLeaveQueue, 	commandPermission.all, 		commandDisplay.chat,    "Remove your levels from the queue."),
     Command("remove", 			CommandLeaveQueue, 	commandPermission.all, 		commandDisplay.hidden),
@@ -159,7 +161,7 @@ function CommandReserve(user, args) {
 
 function CommandAddLevel(user, args) {
 	if (isQueueOpen) {
-		let userIsBlocked = GetSpamUsers().map(x => x.toLowerCase()).indexOf(user.username.toLowerCase()) > -1;
+		let userIsBlocked = StorageHandler.spamUsers.values.map(x => x.toLowerCase()).indexOf(user.username.toLowerCase()) > -1;
 		if (userIsBlocked) {
 			return " VoteNay VoteNay VoteNay For some reason you were flagged for possible spam/botting. Type !notSpam and then try again.";
 		} else {
@@ -774,7 +776,7 @@ function GetOverlayContentFromLevel(level) {
 
 function CommandSpam(user, args) {
 	let targetUser = args[0];
-	if (GetSpamUsers().indexOf(targetUser) > -1) {
+	if (StorageHandler.spamUsers.values.indexOf(targetUser) > -1) {
 		return "User " + targetUser + " is already flagged for possible spam.";
 	} else {
 		AddSpamUser(targetUser);
@@ -783,7 +785,7 @@ function CommandSpam(user, args) {
 }
 
 function CommandSpamList(user, args) {
-	return "The following users have been flagged for possible spam: " + GetSpamUsers().join(", ");
+	return "The following users have been flagged for possible spam: " + StorageHandler.spamUsers.values.join(", ");
 }
 
 function CommandNotSpam(user, args) {
@@ -795,32 +797,18 @@ function CommandNotSpam(user, args) {
 		return "Dude, you weren't even in the spam list. Chill.";
 	}
 }
-
-function GetSpamUsers() {
-	let spamUsers = localStorage.getItem("spamusers");
-	if (spamUsers) return JSON.parse(spamUsers);
-	return [];
-}
 function AddSpamUser(user) {
-	let spamUsers = localStorage.getItem("spamusers");
-	if (!spamUsers) spamUsers = "[]";
-	let newSpamUsers = JSON.parse(spamUsers);
-	newSpamUsers.push(user);
-	localStorage.setItem("spamusers", JSON.stringify(newSpamUsers));
+	StorageHandler.spamUsers.push(user);
 }
 function RemoveSpamUser(username) {
-	let userRemovedFromSpamList = false;
-	let spamUsers = localStorage.getItem("spamusers");
-	if (spamUsers) {
-		spamUsers = JSON.parse(spamUsers);
-		for (let i=0; i<spamUsers.length; i++) {
-			if (spamUsers[i].toLowerCase() === username.toLowerCase()) {
-				spamUsers.splice(i, 1);
-				userRemovedFromSpamList = true;
-			}
+	let spamUsers = StorageHandler.spamUsers.values;
+	for (let i=0; i<spamUsers.length; i++) {
+		if (spamUsers[i].toLowerCase() === username.toLowerCase()) {
+			spamUsers.splice(i, 1);
+			userRemovedFromSpamList = true;
 		}
-		localStorage.setItem("spamusers", JSON.stringify(spamUsers));
 	}
+	StorageHandler.spamUsers = spamUsers;
 	return userRemovedFromSpamList;
 }
 
@@ -831,32 +819,17 @@ function RemoveSpamUser(username) {
 
 function CreateChatLogWindow() {
 	let w = window.open("", "Chat Log", "width=872,height=476");
-	let currentLog = localStorage.getItem("log");
-	if (currentLog) {
-		let logMessages = JSON.parse(currentLog);
-		w.document.writeln("<table>");
-		for (let m of logMessages) 
-			w.document.writeln("<tr><td>" + (new Date(m.timestamp)).toLocaleDateString() + " " + 
-				(new Date(m.timestamp)).toLocaleTimeString() + 
-				"</td><td>" + m.username + "</td><td>" + m.reward + "</td><td>" + m.text + "</td></tr>");
-		w.document.writeln("</table>");
-	}
-	ClearChatLog();
-}
-function ClearChatLog() {
-	localStorage.setItem("log","");
+	let logMessages = StorageHandler.log;
+	w.document.writeln("<table>");
+	for (let m of logMessages) 
+		w.document.writeln("<tr><td>" + (new Date(m.timestamp)).toLocaleDateString() + " " + 
+			(new Date(m.timestamp)).toLocaleTimeString() + 
+			"</td><td>" + m.username + "</td><td>" + m.reward + "</td><td>" + m.text + "</td></tr>");
+	w.document.writeln("</table>");
+	StorageHandler.log.clear();
 }
 function LogChatMessage(m) {
-	let currentLog = localStorage.getItem("log");
-	if (currentLog) {
-		let logMessages = JSON.parse(currentLog);
-		logMessages.push(m);
-		localStorage.setItem("log", JSON.stringify(logMessages));
-	} else {
-		localStorage.setItem("log", JSON.stringify([m]));
-	}
-	// chatLogWindow.document.writeln("<table><tr><td>" + m.timestamp.toLocaleDateString() + " " + m.timestamp.toLocaleTimeString() + 
-	// "</td><td>" + m.username + "</td><td>" + m.reward + "</td><td>" + m.text + "</td></tr></table>");
+	StorageHandler.log.push(m);
 }
 
 /////////////////////////////////////////////////
@@ -915,7 +888,7 @@ function CreateMarqueeWindow() {
 		w.document.write(request.responseText);
 		setTimeout(() => {
 			w.window.init();
-			let currentItems = localStorage.getItem("ticker");
+			let currentItems = StorageHandler.ticker;
 			if (!currentItems) currentItems = "[]";
 			let itemList = JSON.parse(currentItems);
 			w.window.SetScrollItems(itemList);
@@ -927,18 +900,12 @@ function CreateMarqueeWindow() {
 
 function CommandTickerAdd(user, args) {
 	let newText = args.join(' ');
-	let currentItems = localStorage.getItem("ticker");
-	if (!currentItems) currentItems = "[]";
-	let itemList = JSON.parse(currentItems);
-	itemList.push(newText);
-	localStorage.setItem("ticker", JSON.stringify(itemList));
+	StorageHandler.ticker.push(newText);
 	UpdateTickerItems();
 	return "Ticker item registered.";
 }
 function CommandTickerList(user, args) {
-	let currentItems = localStorage.getItem("ticker");
-	if (!currentItems) currentItems = "[]";
-	let itemList = JSON.parse(currentItems);
+	let itemList = StorageHandler.ticker.values;
 	let requestedIndex = +(args[0]);
 	if (requestedIndex)  {
 		let item = itemList[requestedIndex-1];
@@ -949,21 +916,16 @@ function CommandTickerList(user, args) {
 }
 function CommandTickerRemove(user, args) {
 	if (isNaN(+(args[0]))) return "Usage: !tickerRemove itemNum"
-	let currentItems = localStorage.getItem("ticker");
-	if (!currentItems) currentItems = "[]";
-	let itemList = JSON.parse(currentItems);
+	let itemList = StorageHandler.ticker.values;
 	let itemNum = +(args[0]) - 1;
 	itemList.splice(itemNum, 1);
-	localStorage.setItem("ticker", JSON.stringify(itemList));
+	StorageHandler.ticker = itemList;
 	UpdateTickerItems();
 	return "Item removed.";
 }
-// function UpdateTickerItems() {
-// 	let tickerItems = localStorage.getItem("ticker");
-// 	if (tickerItems) {
-// 		marqueeWindow.window.SetScrollItems(JSON.parse(tickerItems));
-// 	}
-// }
+function UpdateTickerItems() {
+	marqueeWindow.window.SetScrollItems(StorageHandler.ticker.values);
+}
 
 
 
