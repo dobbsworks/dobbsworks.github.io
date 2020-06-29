@@ -888,10 +888,7 @@ function CreateMarqueeWindow() {
 		w.document.write(request.responseText);
 		setTimeout(() => {
 			w.window.init();
-			let currentItems = StorageHandler.ticker;
-			if (!currentItems) currentItems = "[]";
-			let itemList = JSON.parse(currentItems);
-			w.window.SetScrollItems(itemList);
+			w.window.SetScrollItems(StorageHandler.ticker.values);
 		}, 500);
 	}
 	request.send();
