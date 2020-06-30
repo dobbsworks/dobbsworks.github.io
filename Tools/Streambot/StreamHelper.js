@@ -37,6 +37,7 @@ function Initialize() {
 	let bc = new BroadcastChannel('helper');
 	bc.onmessage = OnBroadcastMessage;	
 	LoadExternalFunctions();
+	LoadQueue();
 	setInterval(ProcessMessages, 1000);
 }
 
@@ -55,6 +56,14 @@ function LoadExternalFunctions() {
 		let scriptTag = document.createElement('script');
 		scriptTag.src = `https://dobbsworks.github.io/Tools/Streambot/javascript/${fileName}?q=${cacheBreaker}`;
 		document.body.appendChild(scriptTag);
+	}
+}
+
+function LoadQueue() {
+	if (StorageHandler) {
+		queue = StorageHandler.queue.values;
+	} else {
+		setTimeout(LoadQueue, 250);
 	}
 }
 
@@ -312,6 +321,7 @@ function CommandRandomNext(user, args) {
 	} else {
 		let availableLevels = queue.filter(x => x.status === levelStatus.pending);
 		CreateWheelOfLevels(availableLevels);
+		return "HERE COMES THE WHEEL GivePLZ dobbswWheel TakeNRG";
 	}
 }
 
@@ -819,7 +829,7 @@ function RemoveSpamUser(username) {
 
 function CreateChatLogWindow() {
 	let w = window.open("", "Chat Log", "width=872,height=476");
-	let logMessages = StorageHandler.log;
+	let logMessages = StorageHandler.log.values;
 	w.document.writeln("<table>");
 	for (let m of logMessages) 
 		w.document.writeln("<tr><td>" + (new Date(m.timestamp)).toLocaleDateString() + " " + 
