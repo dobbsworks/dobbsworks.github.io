@@ -61,6 +61,7 @@ function Init() {
     var params = new URL(window.location.href).searchParams;
     var source = params.get("source");
     var streamer = params.get("streamer");
+    var items = params.get("items");
 
     if (source === "warpworld") {
         GetUsersFromUrl(`https://api.warp.world/${streamer}/warp_queue`, (res) => {
@@ -70,8 +71,10 @@ function Init() {
         GetUsersFromUrl(`https://viewerlevels.com/queue/streamer/${streamer}.txt`, (res) => {
             users = res.queue.map(x => (x.subscriber ? "★" : "") + x.submitter);
         });
+    } else if (items) {
+        users = JSON.parse(items);
     } else {
-        SetText("Invalid source, url must include ?source=warpworld or ?source=viewerlevels");
+        SetText("Invalid source, url must include one of the following to define user list: <br/> ?source=warpworld&streamer=streamerName <br/> ?source=viewerlevels&streamer=streamerName <br/> ?items=['user1','user2']" );
     }
 }
 
