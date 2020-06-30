@@ -3,6 +3,7 @@ let w = null;
 var ball = null;
 
 function StartSim() {
+    SetText("");
     planck.testbed('Boxes', function(testbed) {
         var pl = planck, Vec2 = pl.Vec2;
         let scale = 4.685; //window.innerHeight/200;
@@ -52,6 +53,7 @@ function StartSim() {
         w = world;
         return world;
     });
+    setInterval(Loop, 20);
 }
 
 
@@ -73,6 +75,7 @@ function Init() {
         });
     } else if (items) {
         users = JSON.parse(items);
+        StartSim();
     } else {
         SetText("Invalid source, url must include one of the following to define user list: <br/> ?source=warpworld&streamer=streamerName <br/> ?source=viewerlevels&streamer=streamerName <br/> ?items=['user1','user2']" );
     }
@@ -83,11 +86,9 @@ function GetUsersFromUrl(url, onResponse) {
     let request = new XMLHttpRequest();
     request.open("GET", url, true);
     request.onload = () => {
-        SetText("");
         onResponse(JSON.parse(request.responseText));
         if (users.length) {
             StartSim();
-            setInterval(Loop, 20);
         } else {
             SetText("No users in the queue!")
         }
