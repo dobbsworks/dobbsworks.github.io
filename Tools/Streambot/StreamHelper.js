@@ -75,7 +75,7 @@ function LoadQueue() {
 // The return value of each command will be sent as a reply
 
 let commands = [
-    Command("add", 				CommandAddLevel, 	commandPermission.all, 		commandDisplay.chat,    "Add a level to the queue. Usage: !add LEV-ELC-ODE"),
+    Command("add", 				"CommandAddLevel", 	commandPermission.all, 		commandDisplay.chat,    "Add a level to the queue. Usage: !add LEV-ELC-ODE"),
     Command("notspam", 			CommandNotSpam, 	commandPermission.all, 		commandDisplay.hidden),
     Command("spam", 			CommandSpam, 		commandPermission.mod, 		commandDisplay.hidden),
     Command("spamlist", 		CommandSpamList, 	commandPermission.mod, 		commandDisplay.hidden),

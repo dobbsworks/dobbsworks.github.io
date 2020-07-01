@@ -204,15 +204,15 @@ function MoveLevelToFront(level) {
 	return "Your level has been moved to the priority queue.";
 }
 
-function CommandQueueSlot(user, args) {
-	let userObj = GetUser(user.username);
-	if (userObj.queueSlots > 1) {
-		return "You already have this upgrade!";
-	} else {
-		userObj.queueSlots++;
-		return "You can now have " + userObj.queueSlots + " levels in the queue at once!";
-	}
-}
+// function CommandQueueSlot(user, args) {
+// 	let userObj = GetUser(user.username);
+// 	if (userObj.queueSlots > 1) {
+// 		return "You already have this upgrade!";
+// 	} else {
+// 		userObj.queueSlots++;
+// 		return "You can now have " + userObj.queueSlots + " levels in the queue at once!";
+// 	}
+// }
 
 function CommandBiggerSlice(user, args) {
 	// find all levels for this user that are pending and not priority
