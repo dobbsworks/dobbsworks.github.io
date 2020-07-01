@@ -380,7 +380,7 @@ function ProcessActivityMessage(messageEl) {
 /////////////////////////////////////////////////
 
 function CreateQueueWindow() {
-	let w = window.open("", "Queue", "width=600,height=700");
+	let w = window.open("", "Queue", "width=600,height=700,left=1140");
     DrawPanelContent(w);
 	return w;
 }
@@ -442,12 +442,13 @@ function CreateQueueTable(w) {
 /////////////////////////////////////////////////
 
 function CreateOverlayWindow() {
-	let w = window.open("", "Overlay", "width=172,height=476");
+	let w = window.open("", "Overlay", "width=172,height=476,left=1740");
 	DrawOverlayContent(w);
 	return w;
 }
 function DrawOverlayContent(w) {
 	if (!w || !w.document) return;
+	if (!StorageHandler) return;
     StyleWindow(w);
     w.document.body.innerHTML = "";
 	w.document.title = "Overlay";
@@ -629,7 +630,7 @@ function CommandDebugAdd() {
 // MARQUEE PANEL
 /////////////////////////////////////////////////
 function CreateMarqueeWindow() {
-	let w = window.open("", "Marquee", "width=850,height=53");
+	let w = window.open("", "Marquee", "width=850,height=53,top=1000");
 	
 	let request = new XMLHttpRequest();
 	let url = "https://dobbsworks.github.io/Tools/Streambot/marquee.html?q=" + (+(new Date()));
