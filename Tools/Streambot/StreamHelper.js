@@ -419,7 +419,7 @@ function CreateQueueTable(w) {
 	colors[levelStatus.completed] = "#555";
 	colors[levelStatus.skipped] = "#855";
 	
-    for (let level of StorageHandler.queue.values) {
+    if (StorageHandler) for (let level of StorageHandler.queue.values) {
 		let color = colors[level.status];
         table += '<tr style="color:' + color + (level.status === levelStatus.live ? ';font-weight:bold' : '') + ';">';
         table += "<td>" + level.code + "</td>";
