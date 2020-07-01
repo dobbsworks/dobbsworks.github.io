@@ -241,7 +241,7 @@ function CommandChangeLevel(user, args) {
     let strippedCode = userInputCode.replace(/-/g, "");
     
     if (strippedCode.length === 9) {
-		levelToChange.code = userInputCode;
+		levelToChange.code = strippedCode.match(/.{1,3}/g).join('-').toUpperCase();
 		StorageHandler.queue = levels;
         return "Your level's id has been changed.";
     } else {
