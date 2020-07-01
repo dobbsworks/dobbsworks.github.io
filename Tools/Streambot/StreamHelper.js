@@ -7,6 +7,7 @@ let marqueeWindow = null;
 let streamerName = "dobbsworks";
 let voice = null;
 let forbiddenCodes = ["t9cn93lkg"];
+var StorageHandler;
 
 let commandPermission = {       // TODO VIP?
 	"all": "all",
@@ -30,13 +31,13 @@ let levelStatus = {
 
 
 function Initialize() {
+	LoadExternalFunctions();
 	//window.resizeTo(222, 759);
 	queueWindow = CreateQueueWindow();	
 	overlayWindow = CreateOverlayWindow();
 	marqueeWindow = CreateMarqueeWindow();
 	let bc = new BroadcastChannel('helper');
 	bc.onmessage = OnBroadcastMessage;	
-	LoadExternalFunctions();
 	LoadQueue();
 	setInterval(ProcessMessages, 1000);
 }
