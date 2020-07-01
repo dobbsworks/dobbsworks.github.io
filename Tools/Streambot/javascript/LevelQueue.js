@@ -116,8 +116,9 @@ function CommandSkip(user, args) {
 	return FinishCurrentLevel(levelStatus.skipped);
 }
 function FinishCurrentLevel(newStatus) {
+	let levels = StorageHandler.queue.values;
 	if (newStatus === levelStatus.completed || newStatus === levelStatus.skipped) {
-		let currentLevel = StorageHandler.queue.values.find(x => x.status === levelStatus.live);
+		let currentLevel = levels.find(x => x.status === levelStatus.live);
 		if (currentLevel) {
 			currentLevel.status = newStatus;
 			currentLevel.timeEnded = new Date();
@@ -125,12 +126,15 @@ function FinishCurrentLevel(newStatus) {
 			if (currentLevel.timeStarted) {
 				finishTime = GetTimeDiff(currentLevel.timeStarted, currentLevel.timeEnded);
 			}
+			StorageHandler.queue = levels;
 			return "Level " + newStatus + "!" + (finishTime ? (" This level was live for " + finishTime + ".") : "");
 		} 
 	}
 }
 function GetTimeDiff(t0, t1) {
 	if (!t0 || !t1) return "";
+	t0 = new Date(t0);
+	t1 = new Date(t1);
     let totalTime = t1 - t0;
     let totalSeconds = Math.ceil(totalTime / 1000);
     let displayMinutes = Math.floor(totalSeconds / 60);
@@ -139,14 +143,16 @@ function GetTimeDiff(t0, t1) {
 }
 
 function CommandNext(user, args) {
-	let currentLevel = StorageHandler.queue.values.find(x => x.status === levelStatus.live);
+    let levels = StorageHandler.queue.values;
+	let currentLevel = levels.find(x => x.status === levelStatus.live);
 	if (currentLevel) {
 		return "There's still a level going on, mark it as complete/skipped first.";
 	} else {
-		let nextLevel = StorageHandler.queue.values.find(x => x.status === levelStatus.pending);
+		let nextLevel = levels.find(x => x.status === levelStatus.pending);
 		if (nextLevel) {
 			nextLevel.status = levelStatus.live;
-			nextLevel.timeStarted = new Date();
+            nextLevel.timeStarted = new Date();
+            StorageHandler.queue = levels;
 			return "Hey @" + nextLevel.username + ", your level is up!";
 		} else {
 			return "The queue is empty!";
@@ -200,6 +206,7 @@ function MoveLevelToFront(level) {
 	if (oldIndex <= -1 || targetIndex <= -1) return "Uh, something went wrong here, ask Dobbs to fix it, idk";
 
 	levels.splice(targetIndex, 0, levels.splice(oldIndex, 1)[0]);
+	StorageHandler.queue = levels;
 
 	return "Your level has been moved to the priority queue.";
 }
@@ -216,14 +223,17 @@ function MoveLevelToFront(level) {
 
 function CommandBiggerSlice(user, args) {
 	// find all levels for this user that are pending and not priority
-	let userLevels = StorageHandler.queue.values.filter(x => x.username === user.username && x.status === levelStatus.pending && !x.isPriority);
+	let levels = StorageHandler.queue.values;
+	let userLevels = levels.filter(x => x.username === user.username && x.status === levelStatus.pending && !x.isPriority);
 	if (userLevels.length === 0) return "There are no valid levels to prioritize.";
 	let levelToPrioritze = userLevels[0];
 	levelToPrioritze.weightPriorityPurchases += 1;
+	StorageHandler.queue = levels;
 }
 
 function CommandChangeLevel(user, args) {
-	let userLevels = StorageHandler.queue.values.filter(x => x.username === user.username && x.status === levelStatus.pending);
+	let levels = StorageHandler.queue.values;
+	let userLevels = levels.filter(x => x.username === user.username && x.status === levelStatus.pending);
 	if (userLevels.length === 0) return "You have no levels in the queue, use !add instead.";
 	let levelToChange = userLevels[0];
     
@@ -231,7 +241,8 @@ function CommandChangeLevel(user, args) {
     let strippedCode = userInputCode.replace(/-/g, "");
     
     if (strippedCode.length === 9) {
-        levelToChange.code = userInputCode;
+		levelToChange.code = userInputCode;
+		StorageHandler.queue = levels;
         return "Your level's id has been changed.";
     } else {
         return "This level code has the wrong number of characters, can you double check it?";

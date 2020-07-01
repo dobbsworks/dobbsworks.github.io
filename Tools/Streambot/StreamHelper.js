@@ -1,5 +1,4 @@
 let users = [];
-let queue = [];
 let isQueueOpen = true;
 let queueWindow = null;
 let overlayWindow = null;
@@ -37,8 +36,7 @@ function Initialize() {
 	overlayWindow = CreateOverlayWindow();
 	marqueeWindow = CreateMarqueeWindow();
 	let bc = new BroadcastChannel('helper');
-	bc.onmessage = OnBroadcastMessage;	
-	LoadQueue();
+	bc.onmessage = OnBroadcastMessage;
 	setInterval(ProcessMessages, 1000);
 }
 
@@ -58,14 +56,6 @@ function LoadExternalFunctions() {
 		let scriptTag = document.createElement('script');
 		scriptTag.src = `https://dobbsworks.github.io/Tools/Streambot/javascript/${fileName}?q=${cacheBreaker}`;
 		document.body.appendChild(scriptTag);
-	}
-}
-
-function LoadQueue() {
-	if (StorageHandler) {
-		queue = StorageHandler.queue.values;
-	} else {
-		setTimeout(LoadQueue, 250);
 	}
 }
 
@@ -427,9 +417,9 @@ function CreateQueueTable(w) {
         table += "<td>" + level.username + "</td>";
         table += "<td>" + level.status + "</td>";
 		if (level.status === levelStatus.live) {
-			table += "<td>" + GetTimeDiff(level.timeStarted, new Date()) + "</td>";
+			table += "<td>" + GetTimeDiff(new Date(level.timeStarted), new Date()) + "</td>";
 		} else if (level.timeEnded) {
-			table += "<td>" + GetTimeDiff(level.timeStarted, level.timeEnded) + "</td>";
+			table += "<td>" + GetTimeDiff(new Date(level.timeStarted), level.timeEnded) + "</td>";
 		}
         table += "</tr>";
     }
@@ -470,7 +460,7 @@ function DrawOverlayContent(w) {
 	let liveLevel = StorageHandler.queue.values.find(x => x.status === levelStatus.live);
 	let levelTime = "";
 	if (liveLevel) {
-		levelTime = GetTimeDiff(liveLevel.timeStarted, new Date());
+		levelTime = GetTimeDiff(new Date(liveLevel.timeStarted), new Date());
 	}
 	w.document.writeln("<br/>");
 	w.document.writeln("<hr/>");
@@ -607,7 +597,7 @@ function CreateWheelOfLevels(levels) {
 
 function CalculateLevelWeight(level) {
 	let now = new Date();
-	let timeBonusWeight = ((now - level.timeAdded) / 1000 / 60 / 5); // number of 5 minute chunks (use Floor for integer val)
+	let timeBonusWeight = ((now - new Date(level.timeAdded)) / 1000 / 60 / 5); // number of 5 minute chunks (use Floor for integer val)
 	let bonusScale = Math.pow(2, level.weightPriorityPurchases);
 	let ret = bonusScale * (level.weight + timeBonusWeight);
 	return ret;
