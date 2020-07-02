@@ -296,13 +296,13 @@ function CalculateLevelWeight(level) {
 	if (lastLog) {
 		let minutesSinceLastMessage = ((now - new Date(lastLog.timestamp)) / 1000 / 60);
 		// starting at 5 minutes, linearly scale down weight to 0 at 25 minutes
-		let penaltyBegins = 5;
+		let penaltyBegins = 15;
 		let completePenalty = 25;
 		let penaltyRatio = 1 - ((minutesSinceLastMessage - penaltyBegins) / (completePenalty - penaltyBegins));
 		// clamp to [0,1]
 		penaltyRatio = penaltyRatio < 0 ? 0 : penaltyRatio;
 		penaltyRatio = penaltyRatio > 1 ? 1 : penaltyRatio;
-		penaltyRatio = penaltyRatio ** 2;
+		penaltyRatio = penaltyRatio ** 0.5;
 		ret *= penaltyRatio;
 	}
 	
