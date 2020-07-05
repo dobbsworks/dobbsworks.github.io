@@ -127,7 +127,7 @@ var MinigameHandler = {
     AwardPrize: () => {
         let pointPrizeTotal = 100;
         pointHandler.addPoints(MinigameHandler.winner.username, pointPrizeTotal);
-        MinigameHandler.WriteMessage(`${MinigameHandler.winner.username} has received ${pointPrizeTotal} tokens!`);
+        MinigameHandler.WriteMessage(`${MinigameHandler.winner.username} has received ${pointHandler.formatValue(pointPrizeTotal)}!`);
 
         // let attemptPrize = CommandBiggerSlice(MinigameHandler.winner, []);
         // if (!attemptPrize) {

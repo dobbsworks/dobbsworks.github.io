@@ -75,14 +75,34 @@ function ProcessCommand(username, commandText, isReward, badges) {
 		
         if (hasValidPermission) {
 			try {
+
+				if (command.cost) {
+					if (!pointHandler.canAfford(username, command.cost)) {
+						WriteMessage("@" + username + ", this reward costs " + pointHandler.formatValue(command.cost) + ", you can't afford it!");
+						break;
+					}
+				}
+
 				let func = typeof command.func === "string" ? window[command.func] : command.func;
 				if (!func) return "Uh-oh, this command went missing."
 				let response = func(user, commandArgs);
-				if (username !== streamerName && response != null) {
-					response = response.charAt(0).toLowerCase() + response.slice(1);
-					response = "@" + username + ", " + response;
+
+				let responseText = "";
+				if (response && response.length) {
+					responseText = response;
+				} else if (response && typeof response === "object") {
+					// handle success/fail object
+					responseText = response.message;
+					if (response.success && command.cost) {
+						pointHandler.deductPoints(username, command.cost);
+					}
 				}
-				if (response) WriteMessage(response);
+
+				if (username !== streamerName && responseText != null) {
+					responseText = responseText.charAt(0).toLowerCase() + responseText.slice(1);
+					responseText = "@" + username + ", " + responseText;
+				}
+				if (responseText) WriteMessage(responseText);
 			} catch(err) {
 				console.error(err);
 			}

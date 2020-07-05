@@ -1,4 +1,7 @@
 var pointHandler = {
+    formatValue: (num) => {
+        return num + " token" + (num === 1 ? "" : "s");
+    },
     getPoints: (username) => {
         let pointValues = StorageHandler.points.values;
         let userPointObj = pointValues.find(x => x.username === username);

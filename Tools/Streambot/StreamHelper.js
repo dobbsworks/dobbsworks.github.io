@@ -19,6 +19,7 @@ let commandPermission = {       // TODO VIP?
 let commandDisplay = {
 	"hidden": "hidden",         // not displayed
 	"chat": "chat",             // displayed with !help
+	"reward": "reward", 
 	"panel": "panel",           // only appears on streamer panel
 };
 let levelStatus = {
@@ -49,6 +50,7 @@ function LoadExternalFunctions() {
 		"StorageHandler.js",
 		"SpamBlock.js",
 		"LevelQueue.js",
+		"WheelHandler.js",
 		"LevelIdeaGenerator.js",
 		"DiceRoller.js",
 		"Minigame.js",
@@ -123,6 +125,9 @@ let commands = [
 	MessageCommand("discord", "Join the discord here: https://discord.gg/cdPmKUP"),
 	
 	MessageCommand("charity", "I'm setting aside $25 of cash every stream that you can have me spend towards the channel's selected charity. Check the channel points for what we're supporting."),
+
+	RewardCommand(100, "wheelcolor", "CommandWheelColor", commandPermission.all),
+
 ]
 
 function Command(...args) {
@@ -132,11 +137,16 @@ function Command(...args) {
     command.permissions = args[2];
     command.display = args[3];
     command.help = args[4];
+    command.cost = args[5];
     return command;
 }
 
 function MessageCommand(...args) {
 	return Command(args[0], () => {return args[1]}, commandPermission.all, commandDisplay.hidden);
+}
+
+function RewardCommand(...args) {
+	return Command(args[1], args[2], args[3], commandDisplay.reward, "", args[0]);
 }
 
 function CommandHelp(user, args) {
