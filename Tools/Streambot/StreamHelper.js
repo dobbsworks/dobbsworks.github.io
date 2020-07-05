@@ -44,12 +44,16 @@ function LoadExternalFunctions() {
 	// for cleanliness, we'll start having some functions stored in other files
 	// probably need to do some kind of error-checking on this
 	let fileList = [
+		"MessageProcessor.js",
+		"MarqueeHandler.js",
 		"StorageHandler.js",
+		"SpamBlock.js",
 		"LevelQueue.js",
 		"LevelIdeaGenerator.js",
 		"DiceRoller.js",
 		"Minigame.js",
-		"MinigameData.js"
+		"MinigameData.js",
+		"PointHandler.js"
 	];
 	let cacheBreaker = (+(new Date()));
 	for (let fileName of fileList) {
@@ -205,166 +209,6 @@ function GetUser(username) {
 	return user;
 }
 
-
-/////////////////////////////////////////////////
-// MESSAGE PROCESSING
-/////////////////////////////////////////////////
-
-function ProcessMessages() {
-	if (!voice) voice = GetVoice(); // keep trying to load TTS voice until it's ready
-	let toProcess = FindChatMessagesToProcess();
-	for (let message of toProcess) {
-		ProcessChatMessage(message);
-	}
-	
-	let activityToProcess = FindActivityMessagesToProcess();
-	for (let message of activityToProcess) {
-		ProcessActivityMessage(message);
-	}
-
-    if (toProcess.length > 0) DrawPanelContent(queueWindow);
-	DrawOverlayContent(overlayWindow);
-}
-function FindChatMessagesToProcess() {
-	let chatMessages = Array.from(document.getElementsByClassName("chat-line__message")); 
-	let rewardMessages = Array.from(document.getElementsByClassName("channel-points-reward-line"))
-	let allMessages = [...chatMessages, ...rewardMessages];
-	let toProcess = allMessages.filter(m => !m.classList.contains("processed"));
-	return toProcess;
-}
-function ProcessChatMessage(messageEl) {
-	let textFragments = Array.from(messageEl.querySelectorAll(".text-fragment, .chat-image, .mention-fragment"));
-	let stitchedText = textFragments.map(x => x.innerText || x.alt).join("");
-	let selectedReward = messageEl.children[0].innerText.split("\n")[0].replace("Redeemed ","");
-	let badges = Array.from(messageEl.getElementsByClassName("chat-badge")).map(x => x.alt);
-	
-	let username = "";
-	let usernameEl = messageEl.getElementsByClassName("chat-line__username");
-	if (usernameEl.length) {
-		username = usernameEl[0].innerText;
-	} else {
-		username = selectedReward.split(" ")[0];
-		selectedReward = selectedReward.replace(username + " redeemed ","");
-	}
-	
-	LogChatMessage({timestamp: new Date(), text: stitchedText, username: username, reward: selectedReward});
-	
-	ProcessCommand(username, stitchedText, false, badges);
-	if (selectedReward.length > 0) {
-		ProcessCommand(username, "!" + selectedReward.replace(/ /g,'') + " " + stitchedText, true, badges);
-	}
-    messageEl.classList.add("processed");
-}
-
-function ProcessCommand(username, commandText, isReward, badges) {
-	let user = {
-		username: username,
-		badges: badges
-	};
-	if (commandText.length < 2) return;
-    let commandArgs = commandText.split(" ");
-    let commandName = commandArgs.splice(0,1)[0].toLowerCase();
-    let matchingCommands = commands.filter(x => "!" + x.name === commandName.toLowerCase());
-    for (let command of matchingCommands) {
-        // todo - actual permission system, allow for all/follower/subscriber/mod/streamer
-		let hasValidPermission = false;
-		
-		if (command.permissions === commandPermission.all) hasValidPermission = true;
-		if (command.permissions === commandPermission.subscriber) {
-			//TODO 
-		}
-		if (command.permissions === commandPermission.reward) {
-			if (isReward) hasValidPermission = true;
-		}
-		if (username === streamerName) hasValidPermission = true;
-		
-        if (hasValidPermission) {
-			try {
-				let func = typeof command.func === "string" ? window[command.func] : command.func;
-				if (!func) return "Uh-oh, this command went missing."
-				let response = func(user, commandArgs);
-				if (username !== streamerName && response != null) {
-					response = response.charAt(0).toLowerCase() + response.slice(1);
-					response = "@" + username + ", " + response;
-				}
-				if (response) WriteMessage(response);
-			} catch(err) {
-				console.error(err);
-			}
-			// run first valid command
-			break;
-        }
-    }
-    DrawPanelContent(queueWindow);
-}
-
-function WriteMessage(message) {
-	WriteMessageRaw(" dobbswBeepBoop " + message);
-}
-
-function WriteMessageRaw(message) {
-	let chatInput = document.getElementsByTagName('textarea')[0];
-	let chatButton = [...document.getElementsByTagName('button')].find(x => x.innerText === "Chat");
-	
-    var nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
-    nativeInputValueSetter.call(chatInput, message);
-
-    var ev2 = new Event('input', { bubbles: true});
-    chatInput.dispatchEvent(ev2);
-	
-	chatButton.click();
-}
-
-function OnBroadcastMessage(message) {
-    // messages from the queue window panel
-    ProcessCommand(streamerName, message.data);
-}
-
-function FindActivityMessagesToProcess() {
-	let messages = Array.from(document.getElementsByClassName("activity-base-list-item")); 
-	let toProcess = messages.filter(m => !m.classList.contains("processed"));
-	return toProcess;
-}
-function ProcessActivityMessage(messageEl) {
-	let line1 = messageEl.querySelector(".activity-base-list-item__title").textContent;
-	let line2 = messageEl.querySelector(".activity-base-list-item__subtitle span").textContent;
-	let time = messageEl.querySelector(".activity-base-list-item__subtitle > span:last-child").textContent;
-
-	if (time.indexOf("day") === -1 && time.indexOf("month") === -1) {
-		// Follows
-		if (line2 === "Followed you") {
-			let user = line1;
-			let alertText = user + " is now following!";
-			marqueeWindow.AddAlert(alertText, "rgb(0,255,128)");
-		}
-		// Bits
-		if (line2.startsWith("Cheered ") && line2.indexOf(" bit") > -1) {
-			let user = line1;
-			let alertText = user + " " + line2.toLowerCase() + "!";
-			marqueeWindow.AddAlert(alertText, "rgb(0,128,255)");
-		}
-		// Raids
-		if (line2.startsWith("Raided you ")) {
-			let user = line1;
-			let alertText = user + " is raiding" + line2.replace("Raided you","") + "!";
-			marqueeWindow.AddAlert(alertText, "rgb(128,128,255)");
-		}
-		// Subscribe
-		if (line2.startsWith("Subscribed ")) {
-			let user = line1;
-			let alertText = user + " " + line2.toLowerCase() + "!";
-			marqueeWindow.AddAlert(alertText, "rgb(128,0,255)");
-		}
-		// Gift sub
-		if (line2.startsWith("Gave out ")) {
-			let user = line1;
-			let alertText = user + " " + line2.replace("Gave ","gave") + "!";
-			marqueeWindow.AddAlert(alertText, "rgb(255,0,128)");
-		}
-	}
-    messageEl.classList.add("processed");
-}
-
 /////////////////////////////////////////////////
 // CONTROL PANEL
 /////////////////////////////////////////////////
@@ -512,49 +356,6 @@ function GetOverlayContentFromLevel(level) {
 
 
 /////////////////////////////////////////////////
-// SPAM BLOCK
-/////////////////////////////////////////////////
-
-function CommandSpam(user, args) {
-	let targetUser = args[0];
-	if (StorageHandler.spamUsers.values.indexOf(targetUser) > -1) {
-		return "User " + targetUser + " is already flagged for possible spam.";
-	} else {
-		AddSpamUser(targetUser);
-		return "User " + targetUser + " has been flagged for possible spam.";
-	}
-}
-
-function CommandSpamList(user, args) {
-	return "The following users have been flagged for possible spam: " + StorageHandler.spamUsers.values.join(", ");
-}
-
-function CommandNotSpam(user, args) {
-	if (!user.username) return "Error, couldn't detect user name.";
-	let userRemovedFromSpamList = RemoveSpamUser(user.username);
-	if (userRemovedFromSpamList) {
-		return "You were successfully removed from the spam list! You may now resubmit your level with !add.";
-	} else {
-		return "Dude, you weren't even in the spam list. Chill.";
-	}
-}
-function AddSpamUser(user) {
-	StorageHandler.spamUsers.push(user);
-}
-function RemoveSpamUser(username) {
-	let spamUsers = StorageHandler.spamUsers.values;
-	for (let i=0; i<spamUsers.length; i++) {
-		if (spamUsers[i].toLowerCase() === username.toLowerCase()) {
-			spamUsers.splice(i, 1);
-			userRemovedFromSpamList = true;
-		}
-	}
-	StorageHandler.spamUsers = spamUsers;
-	return userRemovedFromSpamList;
-}
-
-
-/////////////////////////////////////////////////
 // CHAT LOG PANEL
 /////////////////////////////////////////////////
 
@@ -571,56 +372,6 @@ function CreateChatLogWindow() {
 }
 function LogChatMessage(m) {
 	StorageHandler.log.push(m);
-}
-
-
-/////////////////////////////////////////////////
-// MARQUEE PANEL
-/////////////////////////////////////////////////
-function CreateMarqueeWindow() {
-	let w = window.open("", "Marquee", "width=850,height=53,top=1000");
-	
-	let request = new XMLHttpRequest();
-	let url = "https://dobbsworks.github.io/Tools/Streambot/marquee.html?q=" + (+(new Date()));
-	request.open("GET", url, true);
-	request.onload = () => {
-		w.document.write(request.responseText);
-		setTimeout(() => {
-			w.window.init();
-			w.window.SetScrollItems(StorageHandler.ticker.values);
-		}, 500);
-	}
-	request.send();
-	return w;
-}
-
-function CommandTickerAdd(user, args) {
-	let newText = args.join(' ');
-	StorageHandler.ticker.push(newText);
-	UpdateTickerItems();
-	return "Ticker item registered.";
-}
-function CommandTickerList(user, args) {
-	let itemList = StorageHandler.ticker.values;
-	let requestedIndex = +(args[0]);
-	if (requestedIndex)  {
-		let item = itemList[requestedIndex-1];
-		return "Ticker item text: " + item;
-	} else {
-		return "Run this command with a number from 1 to " + itemList.length.toString() + " to get that item's text.";
-	}
-}
-function CommandTickerRemove(user, args) {
-	if (isNaN(+(args[0]))) return "Usage: !tickerRemove itemNum"
-	let itemList = StorageHandler.ticker.values;
-	let itemNum = +(args[0]) - 1;
-	itemList.splice(itemNum, 1);
-	StorageHandler.ticker = itemList;
-	UpdateTickerItems();
-	return "Item removed.";
-}
-function UpdateTickerItems() {
-	marqueeWindow.window.SetScrollItems(StorageHandler.ticker.values);
 }
 
 
