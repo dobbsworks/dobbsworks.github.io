@@ -3,6 +3,7 @@
     <title>Wheel of Levels</title>
 	</head>
 	<body>
+		<canvas id="canvas"></canvas>
 		<div style="display:none;">
 			<canvas height="100" width="100" id="pattern" ></canvas>
 
@@ -24,21 +25,17 @@ let r = (baseSize / 2) - margin;
 let center = (baseSize / 2);
 let pegCount = 12;
 
-let canvas = document.createElement("canvas");
+let canvas = document.getElementById("canvas");
 canvas.height = baseSize;
 canvas.width = baseSize;
 canvas.style.position = "fixed";
 canvas.style.left = "0";
 canvas.style.top = "0";
-document.body.appendChild(canvas);
 let ctx = canvas.getContext("2d");
 document.body.style.backgroundColor = "magenta";
 
 let items = [];
 
-// need to avoid color offset to allow for chroma-key
-let colorOffset = Math.random()*360;
-colorOffset = 0;
 let rotation = 0;
 let rotationSpeed = 0;
 
@@ -109,7 +106,8 @@ function draw() {
 	for (let index = 0; index < items.length; index++) {
 		let item = items[index];
 		// 270 instead of 360 and +20 to aoid magentas (chroma-key)
-		let hue = Math.floor(270 / items.length * index + colorOffset) % 360 + 20;
+		let hue = Math.floor(270 / items.length * index) % 360 + 20;
+		if (item.hue !== undefined) hue = item.hue;
 		let sat = "75%";
 		let lum = "50%";
 		if (winnerIndex > -1 && winnerIndex !== index) {
@@ -136,7 +134,7 @@ function draw() {
 			ctx.fill();
 		}  
 	}
-	ctx.fillStyle = "black";
+	ctx.fillStyle = "#000";
 	for (let i=0; i<pegCount; i++) {
 		let theta = Math.PI*2 / pegCount * i + rotation;
 		let x = center + r * Math.cos(theta);
@@ -156,7 +154,7 @@ function draw() {
 	
 	// outlines
 	ctx.lineWidth = 2;
-	ctx.strokeStyle = "black";	
+	ctx.strokeStyle = "#000";	
 	ctx.beginPath();
 	ctx.arc(center, center, r, 0, 2*Math.PI);
 	ctx.stroke();
@@ -170,7 +168,7 @@ function draw() {
 	
 	// name labels
 	ctx.fillStyle = "white";
-	ctx.strokeStyle = "black";	
+	ctx.strokeStyle = "#000";	
 	ctx.lineWidth = 5;
 	let textHeight = 30;
 	ctx.font = textHeight + "px Arial";
@@ -219,7 +217,7 @@ function draw() {
 function drawBowserTitle(text, y) {	
 	ctx.lineWidth = 15;
 	ctx.fillStyle = "red";
-	ctx.strokeStyle = "black";	
+	ctx.strokeStyle = "#000";	
 	ctx.font = "100px Grobold";
 	let textWidth = ctx.measureText(text).width;
 	ctx.strokeText(text, center - textWidth/2, y);
