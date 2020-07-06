@@ -54,7 +54,8 @@ function ProcessChatMessage(messageEl) {
 function ProcessCommand(username, commandText, isReward, badges) {
 	let user = {
 		username: username,
-		badges: badges
+		badges: badges,
+		isSub: badges.some(x => x.toLowerCase().indexOf("subscriber") > -1)
 	};
 	if (commandText.length < 2) return;
     let commandArgs = commandText.split(" ");
@@ -65,9 +66,7 @@ function ProcessCommand(username, commandText, isReward, badges) {
 		
 		if (command.permissions === commandPermission.all) hasValidPermission = true;
 		if (command.permissions === commandPermission.subscriber) {
-			if (item.badges.some(x => x.toLowerCase().indexOf("subscriber") > -1)) {
-				hasValidPermission = true;
-			}
+			if (user.isSub) hasValidPermission = true;
 		}
 		if (command.permissions === commandPermission.reward) {
 			if (isReward) hasValidPermission = true;

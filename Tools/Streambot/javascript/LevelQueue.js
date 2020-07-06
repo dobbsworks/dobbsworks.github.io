@@ -53,7 +53,7 @@ function PushQueueEntry(user, strippedCode) {
 	let level = {
 		code: formattedCode,
 		username: user.username,
-		badges: user.badges,
+		isSub: user.isSub,
 		status: levelStatus.pending,
 		timeAdded: new Date(),
 		timeStarted: null,
@@ -234,5 +234,5 @@ function CommandDebugAdd() {
 	let username = "user" + Math.ceil(100*Math.random());
 	let getLevelSegment = () => Math.floor(16*16*16*Math.random()).toString(16).padStart(3,"000");
 	let levelCode = getLevelSegment() + "-" + getLevelSegment() + "-" + getLevelSegment();
-	CommandAddLevel({username: username, badges:[]}, [levelCode]);
+	CommandAddLevel({username: username, badges:[], isSub: false}, [levelCode]);
 }

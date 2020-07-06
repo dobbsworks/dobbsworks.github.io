@@ -28,7 +28,7 @@ function CommandWheelColor(user, args) {
     if (!argColor || isNaN(argColor)) return {message: errorMessage, success: false};
     let hueNum = +argColor;
     if (hueNum < 0 || hueNum > 255) return {message: errorMessage, success: false};
-
+    hueNum = Math.floor(hueNum);
     let wheelValues = StorageHandler.wheel.values;
     let userObj = wheelValues.find(x => x.username === username);
     if (userObj) {
@@ -43,7 +43,7 @@ function CommandWheelColor(user, args) {
 
 function CommandWheelPattern(user, args) {
     let username = user.username;
-    let allowed = ["heart","star"];
+    let allowed = ["heart","star","bowser","club"];
     let allowedStr = allowed.join(', ');
     let errorMessage = `Include a pattern name (${allowedStr}) like this: !wheelcolor star`;
     let argPattern = args[0];
@@ -53,14 +53,23 @@ function CommandWheelPattern(user, args) {
 
     let wheelValues = StorageHandler.wheel.values;
     let userObj = wheelValues.find(x => x.username === username);
+    let expires = +(new Date()) + (60 * 60 * 1000);
     if (userObj) {
         userObj.pattern = argPattern;
+        if (!user.isSub) userObj.expires = expires;
     } else {
-        wheelValues.push({username:username, pattern: argPattern});
+        userObj = {};
+        userObj.username = username;
+        userObj.pattern = argPattern;
+        if (!user.isSub) userObj.expires = expires;
+        wheelValues.push(userObj);
     }
     StorageHandler.wheel = wheelValues;
 
-    return {message: "Wheel pattern has been set!", success: true}
+    let retMessage = "Wheel pattern has been set!";
+    if (!user.isSub) retMessage += " Expires in one hour.";
+
+    return {message: retMessage, success: true}
 }
 
 
@@ -75,12 +84,19 @@ function CreateWheelOfLevels(levels) {
     let wheelData = [];
     for (let x of levels) {
         let setting = wheelSettings.find(s => s.username === x.username);
+        let hue = null;
+        let pattern = null;
+        if (setting) {
+            hue = setting.hue;
+            pattern = setting.pattern;
+            if (setting.expires && +(setting.expires) < new Date()) pattern = null;
+        }
         wheelData.push({
             name: x.username, 
             weight: CalculateLevelWeight(x), 
-            badges: x.badges,
-            hue: setting ? setting.hue : null,
-            pattern: setting ? setting.pattern : null,
+            isSub: x.isSub,
+            hue: hue,
+            pattern: pattern,
         });
     }
 	let url = "https://dobbsworks.github.io/Tools/Streambot/wheel.html?q=" + (+(new Date()));
