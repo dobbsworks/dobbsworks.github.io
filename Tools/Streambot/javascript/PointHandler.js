@@ -14,7 +14,7 @@ var pointHandler = {
         if (userPointObj) {
             userPointObj.points = +(userPointObj.points) + num;
         } else {
-            pointValues.add({username: username, points: num});
+            pointValues.push({username: username, points: num});
         }
         StorageHandler.points = pointValues;
     },
@@ -24,7 +24,7 @@ var pointHandler = {
         if (userPointObj) {
             userPointObj.points = +(userPointObj.points) - num;
         } else {
-            pointValues.add({username: username, points: num});
+            pointValues.push({username: username, points: num});
         }
         StorageHandler.points = pointValues;
     },

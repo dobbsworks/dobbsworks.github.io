@@ -11,7 +11,7 @@ var StorageHandler;
 let commandPermission = {       // TODO VIP?
 	"all": "all",
 	//"follower": "follower",     // doesn't work yet
-	//"subscriber": "subscriber", // doesn't work yet
+	"subscriber": "subscriber", 
 	//"mod": "mod",               // doesn't work yet
 	"streamer": "streamer",
 	"reward": "reward",
@@ -32,13 +32,14 @@ let levelStatus = {
 
 function Initialize() {
 	LoadExternalFunctions();
-	//window.resizeTo(222, 759);
-	queueWindow = CreateQueueWindow();	
-	overlayWindow = CreateOverlayWindow();
-	marqueeWindow = CreateMarqueeWindow();
-	let bc = new BroadcastChannel('helper');
-	bc.onmessage = OnBroadcastMessage;
-	setInterval(ProcessMessages, 1000);
+	setTimeout(() => {
+		queueWindow = CreateQueueWindow();	
+		overlayWindow = CreateOverlayWindow();
+		marqueeWindow = CreateMarqueeWindow();
+		let bc = new BroadcastChannel('helper');
+		bc.onmessage = OnBroadcastMessage;
+		setInterval(ProcessMessages, 1000);
+	}, 1000);
 }
 
 function LoadExternalFunctions() {
@@ -127,6 +128,7 @@ let commands = [
 	MessageCommand("charity", "I'm setting aside $25 of cash every stream that you can have me spend towards the channel's selected charity. Check the channel points for what we're supporting."),
 
 	RewardCommand(100, "wheelcolor", "CommandWheelColor", commandPermission.all),
+	RewardCommand(250, "wheelpattern", "CommandWheelPattern", commandPermission.subscriber),
 
 ]
 

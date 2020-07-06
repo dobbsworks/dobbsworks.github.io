@@ -23,11 +23,44 @@ function CommandRandomWin(user, args) {
 
 function CommandWheelColor(user, args) {
     let username = user.username;
+    let errorMessage = "Include a color value (0-255) like this: !wheelcolor 128";
     let argColor = args[0];
-    if (!argColor || isNaN(argColor)) return {message: "Include a color value (0-255) like this: !wheelcolor 128", success: false};
+    if (!argColor || isNaN(argColor)) return {message: errorMessage, success: false};
     let hueNum = +argColor;
-    if (hueNum < 0 || hueNum > 255) return {message: "Include a color value (0-255) like this: !wheelcolor 128", success: false};
-    return {message: "yay", success: true}
+    if (hueNum < 0 || hueNum > 255) return {message: errorMessage, success: false};
+
+    let wheelValues = StorageHandler.wheel.values;
+    let userObj = wheelValues.find(x => x.username === username);
+    if (userObj) {
+        userObj.hue = hueNum;
+    } else {
+        wheelValues.push({username:username, hue: hueNum});
+    }
+    StorageHandler.wheel = wheelValues;
+
+    return {message: "Wheel color has been set!", success: true}
+}
+
+function CommandWheelPattern(user, args) {
+    let username = user.username;
+    let allowed = ["heart","star"];
+    let allowedStr = allowed.join(', ');
+    let errorMessage = `Include a pattern name (${allowedStr}) like this: !wheelcolor star`;
+    let argPattern = args[0];
+    if (!argPattern) return {message: errorMessage, success: false};
+    argPattern = argPattern.toLowerCase();
+    if (allowed.indexOf(argPattern) === -1) return {message: errorMessage, success: false};
+
+    let wheelValues = StorageHandler.wheel.values;
+    let userObj = wheelValues.find(x => x.username === username);
+    if (userObj) {
+        userObj.pattern = argPattern;
+    } else {
+        wheelValues.push({username:username, pattern: argPattern});
+    }
+    StorageHandler.wheel = wheelValues;
+
+    return {message: "Wheel pattern has been set!", success: true}
 }
 
 
@@ -35,10 +68,21 @@ function CommandWheelColor(user, args) {
 // WHEEL OF LEVELS
 /////////////////////////////////////////////////
 function CreateWheelOfLevels(levels) {
-	let w = window.open("", "WheelOfLevels", "width=1000,height=900,left=700");
+    let w = window.open("", "WheelOfLevels", "width=1000,height=900,left=700");
+    let wheelSettings = StorageHandler.wheel.values;
 	
 	let request = new XMLHttpRequest();
-	let wheelData = levels.map(x => {return {name: x.username, weight: CalculateLevelWeight(x), badges: x.badges}});
+    let wheelData = [];
+    for (let x of levels) {
+        let setting = wheelSettings.find(x => x.username === x.username);
+        wheelData.push({
+            name: x.username, 
+            weight: CalculateLevelWeight(x), 
+            badges: x.badges,
+            hue: setting ? setting.hue : null,
+            pattern: setting ? setting.pattern : null,
+        });
+    }
 	let url = "https://dobbsworks.github.io/Tools/Streambot/wheel.html?q=" + (+(new Date()));
 	request.open("GET", url, true);
 	request.onload = () => {

@@ -61,12 +61,13 @@ function ProcessCommand(username, commandText, isReward, badges) {
     let commandName = commandArgs.splice(0,1)[0].toLowerCase();
     let matchingCommands = commands.filter(x => "!" + x.name === commandName.toLowerCase());
     for (let command of matchingCommands) {
-        // todo - actual permission system, allow for all/follower/subscriber/mod/streamer
 		let hasValidPermission = false;
 		
 		if (command.permissions === commandPermission.all) hasValidPermission = true;
 		if (command.permissions === commandPermission.subscriber) {
-			//TODO 
+			if (item.badges.some(x => x.toLowerCase().indexOf("subscriber") > -1)) {
+				hasValidPermission = true;
+			}
 		}
 		if (command.permissions === commandPermission.reward) {
 			if (isReward) hasValidPermission = true;

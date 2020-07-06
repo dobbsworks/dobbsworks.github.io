@@ -131,6 +131,7 @@ function draw() {
 		} else if (item.badges.some(x => x.toLowerCase().indexOf("subscriber") > -1)) {
 			ctx.fillStyle = patterns.star;
 			if (item.name.toLowerCase() === "peffe29") ctx.fillStyle = patterns.heart;
+			if (item.pattern) ctx.fillStyle = patters[item.pattern];
 			ctx.fill();
 		}  
 	}
