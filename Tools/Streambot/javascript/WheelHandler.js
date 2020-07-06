@@ -74,7 +74,7 @@ function CreateWheelOfLevels(levels) {
 	let request = new XMLHttpRequest();
     let wheelData = [];
     for (let x of levels) {
-        let setting = wheelSettings.find(x => x.username === x.username);
+        let setting = wheelSettings.find(s => s.username === x.username);
         wheelData.push({
             name: x.username, 
             weight: CalculateLevelWeight(x), 
