@@ -127,8 +127,11 @@ let commands = [
 	
 	MessageCommand("charity", "I'm setting aside $25 of cash every stream that you can have me spend towards the channel's selected charity. Check the channel points for what we're supporting."),
 
+
+	Command("addpoints",		"CommandAddPoints",commandPermission.streamer, commandDisplay.hidden),
+
 	RewardCommand(100, "wheelcolor", "CommandWheelColor", commandPermission.all),
-	RewardCommand(250, "wheelpattern", "CommandWheelPattern", commandPermission.subscriber),
+	RewardCommand(250, "wheelpattern", "CommandWheelPattern", commandPermission.all),
 
 ]
 

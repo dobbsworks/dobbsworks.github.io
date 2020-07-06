@@ -4,13 +4,13 @@ var pointHandler = {
     },
     getPoints: (username) => {
         let pointValues = StorageHandler.points.values;
-        let userPointObj = pointValues.find(x => x.username === username);
+        let userPointObj = pointValues.find(x => x.username.toLowerCase() === username.toLowerCase());
         if (userPointObj) return +(userPointObj.points);
         return 0;
     },
     addPoints: (username, num) => {
         let pointValues = StorageHandler.points.values;
-        let userPointObj = pointValues.find(x => x.username === username);
+        let userPointObj = pointValues.find(x => x.username.toLowerCase() === username.toLowerCase());
         if (userPointObj) {
             userPointObj.points = +(userPointObj.points) + num;
         } else {
@@ -20,7 +20,7 @@ var pointHandler = {
     },
     deductPoints: (username, num) => {
         let pointValues = StorageHandler.points.values;
-        let userPointObj = pointValues.find(x => x.username === username);
+        let userPointObj = pointValues.find(x => x.username.toLowerCase() === username.toLowerCase());
         if (userPointObj) {
             userPointObj.points = +(userPointObj.points) - num;
         } else {
@@ -33,6 +33,12 @@ var pointHandler = {
         return points >= num;
     }
 };
+
+function CommandAddPoints(user, args) {
+    let username = args[0];
+    let pointValue = +(args[1]);
+    pointHandler.addPoints(username, pointValue);
+}
 
 
 // Example point calls

@@ -55,7 +55,7 @@ function ProcessCommand(username, commandText, isReward, badges) {
 	let user = {
 		username: username,
 		badges: badges,
-		isSub: badges.some(x => x.toLowerCase().indexOf("subscriber") > -1)
+		isSub: badges && badges.some(x => x.toLowerCase().indexOf("subscriber") > -1)
 	};
 	if (commandText.length < 2) return;
     let commandArgs = commandText.split(" ");
@@ -132,7 +132,7 @@ function WriteMessageRaw(message) {
 
 function OnBroadcastMessage(message) {
     // messages from the queue window panel
-    ProcessCommand(streamerName, message.data);
+    ProcessCommand(streamerName, message.data, false, []);
 }
 
 function FindActivityMessagesToProcess() {

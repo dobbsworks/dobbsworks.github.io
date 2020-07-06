@@ -53,7 +53,7 @@ function CommandWheelPattern(user, args) {
 
     let wheelValues = StorageHandler.wheel.values;
     let userObj = wheelValues.find(x => x.username === username);
-    let expires = +(new Date()) + (60 * 60 * 1000);
+    let expires = +(+(new Date()) + (60 * 60 * 1000));
     if (userObj) {
         userObj.pattern = argPattern;
         if (!user.isSub) userObj.expires = expires;
@@ -89,7 +89,7 @@ function CreateWheelOfLevels(levels) {
         if (setting) {
             hue = setting.hue;
             pattern = setting.pattern;
-            if (setting.expires && +(setting.expires) < new Date()) pattern = null;
+            if (setting.expires && setting.expires < +(new Date())) pattern = null;
         }
         wheelData.push({
             name: x.username, 
