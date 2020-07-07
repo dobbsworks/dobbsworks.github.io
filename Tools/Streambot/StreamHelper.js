@@ -33,6 +33,7 @@ let levelStatus = {
 function Initialize() {
 	LoadExternalFunctions();
 	setTimeout(() => {
+		LoadCommands();
 		queueWindow = CreateQueueWindow();	
 		overlayWindow = CreateOverlayWindow();
 		marqueeWindow = CreateMarqueeWindow();
@@ -72,68 +73,72 @@ function LoadExternalFunctions() {
 /////////////////////////////////////////////////
 // The return value of each command will be sent as a reply
 
-let commands = [
-	Command("add", 			"CommandAddLevel", 	commandPermission.all, 		commandDisplay.chat,    "Add a level to the queue. Usage: !add LEV-ELC-ODE"),
-	Command("notspam", 		"CommandNotSpam", 	commandPermission.all, 		commandDisplay.hidden),
-	Command("spam", 		"CommandSpam", 		commandPermission.mod, 		commandDisplay.hidden),
-	Command("spamlist", 		"CommandSpamList", 	commandPermission.mod, 		commandDisplay.hidden),
-	Command("reserve", 		"CommandReserve", 	commandPermission.all, 		commandDisplay.chat,    "Reserve a spot in the queue without a code. Usage: !reserve"),
-	Command("replace", 		"CommandChangeLevel", commandPermission.all, 		commandDisplay.chat,    "Change your queued level id. Usage: !change LEV-ELC-ODE"),
-	Command("change", 		"CommandChangeLevel", commandPermission.all, 		commandDisplay.chat,    "Change your queued level id. Usage: !change LEV-ELC-ODE"),
-	Command("leave", 		"CommandLeaveQueue", 	commandPermission.all, 		commandDisplay.chat,    "Remove your levels from the queue."),
-	Command("remove", 		"CommandLeaveQueue", 	commandPermission.all, 		commandDisplay.hidden),
-	Command("help", 		"CommandHelp", 		commandPermission.all, 		commandDisplay.hidden),
-	Command("commands", 		"CommandHelp", 		commandPermission.all, 		commandDisplay.hidden),
-	Command("list", 		"CommandList", 		commandPermission.all, 		commandDisplay.chat,    "Displays the upcoming levels from the queue."),
-	Command("queue", 		"CommandList", 		commandPermission.all, 		commandDisplay.hidden),
-	Command("current", 		"CommandCurrent", 	commandPermission.all, 		commandDisplay.chat,    "Displays information about the level being played."),
-	Command("complete", 		"CommandComplete",	commandPermission.streamer, commandDisplay.panel),
-	Command("skip", 		"CommandSkip", 		commandPermission.streamer, commandDisplay.panel),
-	Command("next", 		"CommandNext", 		commandPermission.streamer, commandDisplay.panel),
-	Command("randomnext",		"CommandRandomNext",	commandPermission.streamer, commandDisplay.panel),
-	Command("randomwin",		"CommandRandomWin",	commandPermission.streamer, commandDisplay.hidden),
-	Command("resettimer",		"CommandResetTimer",	commandPermission.streamer, commandDisplay.panel),
-	Command("roll", 		"CommandRoll", 		commandPermission.all,      commandDisplay.chat,    "Roll the dice! Usage: !roll d6, !roll d20+3"),
-	Command("open", 		"CommandOpenQueue", 	commandPermission.streamer, commandDisplay.panel),
-	Command("close", 		"CommandCloseQueue", 	commandPermission.streamer, commandDisplay.panel),
-	Command("texttospeech",		"CommandTTS", 		commandPermission.reward, 	commandDisplay.hidden),
-	//Command("secondqueueslot",	"CommandQueueSlot",	commandPermission.reward,	commandDisplay.hidden),
-	Command("biggerwheelslice",	"CommandBiggerSlice",	commandPermission.reward, 	commandDisplay.hidden),
-	Command("addcom",		"CommandAddCommand",	commandPermission.mod, 		commandDisplay.hidden),
-
-	Command("levelidea", 		"CommandLevelIdea", commandPermission.all, 		commandDisplay.chat,    "Generates a random level idea."),
+let commands = [];
+function LoadCommands() {
+	commands = [
+		Command("add", 			"CommandAddLevel", 	commandPermission.all, 		commandDisplay.chat,    "Add a level to the queue. Usage: !add LEV-ELC-ODE"),
+		Command("notspam", 		"CommandNotSpam", 	commandPermission.all, 		commandDisplay.hidden),
+		Command("spam", 		"CommandSpam", 		commandPermission.mod, 		commandDisplay.hidden),
+		Command("spamlist", 		"CommandSpamList", 	commandPermission.mod, 		commandDisplay.hidden),
+		Command("reserve", 		"CommandReserve", 	commandPermission.all, 		commandDisplay.chat,    "Reserve a spot in the queue without a code. Usage: !reserve"),
+		Command("replace", 		"CommandChangeLevel", commandPermission.all, 		commandDisplay.chat,    "Change your queued level id. Usage: !change LEV-ELC-ODE"),
+		Command("change", 		"CommandChangeLevel", commandPermission.all, 		commandDisplay.chat,    "Change your queued level id. Usage: !change LEV-ELC-ODE"),
+		Command("leave", 		"CommandLeaveQueue", 	commandPermission.all, 		commandDisplay.chat,    "Remove your levels from the queue."),
+		Command("remove", 		"CommandLeaveQueue", 	commandPermission.all, 		commandDisplay.hidden),
+		Command("help", 		"CommandHelp", 		commandPermission.all, 		commandDisplay.hidden),
+		Command("commands", 		"CommandHelp", 		commandPermission.all, 		commandDisplay.hidden),
+		Command("list", 		"CommandList", 		commandPermission.all, 		commandDisplay.chat,    "Displays the upcoming levels from the queue."),
+		Command("queue", 		"CommandList", 		commandPermission.all, 		commandDisplay.hidden),
+		Command("current", 		"CommandCurrent", 	commandPermission.all, 		commandDisplay.chat,    "Displays information about the level being played."),
+		Command("complete", 		"CommandComplete",	commandPermission.streamer, commandDisplay.panel),
+		Command("skip", 		"CommandSkip", 		commandPermission.streamer, commandDisplay.panel),
+		Command("next", 		"CommandNext", 		commandPermission.streamer, commandDisplay.panel),
+		Command("randomnext",		"CommandRandomNext",	commandPermission.streamer, commandDisplay.panel),
+		Command("randomwin",		"CommandRandomWin",	commandPermission.streamer, commandDisplay.hidden),
+		Command("resettimer",		"CommandResetTimer",	commandPermission.streamer, commandDisplay.panel),
+		Command("roll", 		"CommandRoll", 		commandPermission.all,      commandDisplay.chat,    "Roll the dice! Usage: !roll d6, !roll d20+3"),
+		Command("open", 		"CommandOpenQueue", 	commandPermission.streamer, commandDisplay.panel),
+		Command("close", 		"CommandCloseQueue", 	commandPermission.streamer, commandDisplay.panel),
+		Command("texttospeech",		"CommandTTS", 		commandPermission.reward, 	commandDisplay.hidden),
+		//Command("secondqueueslot",	"CommandQueueSlot",	commandPermission.reward,	commandDisplay.hidden),
+		Command("biggerwheelslice",	"CommandBiggerSlice",	commandPermission.reward, 	commandDisplay.hidden),
+		Command("addcom",		"CommandAddCommand",	commandPermission.mod, 		commandDisplay.hidden),
 	
-	Command("minigame",		"CommandMinigame",	commandPermission.streamer, commandDisplay.hidden),
-	MessageCommand("minigame", "Compete for a better shot at having your level played next! A scrambled word will appear in chat. Use !guess YOUR ANSWER to take a stab at solving the puzzle."),
-	Command("guess", 		"CommandMinigameGuess",commandPermission.all, 	commandDisplay.hidden),
+		Command("levelidea", 		"CommandLevelIdea", commandPermission.all, 		commandDisplay.chat,    "Generates a random level idea."),
+		
+		Command("minigame",		"CommandMinigame",	commandPermission.streamer, commandDisplay.hidden),
+		MessageCommand("minigame", "Compete for a better shot at having your level played next! A scrambled word will appear in chat. Use !guess YOUR ANSWER to take a stab at solving the puzzle."),
+		Command("guess", 		"CommandMinigameGuess",commandPermission.all, 	commandDisplay.hidden),
+		
+		Command("tickeradd",		"CommandTickerAdd",	commandPermission.mod, 		commandDisplay.hidden),
+		Command("tickerlist",		"CommandTickerList",	commandPermission.mod, 		commandDisplay.hidden),
+		Command("tickerremove",		"CommandTickerRemove",commandPermission.mod, 		commandDisplay.hidden),
+		
+		Command("debugadd",		"CommandDebugAdd",	commandPermission.streamer, commandDisplay.hidden),
+		Command("as",			"CommandAs",			commandPermission.streamer, commandDisplay.hidden),
+		Command("exportchat",		"CreateChatLogWindow",commandPermission.streamer, commandDisplay.panel),
+		
+		MessageCommand("maker", "My maker id is: S2C-HX7-01G"),
+		MessageCommand("makerid", "My maker id is: S2C-HX7-01G"),
+		MessageCommand("id", "My maker id is: S2C-HX7-01G"),
+		MessageCommand("priority", "Your level will cut ahead of any level that isn't in the priority queue. Note that you need to already have your level in the queue before redeeming this reward!"),
+		MessageCommand("bot", "Hello there, I'm the bot! Dobbs wrote me in JavaScript of all things. I handle the level queue and stuff. Sometimes I break for no good reason! Kappa"),
+		MessageCommand("schedule", "all times in Eastern: Mon 8:30PM, Wed 5PM, Sat 2PM. Mario Maker every stream except Monday."),
+		
+		MessageCommand("wheel", "Instead of taking levels in order, we'll go randomly. Your chances of being chosen are based on how long you've been in the queue."),
+		MessageCommand("discord", "Join the discord here: https://discord.gg/cdPmKUP"),
+		
+		MessageCommand("charity", "I'm setting aside $25 of cash every stream that you can have me spend towards the channel's selected charity. Check the channel points for what we're supporting."),
 	
-	Command("tickeradd",		"CommandTickerAdd",	commandPermission.mod, 		commandDisplay.hidden),
-	Command("tickerlist",		"CommandTickerList",	commandPermission.mod, 		commandDisplay.hidden),
-	Command("tickerremove",		"CommandTickerRemove",commandPermission.mod, 		commandDisplay.hidden),
 	
-	Command("debugadd",		"CommandDebugAdd",	commandPermission.streamer, commandDisplay.hidden),
-	Command("as",			"CommandAs",			commandPermission.streamer, commandDisplay.hidden),
-	Command("exportchat",		"CreateChatLogWindow",commandPermission.streamer, commandDisplay.panel),
+		Command("addpoints",		"CommandAddPoints",commandPermission.streamer, commandDisplay.hidden),
+		Command("points",		"CommandGetPoints",commandPermission.all, commandDisplay.chat),
+		Command("tokens",		"CommandGetPoints",commandPermission.all, commandDisplay.chat),
 	
-	MessageCommand("maker", "My maker id is: S2C-HX7-01G"),
-	MessageCommand("makerid", "My maker id is: S2C-HX7-01G"),
-	MessageCommand("id", "My maker id is: S2C-HX7-01G"),
-	MessageCommand("priority", "Your level will cut ahead of any level that isn't in the priority queue. Note that you need to already have your level in the queue before redeeming this reward!"),
-	MessageCommand("bot", "Hello there, I'm the bot! Dobbs wrote me in JavaScript of all things. I handle the level queue and stuff. Sometimes I break for no good reason! Kappa"),
-	MessageCommand("schedule", "all times in Eastern: Mon 8:30PM, Wed 5PM, Sat 2PM. Mario Maker every stream except Monday."),
-	
-	MessageCommand("wheel", "Instead of taking levels in order, we'll go randomly. Your chances of being chosen are based on how long you've been in the queue."),
-	MessageCommand("discord", "Join the discord here: https://discord.gg/cdPmKUP"),
-	
-	MessageCommand("charity", "I'm setting aside $25 of cash every stream that you can have me spend towards the channel's selected charity. Check the channel points for what we're supporting."),
-
-
-	Command("addpoints",		"CommandAddPoints",commandPermission.streamer, commandDisplay.hidden),
-
-	RewardCommand(100, "wheelcolor", "CommandWheelColor", commandPermission.all),
-	RewardCommand(250, "wheelpattern", "CommandWheelPattern", commandPermission.all),
-
-]
+		RewardCommand(100, "wheelcolor", "CommandWheelColor", commandPermission.all),
+		RewardCommand(250, "wheelpattern", "CommandWheelPattern", commandPermission.all),
+	];
+}
 
 function Command(...args) {
     let command = {};

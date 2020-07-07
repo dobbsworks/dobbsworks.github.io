@@ -1,6 +1,6 @@
 var pointHandler = {
     formatValue: (num) => {
-        return num + " token" + (num === 1 ? "" : "s");
+        return num + " !tokens";
     },
     getPoints: (username) => {
         let pointValues = StorageHandler.points.values;
@@ -39,6 +39,15 @@ function CommandAddPoints(user, args) {
     let pointValue = +(args[1]);
     pointHandler.addPoints(username, pointValue);
 }
+
+function CommandGetPoints(user, args) {
+    let username = args[0];
+    let num = pointHandler.getPoints(username);
+    let text = pointHandler.formatValue(num);
+    return {success: true, message: "You currently have " + text + "."};
+}
+
+
 
 
 // Example point calls
