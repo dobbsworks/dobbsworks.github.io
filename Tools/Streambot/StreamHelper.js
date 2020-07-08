@@ -129,6 +129,7 @@ function LoadCommands() {
 		
 		MessageCommand("charity", "I'm setting aside $25 of cash every stream that you can have me spend towards the channel's selected charity. Check the channel points for what we're supporting."),
 	
+		Command("gettokens", 		"CommandGetTokens", commandPermission.reward, 		commandDisplay.hidden),
 	
 		Command("addpoints",		"CommandAddPoints",commandPermission.streamer, commandDisplay.hidden),
 		Command("points",		"CommandGetPoints",commandPermission.all, commandDisplay.chat),

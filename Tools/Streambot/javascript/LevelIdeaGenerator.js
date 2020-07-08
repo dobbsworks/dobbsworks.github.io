@@ -233,5 +233,5 @@ var LevelGenerator = {
 
 
 function CommandLevelIdea(user, args) {
-	return LevelGenerator.GenerateIdea();
+	return {message: LevelGenerator.GenerateIdea(), success: true};
 }

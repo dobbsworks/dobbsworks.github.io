@@ -46,6 +46,10 @@ function CommandGetPoints(user, args) {
     return {success: true, message: "You currently have " + text + "."};
 }
 
+function CommandGetTokens(user, args) {
+    pointHandler.addPoints(user.username, 250);
+}
+
 
 
 
