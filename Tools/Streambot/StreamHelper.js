@@ -184,7 +184,7 @@ function CommandHelp(user, args) {
 function CommandRewards(user, args) {
     let commName = args[0];
     if (commName) {
-        let command = commands.find(x => x.name.toLowerCase() === commName.toLowerCase() && command.cost);
+        let command = commands.find(x => x.name.toLowerCase() === commName.toLowerCase());
         if (command) {
 			let text = command.help;
 			if (!text) text = "";
@@ -195,7 +195,7 @@ function CommandRewards(user, args) {
     } else {
         let commandsToDisplay = commands.filter(x => x.cost);
         let commandList = commandsToDisplay.map(x => "!" + x.name).join(" ");
-        return 'Use "!reward commandName" for more info about a command. Commands: ' + commandList;
+        return 'Use "!rewards commandName" for more info about a command. Commands: ' + commandList;
     }
 }
 
