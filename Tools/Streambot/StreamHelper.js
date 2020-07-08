@@ -104,7 +104,6 @@ function LoadCommands() {
 		Command("biggerwheelslice",	"CommandBiggerSlice",	commandPermission.reward, 	commandDisplay.hidden),
 		Command("addcom",		"CommandAddCommand",	commandPermission.mod, 		commandDisplay.hidden),
 	
-		Command("levelidea", 		"CommandLevelIdea", commandPermission.all, 		commandDisplay.chat,    "Generates a random level idea."),
 		
 		Command("minigame",		"CommandMinigame",	commandPermission.streamer, commandDisplay.hidden),
 		MessageCommand("minigame", "Compete for a better shot at having your level played next! A scrambled word will appear in chat. Use !guess YOUR ANSWER to take a stab at solving the puzzle."),
@@ -134,9 +133,16 @@ function LoadCommands() {
 		Command("addpoints",		"CommandAddPoints",commandPermission.streamer, commandDisplay.hidden),
 		Command("points",		"CommandGetPoints",commandPermission.all, commandDisplay.chat),
 		Command("tokens",		"CommandGetPoints",commandPermission.all, commandDisplay.chat),
+
+
+		Command("rewards", 		"CommandRewards", 		commandPermission.all, 		commandDisplay.chat, 	"Get information about the things you can spend !tokens on."),
 	
-		RewardCommand(100, "wheelcolor", "CommandWheelColor", commandPermission.all),
-		RewardCommand(250, "wheelpattern", "CommandWheelPattern", commandPermission.all),
+		RewardCommand(100, "wheelcolor", "CommandWheelColor", commandPermission.all,    "Sets the color for your slice of the !wheel."),
+		RewardCommand(250, "wheelpattern", "CommandWheelPattern", commandPermission.all,    "Sets the background pattern for your slice of the !wheel. Lasts one hour for non-subs."),
+
+		
+		Command("getalevelidea", 		"CommandLevelIdea", commandPermission.reward, 		commandDisplay.hidden,    "Generates a random level idea."),
+		RewardCommand(25, "levelidea", "CommandLevelIdea", commandPermission.all,    "Generates a random level idea."),
 	];
 }
 
@@ -172,6 +178,24 @@ function CommandHelp(user, args) {
         let commandsToDisplay = commands.filter(x => x.display === commandDisplay.chat);
         let commandList = commandsToDisplay.map(x => "!" + x.name).join(" ");
         return 'Use "!help commandName" for more info about a command. Commands: ' + commandList;
+    }
+}
+
+function CommandRewards(user, args) {
+    let commName = args[0];
+    if (commName) {
+        let command = commands.find(x => x.name.toLowerCase() === commName.toLowerCase() && command.cost);
+        if (command) {
+			let text = command.help;
+			if (!text) text = "";
+            return text + " Costs " + pointHandler.formatValue(command.cost);
+        } else {
+            return "No information found for command " + commName;
+        }
+    } else {
+        let commandsToDisplay = commands.filter(x => x.cost);
+        let commandList = commandsToDisplay.map(x => "!" + x.name).join(" ");
+        return 'Use "!reward commandName" for more info about a command. Commands: ' + commandList;
     }
 }
 

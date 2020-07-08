@@ -41,8 +41,7 @@ function CommandAddPoints(user, args) {
 }
 
 function CommandGetPoints(user, args) {
-    let username = args[0];
-    let num = pointHandler.getPoints(username);
+    let num = pointHandler.getPoints(user.username);
     let text = pointHandler.formatValue(num);
     return {success: true, message: "You currently have " + text + "."};
 }
