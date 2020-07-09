@@ -57,6 +57,7 @@ function CommandWheelPattern(user, args) {
     if (userObj) {
         userObj.pattern = argPattern;
         if (!user.isSub) userObj.expires = expires;
+        else userObj.expires = null;
     } else {
         userObj = {};
         userObj.username = username;

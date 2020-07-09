@@ -98,7 +98,7 @@ function ProcessCommand(username, commandText, isReward, badges) {
 					}
 				}
 
-				if (username !== streamerName && responseText != null) {
+				if (username !== streamerName && responseText) {
 					responseText = responseText.charAt(0).toLowerCase() + responseText.slice(1);
 					responseText = "@" + username + ", " + responseText;
 				}

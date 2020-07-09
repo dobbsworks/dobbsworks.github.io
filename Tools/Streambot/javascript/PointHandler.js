@@ -38,6 +38,7 @@ function CommandAddPoints(user, args) {
     let username = args[0];
     let pointValue = +(args[1]);
     pointHandler.addPoints(username, pointValue);
+    return {success: true, message: `Added ${pointValue} tokens.`};
 }
 
 function CommandGetPoints(user, args) {
@@ -48,6 +49,7 @@ function CommandGetPoints(user, args) {
 
 function CommandGetTokens(user, args) {
     pointHandler.addPoints(user.username, 250);
+    return {success: true, message: "Your account has been credited 250 tokens."};
 }
 
 

@@ -83,6 +83,9 @@ function init() {
 	}
 
 	createPatterns();
+	// try again in case images failed to load?
+	setInterval(createPatterns, 1000);
+	
 	setInterval(loop, 1000/60);
 	setupTimers();
 }
