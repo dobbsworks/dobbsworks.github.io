@@ -242,7 +242,7 @@ function getSelectedItem() {
 function determineWinner() {
 	let winner = getSelectedItem();	
 	winnerIndex = items.indexOf(winner);
-	setTimeout(() => {SendWinner(winner.name)}, 100);
+	setTimeout(() => {SendWinner(winner.name)}, 6000);
 	setTimeout(() => {
 		if (music) music.close();
 		if (cheer) cheer.close();

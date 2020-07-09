@@ -23,11 +23,11 @@ function CommandRandomWin(user, args) {
 
 function CommandWheelColor(user, args) {
     let username = user.username;
-    let errorMessage = "Include a color value (0-255) like this: !wheelcolor 128";
+    let errorMessage = "Include a color value (0-360) like this: !wheelcolor 128";
     let argColor = args[0];
     if (!argColor || isNaN(argColor)) return {message: errorMessage, success: false};
     let hueNum = +argColor;
-    if (hueNum < 0 || hueNum > 255) return {message: errorMessage, success: false};
+    if (hueNum < 0 || hueNum > 360) return {message: errorMessage, success: false};
     hueNum = Math.floor(hueNum);
     let wheelValues = StorageHandler.wheel.values;
     let userObj = wheelValues.find(x => x.username === username);
@@ -45,7 +45,7 @@ function CommandWheelPattern(user, args) {
     let username = user.username;
     let allowed = ["heart","star","bowser","club"];
     let allowedStr = allowed.join(', ');
-    let errorMessage = `Include a pattern name (${allowedStr}) like this: !wheelcolor star`;
+    let errorMessage = `Include a pattern name (${allowedStr}) like this: !wheelpattern star`;
     let argPattern = args[0];
     if (!argPattern) return {message: errorMessage, success: false};
     argPattern = argPattern.toLowerCase();
