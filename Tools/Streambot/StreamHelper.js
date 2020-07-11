@@ -5,7 +5,6 @@ let overlayWindow = null;
 let marqueeWindow = null;
 let streamerName = "dobbsworks";
 let voice = null;
-let forbiddenCodes = ["t9cn93lkg"];
 var StorageHandler;
 
 let commandPermission = {       // TODO VIP?

@@ -1,7 +1,8 @@
 
+let reserveCode = "RES-ERV-ED0";
 
 function CommandReserve(user, args) {
-	let ret = CommandAddLevel(user, ["RES-ERV-ED0"]);
+	let ret = CommandAddLevel(user, [reserveCode]);
 	if (ret.startsWith("Your level has been queued")) {
 		ret = "Your spot is saved! Use !change if you want to swap the placeholder level code with a real one.";
 	}
@@ -18,19 +19,15 @@ function CommandAddLevel(user, args) {
 			let strippedCode = StripLevelCode(userInputCode);
 			if (strippedCode.length === 9) {
 				if (DoesUserHaveQueueSpace(user.username)) {
-					if (forbiddenCodes.indexOf(strippedCode.toLowerCase()) > -1) {
-						return RandomFrom([
-							"Weird, this code doesn't want to go in the queue, better try again.",
-							"Error. ERROR! ERROR!",
-							"Abort, do it again, fail?"
-						]);
-					} else {
-						PushQueueEntry(user, strippedCode);
-						let queuePosition = StorageHandler.queue.values.filter(x => x.status === levelStatus.pending).length;
-						return "Your level has been queued! It's in position " + queuePosition + ".";
-					}
+					PushQueueEntry(user, strippedCode);
+					let queuePosition = StorageHandler.queue.values.filter(x => x.status === levelStatus.pending).length;
+					return "Your level has been queued! It's in position " + queuePosition + ".";
 				} else {
-					return "You've hit your maximum queue submissions, wait until one of your levels has been cleared."
+					if (DoesUserHaveReserve(user.username)) {
+						return CommandChangeLevel(user, args);
+					} else {
+						return "You've hit your maximum queue submissions, wait until one of your levels has been cleared."
+					}
 				}
 			} else {
 				return "This level code has the wrong number of characters, can you double check it?";
@@ -64,6 +61,16 @@ function PushQueueEntry(user, strippedCode) {
 	}
 	StorageHandler.queue.push(level);
 }
+
+function DoesUserHaveReserve(username) {
+	let usersLevels = StorageHandler.queue.values.filter(x => x.username === username && 
+		(x.status === levelStatus.live || x.status === levelStatus.pending));
+	if (usersLevels && userLevels[0] && userLevels[0].code === reserveCode) {
+		return true;
+	}
+	return false;
+}
+
 function DoesUserHaveQueueSpace(username) {
 	// find all levels for this user that are pending or currently live
 	let usersLevels = StorageHandler.queue.values.filter(x => x.username === username && 
