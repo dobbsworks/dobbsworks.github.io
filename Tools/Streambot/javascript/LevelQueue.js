@@ -63,9 +63,9 @@ function PushQueueEntry(user, strippedCode) {
 }
 
 function DoesUserHaveReserve(username) {
-	let usersLevels = StorageHandler.queue.values.filter(x => x.username === username && 
+	let userLevels = StorageHandler.queue.values.filter(x => x.username === username && 
 		(x.status === levelStatus.live || x.status === levelStatus.pending));
-	if (usersLevels && userLevels[0] && userLevels[0].code === reserveCode) {
+	if (userLevels && userLevels[0] && userLevels[0].code === reserveCode) {
 		return true;
 	}
 	return false;
