@@ -17,7 +17,6 @@ function ProcessMessages() {
 		ProcessActivityMessage(message);
 	}
 
-    //if (toProcess.length > 0) DrawPanelContent(queueWindow);
 	DrawOverlayContent(overlayWindow);
 }
 function FindChatMessagesToProcess() {
@@ -110,7 +109,6 @@ function ProcessCommand(username, commandText, isReward, badges) {
 			break;
         }
     }
-    //DrawPanelContent(queueWindow);
 }
 
 function WriteMessage(message) {

@@ -128,8 +128,6 @@
 	}
 
 	function WriteQueueTable() {
-		let checkbox = document.getElementById("autoupdate");
-		if (!checkbox.checked) return;
 		let levels = StorageHandler.queue.values;
 
 		let oldTbody = document.getElementById("queueBody");
@@ -199,6 +197,8 @@
 	}
 
 	function Loop() {
+		let checkbox = document.getElementById("autoupdate");
+		if (!checkbox.checked) return;
 		WriteQueueTable();
 		WriteLevelDetails();
 	}
