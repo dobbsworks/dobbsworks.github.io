@@ -116,6 +116,12 @@ function CommandList(user, args) {
 	return ret;
 }
 
+function CommandClearOldLevels(user, args) {
+	let levels = StorageHandler.queue.values;
+	levels = levels.filter(x => x.status === levelStatus.live || x.status === levelStatus.pending);
+	StorageHandler.queue = levels;
+}
+
 function CommandComplete(user, args) {
 	return FinishCurrentLevel(levelStatus.completed);
 }
@@ -168,9 +174,11 @@ function CommandNext(user, args) {
 }
 
 function CommandResetTimer(user, args) {
-	let currentLevel = StorageHandler.queue.values.find(x => x.status === levelStatus.live);
+    let levels = StorageHandler.queue.values;
+	let currentLevel = levels.find(x => x.status === levelStatus.live);
 	if (currentLevel) {
 		currentLevel.timeStarted = new Date();
+		StorageHandler.queue = levels;
 	}
 	return "";
 }

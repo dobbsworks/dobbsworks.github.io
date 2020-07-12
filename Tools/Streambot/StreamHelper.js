@@ -84,6 +84,7 @@ function LoadCommands() {
 		Command("change", 		"CommandChangeLevel", commandPermission.all, 		commandDisplay.chat,    "Change your queued level id. Usage: !change LEV-ELC-ODE"),
 		Command("leave", 		"CommandLeaveQueue", 	commandPermission.all, 		commandDisplay.chat,    "Remove your levels from the queue."),
 		Command("remove", 		"CommandLeaveQueue", 	commandPermission.all, 		commandDisplay.hidden),
+		Command("clearqueue", 	"CommandClearOldLevels", 	commandPermission.streamer, 		commandDisplay.panel),
 		Command("help", 		"CommandHelp", 		commandPermission.all, 		commandDisplay.hidden),
 		Command("commands", 		"CommandHelp", 		commandPermission.all, 		commandDisplay.hidden),
 		Command("list", 		"CommandList", 		commandPermission.all, 		commandDisplay.chat,    "Displays the upcoming levels from the queue."),
@@ -259,7 +260,24 @@ function GetUser(username) {
 
 function CreateQueueWindow() {
 	let w = window.open("", "Queue", "width=600,height=700,left=1140");
-    DrawPanelContent(w);
+
+	let request = new XMLHttpRequest();
+	let url = "https://dobbsworks.github.io/Tools/Streambot/controlPanel.html?q=" + (+(new Date()));
+	request.open("GET", url, true);
+	request.onload = () => {
+		w.document.write(request.responseText);
+		setTimeout(() => {
+			let buttonCommands = commands.filter(x => x.display === commandDisplay.panel);
+			for (let buttonCommand of buttonCommands) {
+				w.window.CreateHeaderButton(buttonCommand.name);
+			}
+			//w.window.init();
+		}, 100);
+	}
+	request.send();
+
+
+    //DrawPanelContent(w);
 	return w;
 }
 function DrawPanelContent(w) {
