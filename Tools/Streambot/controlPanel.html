@@ -130,7 +130,7 @@
 	function WriteQueueTable() {
 		let checkbox = document.getElementById("autoupdate");
 		if (!checkbox.checked) return;
-		let levels = queue;//StorageHandler.queue.values;
+		let levels = StorageHandler.queue.values;
 
 		let oldTbody = document.getElementById("queueBody");
 		let newTbody = document.createElement("tbody");
@@ -153,7 +153,7 @@
 	}
 
 	function WriteLevelDetails() {
-		let levels = queue;//StorageHandler.queue.values;
+		let levels = StorageHandler.queue.values;
 		let selectedLevel = levels.find(x => x.code === selectedLevelCode);
 		if (selectedLevel) {
 			let container = document.getElementById("footerDetails");
@@ -203,11 +203,6 @@
 		WriteLevelDetails();
 	}
 
-
-
-	"open,close,next,randomnext".split(",").map(x => CreateHeaderButton(x));
-	let queue = JSON.parse(`[{"code":"B07-023-6F3","username":"user13","isSub":false,"status":"pending","timeAdded":"2020-07-12T18:53:28.011Z","timeStarted":null,"timeEnded":null,"isPriority":false,"weight":1,"weightPriorityPurchases":0},
-							 {"code":"AAA-023-6F3","username":"user13","isSub":false,"status":"pending","timeAdded":"2020-07-12T18:53:28.011Z","timeStarted":null,"timeEnded":null,"isPriority":false,"weight":1,"weightPriorityPurchases":0}]`);
 	setInterval(Loop, 500);
 
 
