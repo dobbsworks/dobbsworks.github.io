@@ -55,7 +55,8 @@
 
 		let targetRecentCount = 2;
 		let targetUpcomingCount = 2;
-		let recentLevels = allLevels.filter(x => x.status === "completed" || x.status === "skipped").slice(pastLevels.length - targetRecentCount);
+		let recentLevels = allLevels.filter(x => x.status === "completed" || x.status === "skipped");
+		recentLevels = recentLevels.slice(recentLevels.length - targetRecentCount);
 		let upcomingLevels = allLevels.filter(x => x.status === levelStatus.pending).slice(0,targetUpcomingCount);
 		recentContainer.innerHTML = recentLevels.map(x => GetLevelHtml(x)).join('');
 
@@ -74,7 +75,7 @@
 	function GetLevelHtml(level) {
 		let completedSpan = `<span style="color:green;">✓</span>`;
 		return `<div class="level">
-					<div>${level.code} ${levelStatus.completed === "completed" ? completedSpan : ""}</div>
+					<div>${level.code} ${level.status === "completed" ? completedSpan : ""}</div>
 					<div>${level.username}</div>
 				</div>`;
 	}
