@@ -282,20 +282,22 @@ function CreateQueueWindow() {
 // OVERLAY PANEL
 /////////////////////////////////////////////////
 
-function CreateOverlayWindow() {
+function CreateOverlayWindowOld() {
 	let w = window.open("", "Overlay", "width=172,height=476,left=1740");
 	DrawOverlayContent(w);
 	return w;
 }
 
-function CreateOverlayWindow2() {
+function CreateOverlayWindow() {
 	let w = window.open("", "Queue", "width=600,height=900,left=1140");
+	console.log(w);
 
 	let request = new XMLHttpRequest();
 	let url = "https://dobbsworks.github.io/Tools/Streambot/sidebar.html?q=" + (+(new Date()));
 	request.open("GET", url, true);
 	request.onload = () => {
 		w.document.write(request.responseText);
+		console.log(w);
 	}
 	request.send();
 
