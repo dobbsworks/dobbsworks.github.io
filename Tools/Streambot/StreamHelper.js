@@ -289,7 +289,7 @@ function CreateOverlayWindowOld() {
 }
 
 function CreateOverlayWindow() {
-	let w = window.open("", "Queue", "width=600,height=900,left=1140");
+	let w = window.open("", "Overlay", "width=172,height=476,left=1740");
 	console.log(w);
 
 	let request = new XMLHttpRequest();
