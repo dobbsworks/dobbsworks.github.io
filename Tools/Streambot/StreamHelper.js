@@ -259,7 +259,7 @@ function GetUser(username) {
 /////////////////////////////////////////////////
 
 function CreateQueueWindow() {
-	let w = window.open("", "Queue", "width=600,height=700,left=1140");
+	let w = window.open("", "Queue", "width=600,height=900,left=1140");
 
 	let request = new XMLHttpRequest();
 	let url = "https://dobbsworks.github.io/Tools/Streambot/controlPanel.html?q=" + (+(new Date()));
@@ -271,66 +271,11 @@ function CreateQueueWindow() {
 			for (let buttonCommand of buttonCommands) {
 				w.window.CreateHeaderButton(buttonCommand.name);
 			}
-			//w.window.init();
 		}, 100);
 	}
 	request.send();
 
-
-    //DrawPanelContent(w);
 	return w;
-}
-function DrawPanelContent(w) {
-	if (!w || !w.document) return;
-    w.document.body.innerHTML = "";
-    StyleWindow(w);
-    CreateButtons(w);
-    CreateQueueTable(w);
-    CreateButtons(w);
-}
-function StyleWindow(w) {
-	w.document.body.style.backgroundColor = "#18181b";
-	w.document.body.style.color = "#adadb8";
-	w.document.body.style.fontFamily = "sans-serif";
-}
-function CreateButtons(w) {
-	let buttons = '<div style="">';
-    let buttonCommands = commands.filter(x => x.display === commandDisplay.panel);
-    for (let buttonCommand of buttonCommands) {
-        buttons += GetButtonHtml(buttonCommand.name);
-    }
-	buttons += '</div>';
-	w.document.writeln(buttons);
-}
-function GetButtonHtml(command) {
-    let displayName = command.charAt(0).toUpperCase() + command.slice(1);
-	let onclick = "(new BroadcastChannel('helper')).postMessage('!" + command + "')";
-	return '<button type="button" onclick="' + onclick + '">' + displayName + '</button>';
-}
-function CreateQueueTable(w) {
-    let table = '<table style="border-spacing: 10px;">';
-	
-	let colors = {}
-	colors[levelStatus.pending] = "#99A";
-	colors[levelStatus.live] = "#FFF";
-	colors[levelStatus.completed] = "#555";
-	colors[levelStatus.skipped] = "#855";
-	
-    if (StorageHandler) for (let level of StorageHandler.queue.values) {
-		let color = colors[level.status];
-        table += '<tr style="color:' + color + (level.status === levelStatus.live ? ';font-weight:bold' : '') + ';">';
-        table += "<td>" + level.code + "</td>";
-        table += "<td>" + level.username + "</td>";
-        table += "<td>" + level.status + "</td>";
-		if (level.status === levelStatus.live) {
-			table += "<td>" + GetTimeDiff(new Date(level.timeStarted), new Date()) + "</td>";
-		} else if (level.timeEnded) {
-			table += "<td>" + GetTimeDiff(new Date(level.timeStarted), level.timeEnded) + "</td>";
-		}
-        table += "</tr>";
-    }
-    table += "</table>";
-	w.document.writeln(table);
 }
 
 /////////////////////////////////////////////////
@@ -341,6 +286,25 @@ function CreateOverlayWindow() {
 	let w = window.open("", "Overlay", "width=172,height=476,left=1740");
 	DrawOverlayContent(w);
 	return w;
+}
+
+function CreateOverlayWindow2() {
+	let w = window.open("", "Queue", "width=600,height=900,left=1140");
+
+	let request = new XMLHttpRequest();
+	let url = "https://dobbsworks.github.io/Tools/Streambot/sidebar.html?q=" + (+(new Date()));
+	request.open("GET", url, true);
+	request.onload = () => {
+		w.document.write(request.responseText);
+	}
+	request.send();
+
+	return w;
+}
+function StyleWindow(w) {
+	w.document.body.style.backgroundColor = "#18181b";
+	w.document.body.style.color = "#adadb8";
+	w.document.body.style.fontFamily = "sans-serif";
 }
 function DrawOverlayContent(w) {
 	if (!w || !w.document) return;

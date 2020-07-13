@@ -1,0 +1,103 @@
+<html>
+
+<head>
+	<title>Overlay</title>
+
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			background-color: #18181b;
+			color: #adadb8;
+			font-family: sans-serif;
+			margin: 0;
+		}
+
+		.levels {
+			padding: 8px;
+		}
+
+		.header {
+			width: 100%;
+			border: solid 2px white;
+			border-width: 2px 0;
+			margin: 4px;
+			padding: 4px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div id="levels">
+		<div class="header">Recent Levels</div>
+		<div id="recentLevels"></div>
+		<div class="header">Now Playing    <span id="currentLevelTime"></span></div>
+		<div id="currentLevel"></div>
+		<div class="header">Upcoming Levels</div>
+		<div id="upcomingLevels"></div>
+	</div>
+
+</body>
+<script src="https://dobbsworks.github.io/Tools/Streambot/javascript/StorageHandler.js"></script>
+<script src="https://dobbsworks.github.io/Tools/Streambot/javascript/WheelHandler.js"></script>
+<script type="text/javascript">
+
+
+	function WriteQueue() {
+		let recentContainer = document.getElementById("recentLevels");
+		let currentContainer = document.getElementById("currentLevel");
+		let upcomingContainer = document.getElementById("upcomingLevels");
+		let levelTimer = document.getElementById("currentLevelTime");
+		let allLevels = StorageHandler.queue.values;
+
+		let targetRecentCount = 2;
+		let targetUpcomingCount = 2;
+		let recentLevels = allLevels.filter(x => x.status === "completed" || x.status === "skipped").slice(pastLevels.length - targetRecentCount);
+		let upcomingLevels = allLevels.filter(x => x.status === levelStatus.pending).slice(0,targetUpcomingCount);
+		recentContainer.innerHTML = recentLevels.map(x => GetLevelHtml(x)).join('');
+
+		let currentLevel = allLevels.find(x => x.status === "live");
+		if (currentLevel) {
+			currentContainer.innerHTML = GetLevelHtml(currentLevel);
+			levelTimer.innerHTML = GetTimeDiff(currentLevel.timeStarted, new Date());
+		} else {
+			currentContainer.innerHTML = "";
+			levelTimer.innerHTML = "";
+		}
+
+		upcomingContainer.innerHTML = upcomingLevels.map(x => GetLevelHtml(x)).join('');
+	}
+
+	function GetLevelHtml(level) {
+		let completedSpan = `<span style="color:green;">✓</span>`;
+		return `<div class="level">
+					<div>${level.code} ${levelStatus.completed === "completed" ? completedSpan : ""}</div>
+					<div>${level.username}</div>
+				</div>`;
+	}
+
+	function DrawPreviewWheel() {
+		let levels = StorageHandler.queue.values;
+	}
+
+	function GetTimeDiff(t0, t1) {
+		if (!t0 || !t1) return "";
+		t0 = new Date(t0);
+		t1 = new Date(t1);
+		let totalTime = t1 - t0;
+		let totalSeconds = Math.ceil(totalTime / 1000);
+		let displayMinutes = Math.floor(totalSeconds / 60);
+		let displaySeconds = totalSeconds % 60;
+		return displayMinutes.toString().padStart(2, "0") + ":" + displaySeconds.toString().padStart(2, "0");
+	}
+
+	setInterval(WriteQueue, 1000);
+	setInterval(DrawPreviewWheel, 50);
+
+
+</script>
+
+</html>

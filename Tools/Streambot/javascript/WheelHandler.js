@@ -79,9 +79,24 @@ function CommandWheelPattern(user, args) {
 /////////////////////////////////////////////////
 function CreateWheelOfLevels(levels) {
     let w = window.open("", "WheelOfLevels", "width=1000,height=900,left=700");
-    let wheelSettings = StorageHandler.wheel.values;
-	
 	let request = new XMLHttpRequest();
+    let wheelData = GetWheelData();
+	let url = "https://dobbsworks.github.io/Tools/Streambot/wheel.html?q=" + (+(new Date()));
+	request.open("GET", url, true);
+	request.onload = () => {
+		w.document.write(request.responseText);
+		setTimeout(() => {
+			w.window.SetItems(wheelData);
+			w.window.init();
+			//for (l of levels) l.weight++;
+		}, 100);
+	}
+	request.send();
+	return w;
+}
+
+function GetWheelData() {
+    let wheelSettings = StorageHandler.wheel.values;
     let wheelData = [];
     for (let x of levels) {
         let setting = wheelSettings.find(s => s.username === x.username);
@@ -100,18 +115,7 @@ function CreateWheelOfLevels(levels) {
             pattern: pattern,
         });
     }
-	let url = "https://dobbsworks.github.io/Tools/Streambot/wheel.html?q=" + (+(new Date()));
-	request.open("GET", url, true);
-	request.onload = () => {
-		w.document.write(request.responseText);
-		setTimeout(() => {
-			w.window.SetItems(wheelData);
-			w.window.init();
-			//for (l of levels) l.weight++;
-		}, 100);
-	}
-	request.send();
-	return w;
+    return wheelData;
 }
 
 function CommandBiggerSlice(user, args) {
