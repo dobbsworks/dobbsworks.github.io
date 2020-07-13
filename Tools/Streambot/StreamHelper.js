@@ -282,12 +282,6 @@ function CreateQueueWindow() {
 // OVERLAY PANEL
 /////////////////////////////////////////////////
 
-function CreateOverlayWindowOld() {
-	let w = window.open("", "Overlay", "width=172,height=476,left=1740");
-	DrawOverlayContent(w);
-	return w;
-}
-
 function CreateOverlayWindow() {
 	let w = window.open("", "Overlay", "width=172,height=476,left=1740");
 	console.log(w);
@@ -303,84 +297,6 @@ function CreateOverlayWindow() {
 
 	return w;
 }
-function StyleWindow(w) {
-	w.document.body.style.backgroundColor = "#18181b";
-	w.document.body.style.color = "#adadb8";
-	w.document.body.style.fontFamily = "sans-serif";
-}
-function DrawOverlayContent(w) {
-	if (!w || !w.document) return;
-	if (!StorageHandler) return;
-    StyleWindow(w);
-    w.document.body.innerHTML = "";
-	w.document.title = "Overlay";
-	
-	let targetRecentCount = 2;
-	let pastLevels = StorageHandler.queue.values.filter(x => x.status === levelStatus.completed || x.status === levelStatus.skipped);
-	let recentLevels = pastLevels.slice(pastLevels.length - targetRecentCount);
-	
-	if (recentLevels.length > 0) {
-		w.document.writeln("<hr/>");
-		w.document.writeln("<div>Recent Levels</div>");
-		w.document.writeln("<hr/>");
-		
-		for (let level of recentLevels) {
-			w.document.writeln(GetOverlayContentFromLevel(level));
-		}		
-	}
-	
-	let liveLevel = StorageHandler.queue.values.find(x => x.status === levelStatus.live);
-	let levelTime = "";
-	if (liveLevel) {
-		levelTime = GetTimeDiff(new Date(liveLevel.timeStarted), new Date());
-	}
-	w.document.writeln("<br/>");
-	w.document.writeln("<hr/>");
-	w.document.writeln("<div>Now Playing   " + levelTime + "</div>");
-	w.document.writeln("<hr/>");	
-	w.document.writeln(GetOverlayContentFromLevel(liveLevel));	
-	w.document.writeln("<br/>");
-	
-	
-	let targetTotalCount = 5; // maximum sum of recent and upcoming
-	let targetUpcomingCount = targetTotalCount - recentLevels.length; 
-	let upcomingLevels = StorageHandler.queue.values.filter(x => x.status === levelStatus.pending).slice(0,targetUpcomingCount);
-	
-	if (upcomingLevels.length > 0) {
-		w.document.writeln("<hr/>");
-		w.document.writeln("<div>Upcoming Levels</div>");
-		w.document.writeln("<hr/>");
-		
-		for (let level of upcomingLevels) {
-			w.document.writeln(GetOverlayContentFromLevel(level));
-		}		
-	} else {
-		w.document.writeln("<hr/>");
-		if (isQueueOpen) {
-			w.document.writeln("<div>No pending levels, add yours now with !add</div>");
-		} else {
-			w.document.writeln("<div>The queue is closed.</div>");
-		}
-	}
-}
-
-function GetOverlayContentFromLevel(level) {
-	if (level) {
-		let flags = "";
-		if (level.isPriority) flags += ' <span style="color:yellow;"> ★</span>';
-		if (level.status === levelStatus.completed) flags += ' <span style="color:green;"> ✓</span>';
-		
-		let html = '<div style="margin-bottom: 8px;">';
-		html +=			'<div>' + level.code + flags + '</div>'
-		html +=			'<div>' + level.username + '</div>';
-		html +=		'</div>';
-		
-		return html;
-	} else {
-		return '<div style="margin-bottom: 8px;"><div>-</div><div>-</div></div>';
-	}
-}
-
 
 
 /////////////////////////////////////////////////

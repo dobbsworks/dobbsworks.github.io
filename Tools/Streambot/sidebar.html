@@ -17,6 +17,7 @@
 
 		.levels {
 			padding: 8px;
+			margin: 4px;
 		}
 
 		.header {
@@ -99,8 +100,10 @@
 		return displayMinutes.toString().padStart(2, "0") + ":" + displaySeconds.toString().padStart(2, "0");
 	}
 
-	setInterval(WriteQueue, 1000);
-	setInterval(DrawPreviewWheel, 50);
+	setTimeout(x => {
+		setInterval(WriteQueue, 1000);
+		setInterval(DrawPreviewWheel, 50);
+	},2000)
 
 
 </script>
