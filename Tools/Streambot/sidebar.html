@@ -57,7 +57,7 @@
 		let targetUpcomingCount = 2;
 		let recentLevels = allLevels.filter(x => x.status === "completed" || x.status === "skipped");
 		recentLevels = recentLevels.slice(recentLevels.length - targetRecentCount);
-		let upcomingLevels = allLevels.filter(x => x.status === levelStatus.pending).slice(0,targetUpcomingCount);
+		let upcomingLevels = allLevels.filter(x => x.status === "pending").slice(0,targetUpcomingCount);
 		recentContainer.innerHTML = recentLevels.map(x => GetLevelHtml(x)).join('');
 
 		let currentLevel = allLevels.find(x => x.status === "live");
