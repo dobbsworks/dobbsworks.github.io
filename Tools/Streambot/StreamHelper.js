@@ -259,7 +259,7 @@ function GetUser(username) {
 /////////////////////////////////////////////////
 
 function CreateQueueWindow() {
-	let w = window.open("", "Queue", "width=600,height=900,left=1140");
+	let w = window.open("", "Queue", "width=750,height=900,left=1140");
 
 	let request = new XMLHttpRequest();
 	let url = "https://dobbsworks.github.io/Tools/Streambot/controlPanel.html?q=" + (+(new Date()));

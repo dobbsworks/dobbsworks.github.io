@@ -5,7 +5,7 @@
 // MARQUEE PANEL
 /////////////////////////////////////////////////
 function CreateMarqueeWindow() {
-	let w = window.open("", "Marquee", "width=850,height=53,top=1000");
+	let w = window.open("", "Marquee", "width=850,height=53,top=800");
 	
 	let request = new XMLHttpRequest();
 	let url = "https://dobbsworks.github.io/Tools/Streambot/marquee.html?q=" + (+(new Date()));

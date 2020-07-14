@@ -80,7 +80,7 @@ function CommandWheelPattern(user, args) {
 function CreateWheelOfLevels(levels) {
     let w = window.open("", "WheelOfLevels", "width=1000,height=900,left=700");
 	let request = new XMLHttpRequest();
-    let wheelData = GetWheelData();
+    let wheelData = GetWheelData(levels);
 	let url = "https://dobbsworks.github.io/Tools/Streambot/wheel.html?q=" + (+(new Date()));
 	request.open("GET", url, true);
 	request.onload = () => {
@@ -95,7 +95,7 @@ function CreateWheelOfLevels(levels) {
 	return w;
 }
 
-function GetWheelData() {
+function GetWheelData(levels) {
     let wheelSettings = StorageHandler.wheel.values;
     let wheelData = [];
     for (let x of levels) {

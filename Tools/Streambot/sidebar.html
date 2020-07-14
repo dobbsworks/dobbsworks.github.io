@@ -30,14 +30,18 @@
 		}
 
 		.level {
-			margin: 4px;
+			margin: 8px;
 		}
 
 		#recentLevels {
-			min-height: 120px;
+			min-height: 90px;
 		}
 		#currentLevel {
-			min-height: 60px;
+			min-height: 50px;
+		}
+
+		canvas {
+			margin: 10px;
 		}
 	</style>
 </head>
@@ -51,6 +55,7 @@
 		<div id="currentLevel"></div>
 		<div class="header">Upcoming Levels</div>
 		<div id="upcomingLevels"></div>
+		<canvas id="previewCanvas" width="150" height="150" ></canvas>
 	</div>
 
 </body>
@@ -62,15 +67,12 @@
 	function WriteQueue() {
 		let recentContainer = document.getElementById("recentLevels");
 		let currentContainer = document.getElementById("currentLevel");
-		let upcomingContainer = document.getElementById("upcomingLevels");
 		let levelTimer = document.getElementById("currentLevelTime");
 		let allLevels = StorageHandler.queue.values;
 
 		let targetRecentCount = 2;
-		let targetUpcomingCount = 2;
 		let recentLevels = allLevels.filter(x => x.status === "completed" || x.status === "skipped");
 		recentLevels = recentLevels.slice(recentLevels.length - targetRecentCount);
-		let upcomingLevels = allLevels.filter(x => x.status === "pending").slice(0,targetUpcomingCount);
 		recentContainer.innerHTML = recentLevels.map(x => GetLevelHtml(x)).join('');
 
 		let currentLevel = allLevels.find(x => x.status === "live");
@@ -81,8 +83,6 @@
 			currentContainer.innerHTML = "";
 			levelTimer.innerHTML = "";
 		}
-
-		upcomingContainer.innerHTML = upcomingLevels.map(x => GetLevelHtml(x)).join('');
 	}
 
 	function GetLevelHtml(level) {
@@ -93,8 +93,58 @@
 				</div>`;
 	}
 
+	let previewLevel = null;
 	function DrawPreviewWheel() {
-		let levels = StorageHandler.queue.values;
+		if (!previewLevel) return;
+		let upcomingContainer = document.getElementById("upcomingLevels");
+		upcomingContainer.innerHTML = GetLevelHtml(previewLevel);
+
+		let canvas = document.getElementById("previewCanvas");
+		let ctx = canvas.getContext("2d");
+		ctx.clearRect(0,0,canvas.width,canvas.height);
+
+		let wheelData = GetWheelData(StorageHandler.queue.values);
+		let levelWheelData = wheelData.find(x => x.name === previewLevel.username);
+		if (levelWheelData == null) return;
+		let totalWeight = wheelData.map(x => x.weight).reduce((a,b) => a+b, 0);
+		let myWeight = levelWheelData.weight;
+		let ratio = myWeight / totalWeight;
+
+		let mid = canvas.width/2; // assumes square canvas
+		let radius = mid - 2;
+		ctx.lineWidth = 2;
+		ctx.strokeStyle = "#adadb8";
+		ctx.fillStyle = "#adadb8";
+		let theta = (ratio * Math.PI*2) - Math.PI/2;
+		ctx.beginPath();
+		ctx.moveTo(mid,mid-radius);
+		ctx.arc(mid, mid, radius, -Math.PI/2, 3*Math.PI/2);
+		ctx.lineTo(mid,mid);
+		ctx.lineTo(mid+radius*Math.cos(theta),mid+radius*Math.sin(theta));
+		ctx.stroke();
+		ctx.beginPath();
+		ctx.moveTo(mid,mid-radius);
+		ctx.arc(mid, mid, radius, -Math.PI/2, theta);
+		ctx.lineTo(mid,mid);
+		ctx.fill();
+	}
+
+	function GetNextPreviewLevel() {
+		let firstUpcomingLevel = StorageHandler.queue.values.find(x => x.status === "pending");
+		if (!previewLevel) {
+			previewLevel = firstUpcomingLevel;
+			return;
+		}
+
+		let currentUser = previewLevel.username;
+		let pendingLevels = StorageHandler.queue.values.filter(x => x.status === "pending");
+		for (let i=0; i<pendingLevels.length; i++) {
+			if (pendingLevels[i].username === currentUser) {
+				previewLevel = pendingLevels[i+1];
+				break;
+			}
+		}
+		if (!previewLevel) previewLevel = firstUpcomingLevel;
 	}
 
 	function GetTimeDiff(t0, t1) {
@@ -111,6 +161,7 @@
 	setTimeout(x => {
 		setInterval(WriteQueue, 1000);
 		setInterval(DrawPreviewWheel, 50);
+		setInterval(GetNextPreviewLevel, 8000);
 	},2000)
 
 
