@@ -17,7 +17,7 @@ function ProcessMessages() {
 		ProcessActivityMessage(message);
 	}
 
-	DrawOverlayContent(overlayWindow);
+	//DrawOverlayContent(overlayWindow);
 }
 function FindChatMessagesToProcess() {
 	let chatMessages = Array.from(document.getElementsByClassName("chat-line__message")); 
