@@ -108,7 +108,7 @@
 		upcomingContainer.innerHTML = GetLevelHtml(previewLevel);
 
 
-		let wheelData = GetWheelData(StorageHandler.queue.values);
+		let wheelData = GetWheelData(StorageHandler.queue.values.filter(x => x.status === "pending"));
 		let totalWeight = wheelData.map(x => x.weight).reduce((a,b) => a+b, 0);
 
 		let mid = canvas.width/2; // assumes square canvas
