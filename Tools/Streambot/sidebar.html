@@ -53,7 +53,7 @@
 		<div id="recentLevels"></div>
 		<div class="header">Now Playing    <span id="currentLevelTime"></span></div>
 		<div id="currentLevel"></div>
-		<div class="header">Upcoming Levels</div>
+		<div class="header">Upcoming Levels - <span id="upcomingCount"></span></div>
 		<div id="upcomingLevels"></div>
 		<canvas id="previewCanvas" width="150" height="150" ></canvas>
 	</div>
@@ -68,6 +68,7 @@
 		let recentContainer = document.getElementById("recentLevels");
 		let currentContainer = document.getElementById("currentLevel");
 		let levelTimer = document.getElementById("currentLevelTime");
+		let upcomingCountContainer = document.getElementById("upcomingCount");
 		let allLevels = StorageHandler.queue.values;
 
 		let targetRecentCount = 2;
@@ -83,6 +84,9 @@
 			currentContainer.innerHTML = "";
 			levelTimer.innerHTML = "";
 		}
+
+		let upcomingLevelsCount = allLevels.filter(x => x.status === "pending").length;
+		upcomingCountContainer.innerHTML = upcomingLevelsCount.toString();
 	}
 
 	function GetLevelHtml(level) {
@@ -95,8 +99,11 @@
 
 	let previewLevel = null;
 	function DrawPreviewWheel() {
-		if (!previewLevel) return;
 		let upcomingContainer = document.getElementById("upcomingLevels");
+		if (!previewLevel) {
+			upcomingContainer.innerHTML = "";
+			return;
+		}
 		upcomingContainer.innerHTML = GetLevelHtml(previewLevel);
 
 		let canvas = document.getElementById("previewCanvas");
@@ -161,7 +168,7 @@
 
 	setTimeout(x => {
 		setInterval(WriteQueue, 1000);
-		setInterval(DrawPreviewWheel, 50);
+		setInterval(DrawPreviewWheel, 1000);
 		setInterval(GetNextPreviewLevel, 8000);
 	},2000)
 
