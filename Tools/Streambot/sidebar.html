@@ -53,7 +53,7 @@
 		<div id="recentLevels"></div>
 		<div class="header">Now Playing    <span id="currentLevelTime"></span></div>
 		<div id="currentLevel"></div>
-		<div class="header">Upcoming Levels - <span id="upcomingCount"></span></div>
+		<div class="header">Upcoming Levels</div>
 		<div id="upcomingLevels"></div>
 		<canvas id="previewCanvas" width="150" height="150" ></canvas>
 	</div>
@@ -68,7 +68,6 @@
 		let recentContainer = document.getElementById("recentLevels");
 		let currentContainer = document.getElementById("currentLevel");
 		let levelTimer = document.getElementById("currentLevelTime");
-		let upcomingCountContainer = document.getElementById("upcomingCount");
 		let allLevels = StorageHandler.queue.values;
 
 		let targetRecentCount = 2;
@@ -84,9 +83,6 @@
 			currentContainer.innerHTML = "";
 			levelTimer.innerHTML = "";
 		}
-
-		let upcomingLevelsCount = allLevels.filter(x => x.status === "pending").length;
-		upcomingCountContainer.innerHTML = upcomingLevelsCount.toString();
 	}
 
 	function GetLevelHtml(level) {
@@ -113,29 +109,24 @@
 
 
 		let wheelData = GetWheelData(StorageHandler.queue.values);
-		let levelWheelData = wheelData.find(x => x.name === previewLevel.username);
-		if (levelWheelData == null) return;
 		let totalWeight = wheelData.map(x => x.weight).reduce((a,b) => a+b, 0);
-		let myWeight = levelWheelData.weight;
-		let ratio = myWeight / totalWeight;
 
 		let mid = canvas.width/2; // assumes square canvas
 		let radius = mid - 2;
 		ctx.lineWidth = 2;
 		ctx.strokeStyle = "#adadb8";
 		ctx.fillStyle = "#adadb8";
-		let theta = (ratio * Math.PI*2) - Math.PI/2;
-		ctx.beginPath();
-		ctx.moveTo(mid,mid-radius);
-		ctx.arc(mid, mid, radius, -Math.PI/2, 3*Math.PI/2);
-		ctx.lineTo(mid,mid);
-		ctx.lineTo(mid+radius*Math.cos(theta),mid+radius*Math.sin(theta));
-		ctx.stroke();
-		ctx.beginPath();
-		ctx.moveTo(mid,mid-radius);
-		ctx.arc(mid, mid, radius, -Math.PI/2, theta);
-		ctx.lineTo(mid,mid);
-		ctx.fill();
+		let startTheta = -Math.PI/2;
+		for (let wheelItem of wheelData) {
+			let ratio = wheelItem.weight / totalWeight;
+			let endTheta = (ratio * Math.PI*2) + startTheta;
+			ctx.beginPath();
+			ctx.arc(mid, mid, radius, startTheta, endTheta);
+			ctx.lineTo(mid,mid);
+			ctx.stroke();
+			if (previewLevel.username === wheelItem.name) ctx.fill();
+			startTheta = endTheta;
+		}
 	}
 
 	function GetNextPreviewLevel() {
