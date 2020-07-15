@@ -284,7 +284,6 @@ function CreateQueueWindow() {
 
 function CreateOverlayWindow() {
 	let w = window.open("", "Overlay", "width=172,height=476,left=1740");
-	console.log(w);
 
 	let request = new XMLHttpRequest();
 	let url = "https://dobbsworks.github.io/Tools/Streambot/sidebar.html?q=" + (+(new Date()));

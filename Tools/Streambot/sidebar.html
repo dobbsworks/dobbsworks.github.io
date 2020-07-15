@@ -99,6 +99,11 @@
 
 	let previewLevel = null;
 	function DrawPreviewWheel() {
+		let canvas = document.getElementById("previewCanvas");
+		let ctx = canvas.getContext("2d");
+		ctx.clearRect(0,0,canvas.width,canvas.height);
+
+
 		let upcomingContainer = document.getElementById("upcomingLevels");
 		if (!previewLevel) {
 			upcomingContainer.innerHTML = "";
@@ -106,9 +111,6 @@
 		}
 		upcomingContainer.innerHTML = GetLevelHtml(previewLevel);
 
-		let canvas = document.getElementById("previewCanvas");
-		let ctx = canvas.getContext("2d");
-		ctx.clearRect(0,0,canvas.width,canvas.height);
 
 		let wheelData = GetWheelData(StorageHandler.queue.values);
 		let levelWheelData = wheelData.find(x => x.name === previewLevel.username);
@@ -148,6 +150,7 @@
 		for (let i=0; i<pendingLevels.length; i++) {
 			if (pendingLevels[i].username === currentUser) {
 				previewLevel = pendingLevels[i+1];
+				if (!previewLevel) previewLevel = firstUpcomingLevel;
 				return;
 			}
 		}
