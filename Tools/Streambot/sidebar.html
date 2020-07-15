@@ -141,10 +141,11 @@
 		for (let i=0; i<pendingLevels.length; i++) {
 			if (pendingLevels[i].username === currentUser) {
 				previewLevel = pendingLevels[i+1];
-				break;
+				return;
 			}
 		}
-		if (!previewLevel) previewLevel = firstUpcomingLevel;
+		
+		previewLevel = firstUpcomingLevel;
 	}
 
 	function GetTimeDiff(t0, t1) {
