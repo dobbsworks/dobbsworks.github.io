@@ -131,7 +131,7 @@ function CommandBiggerSlice(user, args) {
 function CalculateLevelWeight(level) {
 	let now = new Date();
 	let timeBonusWeight = ((now - new Date(level.timeAdded)) / 1000 / 60 / 10) ** 2; 
-	let bonusScale = Math.pow(2, level.weightPriorityPurchases);
+	let bonusScale = (1 + level.weightPriorityPurchases); //Math.pow(2, level.weightPriorityPurchases);
 	let ret = bonusScale * (level.weight + timeBonusWeight);
 	
 	// penalty for being absent, base off of last message received
