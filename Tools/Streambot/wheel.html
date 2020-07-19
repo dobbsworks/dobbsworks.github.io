@@ -133,9 +133,8 @@ function draw() {
 		if (bowserEvent) {
 			ctx.fillStyle = patterns.bowser;
 			ctx.fill();
-		} else if (item.isSub) {
+		} else if (item.isSub || item.pattern) {
 			ctx.fillStyle = patterns.star;
-			if (item.name.toLowerCase() === "peffe29") ctx.fillStyle = patterns.heart;
 			if (item.pattern) ctx.fillStyle = patterns[item.pattern];
 			ctx.fill();
 		}  
