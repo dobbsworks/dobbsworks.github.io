@@ -98,7 +98,7 @@ function createPatterns() {
 	let patternCtx = c.getContext("2d");
 	for (let iconImg of iconDiv.children) {
 		let name = iconImg.src.substring(iconImg.src.lastIndexOf("/")+1).replace("-icon.png","");
-		let pattern = ctx.createPattern(iconImg, 'repeat');
+		let pattern = patternCtx.createPattern(iconImg, 'repeat');
 		patterns[name] = pattern;
 	}
 }
