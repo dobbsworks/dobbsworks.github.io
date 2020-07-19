@@ -87,7 +87,7 @@
 		}
 
 		.log {
-			float:right;
+			float: right;
 		}
 	</style>
 </head>
@@ -163,7 +163,9 @@
 			container.innerHTML = "";
 			container.innerHTML += selectedLevelCode + " by " + selectedLevel.username;
 			container.innerHTML += "<br/>Added " + GetTimeDiff(selectedLevel.timeAdded, new Date()) + " ago";
-			container.innerHTML += `<br/><button class="removeButton" type="button" onclick="RemoveUser('${selectedLevel.username}')">Remove Level</button>`;
+			container.innerHTML += `<br/><button type="button" onclick="RemoveUser('${selectedLevel.username}')">Remove Level</button>`;
+			container.innerHTML += `<br/><button type="button" onclick="PlayNow('${selectedLevel.username}')">Play Now</button>`;
+			container.innerHTML += `<br/><button type="button" onclick="ClosePanel()">Close Panel</button>`;
 
 			let chatMessages = StorageHandler.log.values.filter(x => x.username === selectedLevel.username);
 			if (chatMessages && chatMessages.length) {
@@ -181,6 +183,14 @@
 
 	function RemoveUser(username) {
 		SendCommand("as " + username + " !leave");
+	}
+
+	function PlayNow(username) {
+		SendCommand("randomwin " + username);
+	}
+
+	function ClosePanel() {
+		selectedLevelCode = null;
 	}
 
 	function OnClickRow(e) {
