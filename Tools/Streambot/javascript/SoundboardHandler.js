@@ -7,7 +7,7 @@ function CommandSoundBoard(user, args) {
 function CommandSoundList(user, args) {
     let page = +(args[0]);
     let numPerPage = 5;
-    let maxPage = Math.ceiling(soundboardHandler.sounds.length / numPerPage);
+    let maxPage = Math.ceil(soundboardHandler.sounds.length / numPerPage);
     if (!page || page < 1) page = 1;
     if (page > maxPage) page = maxPage;
     page = Math.floor(page);
@@ -23,40 +23,43 @@ function CommandSoundList(user, args) {
 
 var soundboardHandler = {
     baseUrl: "https://dobbsworks.github.io/Tools/Streambot/audio/",
+    masterVolume: 0.5,
     sounds: [
-        { id: 1, volume: 1.0, key: "bowser-laugh", file: "sm64_bowser_laugh.wav" },
+        { id: 1, volume: 0.8, key: "bowser-laugh", file: "sm64_bowser_laugh.wav" },
         { id: 2, volume: 1.0, key: "korok-yahaha", file: "yahaha.mp3" },
-        { id: 3, volume: 1.0, key: "korok-jingle", file: "korok-jingle.mp3" },
-        { id: 4, volume: 1.0, key: "fickle-wheel", file: "fickle-wheel.mp3" }
+        { id: 3, volume: 0.8, key: "korok-jingle", file: "korok-jingle.mp3" },
+        { id: 4, volume: 0.5, key: "fickle-wheel", file: "fickle-wheel.mp3" }
     ],
     findSound: (arg) => {
-        let sound = this.sounds.find(x => x.id === +(arg));
-        if (!sound) sound = this.sounds.find(x => x.key === arg);
+        let sound = soundboardHandler.sounds.find(x => x.id === +(arg));
+        if (!sound) sound = soundboardHandler.sounds.find(x => x.key === arg);
         return sound;
     },
     isValidated: false,
     validateSounds: () => {
-        if (!this.isValidated) {
+        if (!soundboardHandler.isValidated) {
             function onlyUnique(value, index, self) {
                 return self.indexOf(value) === index;
             }
-            let target = this.sounds.length;
-            if (this.sounds.map(x => x.id).filter(onlyUnique).length !== target) {
+            let target = soundboardHandler.sounds.length;
+            if (soundboardHandler.sounds.map(x => x.id).filter(onlyUnique).length !== target) {
                 console.error("SOUNDBOARD DATA ERROR: ID");
             }
-            if (this.sounds.map(x => x.key).filter(onlyUnique).length !== target) {
+            if (soundboardHandler.sounds.map(x => x.key).filter(onlyUnique).length !== target) {
                 console.error("SOUNDBOARD DATA ERROR: KEY");
             }
-            this.isValidated = true;
+            soundboardHandler.isValidated = true;
         }
     },
     play: (arg) => {
-        this.validateSounds();
-        let sound = this.findSound(arg);
+        soundboardHandler.validateSounds();
+        let sound = soundboardHandler.findSound(arg);
         if (!sound) return false;
-        let url = this.baseUrl + sound.file;
-        let audio = new Audio('audio_file.mp3');
-        audio.volume = sound.volume;
+        let url = soundboardHandler.baseUrl + sound.file;
+        let audio = new Audio(url);
+        audio.volume = sound.volume * soundboardHandler.masterVolume;
+        if (audio.volume > 1) audio.volume = 1;
+        if (audio.volume < 0) audio.volume = 0;
         audio.play();
         return true;
     }
