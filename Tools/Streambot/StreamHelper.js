@@ -145,7 +145,8 @@ function LoadCommands() {
 		
 		Command("getalevelidea", 		"CommandLevelIdea", commandPermission.reward, 		commandDisplay.hidden,    "Generates a random level idea."),
 		RewardCommand(25, "levelidea", "CommandLevelIdea", commandPermission.all,    "Generates a random level idea."),
-		RewardCommand(100, "soundboard", "CommandSoundBoard", commandPermission.all,    "Play a sound. Use !sounds for a list of options."),
+		
+		RewardCommand(100, "sound", "CommandSoundBoard", commandPermission.all,    "Play a sound. Use !sounds for a list of options."),
 		Command("sounds", "CommandSoundList", commandPermission.all,    "Display sounds for !soundboard"),
 	];
 }
