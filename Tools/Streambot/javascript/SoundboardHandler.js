@@ -19,7 +19,7 @@ function CommandSoundList(user, args) {
     let sounds = soundboardHandler.sounds.slice(firstEl, lastEl);
 
     let ret = sounds.map(s => ` ${s.id}. ${s.key}`).join(', ');
-    ret = `Page ${page}/${maxPage}: ` + ret;
+    ret = `Page (${page}/${maxPage}): ` + ret;
     return { message: ret, success: true };
 }
 
@@ -29,42 +29,50 @@ var soundboardHandler = {
     baseUrl: "https://dobbsworks.github.io/Tools/Streambot/audio/",
     masterVolume: 0.5,
     sounds: [
-        { id: 1, volume: 0.8, key: "bowser-laugh", file: "sm64_bowser_laugh.wav" },
-        { id: 2, volume: 1.0, key: "korok-yahaha", file: "yahaha.mp3" },
-        { id: 3, volume: 0.8, key: "korok-jingle", file: "korok-jingle.mp3" },
-        { id: 4, volume: 0.5, key: "fickle-wheel", file: "fickle-wheel.mp3" },
-        { id: 5, volume: 0.5, key: "barrel-roll", file: "barrel-roll.mp3" },
-        { id: 6, volume: 0.5, key: "hey-listen", file: "hey-listen.mp3" },
-        { id: 7, volume: 0.5, key: "wario-laugh", file: "wario-laugh.mp3" },
-        { id: 8, volume: 0.5, key: "spaghetti", file: "spaghetti.mp3" },
-        { id: 9, volume: 0.5, key: "find-princess", file: "find-princess.mp3" },
-        { id: 10, volume: 0.5, key: "instruction-book", file: "instruction-book.mp3" },
-        { id: 11, volume: 0.5, key: "toast", file: "toast.mp3" },
-        { id: 12, volume: 0.5, key: "sm64-game-over", file: "sm64-game-over.mp3" }
+        { volume: 0.8, key: "bowser-laugh", file: "sm64_bowser_laugh.wav" },
+        { volume: 1.0, key: "korok-yahaha", file: "yahaha.mp3" },
+        { volume: 0.8, key: "korok-jingle", file: "korok-jingle.mp3" },
+        { volume: 0.5, key: "tf2-victory", file: "tf2-victory.mp3" },
+        { volume: 0.5, key: "tf2-fail", file: "tf2-fail.mp3" },
+        { volume: 0.5, key: "fickle-wheel", file: "fickle-wheel.mp3" },
+        { volume: 0.7, key: "barrel-roll", file: "barrel-roll.mp3" },
+        { volume: 0.7, key: "hey-listen", file: "hey-listen.mp3" },
+        { volume: 0.7, key: "kirby-hi", file: "kirby-hi.mp3" },
+        { volume: 0.7, key: "wario-laugh", file: "wario-laugh.mp3" },
+        { volume: 0.7, key: "spaghetti", file: "spaghetti.mp3" },
+        { volume: 0.7, key: "find-princess", file: "find-princess.mp3" },
+        { volume: 0.7, key: "instruction-book", file: "instruction-book.mp3" },
+        { volume: 0.7, key: "toast", file: "toast.mp3" },
+        { volume: 0.7, key: "sm64-game-over", file: "sm64-game-over.mp3" },
+        { volume: 0.7, key: "drum-rimshot", file: "drum-rimshot.mp3" },
+        { volume: 0.7, key: "crickets", file: "crickets.mp3" }
     ],
     findSound: (arg) => {
         let sound = soundboardHandler.sounds.find(x => x.id === +(arg));
         if (!sound) sound = soundboardHandler.sounds.find(x => x.key === arg);
         return sound;
     },
-    isValidated: false,
-    validateSounds: () => {
-        if (!soundboardHandler.isValidated) {
+    initialized: false,
+    initSounds: () => {
+        if (!soundboardHandler.initialized) {
             function onlyUnique(value, index, self) {
                 return self.indexOf(value) === index;
             }
             let target = soundboardHandler.sounds.length;
-            if (soundboardHandler.sounds.map(x => x.id).filter(onlyUnique).length !== target) {
-                console.error("SOUNDBOARD DATA ERROR: ID");
-            }
+            // if (soundboardHandler.sounds.map(x => x.id).filter(onlyUnique).length !== target) {
+            //     console.error("SOUNDBOARD DATA ERROR: ID");
+            // }
             if (soundboardHandler.sounds.map(x => x.key).filter(onlyUnique).length !== target) {
                 console.error("SOUNDBOARD DATA ERROR: KEY");
             }
-            soundboardHandler.isValidated = true;
+            for (let i=0; i<soundboardHandler.sounds.length; i++) {
+                soundboardHandler.sounds[i].id = i+1;
+            }
+            soundboardHandler.initialized = true;
         }
     },
     play: (arg) => {
-        soundboardHandler.validateSounds();
+        soundboardHandler.initSounds();
         let sound = soundboardHandler.findSound(arg);
         if (!sound) return false;
         let url = soundboardHandler.baseUrl + sound.file;
