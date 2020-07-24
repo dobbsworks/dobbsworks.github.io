@@ -15,7 +15,7 @@ function CommandSoundList(user, args) {
     if (page > maxPage) page = maxPage;
     page = Math.floor(page);
     let firstEl = (page - 1) * numPerPage;
-    let lastEl = firstEl + numPerPage - 1; 
+    let lastEl = firstEl + numPerPage; 
     let sounds = soundboardHandler.sounds.slice(firstEl, lastEl);
 
     let ret = sounds.map(s => ` ${s.id}. ${s.key}`).join(', ');
