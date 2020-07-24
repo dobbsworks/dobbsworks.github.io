@@ -113,7 +113,7 @@ var MinigameHandler = {
     },
     
     GameWin: (user) => {
-        MinigameHandler.WriteMessage(`${user.username} currectly guessed the answer! ${MinigameHandler.answer}`);
+        MinigameHandler.WriteMessage(`${user.username} correctly guessed the answer! ${MinigameHandler.answer}`);
         MinigameHandler.gameState = "inactive"
         MinigameHandler.winner = user;
         setTimeout( ()=>{MinigameHandler.AwardPrize(); },1000);
@@ -128,13 +128,6 @@ var MinigameHandler = {
         let pointPrizeTotal = 100;
         pointHandler.addPoints(MinigameHandler.winner.username, pointPrizeTotal);
         MinigameHandler.WriteMessage(`${MinigameHandler.winner.username} has received ${pointHandler.formatValue(pointPrizeTotal)}!`);
-
-        // let attemptPrize = CommandBiggerSlice(MinigameHandler.winner, []);
-        // if (!attemptPrize) {
-        //     MinigameHandler.WriteMessage(`${MinigameHandler.winner.username} has received a wheel slice upgrade!`);
-        // } else {
-        //     MinigameHandler.WriteMessage(`${MinigameHandler.winner.username} has no levels in the queue, so they have been awarded bragging rights.`);
-        // }
 
         if (MinigameHandler.repeatMode) {
             setTimeout( ()=>{MinigameHandler.StartGame(); },1000);
