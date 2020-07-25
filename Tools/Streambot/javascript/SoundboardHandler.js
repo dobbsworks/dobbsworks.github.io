@@ -39,13 +39,11 @@ var soundboardHandler = {
         { volume: 0.7, key: "hey-listen", file: "hey-listen.mp3" },
         { volume: 0.7, key: "kirby-hi", file: "kirby-hi.mp3" },
         { volume: 0.7, key: "wario-laugh", file: "wario-laugh.mp3" },
-        { volume: 0.7, key: "spaghetti", file: "spaghetti.mp3" },
-        { volume: 0.7, key: "find-princess", file: "find-princess.mp3" },
         { volume: 0.7, key: "instruction-book", file: "instruction-book.mp3" },
         { volume: 0.7, key: "toast", file: "toast.mp3" },
         { volume: 0.7, key: "sm64-game-over", file: "sm64-game-over.mp3" },
-        { volume: 0.7, key: "drum-rimshot", file: "drum-rimshot.mp3" },
-        { volume: 0.7, key: "crickets", file: "crickets.mp3" }
+        { volume: 0.8, key: "drum-rimshot", file: "drum-rimshot.mp3" },
+        { volume: 0.8, key: "crickets", file: "crickets.mp3" }
     ],
     findSound: (arg) => {
         let sound = soundboardHandler.sounds.find(x => x.id === +(arg));
@@ -84,3 +82,4 @@ var soundboardHandler = {
         return true;
     }
 }
+soundboardHandler.initSounds();
