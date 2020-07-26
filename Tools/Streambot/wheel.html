@@ -44,7 +44,7 @@ let rotationSpeed = 0;
 let confetti = [];
 let music = null;
 let cheer = null;
-let bowserEvent = (Math.random() < 0.12) ? RandomFrom(["reversal", "revolution"]) : "";
+let bowserEvent = (Math.random() < 0.12) ? RandomFrom(["reversal", "revolution", "revolution"]) : "";
 
 function init() {
 	let ytid = RandomFrom([
@@ -312,7 +312,7 @@ function setupTimers() {
 
 	// random events
 	let randomRoll = Math.random();
-	if (randomRoll < 0.02) {
+	if (randomRoll < 0.05) {
 		setTimeout(() => {
 			PlayLaugh();
 			rotationSpeed = -0.02;
