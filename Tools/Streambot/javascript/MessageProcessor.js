@@ -21,7 +21,7 @@ function ProcessMessages() {
 }
 function FindChatMessagesToProcess() {
 	let chatMessages = Array.from(document.getElementsByClassName("chat-line__message")); 
-	let rewardMessages = Array.from(document.getElementsByClassName("channel-points-reward-line"))
+	let rewardMessages = Array.from(document.getElementsByClassName("user-notice-line"))
 	let allMessages = [...chatMessages, ...rewardMessages];
 	let toProcess = allMessages.filter(m => !m.classList.contains("processed"));
 	return toProcess;
