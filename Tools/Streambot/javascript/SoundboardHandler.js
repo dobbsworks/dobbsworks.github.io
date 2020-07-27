@@ -9,7 +9,7 @@ function CommandSoundBoard(user, args) {
 
 function CommandSoundList(user, args) {
     let page = +(args[0]);
-    let numPerPage = 5;
+    let numPerPage = 16;
     let maxPage = Math.ceil(soundboardHandler.sounds.length / numPerPage);
     if (!page || page < 1) page = 1;
     if (page > maxPage) page = maxPage;
@@ -27,21 +27,21 @@ function CommandSoundList(user, args) {
 
 var soundboardHandler = {
     baseUrl: "https://dobbsworks.github.io/Tools/Streambot/audio/",
-    masterVolume: 0.5,
+    masterVolume: 0.8,
     sounds: [
         { volume: 0.8, key: "bowser-laugh", file: "sm64_bowser_laugh.wav" },
-        { volume: 1.0, key: "korok-yahaha", file: "yahaha.mp3" },
+        { volume: 0.9, key: "korok-yahaha", file: "yahaha.mp3" },
         { volume: 0.8, key: "korok-jingle", file: "korok-jingle.mp3" },
-        { volume: 0.5, key: "tf2-victory", file: "tf2-victory.mp3" },
-        { volume: 0.5, key: "tf2-fail", file: "tf2-fail.mp3" },
-        { volume: 0.5, key: "fickle-wheel", file: "fickle-wheel.mp3" },
+        { volume: 0.3, key: "tf2-victory", file: "tf2-victory.mp3" },
+        { volume: 0.3, key: "tf2-fail", file: "tf2-fail.mp3" },
+        { volume: 0.3, key: "fickle-wheel", file: "fickle-wheel.mp3" },
         { volume: 0.7, key: "barrel-roll", file: "barrel-roll.mp3" },
         { volume: 0.7, key: "hey-listen", file: "hey-listen.mp3" },
         { volume: 0.7, key: "kirby-hi", file: "kirby-hi.mp3" },
         { volume: 0.7, key: "wario-laugh", file: "wario-laugh.mp3" },
         { volume: 0.7, key: "instruction-book", file: "instruction-book.mp3" },
         { volume: 0.7, key: "toast", file: "toast.mp3" },
-        { volume: 0.7, key: "sm64-game-over", file: "sm64-game-over.mp3" },
+        { volume: 0.8, key: "sm64-game-over", file: "sm64-game-over.mp3" },
         { volume: 0.8, key: "drum-rimshot", file: "drum-rimshot.mp3" },
         { volume: 0.8, key: "crickets", file: "crickets.mp3" }
     ],
