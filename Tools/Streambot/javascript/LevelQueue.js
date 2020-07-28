@@ -271,7 +271,7 @@ function MarkUserAsPresent(username) {
 
 	for (let levelToChange of userLevels) {
 		if (levelToChange.afkStartTime) {
-			let timeSpentAfk = new Date() - +(levelToChange.afkStartTime);
+			let timeSpentAfk = new Date() - +(new Date(levelToChange.afkStartTime));
 			if (levelToChange.totalAfkTime) {
 				levelToChange.totalAfkTime += timeSpentAfk;
 			} else {
