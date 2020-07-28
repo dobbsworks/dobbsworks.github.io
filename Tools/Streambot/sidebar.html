@@ -88,7 +88,7 @@
 	function GetLevelHtml(level, chanceText) {
 		let completedSpan = level.status === "completed" ? `<span style="color:green;">✓</span>` : "";
 		return `<div class="level">
-					<div>${level.code} ${completedSpan} ${chanceText}</div>
+					<div>${level.code} ${completedSpan}</div>
 					<div>${level.username}</div>
 					<div>${chanceText}</div>
 				</div>`;
@@ -110,8 +110,6 @@
 		let wheelData = GetWheelData(StorageHandler.queue.values.filter(x => x.status === "pending"));
 		let totalWeight = wheelData.map(x => x.weight).reduce((a,b) => a+b, 0);
 
-		let chanceText = FormatRatio(wheelItem.weight, totalWeight);
-		upcomingContainer.innerHTML = GetLevelHtml(previewLevel, chanceText);
 
 		let mid = canvas.width/2; // assumes square canvas
 		let radius = mid - 2;
@@ -126,14 +124,22 @@
 			ctx.arc(mid, mid, radius, startTheta, endTheta);
 			ctx.lineTo(mid,mid);
 			ctx.stroke();
-			if (previewLevel.username === wheelItem.name) ctx.fill();
+			if (previewLevel.username === wheelItem.name) {
+				ctx.fill();
+				let chanceText = FormatRatio(wheelItem.weight, totalWeight);
+				upcomingContainer.innerHTML = GetLevelHtml(previewLevel, chanceText);
+			}
 			startTheta = endTheta;
 		}
 	}
 
 	function FormatRatio(itemWeight, totalWeight) {
-		let percent = Math.floor(100 * itemWeight / totalWeight);
-		return `${percent}% ≈ ${itemWeight.toFixed(0)}/${totalWeight.toFixed(0)}`;
+		let percent = (itemWeight / totalWeight).toFixed(2);
+		return `${FormatWeight(itemWeight)}/${FormatWeight(totalWeight)} ≈ <span class="chance">${percent}%</span>`;
+	}
+
+	function FormatWeight(weight) {
+		return weight.toFixed(2);
 	}
 
 	function GetNextPreviewLevel() {
