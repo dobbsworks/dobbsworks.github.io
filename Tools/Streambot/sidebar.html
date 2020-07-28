@@ -55,7 +55,7 @@
 		<div id="currentLevel"></div>
 		<div class="header">Upcoming Levels</div>
 		<div id="upcomingLevels"></div>
-		<canvas id="previewCanvas" width="150" height="150" ></canvas>
+		<canvas id="previewCanvas" width="140" height="140" ></canvas>
 	</div>
 
 </body>
@@ -85,11 +85,12 @@
 		}
 	}
 
-	function GetLevelHtml(level) {
-		let completedSpan = `<span style="color:green;">✓</span>`;
+	function GetLevelHtml(level, chanceText) {
+		let completedSpan = level.status === "completed" ? `<span style="color:green;">✓</span>` : "";
 		return `<div class="level">
-					<div>${level.code} ${level.status === "completed" ? completedSpan : ""}</div>
+					<div>${level.code} ${completedSpan} ${chanceText}</div>
 					<div>${level.username}</div>
+					<div>${chanceText}</div>
 				</div>`;
 	}
 
@@ -105,11 +106,12 @@
 			upcomingContainer.innerHTML = "";
 			return;
 		}
-		upcomingContainer.innerHTML = GetLevelHtml(previewLevel);
-
 
 		let wheelData = GetWheelData(StorageHandler.queue.values.filter(x => x.status === "pending"));
 		let totalWeight = wheelData.map(x => x.weight).reduce((a,b) => a+b, 0);
+
+		let chanceText = FormatRatio(wheelItem.weight, totalWeight);
+		upcomingContainer.innerHTML = GetLevelHtml(previewLevel, chanceText);
 
 		let mid = canvas.width/2; // assumes square canvas
 		let radius = mid - 2;
@@ -127,6 +129,11 @@
 			if (previewLevel.username === wheelItem.name) ctx.fill();
 			startTheta = endTheta;
 		}
+	}
+
+	function FormatRatio(itemWeight, totalWeight) {
+		let percent = Math.floor(100 * itemWeight / totalWeight);
+		return `${percent}% ≈ ${itemWeight.toFixed(0)}/${totalWeight.toFixed(0)}`;
 	}
 
 	function GetNextPreviewLevel() {
