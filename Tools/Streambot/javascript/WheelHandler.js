@@ -99,6 +99,7 @@ function GetWheelData(levels) {
     let wheelSettings = StorageHandler.wheel.values;
     let wheelData = [];
     for (let x of levels) {
+        if (x.aftStartTime) continue; // user is AFK
         let setting = wheelSettings.find(s => s.username === x.username);
         let hue = null;
         let pattern = null;
@@ -129,26 +130,12 @@ function CommandBiggerSlice(user, args) {
 }
 
 function CalculateLevelWeight(level) {
-	let now = new Date();
-	let timeBonusWeight = ((now - new Date(level.timeAdded)) / 1000 / 60 / 10) ** 2; 
-	let bonusScale = (1 + level.weightPriorityPurchases); //Math.pow(2, level.weightPriorityPurchases);
+    let now = new Date();
+    let timeSinceAdded = (now - new Date(level.timeAdded));
+    if (level.totalAfkTime) timeSinceAdded -= level.totalAfkTime;
+	let timeBonusWeight = (timeSinceAdded / 1000 / 60 / 10) ** 2; 
+	let bonusScale = (1 + level.weightPriorityPurchases); 
 	let ret = bonusScale * (level.weight + timeBonusWeight);
-	
-	// penalty for being absent, base off of last message received
-	// let userMessages = StorageHandler.log.values.filter(x => x.username === level.username);
-	// let lastLog = userMessages[userMessages.length-1];
-	// if (lastLog) {
-	// 	let minutesSinceLastMessage = ((now - new Date(lastLog.timestamp)) / 1000 / 60);
-	// 	// starting at 5 minutes, linearly scale down weight to 0 at 25 minutes
-	// 	let penaltyBegins = 15;
-	// 	let completePenalty = 25;
-	// 	let penaltyRatio = 1 - ((minutesSinceLastMessage - penaltyBegins) / (completePenalty - penaltyBegins));
-	// 	// clamp to [0,1]
-	// 	penaltyRatio = penaltyRatio < 0 ? 0 : penaltyRatio;
-	// 	penaltyRatio = penaltyRatio > 1 ? 1 : penaltyRatio;
-	// 	penaltyRatio = penaltyRatio ** 0.5;
-	// 	ret *= penaltyRatio;
-	// }
 	
 	return ret;
 }

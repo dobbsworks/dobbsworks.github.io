@@ -42,6 +42,9 @@ function ProcessChatMessage(messageEl) {
 	}
 	
 	LogChatMessage({timestamp: new Date(), text: stitchedText, username: username, reward: selectedReward});
+
+	// Need to mark as present BEFORE processing command
+	MarkUserAsPresent(username);
 	
 	ProcessCommand(username, stitchedText, false, badges);
 	if (selectedReward.length > 0) {
