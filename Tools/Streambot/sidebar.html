@@ -43,6 +43,10 @@
 		canvas {
 			margin: 10px;
 		}
+
+		.chance {
+			float:right;
+		}
 	</style>
 </head>
 
@@ -134,12 +138,12 @@
 	}
 
 	function FormatRatio(itemWeight, totalWeight) {
-		let percent = (itemWeight / totalWeight).toFixed(2);
+		let percent = (100 * itemWeight / totalWeight).toFixed(2);
 		return `${FormatWeight(itemWeight)}/${FormatWeight(totalWeight)} ≈ <span class="chance">${percent}%</span>`;
 	}
 
 	function FormatWeight(weight) {
-		return weight.toFixed(2);
+		return weight.toFixed(1);
 	}
 
 	function GetNextPreviewLevel() {
