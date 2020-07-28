@@ -256,12 +256,12 @@ function determineWinner() {
 	setTimeout(() => {SendWinner(winner.name)}, 6000);
 
 	// TEMPORARILY REMOVING WINDOW CLOSING
-	// SOME SORT OF CHROME CRASH TRIGGERED ON WINDOW CLOSE
-	// setTimeout(() => {
-	// 	if (music) music.close();
-	// 	if (cheer) cheer.close();
-	// 	window.close();
-	// }, 8000);
+	setTimeout(() => {
+		if (music) music.close();
+		if (cheer) cheer.close();
+		// SOME SORT OF CHROME CRASH TRIGGERED ON WINDOW CLOSE
+		//window.close();
+	}, 8000);
 }
 
 let nameRevealCount = 0;
