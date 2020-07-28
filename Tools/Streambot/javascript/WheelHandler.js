@@ -143,7 +143,7 @@ function CalculateLevelWeight(level) {
 function CommandSlice(user, args) {
     // get chance of being selected next
     let levels = GetWheelData(StorageHandler.queue.values.filter(x => x.status === "pending"));
-    let myLevel = levels.find(x => x.username === user.username);
+    let myLevel = levels.find(x => x.name === user.username);
     if (!myLevel) return "You don't have a level in the queue right now.";
     let myWeight = myLevel.weight;
     let totalWeight = levels.map(x=>x.weight).reduce((a,b)=>a+b,0);
