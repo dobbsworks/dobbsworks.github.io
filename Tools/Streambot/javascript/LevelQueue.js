@@ -35,15 +35,15 @@ function CommandAddLevel(user, args) {
 		}
 	} else {
 		return "The queue is closed right now. :(";
-	}	
+	}
 }
 function StripLevelCode(rawCodeText) {
-    let ret = "";
-    let validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toLowerCase();
-    for (let char of rawCodeText) {
-        if (validChars.indexOf(char.toLowerCase()) > -1) ret += char;
-    }
-    return ret;
+	let ret = "";
+	let validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toLowerCase();
+	for (let char of rawCodeText) {
+		if (validChars.indexOf(char.toLowerCase()) > -1) ret += char;
+	}
+	return ret;
 }
 function PushQueueEntry(user, strippedCode) {
 	let formattedCode = strippedCode.match(/.{1,3}/g).join('-').toUpperCase();
@@ -65,7 +65,7 @@ function PushQueueEntry(user, strippedCode) {
 }
 
 function DoesUserHaveReserve(username) {
-	let userLevels = StorageHandler.queue.values.filter(x => x.username === username && 
+	let userLevels = StorageHandler.queue.values.filter(x => x.username === username &&
 		(x.status === levelStatus.live || x.status === levelStatus.pending));
 	if (userLevels && userLevels[0] && userLevels[0].code === reserveCode) {
 		return true;
@@ -75,9 +75,9 @@ function DoesUserHaveReserve(username) {
 
 function DoesUserHaveQueueSpace(username) {
 	// find all levels for this user that are pending or currently live
-	let usersLevels = StorageHandler.queue.values.filter(x => x.username === username && 
+	let usersLevels = StorageHandler.queue.values.filter(x => x.username === username &&
 		(x.status === levelStatus.live || x.status === levelStatus.pending));
-		
+
 	// eventually let this be set per user
 	let user = GetUser(username);
 	let userMaxLevelCount = user.queueSlots;
@@ -93,10 +93,10 @@ function CommandCurrent(user, args) {
 	let pendingLevels = StorageHandler.queue.values.filter(x => x.status === levelStatus.pending);
 	let ret = "";
 	if (currentLevel) {
-        let playTime = GetTimeDiff(currentLevel.timeStarted, new Date());
-        ret += "The current level is " + currentLevel.code + " submitted by " + currentLevel.username + ". ";
-        if (playTime) ret += "It's been live for " + playTime + ". ";
-    }
+		let playTime = GetTimeDiff(currentLevel.timeStarted, new Date());
+		ret += "The current level is " + currentLevel.code + " submitted by " + currentLevel.username + ". ";
+		if (playTime) ret += "It's been live for " + playTime + ". ";
+	}
 	ret += "There " +
 		(pendingLevels.length === 1 ? "is 1 level" : ("are " + pendingLevels.length + "levels")) +
 		" pending in the queue.";
@@ -109,7 +109,7 @@ function CommandList(user, args) {
 		...StorageHandler.queue.values.filter(x => x.status === levelStatus.live),
 		...StorageHandler.queue.values.filter(x => x.status === levelStatus.pending)
 	];
-	let levelsToList = liveAndPendingLevels.slice(0,maxLevelsToList);
+	let levelsToList = liveAndPendingLevels.slice(0, maxLevelsToList);
 	let ret = "Live/upcoming levels by: " + levelsToList.map(x => x.username).join(", ");
 	let unlistedCount = liveAndPendingLevels.length - levelsToList.length;
 	if (unlistedCount > 0) {
@@ -143,22 +143,22 @@ function FinishCurrentLevel(newStatus) {
 			}
 			StorageHandler.queue = levels;
 			return "Level " + newStatus + "!" + (finishTime ? (" This level was live for " + finishTime + ".") : "");
-		} 
+		}
 	}
 }
 function GetTimeDiff(t0, t1) {
 	if (!t0 || !t1) return "";
 	t0 = new Date(t0);
 	t1 = new Date(t1);
-    let totalTime = t1 - t0;
-    let totalSeconds = Math.ceil(totalTime / 1000);
-    let displayMinutes = Math.floor(totalSeconds / 60);
-    let displaySeconds = totalSeconds % 60;
-    return displayMinutes.toString().padStart(2, "0") + ":" + displaySeconds.toString().padStart(2, "0");
+	let totalTime = t1 - t0;
+	let totalSeconds = Math.ceil(totalTime / 1000);
+	let displayMinutes = Math.floor(totalSeconds / 60);
+	let displaySeconds = totalSeconds % 60;
+	return displayMinutes.toString().padStart(2, "0") + ":" + displaySeconds.toString().padStart(2, "0");
 }
 
 function CommandNext(user, args) {
-    let levels = StorageHandler.queue.values;
+	let levels = StorageHandler.queue.values;
 	let currentLevel = levels.find(x => x.status === levelStatus.live);
 	if (currentLevel) {
 		return "There's still a level going on, mark it as complete/skipped first.";
@@ -166,8 +166,8 @@ function CommandNext(user, args) {
 		let nextLevel = levels.find(x => x.status === levelStatus.pending);
 		if (nextLevel) {
 			nextLevel.status = levelStatus.live;
-            nextLevel.timeStarted = new Date();
-            StorageHandler.queue = levels;
+			nextLevel.timeStarted = new Date();
+			StorageHandler.queue = levels;
 			return "Hey @" + nextLevel.username + ", your level is up!";
 		} else {
 			return "The queue is empty!";
@@ -176,7 +176,7 @@ function CommandNext(user, args) {
 }
 
 function CommandResetTimer(user, args) {
-    let levels = StorageHandler.queue.values;
+	let levels = StorageHandler.queue.values;
 	let currentLevel = levels.find(x => x.status === levelStatus.live);
 	if (currentLevel) {
 		currentLevel.timeStarted = new Date();
@@ -186,19 +186,19 @@ function CommandResetTimer(user, args) {
 }
 
 function CommandCloseQueue(user, args) {
-    isQueueOpen = false;
-    return "The queue is closed.";
+	isQueueOpen = false;
+	return "The queue is closed.";
 }
 function CommandOpenQueue(user, args) {
-    isQueueOpen = true;
-    return "The queue is open!";
+	isQueueOpen = true;
+	return "The queue is open!";
 }
 
 
 function MoveLevelToFront(level) {
-    let levels = StorageHandler.queue.values;
-    let targetIndex = levels.filter(x => x.status !== levelStatus.pending || x.isPriority).length;
-    let oldIndex = levels.indexOf(levels.find(x => x.status === levelStatus.pending && x.username === level.username && x.code === level.code));
+	let levels = StorageHandler.queue.values;
+	let targetIndex = levels.filter(x => x.status !== levelStatus.pending || x.isPriority).length;
+	let oldIndex = levels.indexOf(levels.find(x => x.status === levelStatus.pending && x.username === level.username && x.code === level.code));
 	if (oldIndex <= -1 || targetIndex <= -1) return "Uh, something went wrong here, ask Dobbs to fix it, idk";
 
 	levels.splice(targetIndex, 0, levels.splice(oldIndex, 1)[0]);
@@ -222,36 +222,36 @@ function CommandChangeLevel(user, args) {
 	let userLevels = levels.filter(x => x.username === user.username && x.status === levelStatus.pending);
 	if (userLevels.length === 0) return "You have no levels in the queue, use !add instead.";
 	let levelToChange = userLevels[0];
-    
-    let userInputCode = args[0];
-    let strippedCode = userInputCode.replace(/-/g, "");
-    
-    if (strippedCode.length === 9) {
+
+	let userInputCode = args[0];
+	let strippedCode = userInputCode.replace(/-/g, "");
+
+	if (strippedCode.length === 9) {
 		levelToChange.code = strippedCode.match(/.{1,3}/g).join('-').toUpperCase();
 		StorageHandler.queue = levels;
-        return "Your level's id has been changed.";
-    } else {
-        return "This level code has the wrong number of characters, can you double check it?";
-    }
+		return "Your level's id has been changed.";
+	} else {
+		return "This level code has the wrong number of characters, can you double check it?";
+	}
 }
 
 function CommandLeaveQueue(user, args) {
-    let newLevelList = StorageHandler.queue.values;
-    newLevelList = newLevelList.filter(x => x.username !== user.username || x.status !== levelStatus.pending);
-    if (newLevelList.length === StorageHandler.queue.values.length) {
-        return "You have no levels in the queue.";
-    }
+	let newLevelList = StorageHandler.queue.values;
+	newLevelList = newLevelList.filter(x => x.username !== user.username || x.status !== levelStatus.pending);
+	if (newLevelList.length === StorageHandler.queue.values.length) {
+		return "You have no levels in the queue.";
+	}
 
-    StorageHandler.queue = newLevelList;
-    return "Your level has been removed from the queue.";
+	StorageHandler.queue = newLevelList;
+	return "Your level has been removed from the queue.";
 }
 
 
 function CommandDebugAdd() {
-	let username = "user" + Math.ceil(100*Math.random());
-	let getLevelSegment = () => Math.floor(16*16*16*Math.random()).toString(16).padStart(3,"000");
+	let username = "user" + Math.ceil(100 * Math.random());
+	let getLevelSegment = () => Math.floor(16 * 16 * 16 * Math.random()).toString(16).padStart(3, "000");
 	let levelCode = getLevelSegment() + "-" + getLevelSegment() + "-" + getLevelSegment();
-	CommandAddLevel({username: username, badges:[], isSub: false}, [levelCode]);
+	CommandAddLevel({ username: username, badges: [], isSub: false }, [levelCode]);
 }
 
 function CommandAfk(user, args) {
@@ -267,15 +267,23 @@ function CommandAfk(user, args) {
 function MarkUserAsPresent(username) {
 	let levels = StorageHandler.queue.values;
 	let userLevels = levels.filter(x => x.username === username && x.status === levelStatus.pending);
+	let userHadAfkLevel = false;
 
 	for (let levelToChange of userLevels) {
-		let timeSpentAfk = new Date() - +(levelToChange.afkStartTime);
-		if (levelToChange.totalAfkTime) {
-			levelToChange.totalAfkTime += timeSpentAfk;
-		} else {
-			levelToChange.totalAfkTime = timeSpentAfk;
+		if (levelToChange.afkStartTime) {
+			let timeSpentAfk = new Date() - +(levelToChange.afkStartTime);
+			if (levelToChange.totalAfkTime) {
+				levelToChange.totalAfkTime += timeSpentAfk;
+			} else {
+				levelToChange.totalAfkTime = timeSpentAfk;
+			}
+			levelToChange.afkStartTime = null;
+			userHadAfkLevel = true;
 		}
-		levelToChange.afkStartTime = null;
 	}
 	StorageHandler.queue = levels;
+
+	if (userHadAfkLevel) {
+		WriteMessage("Welcome back, @" + username + "! Your level is back in the queue.")
+	}
 }
