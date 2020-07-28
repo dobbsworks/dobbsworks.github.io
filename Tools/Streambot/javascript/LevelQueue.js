@@ -58,7 +58,7 @@ function PushQueueEntry(user, strippedCode) {
 		isPriority: false,
 		weight: 1, //weighting to be used for !randomnext
 		weightPriorityPurchases: 0, //priority
-		aftStartTime: null,
+		afkStartTime: null,
 		totalAfkTime: 0,
 	}
 	StorageHandler.queue.push(level);
@@ -259,7 +259,7 @@ function CommandAfk(user, args) {
 	let userLevels = levels.filter(x => x.username === user.username && x.status === levelStatus.pending);
 	if (userLevels.length === 0) return "You have no levels in the queue, but thanks for letting us know, I guess.";
 	let levelToChange = userLevels[0];
-	levelToChange.aftStartTime = new Date();
+	levelToChange.afkStartTime = new Date();
 	StorageHandler.queue = levels;
 	return "Thanks for the heads up! You'll be automatically re-entered in the queue the next time you say something in chat.";
 }
@@ -267,11 +267,15 @@ function CommandAfk(user, args) {
 function MarkUserAsPresent(username) {
 	let levels = StorageHandler.queue.values;
 	let userLevels = levels.filter(x => x.username === username && x.status === levelStatus.pending);
-	if (userLevels.length === 0) return;
 
 	for (let levelToChange of userLevels) {
-		let timeSpentAfk = new Date() - +(levelToChange.aftStartTime);
-		levelToChange.totalAfkTime += timeSpentAfk;
-		levelToChange.aftStartTime = null;
+		let timeSpentAfk = new Date() - +(levelToChange.afkStartTime);
+		if (levelToChange.totalAfkTime) {
+			levelToChange.totalAfkTime += timeSpentAfk;
+		} else {
+			levelToChange.totalAfkTime = timeSpentAfk;
+		}
+		levelToChange.afkStartTime = null;
 	}
+	StorageHandler.queue = levels;
 }

@@ -99,7 +99,7 @@ function GetWheelData(levels) {
     let wheelSettings = StorageHandler.wheel.values;
     let wheelData = [];
     for (let x of levels) {
-        if (x.aftStartTime) continue; // user is AFK
+        if (x.afkStartTime) continue; // user is AFK
         let setting = wheelSettings.find(s => s.username === x.username);
         let hue = null;
         let pattern = null;

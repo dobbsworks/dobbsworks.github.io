@@ -77,6 +77,7 @@ let commands = [];
 function LoadCommands() {
 	commands = [
 		Command("add", 			"CommandAddLevel", 	commandPermission.all, 		commandDisplay.chat,    "Add a level to the queue. Usage: !add LEV-ELC-ODE"),
+		Command("afk", "CommandAfk", commandPermission.all, commandDisplay.chat, "Mark yourself as AFK so that your level doesn't get played until you get back."),
 		Command("notspam", 		"CommandNotSpam", 	commandPermission.all, 		commandDisplay.hidden),
 		Command("spam", 		"CommandSpam", 		commandPermission.mod, 		commandDisplay.hidden),
 		Command("spamlist", 		"CommandSpamList", 	commandPermission.mod, 		commandDisplay.hidden),
