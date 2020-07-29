@@ -240,6 +240,7 @@ function drawBowserTitle(text, y) {
 }
 
 function getSelectedItem() {
+	if (items.length === 1) return items[0];
 	// PI/2 == bottom
 	let targetAngle = 3*Math.PI/2;
 	let selected = null;
@@ -249,8 +250,6 @@ function getSelectedItem() {
 		if (p2 <= p1) p2 = p1 + Math.PI*2;
 		if (p1 < targetAngle && p2 >= targetAngle) selected = x;
 	}
-	// such a kludge, I really need to redo this... :/
-	if (!selected) selected = items[0];
 	return selected;
 }
 
