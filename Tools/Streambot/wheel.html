@@ -44,9 +44,10 @@ let rotationSpeed = 0;
 let confetti = [];
 let music = null;
 let cheer = null;
-let bowserEvent = (Math.random() < 0.12) ? RandomFrom(["reversal", "revolution", "revolution"]) : "";
+let bowserEvent = "";
 
 function init() {
+	bowserEvent = (Math.random() < 0.12) ? RandomFrom(["reversal", "revolution", "revolution"]) : "";
 	let ytid = RandomFrom([
 		"gDn4NRVkG4Y", // BK Furnace Fun
 		"RMhhcz8wfEU", // SMRPG victory
@@ -75,7 +76,7 @@ function init() {
 	if (!ytid) ytid = "gDn4NRVkG4Y";
 	if (bowserEvent) ytid = "Rz-J4WJnkIM" // 3d World Bowser theme
 	music = PlayAudio(ytid);
-	for (let i = 0; i < 100; i++) {
+	if (confetti.length === 0) for (let i = 0; i < 100; i++) {
 		confetti.push({
 			x: Math.random() * window.innerWidth,
 			y: Math.random() * window.innerHeight,
@@ -93,13 +94,13 @@ function init() {
 
 	createPatterns();
 	// try again in case images failed to load?
-	setInterval(createPatterns, 1000);
 	
-	setInterval(loop, 1000/60);
 	setupTimers();
 }
+setInterval(loop, 1000/60);
 
 let patterns = {};
+let patternsInterval = setInterval(createPatterns, 1000);
 function createPatterns() {
 	let iconDiv = document.getElementById("icons");
 	let c = document.getElementById("pattern");
@@ -113,6 +114,7 @@ function createPatterns() {
 
 function draw() {
 	ctx.clearRect(0,0,baseSize, baseSize);
+	if (items.length === 0) return;
 	
 	let totalWeight = items.map(x => x.weight).reduce((a,b)=>a+b,0);
 	let cumulativeWeight = 0;
@@ -247,6 +249,8 @@ function getSelectedItem() {
 		if (p2 <= p1) p2 = p1 + Math.PI*2;
 		if (p1 < targetAngle && p2 >= targetAngle) selected = x;
 	}
+	// such a kludge, I really need to redo this... :/
+	if (!selected) selected = items[0];
 	return selected;
 }
 
@@ -261,7 +265,17 @@ function determineWinner() {
 		if (cheer) cheer.close();
 		// SOME SORT OF CHROME CRASH TRIGGERED ON WINDOW CLOSE
 		//window.close();
+		cleanup();
 	}, 8000);
+}
+
+function cleanup() {
+	winnerIndex = -1;
+	nameRevealCount = 0;
+ 	nameHideCount = 0;
+	rotationAccel = 1;
+	winnerIndex = -1;
+	bowserAdjust = -1;
 }
 
 let nameRevealCount = 0;
