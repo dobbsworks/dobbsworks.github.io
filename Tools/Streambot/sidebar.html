@@ -94,7 +94,7 @@
 		return `<div class="level">
 					<div>${level.code} ${completedSpan}</div>
 					<div>${level.username}</div>
-					<div>${chanceText}</div>
+					<div>${chanceText ? chanceText : ""}</div>
 				</div>`;
 	}
 
