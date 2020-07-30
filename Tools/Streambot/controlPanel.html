@@ -157,10 +157,10 @@
 	function WriteLevelDetails() {
 		let levels = StorageHandler.queue.values;
 		let selectedLevel = levels.find(x => x.code === selectedLevelCode);
-		if (selectedLevel) {
-			let container = document.getElementById("footerDetails");
+		let container = document.getElementById("footerDetails");
 
-			container.innerHTML = "";
+		container.innerHTML = "";
+		if (selectedLevel) {
 			container.innerHTML += selectedLevelCode + " by " + selectedLevel.username;
 			container.innerHTML += "<br/>Added " + GetTimeDiff(selectedLevel.timeAdded, new Date()) + " ago";
 			container.innerHTML += `<br/><button type="button" onclick="RemoveUser('${selectedLevel.username}')">Remove Level</button>`;

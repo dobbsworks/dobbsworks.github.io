@@ -207,16 +207,6 @@ function MoveLevelToFront(level) {
 	return "Your level has been moved to the priority queue.";
 }
 
-// function CommandQueueSlot(user, args) {
-// 	let userObj = GetUser(user.username);
-// 	if (userObj.queueSlots > 1) {
-// 		return "You already have this upgrade!";
-// 	} else {
-// 		userObj.queueSlots++;
-// 		return "You can now have " + userObj.queueSlots + " levels in the queue at once!";
-// 	}
-// }
-
 function CommandChangeLevel(user, args) {
 	let levels = StorageHandler.queue.values;
 	let userLevels = levels.filter(x => x.username === user.username && x.status === levelStatus.pending);
