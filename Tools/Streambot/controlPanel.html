@@ -142,7 +142,7 @@
 			row.classList.add(level.status);
 			if (level.code === selectedLevelCode) row.classList.add("selected");
 			row.insertCell().innerHTML = level.code;
-			row.insertCell().innerHTML = (level.isSub ? "★" : "") + level.username;
+			row.insertCell().innerHTML = (level.isSub ? "★" : "") + (level.afkStartTime ? " (AFK) " : "") + level.username;
 			row.insertCell().innerHTML = level.status;
 			if (level.status === "live") {
 				row.insertCell().innerHTML = GetTimeDiff(new Date(level.timeStarted), new Date());
@@ -169,7 +169,6 @@
 
 			let chatMessages = StorageHandler.log.values.filter(x => x.username === selectedLevel.username);
 			if (chatMessages && chatMessages.length) {
-				console.log(chatMessages)
 				let latestMessage = chatMessages[chatMessages.length - 1];
 				let age = GetTimeDiff(latestMessage.timestamp, new Date());
 				let div = `<div class="log">

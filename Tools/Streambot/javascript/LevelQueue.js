@@ -21,7 +21,7 @@ function CommandAddLevel(user, args) {
 				if (DoesUserHaveQueueSpace(user.username)) {
 					PushQueueEntry(user, strippedCode);
 					let queuePosition = StorageHandler.queue.values.filter(x => x.status === levelStatus.pending).length;
-					return "Your level has been queued! It's in position " + queuePosition + ".";
+					return "Your level has been queued! May the wheel spin in your favor GivePLZ dobbswWheel ";
 				} else {
 					if (DoesUserHaveReserve(user.username)) {
 						return CommandChangeLevel(user, args);
@@ -30,7 +30,7 @@ function CommandAddLevel(user, args) {
 					}
 				}
 			} else {
-				return "This level code has the wrong number of characters, can you double check it?";
+				return "This level code has the wrong number of characters, can you double-check it?";
 			}
 		}
 	} else {
@@ -252,6 +252,17 @@ function CommandDebugAdd() {
 	let getLevelSegment = () => Math.floor(16 * 16 * 16 * Math.random()).toString(16).padStart(3, "000");
 	let levelCode = getLevelSegment() + "-" + getLevelSegment() + "-" + getLevelSegment();
 	CommandAddLevel({ username: username, badges: [], isSub: false }, [levelCode]);
+}
+
+function CommandFreezeLevel() {
+	// marks current live level as pending/afk
+	let levels = StorageHandler.queue.values;
+	let liveLevel = levels.find(x => x.status === levelStatus.live);
+	if (!liveLevel) return "There is no live level.";
+	liveLevel.status = levelStatus.pending;
+	liveLevel.afkStartTime = new Date();
+	StorageHandler.queue = levels;
+	return "Level has been cryogenically frozen and will be thawed when " + liveLevel.username + " says something in chat.";
 }
 
 function CommandAfk(user, args) {
