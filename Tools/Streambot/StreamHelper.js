@@ -57,7 +57,8 @@ function LoadExternalFunctions() {
 		"Minigame.js",
 		"MinigameData.js",
 		"PointHandler.js",
-		"SoundboardHandler.js"
+		"SoundboardHandler.js",
+		"Shoutout.js",
 	];
 	let cacheBreaker = (+(new Date()));
 	for (let fileName of fileList) {
@@ -153,6 +154,9 @@ function LoadCommands() {
 		
 		RewardCommand(100, "sound", "CommandSoundBoard", commandPermission.all,    "Play a sound. Use !sounds for a list of options."),
 		Command("sounds", "CommandSoundList", commandPermission.all,    "Display sounds for !soundboard"),
+
+		Command("so", "CommandShoutout", commandPermission.mod, commandDisplay.hidden, "Usage: !so username"),
+		Command("setshoutout", "CommandSetShoutout", commandPermission.mod, commandDisplay.hidden, "Usage: !so username Shout-out to $name!"),
 	];
 }
 

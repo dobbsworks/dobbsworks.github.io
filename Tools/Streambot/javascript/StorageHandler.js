@@ -27,16 +27,19 @@ var StorageHandler = new Proxy({}, {
                 StorageHelper.setList(name, []);
             },
 
-            //StorageHandler.test1.upsert({foo:3, bar:"D"}, x=>x.foo)
-            upsert(value, keyLambda) {
+            // StorageHandler.wheel.getUser("dobbsworks")
+            getUser(username) {
                 let list = StorageHelper.getList(name);
-                let newList = [];
-                for(el of list) {
-                    if (keyLambda(el) === keyLambda(value)) newList.push(value);
-                    else newList.push(el);
-                }
-                StorageHelper.setList(name, newList);
-            }
+                let value = list.find(x => x.username.toLowerCase() === username.toLowerCase());
+                return value;
+            },
+            // StorageHandler.wheel.upsert({username: "dobbsworks", foo: "bar"})
+            upsert(record) {
+                let list = StorageHelper.getList(name);
+                list = list.filter(x => x.username !== record.username);
+                list.push(record);
+                StorageHelper.setList(name, list);
+            },
         };
     },
     set(target, name, value) {
