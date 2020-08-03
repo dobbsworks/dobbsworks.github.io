@@ -147,7 +147,7 @@ function LoadCommands() {
 
 		Command("rewards", 		"CommandRewards", 		commandPermission.all, 		commandDisplay.chat, 	"Get information about the things you can spend !tokens on."),
 	
-		RewardCommand(100, "wheelcolor", "CommandWheelColor", commandPermission.all,    "Sets the color for your slice of the !wheel. Example: !wheelcolor 180"),
+		RewardCommand(100, "wheelcolor", "CommandWheelColor", commandPermission.all,    "Sets the color for your slice of the !wheel. Example: !wheelcolor red OR !wheelcolor #AA5D00"),
 		RewardCommand(250, "wheelpattern", "CommandWheelPattern", commandPermission.all,    "Sets the background pattern for your slice of the !wheel. Lasts one hour for non-subs. Example: !wheelpattern star"),
 
 		
