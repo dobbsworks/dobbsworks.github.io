@@ -6,6 +6,16 @@
 		html, body {
 			overflow: hidden;
 		}
+		body {
+			background-color: #92cddb;
+			background-image: url("https://dobbsworks.github.io/Tools/Streambot/images/wheel-background.png");
+			background-size: cover;
+		}
+		canvas {
+			position: fixed;
+			left: 0;
+			top: 0;
+		}
 	</style>
 	</head>
 	<body>
@@ -35,11 +45,7 @@ let pegCount = 12;
 let canvas = document.getElementById("canvas");
 canvas.height = baseSize;
 canvas.width = baseSize;
-canvas.style.position = "fixed";
-canvas.style.left = "0";
-canvas.style.top = "0";
 let ctx = canvas.getContext("2d");
-document.body.style.backgroundColor = "magenta";
 
 let items = [];
 

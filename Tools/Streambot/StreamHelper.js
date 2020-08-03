@@ -219,7 +219,7 @@ function CommandTTS(user, args) {
 	let text = args.join(" ");
 	let msg = new SpeechSynthesisUtterance(text);
 	msg.volume = 0.5;
-	voice = GetVoice();
+	if (!voice) voice = GetVoice(); // keep trying to load TTS voice until it's ready
 	if (voice) msg.voice = voice;
 	window.speechSynthesis.speak(msg);
 }

@@ -54,12 +54,12 @@ function CommandGetTokens(user, args) {
 
 function CommandGetLotsOfTokens(user, args) {
     pointHandler.addPoints(user.username, 2000);
-    return {success: true, message: "Your account has been credited 2000 tokens."};
+    return {success: true, message: "Your account has been credited 2,000 tokens."};
 }
 
 function CommandGetTooManyTokens(user, args) {
     pointHandler.addPoints(user.username, 10000);
-    return {success: true, message: "Your account has been credited 10000 tokens."};
+    return {success: true, message: "Your account has been credited 10,000 tokens."};
 }
 
 

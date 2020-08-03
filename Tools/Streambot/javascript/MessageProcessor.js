@@ -6,7 +6,6 @@
 /////////////////////////////////////////////////
 
 function ProcessMessages() {
-	if (!voice) voice = GetVoice(); // keep trying to load TTS voice until it's ready
 	let toProcess = FindChatMessagesToProcess();
 	for (let message of toProcess) {
 		ProcessChatMessage(message);
@@ -16,8 +15,6 @@ function ProcessMessages() {
 	for (let message of activityToProcess) {
 		ProcessActivityMessage(message);
 	}
-
-	//DrawOverlayContent(overlayWindow);
 }
 function FindChatMessagesToProcess() {
 	let chatMessages = Array.from(document.getElementsByClassName("chat-line__message")); 
