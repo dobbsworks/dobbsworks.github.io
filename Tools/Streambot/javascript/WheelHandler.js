@@ -12,6 +12,7 @@ function CommandRandomNext(user, args) {
 }
 
 function CommandRandomWin(user, args) {
+    wheelWindow.resizeTo(0,0);
 	let winningUser = args[0];
 	let availableLevels = StorageHandler.queue.values.filter(x => x.status === levelStatus.pending);
 	let level = availableLevels.find(x => x.username === winningUser);

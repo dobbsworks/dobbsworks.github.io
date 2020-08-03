@@ -305,7 +305,6 @@ function CreateOverlayWindow() {
 	request.open("GET", url, true);
 	request.onload = () => {
 		w.document.write(request.responseText);
-		console.log(w);
 	}
 	request.send();
 
