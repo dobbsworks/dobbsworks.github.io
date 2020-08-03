@@ -22,20 +22,24 @@ function CommandRandomWin(user, args) {
 	}
 }
 
+function isColor(strColor){
+    let s = new Option().style;
+    s.color = strColor;
+    return s.color !== '';
+  }
+
 function CommandWheelColor(user, args) {
     let username = user.username;
-    let errorMessage = "Include a color value (0-360) like this: !wheelcolor 128";
-    let argColor = args[0];
-    if (!argColor || isNaN(argColor)) return {message: errorMessage, success: false};
-    let hueNum = +argColor;
-    if (hueNum < 0 || hueNum > 360) return {message: errorMessage, success: false};
-    hueNum = Math.floor(hueNum);
+    let argColor = args.join(" ");
+    if (!argColor) return {message: "Include a color: !wheelcolor red, !wheelcolor #00FF33", success: false};
+    if (!isColor(argColor)) return {message: `Invalid color "${argColor}", correct usage: !wheelcolor red, !wheelcolor #00FF33`, success: false};
+
     let wheelValues = StorageHandler.wheel.values;
     let userObj = wheelValues.find(x => x.username === username);
     if (userObj) {
-        userObj.hue = hueNum;
+        userObj.color = argColor;
     } else {
-        wheelValues.push({username:username, hue: hueNum});
+        wheelValues.push({username:username, color: argColor});
     }
     StorageHandler.wheel = wheelValues;
 
@@ -106,7 +110,9 @@ function GetWheelData(levels) {
         let setting = wheelSettings.find(s => s.username === x.username);
         let hue = null;
         let pattern = null;
+        let color = null;
         if (setting) {
+            color = setting.color;
             hue = setting.hue;
             pattern = setting.pattern;
             if (setting.expires && setting.expires < +(new Date())) pattern = null;
@@ -116,6 +122,7 @@ function GetWheelData(levels) {
             weight: CalculateLevelWeight(x), 
             isSub: x.isSub,
             hue: hue,
+            color: color,
             pattern: pattern,
         });
     }

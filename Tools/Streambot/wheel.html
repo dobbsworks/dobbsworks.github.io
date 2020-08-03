@@ -134,14 +134,8 @@ function draw() {
 		let item = items[index];
 		// 270 instead of 360 and +20 to aoid magentas (chroma-key)
 		let hue = Math.floor(270 / items.length * index) % 360 + 20;
-		if (item.hue !== undefined && item.hue !== null) hue = item.hue;
-		let sat = "75%";
-		let lum = "50%";
-		if (winnerIndex > -1 && winnerIndex !== index) {
-			sat = "25%";
-			lum = "75%";
-		}
-		let color = "hsl(" + hue + ", " + sat + "," + lum + ")";
+		let color = "hsl(" + hue + ",75%,50%)";
+		if (item.color !== undefined && item.color !== null) color = item.color;
 		item.t1 = cumulativeWeight / totalWeight * (2*Math.PI);
 		item.t2 = (cumulativeWeight + item.weight) / totalWeight * (2*Math.PI);
 		
