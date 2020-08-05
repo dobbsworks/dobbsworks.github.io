@@ -133,6 +133,7 @@ function LoadCommands() {
 		
 		MessageCommand("wheel", "Instead of taking levels in order, we'll go randomly. Your chances of being chosen are based on how long you've been in the queue."),
 		MessageCommand("discord", "Join the discord here: https://discord.gg/cdPmKUP"),
+		MessageCommand("phasetendo", "PhaseTendo is a MM2 game by LurkingTurtleGaming. In normal endless, you race to complete extra clear conditions to advance, such as collecting no coins or not killing any enemies."),
 		
 		MessageCommand("charity", "I'm setting aside $25 of cash every stream that you can have me spend towards the channel's selected charity. Check the channel points for what we're supporting."),
 	
