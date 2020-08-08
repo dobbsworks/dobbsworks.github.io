@@ -1,4 +1,6 @@
 var MinigameHandler = {
+    gameTypes: ["scramble","hangman"],
+    gameType: null,
     gameState: "inactive",
     repeatMode: false,
     answer: "",
@@ -32,15 +34,26 @@ var MinigameHandler = {
             MinigameHandler.WriteMessage("There's already a minigame in progress.");
             return;
         }
+        MinigameHandler.gameType = MinigameHandler.gameTypes[Math.floor(Math.random() * MinigameHandler.gameTypes.length)];
         let puzzle = MinigameHandler.GetPuzzle();
         MinigameHandler.answer = puzzle.answer;
-        MinigameHandler.revealPerHint = Math.ceil(puzzle.answer.length / 10);
-        MinigameHandler.display = MinigameHandler.ScrambleWord(MinigameHandler.answer);
-        MinigameHandler.WriteMessage(`Minigame starting in ${MinigameHandler.timeBeforeStart} seconds! The category is ${puzzle.category}. When the puzzle appears, guess the answer with !guess MY ANSWER`);
+
+        let openingMessage = `${MinigameHandler.gameType.toUpperCase} minigame starting in ${MinigameHandler.timeBeforeStart} seconds! The category is ${puzzle.category}. `;
+        if (MinigameHandler.gameType === "scramble") {
+            MinigameHandler.revealPerHint = Math.ceil(puzzle.answer.length / 10);
+            MinigameHandler.display = MinigameHandler.ScrambleWord(MinigameHandler.answer);
+            openingMessage += `When the puzzle appears, guess the answer with !guess MY ANSWER`;
+        } else if (MinigameHandler.gameType === "hangman") {
+            MinigameHandler.revealPerHint = 0;
+            MinigameHandler.display = MinigameHandler.HideWord(MinigameHandler.answer);
+            openingMessage += `Guess letters with !guess X, or guess the full answer with !guess MY ANSWER`;
+        }
+
         MinigameHandler.gameState = "starting";
         MinigameHandler.timer = -MinigameHandler.timeBeforeStart;
         MinigameHandler.revealIndex = 0;
         MinigameHandler.guesses = [];
+        MinigameHandler.WriteMessage(openingMessage);
     },
     
     ProcessGuess: (user, guess) => {
@@ -63,6 +76,16 @@ var MinigameHandler = {
         let isGuessCorrect = trimmedAnswer === trimmedGuess;
         if (isGuessCorrect) {
             MinigameHandler.GameWin(user);
+        }
+
+        // guess single letter
+        if (MinigameHandler.gameType === "hangman" && guess.length === 1 && MinigameHandler.IsAlphanumeric(guess[0])) {
+            let revealedCount = MinigameHandler.UnhideCharacter(guess);
+            if (revealedCount > 0) {
+                pointHandler.addPoints(user.username, 10);
+                MinigameHandler.WriteMessage(`${revealedCount} ${guess.toUpperCase()}${revealedCount===1?"":"'s"}, ${user.username} has received ${pointHandler.formatValue(10)}.`);
+                MinigameHandler.timer = MinigameHandler.timeBetweenHints;
+            }
         }
     },
 
@@ -106,6 +129,22 @@ var MinigameHandler = {
         }
     },
 
+    UnhideCharacter: (char) => {
+        char = char.toUpperCase();
+        let newDisplay = "";
+        let revealCount = 0;
+        for (let i=0; i<MinigameHandler.display.length; i++) {
+            if (MinigameHandler.answer[i].toUpperCase() === char) {
+                newDisplay += MinigameHandler.answer[i];
+                revealCount++;
+            } else {
+                newDisplay += MinigameHandler.display[i];
+            }
+        }
+        MinigameHandler.display = newDisplay;
+        return revealCount;
+    },
+
     SetChar: (text, char, index) => {
         let letters = text.split("");
         letters[index] = char;
@@ -116,7 +155,8 @@ var MinigameHandler = {
         MinigameHandler.WriteMessage(`${user.username} correctly guessed the answer! ${MinigameHandler.answer}`);
         MinigameHandler.gameState = "inactive"
         MinigameHandler.winner = user;
-        setTimeout( ()=>{MinigameHandler.AwardPrize(); },1000);
+        let winningPoints = (MinigameHandler.gameType === "hangman") ? 50 : 100;
+        setTimeout( ()=>{MinigameHandler.AwardPrize(user.username, winningPoints); },1000);
     },
 
     GameLoss: () => {
@@ -124,10 +164,9 @@ var MinigameHandler = {
         MinigameHandler.gameState = "inactive"
     },
 
-    AwardPrize: () => {
-        let pointPrizeTotal = 100;
-        pointHandler.addPoints(MinigameHandler.winner.username, pointPrizeTotal);
-        MinigameHandler.WriteMessage(`${MinigameHandler.winner.username} has received ${pointHandler.formatValue(pointPrizeTotal)}!`);
+    AwardPrize: (username, pointPrizeTotal) => {
+        pointHandler.addPoints(username, pointPrizeTotal);
+        MinigameHandler.WriteMessage(`${username} has received ${pointHandler.formatValue(pointPrizeTotal)}!`);
 
         if (MinigameHandler.repeatMode) {
             setTimeout( ()=>{MinigameHandler.StartGame(); },1000);
@@ -139,7 +178,7 @@ var MinigameHandler = {
         return alpha.indexOf(letter) > -1 || alpha.toLowerCase().indexOf(letter) > -1;
     },
 
-    // Scramble letters/numbers, leave spaces and special characters in place
+    // Scramble letters/numbers
     // e.g. "Final Fantasy: Crystal Chronicles" 
     // into "NYTNE RCSAAOA: FHTSICY CLRLANLFSI"
     ScrambleWord: (word) => {
@@ -163,6 +202,14 @@ var MinigameHandler = {
             }
         }
         return ret;
+    },
+
+    // Blank out letters/numbers, leave spaces and special characters in place
+    // e.g. "Final Fantasy: Crystal Chronicles" 
+    // into "+++++ +++++++: +++++++ ++++++++++"
+    HideWord: (word) => {
+        let char = "+";
+        return word.split("").map(c => MinigameHandler.IsAlphanumeric(c) ? char : c).join("");
     },
 
     WriteMessage(message) {
