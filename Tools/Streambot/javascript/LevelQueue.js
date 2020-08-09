@@ -98,7 +98,7 @@ function CommandCurrent(user, args) {
 		if (playTime) ret += "It's been live for " + playTime + ". ";
 	}
 	ret += "There " +
-		(pendingLevels.length === 1 ? "is 1 level" : ("are " + pendingLevels.length + "levels")) +
+		(pendingLevels.length === 1 ? "is 1 level" : ("are " + pendingLevels.length + " levels")) +
 		" pending in the queue.";
 	return ret;
 }
