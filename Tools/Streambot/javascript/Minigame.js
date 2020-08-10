@@ -13,6 +13,7 @@ var MinigameHandler = {
     timeBetweenHints: 30,
     revealPerHint: 1,
     timeBetweenGuesses: 10,
+    hideCharacter: "+",
 
     interval: null,
     Init: () => {
@@ -38,7 +39,7 @@ var MinigameHandler = {
         let puzzle = MinigameHandler.GetPuzzle();
         MinigameHandler.answer = puzzle.answer;
 
-        let openingMessage = `${MinigameHandler.gameType.toUpperCase} minigame starting in ${MinigameHandler.timeBeforeStart} seconds! The category is ${puzzle.category}. `;
+        let openingMessage = `${MinigameHandler.gameType.toUpperCase()} minigame starting in ${MinigameHandler.timeBeforeStart} seconds! The category is ${puzzle.category}. `;
         if (MinigameHandler.gameType === "scramble") {
             MinigameHandler.revealPerHint = Math.ceil(puzzle.answer.length / 10);
             MinigameHandler.display = MinigameHandler.ScrambleWord(MinigameHandler.answer);
@@ -134,7 +135,7 @@ var MinigameHandler = {
         let newDisplay = "";
         let revealCount = 0;
         for (let i=0; i<MinigameHandler.display.length; i++) {
-            if (MinigameHandler.answer[i].toUpperCase() === char) {
+            if (MinigameHandler.answer[i].toUpperCase() === char && MinigameHandler.display[i] === MinigameHandler.hideCharacter) {
                 newDisplay += MinigameHandler.answer[i];
                 revealCount++;
             } else {
@@ -208,8 +209,7 @@ var MinigameHandler = {
     // e.g. "Final Fantasy: Crystal Chronicles" 
     // into "+++++ +++++++: +++++++ ++++++++++"
     HideWord: (word) => {
-        let char = "+";
-        return word.split("").map(c => MinigameHandler.IsAlphanumeric(c) ? char : c).join("");
+        return word.split("").map(c => MinigameHandler.IsAlphanumeric(c) ? MinigameHandler.hideCharacter : c).join("");
     },
 
     WriteMessage(message) {
