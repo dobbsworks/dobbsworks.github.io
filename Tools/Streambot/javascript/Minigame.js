@@ -83,9 +83,14 @@ var MinigameHandler = {
         if (MinigameHandler.gameType === "hangman" && guess.length === 1 && MinigameHandler.IsAlphanumeric(guess[0])) {
             let revealedCount = MinigameHandler.UnhideCharacter(guess);
             if (revealedCount > 0) {
-                pointHandler.addPoints(user.username, 10);
-                MinigameHandler.WriteMessage(`${revealedCount} ${guess.toUpperCase()}${revealedCount===1?"":"'s"}, ${user.username} has received ${pointHandler.formatValue(10)}.`);
                 MinigameHandler.timer = MinigameHandler.timeBetweenHints;
+                
+                if (MinigameHandler.answer.toUpperCase() === MinigameHandler.display.toUpperCase()) {
+                    MinigameHandler.GameWin(user);
+                } else {
+                    pointHandler.addPoints(user.username, 10);
+                    MinigameHandler.WriteMessage(`${revealedCount} ${guess.toUpperCase()}${revealedCount===1?"":"'s"}, ${user.username} has received ${pointHandler.formatValue(10)}.`);
+                }
             }
         }
     },

@@ -41,7 +41,7 @@
 			border: none;
 			border-radius: 4px;
 			cursor: pointer;
-			padding: 10px;
+			padding: 6px;
 			font-weight: 600;
 			font-size: 0.8rem;
 		}
@@ -95,6 +95,7 @@
 <body>
 
 	<div id="headerControls">
+		<div id="alertLight"></div>
 	</div>
 
 	<table id="queue">
@@ -209,11 +210,32 @@
 		return displayMinutes.toString().padStart(2, "0") + ":" + displaySeconds.toString().padStart(2, "0");
 	}
 
+	function GetWarningLightColor() {
+		let now = new Date();
+		let targetEndStreamTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12+9, 15, 0);
+		let minutesUntilStreamEnd = (targetEndStreamTime - now) / 1000 / 60;
+		let pendingLevels = StorageHandler.queue.values.filter(x => x.status === "pending");
+
+		let minutesLeftPerLevel = minutesUntilStreamEnd / pendingLevels.length;
+		if (minutesLeftPerLevel >= 11) return "lime";
+		if (minutesLeftPerLevel >= 10) return "greenyellow";
+		if (minutesLeftPerLevel >= 9) return "yellow";
+		if (minutesLeftPerLevel >= 8) return "orange";
+		return "red";
+	}
+
+	function UpdateWarningLight() {
+		let color = GetWarningLightColor();
+		let element = document.getElementById("alertLight");
+		element.style.backgroundColor = color;
+	}
+
 	function Loop() {
 		let checkbox = document.getElementById("autoupdate");
 		if (!checkbox.checked) return;
 		WriteQueueTable();
 		WriteLevelDetails();
+		UpdateWarningLight();
 	}
 
 	setInterval(Loop, 500);
