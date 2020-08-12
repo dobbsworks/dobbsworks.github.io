@@ -106,11 +106,12 @@ function LoadCommands() {
 		Command("roll", 		"CommandRoll", 		commandPermission.all,      commandDisplay.chat,    "Roll the dice! Usage: !roll d6, !roll d20+3"),
 		Command("open", 		"CommandOpenQueue", 	commandPermission.streamer, commandDisplay.panel),
 		Command("close", 		"CommandCloseQueue", 	commandPermission.streamer, commandDisplay.panel),
-		Command("texttospeech",		"CommandTTS", 		commandPermission.reward, 	commandDisplay.hidden),
 		//Command("secondqueueslot",	"CommandQueueSlot",	commandPermission.reward,	commandDisplay.hidden),
 		Command("biggerwheelslice",	"CommandBiggerSlice",	commandPermission.reward, 	commandDisplay.hidden),
 		Command("addcom",		"CommandAddCommand",	commandPermission.mod, 		commandDisplay.hidden),
 	
+		Command("texttospeech",		"CommandTTS", 		commandPermission.reward, 	commandDisplay.hidden),
+		RewardCommand(25, "tts", "CommandTTS", commandPermission.all,    "Makes the computer voice say a thing hehe"),
 		
 		Command("minigame",		"CommandMinigame",	commandPermission.streamer, commandDisplay.hidden),
 		MessageCommand("minigame", "Compete for a better shot at having your level played next! A scrambled word will appear in chat. Use !guess YOUR ANSWER to take a stab at solving the puzzle."),
@@ -180,7 +181,7 @@ function MessageCommand(...args) {
 }
 
 function RewardCommand(...args) {
-	return Command(args[1], args[2], args[3], commandDisplay.reward, "", args[0]);
+	return Command(args[1], args[2], args[3], commandDisplay.reward, args[5], args[0]);
 }
 
 function CommandHelp(user, args) {
@@ -228,7 +229,9 @@ function CommandTTS(user, args) {
 function GetVoice() {
 	if (!voice) {
 		let voices = window.speechSynthesis.getVoices();
-		voice = voices.filter(x => x.name === "Google US English")[0];
+		voice = voices.filter(x => x.name === "Google UK English Female")[0];
+		if (!voice) voice = voices.filter(x => x.name === "Google UK English Male")[0];
+		if (!voice) voice = voices.filter(x => x.name === "Google US English")[0];
 	}
 	return voice;
 }
