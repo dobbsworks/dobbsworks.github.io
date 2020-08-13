@@ -111,7 +111,7 @@ function LoadCommands() {
 		Command("addcom",		"CommandAddCommand",	commandPermission.mod, 		commandDisplay.hidden),
 	
 		Command("texttospeech",		"CommandTTS", 		commandPermission.reward, 	commandDisplay.hidden),
-		RewardCommand(25, "tts", "CommandTTS", commandPermission.all,    "Makes the computer voice say a thing hehe"),
+		RewardCommand(200, "tts", "CommandTTS", commandPermission.all,    "Makes the computer voice say a thing hehe"),
 		
 		Command("minigame",		"CommandMinigame",	commandPermission.streamer, commandDisplay.hidden),
 		MessageCommand("minigame", "Compete for a better shot at having your level played next! A scrambled word will appear in chat. Use !guess YOUR ANSWER to take a stab at solving the puzzle."),
@@ -225,6 +225,10 @@ function CommandTTS(user, args) {
 	if (!voice) voice = GetVoice(); // keep trying to load TTS voice until it's ready
 	if (voice) msg.voice = voice;
 	window.speechSynthesis.speak(msg);
+	msg.onerror = function(event) {
+		WriteMessage("Hey, bot here. ALERT! TTS just DIED or something. @dobbsworks please notice this message, kind of important. Chat, tell dobbs to notice this");
+		console.error('An error has occurred with the speech synthesis: ' + event.error);
+	}
 }
 function GetVoice() {
 	if (!voice) {

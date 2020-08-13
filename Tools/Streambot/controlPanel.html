@@ -227,9 +227,9 @@
 		let pendingLevels = StorageHandler.queue.values.filter(x => x.status === "pending");
 
 		let minutesLeftPerLevel = minutesUntilStreamEnd / pendingLevels.length;
-		if (minutesLeftPerLevel >= 11) return "lime";
-		if (minutesLeftPerLevel >= 10) return "greenyellow";
-		if (minutesLeftPerLevel >= 9) return "yellow";
+		if (minutesLeftPerLevel >= 15) return "lime";
+		if (minutesLeftPerLevel >= 12) return "greenyellow";
+		if (minutesLeftPerLevel >= 10) return "yellow";
 		if (minutesLeftPerLevel >= 8) return "orange";
 		return "red";
 	}

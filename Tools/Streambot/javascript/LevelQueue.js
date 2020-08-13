@@ -21,12 +21,12 @@ function CommandAddLevel(user, args) {
 				if (DoesUserHaveQueueSpace(user.username)) {
 					PushQueueEntry(user, strippedCode);
 					let queuePosition = StorageHandler.queue.values.filter(x => x.status === levelStatus.pending).length;
-					return "Your level has been queued! May the wheel spin in your favor GivePLZ dobbswWheel ";
+					return "Your level has been queued, may the !wheel spin in your favor GivePLZ dobbswWheel ";
 				} else {
 					if (DoesUserHaveReserve(user.username)) {
 						return CommandChangeLevel(user, args);
 					} else {
-						return "You've hit your maximum queue submissions, wait until one of your levels has been cleared."
+						return "You're already in the queue, wait until one of your levels has been cleared, or use !change to swap out the level."
 					}
 				}
 			} else {
