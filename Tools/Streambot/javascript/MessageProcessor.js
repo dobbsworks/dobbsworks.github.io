@@ -6,9 +6,13 @@
 /////////////////////////////////////////////////
 
 function ProcessMessages() {
-	let toProcess = FindChatMessagesToProcess();
-	for (let message of toProcess) {
-		ProcessChatMessage(message);
+	let chatMessages = Array.from(document.getElementsByClassName("chat-line__message")).filter(m => !m.classList.contains("processed")); 
+	for (let message of chatMessages) {
+		ProcessChatMessage(message, false);
+	}
+	let rewardMessages = Array.from(document.getElementsByClassName("user-notice-line")).filter(m => !m.classList.contains("processed"));
+	for (let message of rewardMessages) {
+		ProcessChatMessage(message, true);
 	}
 	
 	let activityToProcess = FindActivityMessagesToProcess();
@@ -16,14 +20,7 @@ function ProcessMessages() {
 		ProcessActivityMessage(message);
 	}
 }
-function FindChatMessagesToProcess() {
-	let chatMessages = Array.from(document.getElementsByClassName("chat-line__message")); 
-	let rewardMessages = Array.from(document.getElementsByClassName("user-notice-line"))
-	let allMessages = [...chatMessages, ...rewardMessages];
-	let toProcess = allMessages.filter(m => !m.classList.contains("processed"));
-	return toProcess;
-}
-function ProcessChatMessage(messageEl) {
+function ProcessChatMessage(messageEl, isReward) {
 	let textFragments = Array.from(messageEl.querySelectorAll(".text-fragment, .chat-image, .mention-fragment"));
 	let stitchedText = textFragments.map(x => x.innerText || x.alt).join("");
 	let selectedReward = messageEl.children[0].innerText.split("\n")[0].replace("Redeemed ","");
@@ -38,7 +35,7 @@ function ProcessChatMessage(messageEl) {
 		selectedReward = selectedReward.replace(username + " redeemed ","");
 	}
 	
-	LogChatMessage({timestamp: new Date(), text: stitchedText, username: username, reward: selectedReward});
+	LogChatMessage({timestamp: new Date(), text: stitchedText, username: username, reward: isReward ? selectedReward : ""});
 
 	// Need to mark as present BEFORE processing command
 	MarkUserAsPresent(username);

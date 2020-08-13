@@ -99,6 +99,9 @@
 		.log {
 			float: right;
 		}
+		#cli {
+			float: right;
+		}
 	</style>
 </head>
 
@@ -120,6 +123,7 @@
 				Auto-update
 				<input type="checkbox" id="autoupdate" checked>
 			</label>
+			<input id="cli" onkeydown="OnCliEvent(e)" />
 		</div>
 	</div>
 
@@ -247,6 +251,18 @@
 		WriteLevelDetails();
 		UpdateWarningLight();
 	}
+
+	function OnCliEvent(e) {
+		if (!e) return;
+		if (e.Key === "Enter") {
+			let el = document.getElementById("cli");
+			let command = el.value;
+			el.value = "";
+			let bc = new BroadcastChannel('helper');
+			bc.postMessage(command);
+		}
+	}
+	document.getElementById("cli").onkeydown = OnCliEvent;
 
 	setInterval(Loop, 500);
 
