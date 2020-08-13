@@ -101,6 +101,9 @@
 		}
 		#cli {
 			float: right;
+			background-color: black;
+			color: white;
+			width: 400px;
 		}
 	</style>
 </head>
@@ -254,7 +257,7 @@
 
 	function OnCliEvent(e) {
 		if (!e) return;
-		if (e.Key === "Enter") {
+		if (e.key === "Enter") {
 			let el = document.getElementById("cli");
 			let command = el.value;
 			el.value = "";
