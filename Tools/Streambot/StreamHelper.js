@@ -4,7 +4,6 @@ let queueWindow = null;
 let overlayWindow = null;
 let marqueeWindow = null;
 let streamerName = "dobbsworks";
-let voice = null;
 var StorageHandler;
 
 let commandPermission = {       // TODO VIP?
@@ -59,6 +58,7 @@ function LoadExternalFunctions() {
 		"PointHandler.js",
 		"SoundboardHandler.js",
 		"Shoutout.js",
+		"TextToSpeechHandler.js",
 	];
 	let cacheBreaker = (+(new Date()));
 	for (let fileName of fileList) {
@@ -216,28 +216,6 @@ function CommandRewards(user, args) {
         let commandList = commandsToDisplay.map(x => "!" + x.name).join(" ");
         return 'Use "!rewards commandName" for more info about a command. Commands: ' + commandList;
     }
-}
-
-function CommandTTS(user, args) {
-	let text = args.join(" ");
-	let msg = new SpeechSynthesisUtterance(text);
-	msg.volume = 0.5;
-	if (!voice) voice = GetVoice(); // keep trying to load TTS voice until it's ready
-	if (voice) msg.voice = voice;
-	window.speechSynthesis.speak(msg);
-	msg.onerror = function(event) {
-		WriteMessage("Hey, bot here. ALERT! TTS just DIED or something. @dobbsworks please notice this message, kind of important. Chat, tell dobbs to notice this");
-		console.error('An error has occurred with the speech synthesis: ' + event.error);
-	}
-}
-function GetVoice() {
-	if (!voice) {
-		let voices = window.speechSynthesis.getVoices();
-		voice = voices.filter(x => x.name === "Google UK English Female")[0];
-		if (!voice) voice = voices.filter(x => x.name === "Google UK English Male")[0];
-		if (!voice) voice = voices.filter(x => x.name === "Google US English")[0];
-	}
-	return voice;
 }
 
 function CommandAddCommand(user, args) {
