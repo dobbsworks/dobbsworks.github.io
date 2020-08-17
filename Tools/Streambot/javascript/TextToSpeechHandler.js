@@ -30,7 +30,7 @@ function TTSLoop() {
 function CommandTTS(user, args) {
 	let text = args.join(" ");
 	let msg = new SpeechSynthesisUtterance(text);
-	msg.volume = 0.5;
+	msg.volume = 1;
 	msg.voice = voice;
 	msg.onerror = function(event) {
 		WriteMessage("Hey, bot here. ALERT! TTS just DIED or something. @dobbsworks please notice this message, kind of important. Chat, tell dobbs to notice this");

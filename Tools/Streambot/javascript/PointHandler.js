@@ -35,8 +35,9 @@ var pointHandler = {
 };
 
 function CommandAddPoints(user, args) {
-    let username = args[0];
+    let username = args[0].replace("@","");
     let pointValue = +(args[1]);
+    if (isNaN(pointValue)) return {success: false, message: `${pointValue} is not a number. Usage: !addpoints @user num`}
     pointHandler.addPoints(username, pointValue);
     return {success: true, message: `Added ${pointValue} tokens.`};
 }

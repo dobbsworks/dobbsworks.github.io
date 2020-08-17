@@ -111,7 +111,7 @@ function LoadCommands() {
 		Command("addcom",		"CommandAddCommand",	commandPermission.mod, 		commandDisplay.hidden),
 	
 		Command("texttospeech",		"CommandTTS", 		commandPermission.reward, 	commandDisplay.hidden),
-		RewardCommand(200, "tts", "CommandTTS", commandPermission.all,    "Makes the computer voice say a thing hehe"),
+		RewardCommand(50, "tts", "CommandTTS", commandPermission.all,    "Makes the computer voice say a thing hehe"),
 		
 		Command("minigame",		"CommandMinigame",	commandPermission.streamer, commandDisplay.hidden),
 		MessageCommand("minigame", "Compete for a better shot at having your level played next! A scrambled word will appear in chat. Use !guess YOUR ANSWER to take a stab at solving the puzzle."),
@@ -229,7 +229,7 @@ function CommandAddCommand(user, args) {
 
 
 function CommandAs(user, args) {
-	let asUser = args[0];
+	let asUser = args[0].replace("@","");
 	let asCommandText = args.slice(1).join(" ");
 	ProcessCommand(asUser, asCommandText, true, []);
 }

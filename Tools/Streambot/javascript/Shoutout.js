@@ -1,7 +1,7 @@
 
 
 function CommandShoutout(user, args) {
-    let targetUser = args[0];
+    let targetUser = args[0].replace("@","");
     if (targetUser) {
         targetUser = targetUser.replace("@","");
         let link = `twitch.tv/${targetUser}`;
@@ -20,7 +20,7 @@ function CommandShoutout(user, args) {
 }
 
 function CommandSetShoutout(user, args) {
-    let targetUser = args[0];
+    let targetUser = args[0].replace("@","");
     let shoutoutText = args.slice(1).join(" ");
     let record = {username: targetUser, text: shoutoutText};
     StorageHandler.shoutout.upsert(record);

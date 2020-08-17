@@ -6,7 +6,7 @@
 /////////////////////////////////////////////////
 
 function CommandSpam(user, args) {
-	let targetUser = args[0];
+	let targetUser = args[0].replace("@","");
 	if (StorageHandler.spamUsers.values.indexOf(targetUser) > -1) {
 		return "User " + targetUser + " is already flagged for possible spam.";
 	} else {
