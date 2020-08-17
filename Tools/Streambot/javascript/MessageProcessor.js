@@ -44,7 +44,11 @@ function ProcessChatMessage(messageEl, isReward) {
 	if (selectedReward.length > 0) {
 		ProcessCommand(username, "!" + selectedReward.replace(/ /g,'') + " " + stitchedText, true, badges);
 	}
-    messageEl.classList.add("processed");
+	messageEl.classList.add("processed");
+
+	// Temp code to see if we can properly detect total bits in a message
+	let bitTotal = Array.from(temp1.querySelectorAll(".chat-line__message--cheer-amount")).map(x => +(x.innerText)).reduce((a,b)=>a+b,0);
+	LogChatMessage({timestamp: new Date(), text: stitchedText, username: username, reward: isReward ? selectedReward : bitTotal + " BITS"});
 }
 
 function ProcessCommand(username, commandText, isReward, badges) {
