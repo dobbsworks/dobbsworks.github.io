@@ -37,6 +37,7 @@ function CommandTTS(user, args) {
 		console.error('An error has occurred with the speech synthesis: ' + event.error);
     }
     pendingTtsItems.push(msg);
+    return {success: true};
 }
 function GetVoice() {
 	if (!voice) {
