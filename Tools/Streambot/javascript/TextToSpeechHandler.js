@@ -28,7 +28,12 @@ function TTSLoop() {
 
 
 function CommandTTS(user, args) {
-	let text = args.join(" ");
+    let text = args.join(" ");
+    TTSMessage(text);
+    return {success: true};
+}
+
+function TTSMessage(text) {
 	let msg = new SpeechSynthesisUtterance(text);
 	msg.volume = 1;
 	msg.voice = voice;
@@ -37,8 +42,8 @@ function CommandTTS(user, args) {
 		console.error('An error has occurred with the speech synthesis: ' + event.error);
     }
     pendingTtsItems.push(msg);
-    return {success: true};
 }
+
 function GetVoice() {
 	if (!voice) {
 		let voices = speechSynthesis.getVoices();
