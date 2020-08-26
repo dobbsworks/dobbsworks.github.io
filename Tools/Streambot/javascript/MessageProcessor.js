@@ -48,7 +48,7 @@ function ProcessChatMessage(messageEl, isReward) {
 
 	let bitTotal = Array.from(messageEl.querySelectorAll(".chat-line__message--cheer-amount")).map(x => +(x.innerText)).reduce((a,b)=>a+b,0);
 	if (bitTotal >= 5) {
-		TTSMessage(stitchedText);
+		TTSMessage(stitchedText.replace(/Cheer [\d]*/g, ""));
 	}
 }
 
