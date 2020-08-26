@@ -3,6 +3,7 @@ let w = null;
 var ball = null;
 
 function StartSim() {
+    ScrambleEntries();
     SetText("");
     planck.testbed('Boxes', function(testbed) {
         var pl = planck, Vec2 = pl.Vec2;
@@ -79,6 +80,17 @@ function Init() {
     } else {
         SetText("Invalid source, url must include one of the following to define user list: <br/> ?source=warpworld&streamer=streamerName <br/> ?source=viewerlevels&streamer=streamerName <br/> ?items=['user1','user2']" );
     }
+}
+
+
+function ScrambleEntries() {
+    let newArray = [];
+    while (users.length > 0) {
+        let randIndex = Math.floor(Math.random() * users.length);
+        let el = users.splice(randIndex,1);
+        newArray.push(el);
+    }
+    users = newArray;
 }
 
 
