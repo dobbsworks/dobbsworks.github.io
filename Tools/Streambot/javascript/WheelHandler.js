@@ -48,7 +48,7 @@ function CommandWheelColor(user, args) {
 
 function CommandWheelPattern(user, args) {
     let username = user.username;
-    let allowed = ["heart","star","bowser","club"];
+    let allowed = ["star","bowser","heart","club","diamond","spade","checker","dobbs"];
     let allowedStr = allowed.join(', ');
     let errorMessage = `Include a pattern name (${allowedStr}) like this: !wheelpattern star`;
     let argPattern = args[0];
