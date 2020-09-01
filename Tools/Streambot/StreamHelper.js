@@ -112,7 +112,7 @@ function LoadCommands() {
 		Command("addcom", "CommandAddCommand", commandPermission.mod, commandDisplay.hidden),
 	
 		Command("texttospeech", "CommandTTS", commandPermission.reward, commandDisplay.hidden),
-		//RewardCommand(50, "tts", "CommandTTS", commandPermission.all, "Makes the computer voice say a thing hehe"),
+		Command("tts", "CommandTTS", commandPermission.streamer, "Makes the computer voice say a thing hehe"),
 		
 		Command("minigame", "CommandMinigame", commandPermission.streamer, commandDisplay.hidden),
 		MessageCommand("minigame", "Compete for a better shot at having your level played next! A scrambled word will appear in chat. Use !guess YOUR ANSWER to take a stab at solving the puzzle."),

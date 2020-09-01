@@ -43,7 +43,10 @@ var soundboardHandler = {
         { volume: 0.7, key: "toast", file: "toast.mp3" },
         { volume: 0.8, key: "sm64-game-over", file: "sm64-game-over.mp3" },
         { volume: 0.8, key: "drum-rimshot", file: "drum-rimshot.mp3" },
-        { volume: 0.8, key: "crickets", file: "crickets.mp3" }
+        { volume: 0.8, key: "crickets", file: "crickets.mp3" },
+        { volume: 0.8, key: "space", file: "space.mp3" },
+        { volume: 0.8, key: "space-dad", file: "space-dad.mp3" },
+        { volume: 0.8, key: "space-space", file: "space-space.mp3" },
     ],
     findSound: (arg) => {
         let sound = soundboardHandler.sounds.find(x => x.id === +(arg));
