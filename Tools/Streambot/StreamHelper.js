@@ -10,7 +10,7 @@ let commandPermission = {       // TODO VIP?
 	"all": "all",
 	//"follower": "follower",     // doesn't work yet
 	"subscriber": "subscriber", 
-	//"mod": "mod",               // doesn't work yet
+	"mod": "mod",
 	"streamer": "streamer",
 	"reward": "reward",
 };
@@ -109,13 +109,13 @@ function LoadCommands() {
 		Command("close", "CommandCloseQueue", commandPermission.streamer, commandDisplay.panel),
 		//Command("secondqueueslot", "CommandQueueSlot", commandPermission.reward, commandDisplay.hidden),
 		Command("biggerwheelslice", "CommandBiggerSlice", commandPermission.reward, commandDisplay.hidden),
-		Command("addcom", "CommandAddCommand", commandPermission.mod, commandDisplay.hidden),
+		Command("addcom", "CommandAddCommand", commandPermission.mod, commandDisplay.hidden, "Adds a text command for the duration of the stream. Usage: !addcom myCom This is the response"),
 	
 		Command("texttospeech", "CommandTTS", commandPermission.reward, commandDisplay.hidden),
 		Command("tts", "CommandTTS", commandPermission.streamer, "Makes the computer voice say a thing hehe"),
 		
 		Command("minigame", "CommandMinigame", commandPermission.streamer, commandDisplay.hidden),
-		MessageCommand("minigame", "Compete for a better shot at having your level played next! A scrambled word will appear in chat. Use !guess YOUR ANSWER to take a stab at solving the puzzle."),
+		MessageCommand("minigame", "Compete for bonus tokens! Use !guess YOUR ANSWER to take a stab at solving the puzzle."),
 		Command("guess", "CommandMinigameGuess",commandPermission.all, commandDisplay.hidden),
 		
 		Command("tickeradd", "CommandTickerAdd", commandPermission.mod, commandDisplay.hidden),

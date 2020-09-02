@@ -56,7 +56,8 @@ function ProcessCommand(username, commandText, isReward, badges) {
 	let user = {
 		username: username,
 		badges: badges,
-		isSub: badges && badges.some(x => x.toLowerCase().indexOf("subscriber") > -1)
+		isSub: badges && badges.some(x => x.toLowerCase().indexOf("subscriber") > -1),
+		isMod: badges && badges.some(x => x.toLowerCase().indexOf("moderator") > -1)
 	};
 	if (commandText.length < 2) return;
     let commandArgs = commandText.split(" ");
@@ -66,8 +67,12 @@ function ProcessCommand(username, commandText, isReward, badges) {
 		let hasValidPermission = false;
 		
 		if (command.permissions === commandPermission.all) hasValidPermission = true;
+		
 		if (command.permissions === commandPermission.subscriber) {
 			if (user.isSub) hasValidPermission = true;
+		}
+		if (command.permissions === commandPermission.mod) {
+			if (user.isMod) hasValidPermission = true;
 		}
 		if (command.permissions === commandPermission.reward) {
 			if (isReward) hasValidPermission = true;
