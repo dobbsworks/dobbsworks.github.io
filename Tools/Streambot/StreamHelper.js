@@ -183,7 +183,7 @@ function MessageCommand(...args) {
 }
 
 function RewardCommand(...args) {
-	return Command(args[1], args[2], args[3], commandDisplay.reward, args[5], args[0]);
+	return Command(args[1], args[2], args[3], commandDisplay.reward, args[4], args[0]);
 }
 
 function CommandHelp(user, args) {
