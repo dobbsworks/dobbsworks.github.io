@@ -114,7 +114,7 @@ function LoadCommands() {
 		Command("texttospeech", "CommandTTS", commandPermission.reward, commandDisplay.hidden),
 		Command("tts", "CommandTTS", commandPermission.streamer, "Makes the computer voice say a thing hehe"),
 		
-		Command("minigame", "CommandMinigame", commandPermission.streamer, commandDisplay.hidden),
+		Command("minigame", "CommandMinigame", commandPermission.mod, commandDisplay.hidden),
 		MessageCommand("minigame", "Compete for bonus tokens! Use !guess YOUR ANSWER to take a stab at solving the puzzle."),
 		Command("guess", "CommandMinigameGuess",commandPermission.all, commandDisplay.hidden),
 		
