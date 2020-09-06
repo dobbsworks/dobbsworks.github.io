@@ -1,10 +1,7 @@
 function CommandSoundBoard(user, args) {
     let searchString = args[0];
-    let playSuccess = soundboardHandler.play(searchString);
-
-    let message = "";
-    if (!playSuccess) message = "Sound not found, use !sounds to check available options";
-    return { message: message, success: playSuccess };
+    let message = soundboardHandler.play(searchString);
+    return { message: message, success: message.length === 0 };
 }
 
 function CommandSoundList(user, args) {
@@ -76,14 +73,15 @@ var soundboardHandler = {
     play: (arg) => {
         soundboardHandler.initSounds();
         let sound = soundboardHandler.findSound(arg);
-        if (!sound) return false;
+        if (!sound) return "Sound not found, use !sounds to check available options";
         let url = soundboardHandler.baseUrl + sound.file;
         let audio = new Audio(url);
         audio.volume = sound.volume * soundboardHandler.masterVolume;
         if (audio.volume > 1) audio.volume = 1;
         if (audio.volume < 0) audio.volume = 0;
+        if (audio.duration > 15) return "ok, so Dobbs might've goofed this sound up, try a different one.";
         audio.play();
-        return true;
+        return "";
     }
 }
 soundboardHandler.initSounds();

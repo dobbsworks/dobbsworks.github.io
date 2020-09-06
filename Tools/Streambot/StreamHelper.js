@@ -139,6 +139,8 @@ function LoadCommands() {
 		MessageCommand("phasetendo", "PhaseTendo is a MM2 game by LurkingTurtleGaming. In normal endless, you race to complete extra clear conditions to advance, such as collecting no coins or not killing any enemies."),
 		
 		MessageCommand("charity", "I'm setting aside $25 of cash every stream that you can have me spend towards the channel's selected charity. Check the channel points for what we're supporting."),
+		MessageCommand("horse", "honse"),
+		MessageCommand("plunk", "plunk successful, thank you."),
 	
 		Command("gettokens", "CommandGetTokens", commandPermission.reward, commandDisplay.hidden),
 		Command("getlotsoftokens", "CommandGetLotsOfTokens", commandPermission.reward, commandDisplay.hidden),
