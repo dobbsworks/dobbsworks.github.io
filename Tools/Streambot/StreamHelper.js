@@ -141,6 +141,7 @@ function LoadCommands() {
 		MessageCommand("charity", "I'm setting aside $25 of cash every stream that you can have me spend towards the channel's selected charity. Check the channel points for what we're supporting."),
 		MessageCommand("horse", "honse"),
 		MessageCommand("plunk", "plunk successful, thank you."),
+		MessageCommand("disney", "https://disneydunces.podbean.com/"),
 	
 		Command("gettokens", "CommandGetTokens", commandPermission.reward, commandDisplay.hidden),
 		Command("getlotsoftokens", "CommandGetLotsOfTokens", commandPermission.reward, commandDisplay.hidden),
