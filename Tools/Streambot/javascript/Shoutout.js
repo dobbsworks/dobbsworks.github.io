@@ -12,7 +12,7 @@ function CommandShoutout(user, args) {
             text = text.replace("$name", targetUser);
             return text;
         } else {
-            return `Generic shout-out to ${targetUser}, watch them at ${link}`;
+            return `Shout-out to ${targetUser}! Watch them at ${link}`;
         }
     } else {
         return "WOOO";
