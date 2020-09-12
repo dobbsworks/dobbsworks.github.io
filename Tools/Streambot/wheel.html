@@ -41,7 +41,7 @@
 	<script type="text/javascript">
 	
 let baseSize = Math.floor(Math.min(window.innerWidth, window.innerHeight));
-let margin = 50;
+let margin = 70;
 let r = (baseSize / 2) - margin;
 let center = (baseSize / 2);
 let pegCount = 12;
@@ -50,6 +50,7 @@ let canvas = document.getElementById("canvas");
 canvas.height = baseSize;
 canvas.width = baseSize;
 let ctx = canvas.getContext("2d");
+ctx.textAlign = "center";
 
 let items = [];
 
@@ -60,10 +61,10 @@ let rotationSpeed = 0;
 let confetti = [];
 let music = null;
 let cheer = null;
-let bowserEvent = "";
+let wheelEvent = "";
 
 function init() {
-	bowserEvent = (Math.random() < 0.12) ? RandomFrom(["reversal", "revolution", "revolution"]) : "";
+	wheelEvent = (Math.random() < 0.12) ? RandomFrom(["reversal", "revolution", "prize"]) : "";
 	let ytid = RandomFrom([
 		"gDn4NRVkG4Y", // BK Furnace Fun
 		"RMhhcz8wfEU", // SMRPG victory
@@ -90,7 +91,7 @@ function init() {
 		"IsrddmREt28", // Diddy Kong Racing - character select
 	]);
 	if (!ytid) ytid = "gDn4NRVkG4Y";
-	if (bowserEvent) ytid = "Rz-J4WJnkIM" // 3d World Bowser theme
+	if (isBowserEvent()) ytid = "Rz-J4WJnkIM" // 3d World Bowser theme
 	music = PlayAudio(ytid);
 	if (confetti.length === 0) for (let i = 0; i < 100; i++) {
 		confetti.push({
@@ -103,10 +104,8 @@ function init() {
 	
 	items.forEach(item => item.text = item.name.substring(0,14));
 
-	if (bowserEvent) {
-		if (bowserEvent === "revolution") items.forEach(item => item.targetWeight = 1);
-		if (bowserEvent === "reversal") items.forEach(item => item.targetWeight = 1 / item.weight);
-	}
+	if (wheelEvent === "revolution") items.forEach(item => item.targetWeight = 1);
+	if (wheelEvent === "reversal") items.forEach(item => item.targetWeight = 1 / item.weight);
 
 	createPatterns();
 	// try again in case images failed to load?
@@ -128,12 +127,57 @@ function createPatterns() {
 	}
 }
 
+function isBowserEvent() {
+	return wheelEvent === "reversal" || wheelEvent === "revolution";
+}
+
+function isPrizeChosen() {
+	if (wheelEvent == "prize") {
+		let finalRot = rotation % (Math.PI*2);
+		return (finalRot <= 3 * Math.PI / 2 && finalRot >= 3 * Math.PI / 2 - Math.PI / 6);
+	}
+	return false;
+}
+
+function arcText(text, radius, theta) {
+	// draw text along the circumference
+	// draw letter by letter for actual curved text
+	let textHeight = 50;
+	ctx.font = textHeight + "px Arial";
+	ctx.strokeStyle = "black";
+	ctx.fillStyle = "white";
+	ctx.translate(center, center);
+	ctx.rotate(theta);
+	ctx.strokeText(text, 0, radius+textHeight);
+	ctx.fillText(text, 0, radius+textHeight);
+	ctx.rotate(-theta);
+	ctx.translate(-center, -center);
+}
+
 function draw() {
 	ctx.clearRect(0,0,baseSize, baseSize);
 	if (items.length === 0) return;
+	if (wheelEvent === "prize") {
+		ctx.strokeStyle = "black";
+		ctx.fillStyle = "gold";
+		ctx.beginPath();
+		ctx.moveTo(center, center);
+		ctx.arc(center, center, r + margin - 5, 0+rotation, Math.PI*2/12+rotation);
+		ctx.lineTo(center, center);
+		ctx.fill();
+		ctx.stroke();
+		
+
+		arcText("P", r, rotation - Math.PI/2 +  Math.PI*2/12/2 + 0.18);
+		arcText("R", r, rotation - Math.PI/2 +  Math.PI*2/12/2 + 0.08);
+		arcText("I", r, rotation - Math.PI/2 +  Math.PI*2/12/2);
+		arcText("Z", r, rotation - Math.PI/2 +  Math.PI*2/12/2 - 0.08);
+		arcText("E", r, rotation - Math.PI/2 +  Math.PI*2/12/2 - 0.18);
+	}
 	
 	let totalWeight = items.map(x => x.weight).reduce((a,b)=>a+b,0);
 	let cumulativeWeight = 0;
+
 	for (let index = 0; index < items.length; index++) {
 		let item = items[index];
 		// 270 instead of 360 and +20 to aoid magentas (chroma-key)
@@ -150,7 +194,7 @@ function draw() {
 		ctx.arc(center, center, r, item.t1+rotation, item.t2+rotation);
 		ctx.lineTo(center, center);
 		ctx.fill();
-		if (bowserEvent) {
+		if (isBowserEvent()) {
 			ctx.fillStyle = patterns.bowser;
 			ctx.fill();
 		} else if (item.isSub || item.pattern) {
@@ -202,11 +246,10 @@ function draw() {
 			if (nameIndex >= nameRevealCount) break;
 			if (nameIndex < nameHideCount) continue;
 			let item = items[nameIndex];
-			let textWidth = ctx.measureText(item.text).width;
 			let centerX = center + 0.75 * r * Math.cos((item.t1+item.t2)/2+rotation);
 			let centerY = center + 0.75 * r * Math.sin((item.t1+item.t2)/2+rotation);
-			ctx.strokeText(item.text, centerX - textWidth/2, centerY + textHeight/4);
-			ctx.fillText(item.text, centerX - textWidth/2, centerY + textHeight/4);
+			ctx.strokeText(item.text, centerX, centerY + textHeight/4);
+			ctx.fillText(item.text, centerX, centerY + textHeight/4);
 		}	
 	}
 	
@@ -216,13 +259,13 @@ function draw() {
 		let winner = items[winnerIndex];
 		let text = winner.name;
 		let textWidth = ctx.measureText(text).width;
-		ctx.strokeText(text, center - textWidth/2, center);
-		ctx.fillText(text, center - textWidth/2, center);
+		ctx.strokeText(text, center, center);
+		ctx.fillText(text, center, center);
 		
 		text = "wins!"
-		textWidth = ctx.measureText(text).width;
-		ctx.strokeText(text, center - textWidth/2, center + 60);
-		ctx.fillText(text, center - textWidth/2, center + 60);
+		if (isPrizeChosen()) text = "wins + BONUS!"
+		ctx.strokeText(text, center, center + 60);
+		ctx.fillText(text, center, center + 60);
 		
 		// confetti
 		for (let c of confetti) {
@@ -235,7 +278,7 @@ function draw() {
 	
 	if (bowserAdjust >= 1) {
 		drawBowserTitle("BOWSER", 450);
-		drawBowserTitle(bowserEvent.toUpperCase() , 550);
+		drawBowserTitle(wheelEvent.toUpperCase() , 550);
 	}
 }
 
@@ -244,9 +287,8 @@ function drawBowserTitle(text, y) {
 	ctx.fillStyle = "red";
 	ctx.strokeStyle = "#000";	
 	ctx.font = "100px Grobold";
-	let textWidth = ctx.measureText(text).width;
-	ctx.strokeText(text, center - textWidth/2, y);
-	ctx.fillText(text, center - textWidth/2, y);
+	ctx.strokeText(text, center, y);
+	ctx.fillText(text, center, y);
 }
 
 function getSelectedItem() {
@@ -305,7 +347,7 @@ function setupTimers() {
 
 
 	// bowser event
-	if (bowserEvent) {
+	if (isBowserEvent()) {
 		setTimeout(PlayLaugh, timer);
 		setTimeout(() => {bowserAdjust = 2}, timer);
 		timer += 4000;
@@ -363,6 +405,8 @@ function setupTimers() {
 function SendWinner(winningUser) {
 	console.log("Sending user " + winningUser);
 	(new BroadcastChannel('helper')).postMessage('!randomwin ' + winningUser);
+	
+	if (isPrizeChosen()) (new BroadcastChannel('helper')).postMessage('!bonusprize ' + winningUser);
 }
 
 

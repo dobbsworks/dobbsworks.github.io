@@ -22,6 +22,11 @@ function CommandRandomWin(user, args) {
 	}
 }
 
+function CommandBonusPrize(user, args) {
+	let winningUser = args[0];
+    return "Whoa, @dobbsworks, we got a big winner over here!";
+}
+
 function isColor(strColor){
     let s = new Option().style;
     s.color = strColor;

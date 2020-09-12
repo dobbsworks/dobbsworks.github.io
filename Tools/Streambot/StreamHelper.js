@@ -103,6 +103,7 @@ function LoadCommands() {
 		Command("randomnext", "CommandRandomNext", commandPermission.streamer, commandDisplay.panel),
 		Command("freeze", "CommandFreezeLevel", commandPermission.streamer, commandDisplay.panel),
 		Command("randomwin", "CommandRandomWin", commandPermission.streamer, commandDisplay.hidden),
+		Command("bonusprize", "CommandBonusPrize", commandPermission.streamer, commandDisplay.hidden),
 		Command("resettimer", "CommandResetTimer", commandPermission.streamer, commandDisplay.panel),
 		Command("roll", "CommandRoll", commandPermission.all, commandDisplay.chat, "Roll the dice! Usage: !roll d6, !roll d20+3"),
 		Command("open", "CommandOpenQueue", commandPermission.streamer, commandDisplay.panel),

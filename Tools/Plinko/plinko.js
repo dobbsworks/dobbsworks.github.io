@@ -3,7 +3,7 @@ let w = null;
 var ball = null;
 
 function StartSim() {
-    ScrambleEntries();
+    if (scrambleRequested) ScrambleEntries();
     SetText("");
     planck.testbed('Boxes', function(testbed) {
         var pl = planck, Vec2 = pl.Vec2;
@@ -59,12 +59,14 @@ function StartSim() {
 
 
 let users = null;
+let scrambleRequested = false;
 
 function Init() {
     var params = new URL(window.location.href).searchParams;
     var source = params.get("source");
     var streamer = params.get("streamer");
     var items = params.get("items");
+    scrambleRequested = params.get("scramble").toLowerCase() == "true"; 
 
     if (source === "warpworld") {
         GetUsersFromUrl(`https://api.warp.world/${streamer}/warp_queue`, (res) => {
