@@ -91,6 +91,7 @@ function LoadCommands() {
 		Command("clearqueue", "CommandClearOldLevels", commandPermission.streamer, commandDisplay.panel),
 		MessageCommand("position", "Levels are processed in a semi-random order. The longer you're in the queue, the better your chance! Use !slice to check your current chances."),
 		Command("slice", "CommandSlice", commandPermission.all, commandDisplay.chat, "Check your level's chance of being chosen next. Usage: !slice"),
+		Command("odds", "CommandSlice", commandPermission.all, commandDisplay.none, "Check your level's chance of being chosen next. Usage: !slice"),
 
 		Command("help", "CommandHelp", commandPermission.all, commandDisplay.hidden),
 		Command("commands", "CommandHelp", commandPermission.all, commandDisplay.hidden),
