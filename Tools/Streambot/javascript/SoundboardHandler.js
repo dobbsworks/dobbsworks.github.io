@@ -48,7 +48,7 @@ var soundboardHandler = {
     ],
     findSound: (arg) => {
         let sound = soundboardHandler.sounds.find(x => x.id === +(arg));
-        if (!sound) sound = soundboardHandler.sounds.find(x => x.key === arg);
+        if (!sound) sound = soundboardHandler.sounds.find(x => x.key === arg.toLowerCase());
         return sound;
     },
     initialized: false,

@@ -157,7 +157,7 @@ function LoadCommands() {
 		RewardCommand(25, "levelidea", "CommandLevelIdea", commandPermission.all, "Generates a random level idea."),
 		
 		RewardCommand(100, "sound", "CommandSoundBoard", commandPermission.all, "Play a sound. Use !sounds for a list of options."),
-		Command("sounds", "CommandSoundList", commandPermission.all, "Display sounds for !soundboard"),
+		Command("soundlist", "CommandSoundList", commandPermission.all, "Display sounds for !soundboard"),
 
 		Command("so", "CommandShoutout", commandPermission.mod, commandDisplay.hidden, "Usage: !so username"),
 		Command("setshoutout", "CommandSetShoutout", commandPermission.mod, commandDisplay.hidden, "Usage: !so username Shout-out to $name!"),
@@ -174,6 +174,7 @@ function LoadCommands() {
 		AliasCommand("shop", "rewards"),
 		AliasCommand("reward", "rewards"),
 		AliasCommand("pos", "position"),
+		AliasCommand("sounds", "soundlist"),
 	];
 }
 
@@ -201,7 +202,11 @@ function AliasCommand(alias, targetCommandName) {
 }
 
 function GetCommandsByName(commandName) {
-	return commands.filter(x => x.name.toLowerCase() === commandName.toLowerCase());
+	let allCommandNames = [
+		...(aliases.filter(x => x.alias.toLowerCase() === commandName.toLowerCase()).map(x => x.targetCommandName)),
+		commandName
+	].map(x => x.toLowerCase());
+	return commands.filter(x => allCommandNames.indexOf(x.name.toLowerCase()) > -1);
 }
 
 function CommandHelp(user, args) {
