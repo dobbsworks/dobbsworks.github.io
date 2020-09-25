@@ -201,7 +201,7 @@ function AliasCommand(alias, targetCommandName) {
 }
 
 function GetCommandsByName(commandName) {
-	return commands.filter(x => x.name.toLowerCase() === commName.toLowerCase());
+	return commands.filter(x => x.name.toLowerCase() === commandName.toLowerCase());
 }
 
 function CommandHelp(user, args) {
