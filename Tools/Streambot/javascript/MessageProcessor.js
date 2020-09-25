@@ -61,8 +61,8 @@ function ProcessCommand(username, commandText, isReward, badges) {
 	};
 	if (commandText.length < 2) return;
     let commandArgs = commandText.split(" ");
-    let commandName = commandArgs.splice(0,1)[0].toLowerCase();
-    let matchingCommands = commands.filter(x => "!" + x.name === commandName.toLowerCase());
+	let commandName = commandArgs.splice(0,1)[0].toLowerCase();
+	let matchingCommands = GetCommandsByName(commandName.replace("!",""));
     for (let command of matchingCommands) {
 		let hasValidPermission = false;
 		

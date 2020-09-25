@@ -75,28 +75,23 @@ function LoadExternalFunctions() {
 // The return value of each command will be sent as a reply
 
 let commands = [];
+let aliases = [];
 function LoadCommands() {
 	commands = [
 		Command("add", "CommandAddLevel", commandPermission.all, commandDisplay.chat, "Add a level to the queue. Usage: !add LEV-ELC-ODE"),
 		Command("afk", "CommandAfk", commandPermission.all, commandDisplay.chat, "Mark yourself as AFK so that your level doesn't get played until you get back."),
-		Command("brb", "CommandAfk", commandPermission.all, commandDisplay.none, "Mark yourself as AFK so that your level doesn't get played until you get back."),
 		Command("notspam", "CommandNotSpam", commandPermission.all, commandDisplay.hidden),
 		Command("spam", "CommandSpam", commandPermission.mod, commandDisplay.hidden),
 		Command("spamlist", "CommandSpamList", commandPermission.mod, commandDisplay.hidden),
 		Command("reserve", "CommandReserve", commandPermission.all, commandDisplay.chat, "Reserve a spot in the queue without a code. Usage: !reserve"),
 		Command("replace", "CommandChangeLevel", commandPermission.all, commandDisplay.hidden, "Change your queued level id. Usage: !change LEV-ELC-ODE"),
-		Command("change", "CommandChangeLevel", commandPermission.all, commandDisplay.chat, "Change your queued level id. Usage: !change LEV-ELC-ODE"),
 		Command("leave", "CommandLeaveQueue", commandPermission.all, commandDisplay.chat, "Remove your levels from the queue."),
-		Command("remove", "CommandLeaveQueue", commandPermission.all, commandDisplay.hidden),
 		Command("clearqueue", "CommandClearOldLevels", commandPermission.streamer, commandDisplay.panel),
 		MessageCommand("position", "Levels are processed in a semi-random order. The longer you're in the queue, the better your chance! Use !slice to check your current chances."),
 		Command("slice", "CommandSlice", commandPermission.all, commandDisplay.chat, "Check your level's chance of being chosen next. Usage: !slice"),
-		Command("odds", "CommandSlice", commandPermission.all, commandDisplay.none, "Check your level's chance of being chosen next. Usage: !slice"),
 
 		Command("help", "CommandHelp", commandPermission.all, commandDisplay.hidden),
-		Command("commands", "CommandHelp", commandPermission.all, commandDisplay.hidden),
 		Command("list", "CommandList", commandPermission.all, commandDisplay.chat, "Displays the upcoming levels from the queue."),
-		Command("queue", "CommandList", commandPermission.all, commandDisplay.hidden),
 		Command("current", "CommandCurrent", commandPermission.all, commandDisplay.chat, "Displays information about the level being played."),
 		Command("complete", "CommandComplete", commandPermission.streamer, commandDisplay.panel),
 		Command("skip", "CommandSkip", commandPermission.streamer, commandDisplay.panel),
@@ -129,8 +124,6 @@ function LoadCommands() {
 		Command("exportchat", "CreateChatLogWindow",commandPermission.streamer, commandDisplay.panel),
 		
 		MessageCommand("maker", "My maker id is: S2C-HX7-01G"),
-		MessageCommand("makerid", "My maker id is: S2C-HX7-01G"),
-		MessageCommand("id", "My maker id is: S2C-HX7-01G"),
 		MessageCommand("priority", "Your level will cut ahead of any level that isn't in the priority queue. Note that you need to already have your level in the queue before redeeming this reward!"),
 		MessageCommand("bot", "Hello there, I'm the bot! Dobbs wrote me in JavaScript of all things. I handle the level queue and stuff. Sometimes I break for no good reason! Kappa"),
 		MessageCommand("schedule", "all times in Eastern: Mon 8:30PM, Wed 5PM, Sat 2PM. Mario Maker every stream except Monday."),
@@ -155,7 +148,6 @@ function LoadCommands() {
 
 
 		Command("rewards", "CommandRewards", commandPermission.all, commandDisplay.chat, "Get information about the things you can spend !tokens on."),
-		Command("reward", "CommandRewards", commandPermission.all, commandDisplay.chat, "Get information about the things you can spend !tokens on."),
 	
 		RewardCommand(100, "wheelcolor", "CommandWheelColor", commandPermission.all, "Sets the color for your slice of the !wheel. Example: !wheelcolor red OR !wheelcolor #AA5D00"),
 		RewardCommand(250, "wheelpattern", "CommandWheelPattern", commandPermission.all, "Sets the background pattern for your slice of the !wheel. Lasts one hour for non-subs. Example: !wheelpattern star"),
@@ -169,6 +161,19 @@ function LoadCommands() {
 
 		Command("so", "CommandShoutout", commandPermission.mod, commandDisplay.hidden, "Usage: !so username"),
 		Command("setshoutout", "CommandSetShoutout", commandPermission.mod, commandDisplay.hidden, "Usage: !so username Shout-out to $name!"),
+	];
+	aliases = [
+		AliasCommand("brb", "afk"),
+		AliasCommand("change", "replace"),
+		AliasCommand("remove", "leave"),
+		AliasCommand("odds", "slice"),
+		AliasCommand("commands", "help"),
+		AliasCommand("queue", "list"),
+		AliasCommand("makerid", "maker"),
+		AliasCommand("id", "maker"),
+		AliasCommand("shop", "rewards"),
+		AliasCommand("reward", "rewards"),
+		AliasCommand("pos", "position"),
 	];
 }
 
@@ -191,10 +196,18 @@ function RewardCommand(...args) {
 	return Command(args[1], args[2], args[3], commandDisplay.reward, args[4], args[0]);
 }
 
+function AliasCommand(alias, targetCommandName) {
+	return {alias: alias, targetCommandName: targetCommandName};
+}
+
+function GetCommandsByName(commandName) {
+	return commands.filter(x => x.name.toLowerCase() === commName.toLowerCase());
+}
+
 function CommandHelp(user, args) {
     let commName = args[0];
     if (commName) {
-        let command = commands.find(x => x.name.toLowerCase() === commName.toLowerCase());
+        let command = GetCommandsByName(commName)[0];
         if (command && command.help) {
             return command.help;
         } else {
@@ -210,7 +223,7 @@ function CommandHelp(user, args) {
 function CommandRewards(user, args) {
     let commName = args[0];
     if (commName) {
-        let command = commands.find(x => x.name.toLowerCase() === commName.toLowerCase());
+        let command = GetCommandsByName(commName)[0];
         if (command) {
 			let text = command.help;
 			if (!text) text = "";
