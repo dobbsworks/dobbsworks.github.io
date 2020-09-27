@@ -111,7 +111,7 @@
 			return;
 		}
 
-		let wheelData = GetWheelData(StorageHandler.queue.values.filter(x => x.status === "pending"));
+		let wheelData = GetWheelData();
 		let totalWeight = wheelData.map(x => x.weight).reduce((a,b) => a+b, 0);
 
 

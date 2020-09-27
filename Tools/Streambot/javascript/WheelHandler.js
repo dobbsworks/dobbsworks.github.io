@@ -5,8 +5,7 @@ function CommandRandomNext(user, args) {
 	if (currentLevel) {
 		return "There's still a level going on, mark it as complete/skipped first.";
 	} else {
-		let availableLevels = StorageHandler.queue.values.filter(x => x.status === levelStatus.pending);
-		CreateWheelOfLevels(availableLevels);
+		CreateWheelOfLevels(StorageHandler.queue.values);
 		return "HERE COMES THE WHEEL GivePLZ dobbswWheel TakeNRG";
 	}
 }
@@ -107,11 +106,13 @@ function CreateWheelOfLevels(levels) {
 	return wheelWindow;
 }
 
-function GetWheelData(levels) {
+function GetWheelData() {
+    let levels = StorageHandler.queue.values;
     let wheelSettings = StorageHandler.wheel.values;
     let wheelData = [];
     for (let x of levels) {
         if (x.afkStartTime) continue; // user is AFK
+        if (x.status !== levelStatus.pending) continue;
         let setting = wheelSettings.find(s => s.username === x.username);
         let hue = null;
         let pattern = null;
@@ -138,11 +139,13 @@ function CommandBiggerSlice(user, args) {
 	// find all levels for this user that are pending and not priority
 	let levels = StorageHandler.queue.values;
 	let userLevels = levels.filter(x => x.username === user.username && x.status === levelStatus.pending && !x.isPriority);
-	if (userLevels.length === 0) return "There are no valid levels to prioritize.";
+	if (userLevels.length === 0) return {message: "There are no valid levels to prioritize.", success: false};
 	let levelToPrioritze = userLevels[0];
 	levelToPrioritze.weightPriorityPurchases += 1;
-	StorageHandler.queue = levels;
+    StorageHandler.queue = levels;
+    return {message: "Wheel slice upgraded!", success: true};
 }
+
 
 function CalculateLevelWeight(level) {
     let now = new Date();
@@ -157,7 +160,7 @@ function CalculateLevelWeight(level) {
 
 function CommandSlice(user, args) {
     // get chance of being selected next
-    let levels = GetWheelData(StorageHandler.queue.values.filter(x => x.status === "pending"));
+    let levels = GetWheelData();
     let myLevel = levels.find(x => x.name === user.username);
     if (!myLevel) return "You don't have a level in the queue right now.";
     let myWeight = myLevel.weight;
