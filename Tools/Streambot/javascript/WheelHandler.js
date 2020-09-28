@@ -112,7 +112,7 @@ function GetWheelData() {
     let wheelData = [];
     for (let x of levels) {
         if (x.afkStartTime) continue; // user is AFK
-        if (x.status !== levelStatus.pending) continue;
+        if (x.status !== "pending") continue; 
         let setting = wheelSettings.find(s => s.username === x.username);
         let hue = null;
         let pattern = null;
