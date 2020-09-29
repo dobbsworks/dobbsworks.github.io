@@ -38,6 +38,7 @@
     		-webkit-text-stroke: 2px black;
     		color: white;
 			font-size: 75px;
+    		font-weight: 700;
 			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 		}
 	</style>
@@ -83,16 +84,11 @@
 		var clipTitle = document.getElementById("clipTitle");
 		clipFrame.src = urlPrefix + clip.slug + urlSuffix;
 		clipTitle.innerHTML = clip.title;
-
-		let timer = 1000 * clip.duration + 500;
-		setTimeout(() => { clipFrame.style.opacity = "0" }, timer);
-		timer += 500;
-		setTimeout(() => { LoadClip(GetRandomUnviewed()); }, timer);
-		setTimeout(() => { clipTitle.style.opacity = "1" }, timer);
-		timer += 500;
-		setTimeout(() => { clipFrame.style.opacity = "1" }, timer);
-		timer += 3500;
-		setTimeout(() => { clipTitle.style.opacity = "0" }, timer);
+		clipTitle.style.opacity = "1"
+		setTimeout(() => { clipTitle.style.opacity = "0" }, 3000);
+		
+		setTimeout(() => { clipFrame.style.opacity = "0" }, 1000 * clip.duration + 500);
+		setTimeout(() => { LoadClip(GetRandomUnviewed()); }, 1000 * clip.duration + 1000);
 	}
 
 	LoadClip(GetRandomUnviewed());
