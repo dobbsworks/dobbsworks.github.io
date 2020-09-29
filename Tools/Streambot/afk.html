@@ -31,12 +31,13 @@
 			opacity: 1.0;
 		}
 		#clipTitle {
+    		z-index: 2;
 			position: absolute;
 			left: 10px;
 			bottom: 10px;
-    		text-shadow: 1px 1px black;
+    		-webkit-text-stroke: 2px black;
     		color: white;
-			font-size: 32px;
+			font-size: 75px;
 			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 		}
 	</style>
@@ -81,7 +82,7 @@
 		var clipFrame = document.getElementById("clipFrame");
 		var clipTitle = document.getElementById("clipTitle");
 		clipFrame.src = urlPrefix + clip.slug + urlSuffix;
-		clipTitle.innerHTML = clipFrame.title;
+		clipTitle.innerHTML = clip.title;
 
 		let timer = 1000 * clip.duration + 500;
 		setTimeout(() => { clipFrame.style.opacity = "0" }, timer);
