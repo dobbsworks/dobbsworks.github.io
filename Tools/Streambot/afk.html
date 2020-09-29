@@ -4,6 +4,11 @@
 	<title>BRB</title>
 
 	<style>
+		* {
+			transition-property: all;
+			transition-duration: 0.5s;
+		}
+
 		html,
 		body {
 			overflow: hidden;
@@ -20,16 +25,17 @@
 			overflow: hidden;
 		}
 
-		.clipFrame {
+		#clipFrame {
 			position: relative;
 			top: -100;
+			opacity: 1.0;
 		}
 	</style>
 </head>
 
 <body>
 	<div class="frameContainer">
-		<iframe class="clipFrame" src="" height="1100" width="1600" frameborder="0" scrolling="no"
+		<iframe id="clipFrame" src="" height="1100" width="1600" frameborder="0" scrolling="no"
 			allowfullscreen="false"></iframe>
 	</div>
 </body>
@@ -59,6 +65,10 @@
 	function LoadClip(clip) {
 		var clipFrame = document.getElementById("clipFrame");
 		clipFrame.src = urlPrefix + clip.slug + urlSuffix;
+
+		setTimeout(() => { clipFrame.style.opacity = "0" }, 1000 * clip.duration - 500);
+		setTimeout(() => { LoadClip(GetRandomUnviewed()); }, 1000 * clip.duration);
+		setTimeout(() => { clipFrame.style.opacity = "1" }, 1000 * clip.duration + 500);
 	}
 
 	LoadClip(GetRandomUnviewed());
