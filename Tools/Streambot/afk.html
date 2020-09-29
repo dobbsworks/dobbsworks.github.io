@@ -15,10 +15,14 @@
 			background-size: cover;
 		}
 
-		canvas {
-			position: fixed;
-			left: 0;
-			top: 0;
+		.frameContainer {
+			height: 900;
+			overflow: hidden;
+		}
+
+		.clipFrame {
+			position: relative;
+			top: -100;
 		}
 	</style>
 </head>
@@ -57,7 +61,28 @@
 		clipFrame.src = urlPrefix + clip.slug + urlSuffix;
 	}
 
-	LoadClip(clips[0]);
+	LoadClip(GetRandomUnviewed());
+
+
+
+
+
+
+	function GetRandomUnviewed() {
+		let unviewed = clips.filter(x => !x.viewed);
+		if (unviewed.length === 0) {
+			clips.forEach(x => x.viewed = false);
+			unviewed = clips;
+		}
+		let ret = RandomFrom(unviewed);
+		ret.viewed = true;
+		return ret;
+	}
+
+	function RandomFrom(list) {
+		let index = RandomNumber(list.length) - 1;
+		return list[index];
+	}
 
 </script>
 
