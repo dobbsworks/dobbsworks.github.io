@@ -1,0 +1,63 @@
+<html>
+
+<head>
+	<title>BRB</title>
+
+	<style>
+		html,
+		body {
+			overflow: hidden;
+		}
+
+		body {
+			background-color: #92cddb;
+			background-image: url("https://dobbsworks.github.io/Tools/Streambot/images/wheel-background.png");
+			background-size: cover;
+		}
+
+		canvas {
+			position: fixed;
+			left: 0;
+			top: 0;
+		}
+	</style>
+</head>
+
+<body>
+	<iframe id="clipFrame" src="" height="600"
+		width="800" frameborder="0" scrolling="no" allowfullscreen="false"></iframe>
+
+</body>
+<script type="text/javascript">
+
+	var urlPrefix = "https://clips.twitch.tv/embed?clip=";
+	var urlSuffix = "&parent=dobbsworks.github.io";
+
+	// temp1.map(x => ({title: x.node.title, game: x.node.game.name, duration: x.node.durationSeconds, clippedBy: x.node.curator.displayName, slug: x.node.slug}))
+	var clips = [
+		{ "title": "Two for the count! #Teamshell", "game": "Super Mario Maker 2", "duration": 35, "clippedBy": "peffe29", "slug": "DiligentScrumptiousBibimbapNotATK" },
+		{ "title": "The HotChill Zone #TS", "game": "Super Mario Maker 2", "duration": 33, "clippedBy": "peffe29", "slug": "BlitheBreakableDragonfruitDBstyle" },
+		{ "title": "Bones Shore #Teamshell", "game": "Super Mario Maker 2", "duration": 30, "clippedBy": "peffe29", "slug": "SteamyCleanShieldDatBoi" },
+		{ "title": "Kirbska took over dobbsworks's channel!?", "game": "Super Mario Maker 2", "duration": 40, "clippedBy": "germdove", "slug": "AggressiveJazzyFiddleheadsCorgiDerp" },
+		{ "title": "Your 9-hammer can't save you now", "game": "Super Smash Bros. Ultimate", "duration": 19, "clippedBy": "dobbsworks", "slug": "BlitheBoxySeahorseTakeNRG" },
+		{ "title": "oh oh eh uh oh woah ey okay okay woah ey buddy ", "game": "Super Mario Maker 2", "duration": 20, "clippedBy": "Ehnu", "slug": "MuddyBoxyPterodactylOneHand" },
+		{ "title": "A joke that went all great until someone made it all awkward", "game": "Super Mario Maker 2", "duration": 52, "clippedBy": "germdove", "slug": "HardBenevolentCobblerArgieB8" },
+		{ "title": "The divine vine #teamshell", "game": "Super Mario Maker 2", "duration": 43, "clippedBy": "peffe29", "slug": "AttractivePhilanthropicMochaSaltBae" },
+		{ "title": "How to kill a server 101 (30 KS)", "game": "Team Fortress 2", "duration": 36, "clippedBy": "dobbsworks", "slug": "FineKnottyCarrotSoBayed" },
+		{ "title": "Haaaaaa (insane strats)", "game": "Super Mario Maker 2", "duration": 17, "clippedBy": "peffe29", "slug": "FairNastyJellyfishUncleNox" },
+		{ "title": "\"I'm terrified of you sneaking up on me\"", "game": "Team Fortress 2", "duration": 31, "clippedBy": "dobbsworks", "slug": "BusyZanyPepperoniSmoocherZ" },
+		{ "title": "Maximus Cheesicus", "game": "Super Mario Maker 2", "duration": 30, "clippedBy": "moloy559", "slug": "MotionlessGiftedYakinikuOSkomodo" },
+		{ "title": "germdove mode: activate", "game": "Super Mario Maker 2", "duration": 52, "clippedBy": "germdove", "slug": "UninterestedCulturedLeopardRickroll" }
+	];
+
+
+	function LoadClip(clip) {
+		var clipFrame = document.getElementById("clipFrame");
+		clipFrame.src = urlPrefix + clip.slug + urlSuffix;
+	}
+
+	LoadClip(clips[0]);
+
+</script>
+
+</html>
