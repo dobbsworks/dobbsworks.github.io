@@ -16,8 +16,8 @@
 
 		body {
 			background-color: #92cddb;
-			background-image: url("https://dobbsworks.github.io/Tools/Streambot/images/wheel-background.png");
-			background-size: cover;
+			/* background-image: url("https://dobbsworks.github.io/Tools/Streambot/images/wheel-background.png"); */
+			/* background-size: cover; */
 		}
 
 		.frameContainer {
@@ -85,11 +85,9 @@
 		var clipTitle = document.getElementById("clipTitle");
 		clipFrame.src = urlPrefix + clip.slug + urlSuffix;
 		clipTitle.innerHTML = clip.title;
-		clipTitle.style.opacity = "1";
 		clipFrame.style.opacity = "1";
-		setTimeout(() => { clipTitle.style.opacity = "0.5" }, 3000);
 
-		setTimeout(() => { clipFrame.style.opacity = "0.5" }, 1000 * clip.duration + 500);
+		setTimeout(() => { clipFrame.style.opacity = "0.1" }, 1000 * clip.duration + 500);
 		setTimeout(() => { LoadClip(); }, 1000 * clip.duration + 1000);
 	}
 
