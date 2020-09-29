@@ -30,6 +30,15 @@
 			top: -100;
 			opacity: 1.0;
 		}
+		#clipTitle {
+			position: absolute;
+			left: 10px;
+			bottom: 10px;
+    		text-shadow: 1px 1px black;
+    		color: white;
+			font-size: 32px;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		}
 	</style>
 </head>
 
@@ -37,6 +46,7 @@
 	<div class="frameContainer">
 		<iframe id="clipFrame" src="" height="1100" width="1600" frameborder="0" scrolling="no"
 			allowfullscreen="false"></iframe>
+		<div id="clipTitle"></div>
 	</div>
 </body>
 <script type="text/javascript">
@@ -58,20 +68,30 @@
 		{ "title": "Haaaaaa (insane strats)", "game": "Super Mario Maker 2", "duration": 17, "clippedBy": "peffe29", "slug": "FairNastyJellyfishUncleNox" },
 		{ "title": "\"I'm terrified of you sneaking up on me\"", "game": "Team Fortress 2", "duration": 31, "clippedBy": "dobbsworks", "slug": "BusyZanyPepperoniSmoocherZ" },
 		{ "title": "Maximus Cheesicus", "game": "Super Mario Maker 2", "duration": 30, "clippedBy": "moloy559", "slug": "MotionlessGiftedYakinikuOSkomodo" },
-		{ "title": "germdove mode: activate", "game": "Super Mario Maker 2", "duration": 52, "clippedBy": "germdove", "slug": "UninterestedCulturedLeopardRickroll" }
+		{ "title": "germdove mode: activate", "game": "Super Mario Maker 2", "duration": 52, "clippedBy": "germdove", "slug": "UninterestedCulturedLeopardRickroll" },
+		{ "title": "Egregious Galoombas", "game": "Super Mario Maker 2", "duration": 26, "clippedBy": "MmmDoggy", "slug": "ProudSeductiveWolverineUnSane" },
+		{ "title": "First victory on normal difficulty", "game": "FTL: Faster Than Light", "duration": 25, "clippedBy": "dobbsworks", "slug": "WittyScaryWoodpeckerTebowing" },
+		{ "title": "Beetless%", "game": "Super Mario Maker 2", "duration": 59, "clippedBy": "MarioMakerFanGPB", "slug": "PolishedDrabAntDxCat" },
+		{ "title": "POG", "game": "Super Mario Maker 2", "duration": 14, "clippedBy": "jadmusic23", "slug": "SeductiveMistyBeanLitFam" },
+		{ "title": "oh how they wiggle", "game": "Super Mario Maker 2", "duration": 39, "clippedBy": "Ehnu", "slug": "OpenBovineTomatoMau5" },
 	];
 
 
 	function LoadClip(clip) {
 		var clipFrame = document.getElementById("clipFrame");
+		var clipTitle = document.getElementById("clipTitle");
 		clipFrame.src = urlPrefix + clip.slug + urlSuffix;
+		clipTitle.innerHTML = clipFrame.title;
 
 		let timer = 1000 * clip.duration + 500;
 		setTimeout(() => { clipFrame.style.opacity = "0" }, timer);
 		timer += 500;
 		setTimeout(() => { LoadClip(GetRandomUnviewed()); }, timer);
+		setTimeout(() => { clipTitle.style.opacity = "1" }, timer);
 		timer += 500;
 		setTimeout(() => { clipFrame.style.opacity = "1" }, timer);
+		timer += 3500;
+		setTimeout(() => { clipTitle.style.opacity = "0" }, timer);
 	}
 
 	LoadClip(GetRandomUnviewed());
