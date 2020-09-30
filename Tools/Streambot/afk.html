@@ -84,7 +84,7 @@
 		var clipFrame = document.getElementById("clipFrame");
 		var clipTitle = document.getElementById("clipTitle");
 		clipFrame.src = urlPrefix + clip.slug + urlSuffix;
-		clipTitle.innerHTML = clip.title;
+		clipTitle.innerHTML = clip.title + "<br/>Clipped by: " + clip.clippedBy;
 		setTimeout(() => { clipFrame.style.opacity = "1" }, 500);
 
 		setTimeout(() => { clipFrame.style.opacity = "0.1" }, 1000 * clip.duration + 500);
