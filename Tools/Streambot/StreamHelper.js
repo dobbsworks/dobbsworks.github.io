@@ -106,6 +106,7 @@ function LoadCommands() {
 		Command("close", "CommandCloseQueue", commandPermission.streamer, commandDisplay.panel),
 		//Command("secondqueueslot", "CommandQueueSlot", commandPermission.reward, commandDisplay.hidden),
 		Command("biggerwheelslice", "CommandBiggerSlice", commandPermission.reward, commandDisplay.hidden),
+		RewardCommand(500, "sliceup", "CommandBiggerSlice", commandPermission.all, "Increases the chance of your level being chosen on the wheel. Lasts until your level is chosen."),
 		Command("addcom", "CommandAddCommand", commandPermission.mod, commandDisplay.hidden, "Adds a text command for the duration of the stream. Usage: !addcom myCom This is the response"),
 	
 		Command("texttospeech", "CommandTTS", commandPermission.reward, commandDisplay.hidden),

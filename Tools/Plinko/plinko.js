@@ -66,7 +66,9 @@ function Init() {
     var source = params.get("source");
     var streamer = params.get("streamer");
     var items = params.get("items");
-    scrambleRequested = params.get("scramble").toLowerCase() == "true"; 
+    if (params.get("scramble")) {
+        scrambleRequested = params.get("scramble").toLowerCase() == "true"; 
+    }
 
     if (source === "warpworld") {
         GetUsersFromUrl(`https://api.warp.world/${streamer}/warp_queue`, (res) => {
