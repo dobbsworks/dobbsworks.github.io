@@ -11,7 +11,9 @@ function CommandRandomNext(user, args) {
 }
 
 function CommandRandomWin(user, args) {
-    wheelWindow.resizeTo(0,0);
+    // for some mysterious reason resizeto gets the window closer to, but not exactly 0,0
+    // call it 10 times I guess? This is really weird behavior
+    for (let i=0; i<10; i++) wheelWindow.resizeTo(0,0);
 	let winningUser = args[0];
 	let availableLevels = StorageHandler.queue.values.filter(x => x.status === levelStatus.pending);
 	let level = availableLevels.find(x => x.username === winningUser);
@@ -89,7 +91,7 @@ function CommandWheelPattern(user, args) {
 let wheelWindow = null;
 function CreateWheelOfLevels(levels) {
     wheelWindow = window.open("", "WheelOfLevels", "width=1000,height=900,left=700");
-    wheelWindow.resizeTo(1300,800)
+    for (let i=0; i<10; i++) wheelWindow.resizeTo(1300,800);
 	let request = new XMLHttpRequest();
     let wheelData = GetWheelData(levels);
 	let url = "https://dobbsworks.github.io/Tools/Streambot/wheel.html?q=" + (+(new Date()));
