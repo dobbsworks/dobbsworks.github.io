@@ -420,7 +420,7 @@ function setupTimers() {
 function SendWinner(winningUser) {
 	console.log("Sending user " + winningUser.name);
 	let totalWeight = items.map(x => x.weight).reduce((a,b)=>a+b,0);
-	let winnerChance = winnerUser.weight / totalWeight;
+	let winnerChance = winningUser.weight / totalWeight;
 
 	// calc the chance from before event
 	let preEventWinWeight = preEventItems.find(x => x.name === winningUser.name).weight;
