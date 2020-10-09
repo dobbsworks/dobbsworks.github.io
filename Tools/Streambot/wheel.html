@@ -77,6 +77,8 @@ function init() {
 		if (maxToMinRatio < 1.4) {
 			wheelEvent = "";
 			console.log("bowser event suppressed, weight ratio below threshold", maxToMinRatio)
+		} else {
+			console.log(maxWeight, minWeight)
 		}
 	}
 
@@ -418,7 +420,6 @@ function setupTimers() {
 }
 
 function SendWinner(winningUser) {
-	console.log("Sending user " + winningUser.name);
 	let totalWeight = items.map(x => x.weight).reduce((a,b)=>a+b,0);
 	let winnerChance = winningUser.weight / totalWeight;
 
@@ -427,7 +428,9 @@ function SendWinner(winningUser) {
 	let preEventTotalWeight = preEventItems.map(x => x.weight).reduce((a,b)=>a+b,0);
 	let preEventChance = preEventWinWeight / preEventTotalWeight;
 
-	(new BroadcastChannel('helper')).postMessage('!randomwin ' + winningUser.name + ' ' + preEventChance + ' ' + winnerChance);
+	let command = '!randomwin ' + winningUser.name + ' ' + preEventChance + ' ' + winnerChance;
+	console.log("Sending message " + command);
+	(new BroadcastChannel('helper')).postMessage(command);
 	
 	if (isPrizeChosen()) (new BroadcastChannel('helper')).postMessage('!bonusprize ' + winningUser.name);
 }
