@@ -53,6 +53,7 @@ let ctx = canvas.getContext("2d");
 ctx.textAlign = "center";
 
 let items = [];
+let preEventItems = [];
 
 let rotation = 0;
 let rotationSpeed = 0;
@@ -64,7 +65,21 @@ let cheer = null;
 let wheelEvent = "";
 
 function init() {
-	wheelEvent = (Math.random() < 0.12) ? RandomFrom(["reversal", "revolution", "prize", "prize", "prize"]) : "";
+	preEventItems = JSON.parse(JSON.stringify(items));
+	let eventRandValue = Math.random();
+	console.log("eventRandValue",eventRandValue)
+	wheelEvent = (eventRandValue < 0.12) ? RandomFrom(["reversal", "revolution", "prize", "prize", "prize"]) : "";
+	if (isBowserEvent()) {
+		// check to see if a bowser event makes sense here
+		let minWeight = Math.min(0.1, ...(items.map(x => x.weight)));
+		let maxWeight = Math.max(0.1, ...(items.map(x => x.weight)));
+		let maxToMinRatio = maxWeight / minWeight;
+		if (maxToMinRatio < 1.4) {
+			wheelEvent = "";
+			console.log("bowser event suppressed, weight ratio below threshold", maxToMinRatio)
+		}
+	}
+
 	let ytid = RandomFrom([
 		"gDn4NRVkG4Y", // BK Furnace Fun
 		"RMhhcz8wfEU", // SMRPG victory
@@ -308,7 +323,7 @@ function getSelectedItem() {
 function determineWinner() {
 	let winner = getSelectedItem();	
 	winnerIndex = items.indexOf(winner);
-	setTimeout(() => {SendWinner(winner.name)}, 6000);
+	setTimeout(() => {SendWinner(winner)}, 6000);
 
 	// TEMPORARILY REMOVING WINDOW CLOSING
 	setTimeout(() => {
@@ -403,10 +418,18 @@ function setupTimers() {
 }
 
 function SendWinner(winningUser) {
-	console.log("Sending user " + winningUser);
-	(new BroadcastChannel('helper')).postMessage('!randomwin ' + winningUser);
+	console.log("Sending user " + winningUser.name);
+	let totalWeight = items.map(x => x.weight).reduce((a,b)=>a+b,0);
+	let winnerChance = winnerUser.weight / totalWeight;
+
+	// calc the chance from before event
+	let preEventWinWeight = preEventItems.find(x => x.name === winningUser.name).weight;
+	let preEventTotalWeight = preEventItems.map(x => x.weight).reduce((a,b)=>a+b,0);
+	let preEventChance = preEventWinWeight / preEventTotalWeight;
+
+	(new BroadcastChannel('helper')).postMessage('!randomwin ' + winningUser.name + ' ' + preEventChance + ' ' + winnerChance);
 	
-	if (isPrizeChosen()) (new BroadcastChannel('helper')).postMessage('!bonusprize ' + winningUser);
+	if (isPrizeChosen()) (new BroadcastChannel('helper')).postMessage('!bonusprize ' + winningUser.name);
 }
 
 
