@@ -71,8 +71,8 @@ function init() {
 	wheelEvent = (eventRandValue < 0.12) ? RandomFrom(["reversal", "revolution", "prize", "prize", "prize"]) : "";
 	if (isBowserEvent()) {
 		// check to see if a bowser event makes sense here
-		let minWeight = Math.min(0.1, ...(items.map(x => x.weight)));
-		let maxWeight = Math.max(0.1, ...(items.map(x => x.weight)));
+		let minWeight = Math.min(999999, ...(items.map(x => x.weight)));
+		let maxWeight = Math.max(0, ...(items.map(x => x.weight)));
 		let maxToMinRatio = maxWeight / minWeight;
 		if (maxToMinRatio < 1.4) {
 			wheelEvent = "";
