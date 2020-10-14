@@ -421,6 +421,7 @@ function setupTimers() {
 
 function SendWinner(winningUser) {
 	let totalWeight = items.map(x => x.weight).reduce((a,b)=>a+b,0);
+	// got a null error here once on winningUser.weight... weird!
 	let winnerChance = winningUser.weight / totalWeight;
 
 	// calc the chance from before event

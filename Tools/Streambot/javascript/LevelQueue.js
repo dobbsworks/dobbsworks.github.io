@@ -288,3 +288,9 @@ function MarkUserAsPresent(username) {
 		WriteMessage("Welcome back, @" + username + "! Your level is back in the queue.")
 	}
 }
+
+// function SetUserMakerId(username, makerId) {
+	
+//     let record = {username: targetUser, id: makerId};
+//     StorageHandler.maker.upsert(record);
+// }
