@@ -5,9 +5,11 @@ class Sprite {
     }
     dx = 0;
     dy = 0;
+    isActive = true;
+    color = "white";
     radius = 30;
     Draw() {
-        ctx.strokeStyle = "white";
+        ctx.strokeStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
         ctx.stroke();
@@ -16,6 +18,18 @@ class Sprite {
     Update() {
         // implemented by subclass
         console.error("HEY! You need to extend this class.")
+    }
+
+    IsTouchingSprite(sprite) {
+        let deltaX = sprite.x - this.x;
+        let deltaY = sprite.y - this.y;
+        let distanceSquared = deltaX ** 2 + deltaY ** 2;
+        let radiusSquared = (sprite.radius + this.radius) ** 2;
+        return distanceSquared <= radiusSquared;
+    }
+
+    GetTouchingSprites() {
+        return sprites.filter(x => x !== this && this.IsTouchingSprite(x));
     }
 
     ReactToBorders() {

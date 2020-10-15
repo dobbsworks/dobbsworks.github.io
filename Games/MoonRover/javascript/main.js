@@ -23,6 +23,7 @@ function MainLoop() {
     for (let sprite of sprites) {
         sprite.Update();
     }
+    sprites = sprites.filter(x => x.isActive);
     Draw();
     UpdateMouseChanged();
 }

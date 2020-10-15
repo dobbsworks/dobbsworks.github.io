@@ -1,5 +1,7 @@
 class Enemy extends Sprite {
+    color = "red";
     direction = 1;
+    hp = 3;
     Update() {
         this.ApplyGravity();
         this.UpdatePosition();
@@ -10,6 +12,11 @@ class Enemy extends Sprite {
         if (touchedBorders.some(x => x instanceof RightWall)) {
             this.direction = -1;
         }
-        this.dx = this.direction * 2;
+        let speed = 1;
+        this.dx = this.direction * speed;
+
+        if (this.hp <= 0) {
+            this.isActive = false;
+        }
     }
 }
