@@ -1,6 +1,15 @@
 var canvas;
 var ctx;
-var sprites = [];
+var sprites = [
+    new Player(300,300),
+     new Enemy(400, 200)
+];
+var borders = [
+    new Ceiling(25),
+    new Floor(400),
+    new LeftWall(100),
+    new RightWall(600)
+];
 setTimeout(Initialize, 100);
 
 function Initialize() {
@@ -8,28 +17,28 @@ function Initialize() {
     ctx = canvas.getContext("2d");
     InitMouseHandlers();
     setInterval(MainLoop, 1000/60);
-
-    for (let i=0; i<10; i++) {
-        let newSprite = new Player(Math.random()*500,Math.random()*500);
-        newSprite.dx = Math.random()-0.5;
-        newSprite.dy = Math.random()-0.5;
-        sprites.push(newSprite);
-    }
-
 }
 
 function MainLoop() {
     for (let sprite of sprites) {
         sprite.Update();
     }
-    UpdateMouseChanged();
     Draw();
+    UpdateMouseChanged();
 }
 
 function Draw() {
     ctx.fillStyle = "black";
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 4;
     ctx.fillRect(0,0, canvas.width, canvas.height);
+    for (let border of borders) {
+        border.Draw();
+    }
     for (let sprite of sprites) {
         sprite.Draw();
+    }
+    if (isMouseDown) {
+        ctx.strokeRect(0,0, canvas.width, canvas.height);
     }
 }

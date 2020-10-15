@@ -13,6 +13,10 @@ function UpdateMouseChanged() {
     isMouseChanged = false;
 }
 
+function isMouseClicked() {
+    return isMouseChanged && isMouseDown;
+}
+
 function OnMouseDown(e) {
     if (e.button === 0) {
         isMouseDown = true;
