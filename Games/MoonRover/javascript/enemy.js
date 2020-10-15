@@ -17,6 +17,9 @@ class Enemy extends Sprite {
 
         if (this.hp <= 0) {
             this.isActive = false;
+            setTimeout(()=>{
+                sprites.push(new Enemy(350,0))
+            },1000)
         }
     }
 }

@@ -10,6 +10,9 @@ class Sprite {
     radius = 30;
     Draw() {
         ctx.strokeStyle = this.color;
+        if (this.hurtTimer) {
+            ctx.strokeStyle = "magenta";
+        }
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
         ctx.stroke();

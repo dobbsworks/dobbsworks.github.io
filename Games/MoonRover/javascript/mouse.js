@@ -40,6 +40,7 @@ function OnMouseMove(e) {
 }
 
 function OnTouchStart(e) {
+    //TODO - account for canvas position
     mouseX = e.touches[0].pageX;
     mouseY = e.touches[0].pageY;
     isMouseDown = true;
