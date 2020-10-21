@@ -67,6 +67,22 @@ class Sprite {
                     touchedBorders.push(border);
                 }
             }
+            if (border instanceof Platform) {
+                let isOldSpriteOverPlatform = this.oldY + this.radius <= border.y;
+                let isNewSpriteUnderPlatform = this.y + this.radius > border.y;
+                if (isOldSpriteOverPlatform && isNewSpriteUnderPlatform) {
+                    // let dy = this.y - this.oldY;
+                    // let dx = this.x - this.oldX;
+                    let isOldXInBounds = this.oldX >= border.x1 && this.oldX <= border.x2;
+                    let isNewXInBounds = this.x >= border.x1 && this.x <= border.x2;
+                    if (isOldXInBounds && isNewXInBounds) {
+                        this.y = border.y - this.radius;
+                        this.dy = 0;
+                        this.dx *= 0.9;
+                        touchedBorders.push(border);
+                    }
+                }
+            }
         }
         return touchedBorders;
     }

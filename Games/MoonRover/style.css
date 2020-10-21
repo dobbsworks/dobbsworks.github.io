@@ -6,4 +6,7 @@ html, body {
 
 canvas {
     margin: 20px;
+    background-image: url("./content/images/bg.png");
+    background-size: cover;
+    background-position: bottom;
 }

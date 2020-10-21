@@ -2,6 +2,12 @@ class Enemy extends Sprite {
     color = "red";
     direction = 1;
     hp = 3;
+    loot = 0;
+
+    Initialize() {
+        this.loot = 2 + Math.ceil(Math.random() * 3)
+    }
+
     Update() {
         this.ApplyGravity();
         this.UpdatePosition();
@@ -17,6 +23,10 @@ class Enemy extends Sprite {
 
         if (this.hp <= 0) {
             this.isActive = false;
+            
+            for (let i=0; i<this.loot; i++) {
+                sprites.push(new Loot(this.x, this.y));
+            }
             setTimeout(()=>{
                 sprites.push(new Enemy(350,0))
             },1000)

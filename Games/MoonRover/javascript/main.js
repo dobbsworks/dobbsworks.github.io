@@ -6,9 +6,10 @@ var sprites = [
 ];
 var borders = [
     new Ceiling(25),
-    new Floor(400),
+    new Floor(440),
     new LeftWall(100),
-    new RightWall(600)
+    new RightWall(600),
+    new Platform(250,450,300),
 ];
 setTimeout(Initialize, 100);
 
@@ -21,6 +22,12 @@ function Initialize() {
 
 function MainLoop() {
     for (let sprite of sprites) {
+        if (sprite.Initialize && !sprite.initialized) {
+            sprite.Initialize();
+            sprite.initialized = true;
+        }
+        sprite.oldX = sprite.x;
+        sprite.oldY = sprite.y;
         sprite.Update();
     }
     sprites = sprites.filter(x => x.isActive);
@@ -32,7 +39,7 @@ function Draw() {
     ctx.fillStyle = "black";
     ctx.strokeStyle = "white";
     ctx.lineWidth = 4;
-    ctx.fillRect(0,0, canvas.width, canvas.height);
+    ctx.clearRect(0,0, canvas.width, canvas.height);
     for (let border of borders) {
         border.Draw();
     }

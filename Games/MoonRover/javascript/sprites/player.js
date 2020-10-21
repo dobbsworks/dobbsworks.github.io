@@ -2,6 +2,7 @@ class Player extends Sprite {
     color = "blue";
     hp = 5;
     hurtTimer = 0;
+    loot = 0;
 
     Update() {
         if (isMouseClicked()) {
@@ -40,6 +41,10 @@ class Player extends Sprite {
                         this.hurtTimer = 60;
                     }
                 }
+            }
+            if (touchingSprite instanceof Loot) {
+                touchingSprite.isActive = false;
+                this.loot += touchingSprite.value;
             }
         }
         if (this.hurtTimer > 0) {

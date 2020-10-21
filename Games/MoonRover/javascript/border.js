@@ -15,6 +15,21 @@ class Border {
     }
 }
 
+class Platform extends Border {
+    constructor(x1,x2,y) {
+        super();
+        this.x1 = Math.min(x1, x2);
+        this.x2 = Math.max(x1, x2);
+        this.y = y;
+    }
+    Draw() {
+        ctx.beginPath();
+        ctx.moveTo(this.x1, this.y);
+        ctx.lineTo(this.x2, this.y);
+        ctx.stroke();
+    }
+}
+
 class Floor extends Border {
     constructor(y) {
         super();
