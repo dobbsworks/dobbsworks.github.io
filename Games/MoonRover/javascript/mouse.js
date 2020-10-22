@@ -1,5 +1,6 @@
 var mouseX = 0;
 var mouseY = 0;
+var mouseScroll = 0;
 var isMouseDown = false;
 var isMouseChanged = false;
 
@@ -10,10 +11,12 @@ function InitMouseHandlers() {
     canvas.addEventListener("touchstart", OnTouchStart, false);
     canvas.addEventListener("touchend", OnTouchEnd, false);
     canvas.addEventListener("touchmove", OnTouchMove, false);
+    canvas.addEventListener("wheel", OnMouseScroll, false);
 }
 
 function UpdateMouseChanged() {
     isMouseChanged = false;
+    mouseScroll = 0;
 }
 
 function isMouseClicked() {
@@ -37,6 +40,11 @@ function OnMouseUp(e) {
 function OnMouseMove(e) {
     mouseX = e.layerX;
     mouseY = e.layerY;
+}
+
+function OnMouseScroll(e) {
+    if (e.deltaY > 0) mouseScroll = 1;
+    if (e.deltaY < 0) mouseScroll = -1;
 }
 
 function OnTouchStart(e) {

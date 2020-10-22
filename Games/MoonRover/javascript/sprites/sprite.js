@@ -8,6 +8,7 @@ class Sprite {
     isActive = true;
     color = "white";
     radius = 30;
+    frame = 0;
     Draw() {
         ctx.strokeStyle = this.color;
         if (this.hurtTimer) {

@@ -2,25 +2,11 @@ class Player extends Sprite {
     color = "blue";
     hp = 5;
     hurtTimer = 0;
-    loot = 0;
 
     Update() {
-        if (isMouseClicked()) {
+        if (isMouseDown) {
             // weapon fired
-            let xDif = this.x - mouseX;
-            let yDif = this.y - mouseY;
-            let theta = Math.atan2(yDif, xDif);
-
-            let pushbackForce = 4;
-            this.dx += pushbackForce * Math.cos(theta);
-            this.dy += pushbackForce * Math.sin(theta);
-
-            for (let a of [-0.1, 0, 0.1]) {
-                let bullet = new PlayerBullet(this.x, this.y);
-                bullet.dx = -pushbackForce * Math.cos(theta + a) * 4;
-                bullet.dy = -pushbackForce * Math.sin(theta + a) * 4;
-                sprites.push(bullet);
-            }
+            weaponHandler.GetCurrent().PullTrigger();
         }
         this.ApplyGravity();
         this.UpdatePosition();
@@ -34,8 +20,10 @@ class Player extends Sprite {
                     if (this.hp <= 0) {
                         // you are dead, not big surprise
                         this.isActive = false;
+                        deathCount++;
                         setTimeout(() => {
-                            sprites.push(new Player(0,0))
+                            player = new Player(0,0);
+                            sprites.push(player)
                         },1000)
                     } else {
                         this.hurtTimer = 60;
@@ -44,7 +32,7 @@ class Player extends Sprite {
             }
             if (touchingSprite instanceof Loot) {
                 touchingSprite.isActive = false;
-                this.loot += touchingSprite.value;
+                loot += touchingSprite.value;
             }
         }
         if (this.hurtTimer > 0) {
