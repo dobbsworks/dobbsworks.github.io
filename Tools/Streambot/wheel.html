@@ -1,512 +1,522 @@
 <html>
-	<head>
+
+<head>
 	<title>Wheel of Levels</title>
-	
+
 	<style>
-		html, body {
+		html,
+		body {
 			overflow: hidden;
 		}
+
 		body {
 			background-color: #92cddb;
 			background-image: url("https://dobbsworks.github.io/Tools/Streambot/images/wheel-background.png");
 			background-size: cover;
 		}
+
 		canvas {
 			position: fixed;
 			left: 0;
 			top: 0;
 		}
 	</style>
-	</head>
-	<body>
-		<canvas id="canvas"></canvas>
-		<div style="display:none;">
-			<canvas height="100" width="100" id="pattern" ></canvas>
+</head>
 
-			<div id="icons">
-				<image src="https://dobbsworks.github.io/Tools/Streambot/images/star-icon.png"></image>
-				<image src="https://dobbsworks.github.io/Tools/Streambot/images/heart-icon.png"></image>
-				<image src="https://dobbsworks.github.io/Tools/Streambot/images/bowser-icon.png"></image>
-				<image src="https://dobbsworks.github.io/Tools/Streambot/images/club-icon.png"></image>
-				<image src="https://dobbsworks.github.io/Tools/Streambot/images/diamond-icon.png"></image>
-				<image src="https://dobbsworks.github.io/Tools/Streambot/images/spade-icon.png"></image>
-				<image src="https://dobbsworks.github.io/Tools/Streambot/images/checker-icon.png"></image>
-				<image src="https://dobbsworks.github.io/Tools/Streambot/images/dobbs-icon.png"></image>
-				<image src="https://dobbsworks.github.io/Tools/Streambot/images/triforce-icon.png"></image>
-				<image src="https://dobbsworks.github.io/Tools/Streambot/images/pokeball-icon.png"></image>
-			</div>
+<body>
+	<canvas id="canvas"></canvas>
+	<div style="display:none;">
+		<canvas height="100" width="100" id="pattern"></canvas>
 
-			<audio id="audio1" src="https://dobbsworks.github.io/Games/SayWhen/audio/high.mp3"></audio>
-			<audio id="bowserLaugh" src="https://dobbsworks.github.io/Tools/Streambot/audio/sm64_bowser_laugh.wav"></audio>
+		<div id="icons">
+			<image src="https://dobbsworks.github.io/Tools/Streambot/images/star-icon.png"></image>
+			<image src="https://dobbsworks.github.io/Tools/Streambot/images/heart-icon.png"></image>
+			<image src="https://dobbsworks.github.io/Tools/Streambot/images/bowser-icon.png"></image>
+			<image src="https://dobbsworks.github.io/Tools/Streambot/images/club-icon.png"></image>
+			<image src="https://dobbsworks.github.io/Tools/Streambot/images/diamond-icon.png"></image>
+			<image src="https://dobbsworks.github.io/Tools/Streambot/images/spade-icon.png"></image>
+			<image src="https://dobbsworks.github.io/Tools/Streambot/images/checker-icon.png"></image>
+			<image src="https://dobbsworks.github.io/Tools/Streambot/images/dobbs-icon.png"></image>
+			<image src="https://dobbsworks.github.io/Tools/Streambot/images/triforce-icon.png"></image>
+			<image src="https://dobbsworks.github.io/Tools/Streambot/images/pokeball-icon.png"></image>
 		</div>
-	</body>
-	<script type="text/javascript">
-	
-let baseSize = Math.floor(Math.min(window.innerWidth, window.innerHeight));
-let margin = 70;
-let r = (baseSize / 2) - margin;
-let center = (baseSize / 2);
-let pegCount = 12;
 
-let canvas = document.getElementById("canvas");
-canvas.height = baseSize;
-canvas.width = baseSize;
-let ctx = canvas.getContext("2d");
-ctx.textAlign = "center";
+		<audio id="audio1" src="https://dobbsworks.github.io/Games/SayWhen/audio/high.mp3"></audio>
+		<audio id="bowserLaugh" src="https://dobbsworks.github.io/Tools/Streambot/audio/sm64_bowser_laugh.wav"></audio>
+	</div>
+</body>
+<script type="text/javascript">
 
-let items = [];
-let preEventItems = [];
+	let baseSize = Math.floor(Math.min(window.innerWidth, window.innerHeight));
+	let margin = 70;
+	let r = (baseSize / 2) - margin;
+	let center = (baseSize / 2);
+	let pegCount = 12;
 
-let rotation = 0;
-let rotationSpeed = 0;
+	let canvas = document.getElementById("canvas");
+	canvas.height = baseSize;
+	canvas.width = baseSize;
+	let ctx = canvas.getContext("2d");
+	ctx.textAlign = "center";
+
+	let items = [];
+	let preEventItems = [];
+
+	let rotation = 0;
+	let rotationSpeed = 0;
 
 
-let confetti = [];
-let music = null;
-let cheer = null;
-let wheelEvent = "";
+	let confetti = [];
+	let music = null;
+	let cheer = null;
+	let wheelEvent = "";
 
-function init() {
-	preEventItems = JSON.parse(JSON.stringify(items));
-	let eventRandValue = Math.random();
-	console.log("eventRandValue",eventRandValue)
-	wheelEvent = (eventRandValue < 0.12) ? RandomFrom(["reversal", "revolution", "prize", "prize", "prize"]) : "";
-	if (isBowserEvent()) {
-		// check to see if a bowser event makes sense here
-		let minWeight = Math.min(999999, ...(items.map(x => x.weight)));
-		let maxWeight = Math.max(0, ...(items.map(x => x.weight)));
-		let maxToMinRatio = maxWeight / minWeight;
-		if (maxToMinRatio < 1.4) {
-			wheelEvent = "";
-			console.log("bowser event suppressed, weight ratio below threshold", maxToMinRatio)
-		} else {
-			console.log(maxWeight, minWeight)
-		}
-	}
-
-	let ytid = RandomFrom([
-		"gDn4NRVkG4Y", // BK Furnace Fun
-		"RMhhcz8wfEU", // SMRPG victory
-		"OhLVrfMKiKg", // DK64 bonus
-		"72qGczM5OTs", // runaway 5
-		"WV_0d4KfpK0", // Pilotwings intro
-		"3EjSwg-eNAo&t=11", // DKC3 bonus
-		"ABr_f0pV_y0", // SM64 slide
-		"yIFloLCk_Y0", // MK64 time trial
-		"g5qo57gwn9s", // SSB64 bonus,
-		"bcTk-xyIkug", // BKN&B bonus
-		"nlSBjGguILk", // Mario Golf TT speed golf
-		"E-4Nk466iIo", // Binding of Isaac arcade
-		"4lBl-9vb1Vs", // Sticker Star - Pay or Fray
-		"b2cPvHAcFVo", // Space Station Silicon Valley - bonus
-		"LepGlDFhcKM", // Malo Mart
-		"4GfXKM-2nak", // Paper Mario: Origami King - battle
-		"ctt0vcJlXiU", // New Donk City - day
-		"xiCvF1DU8bQ", // Yoshi's Crafted World - bonus
-		"AO-d2QvRES0", // Snipperclips - Retro reboot
-		"6j0HiMpV1HE", // Mario Paint - BGM 1
-		"4-18zfwvySw", // Plok
-		"Sw9S890zWaE", // Kirby 64
-		"IsrddmREt28", // Diddy Kong Racing - character select
-	]);
-	if (!ytid) ytid = "gDn4NRVkG4Y";
-	if (isBowserEvent()) ytid = "Rz-J4WJnkIM" // 3d World Bowser theme
-	music = PlayAudio(ytid);
-	if (confetti.length === 0) for (let i = 0; i < 100; i++) {
-		confetti.push({
-			x: Math.random() * window.innerWidth,
-			y: Math.random() * window.innerHeight,
-			timer: 100 * Math.random(),
-			color: ["red","blue","lime"][Math.floor(Math.random()*3)]
-		});
-	}
-	
-	items.forEach(item => item.text = item.name.substring(0,14));
-
-	if (wheelEvent === "revolution") items.forEach(item => item.targetWeight = 1);
-	if (wheelEvent === "reversal") items.forEach(item => item.targetWeight = 1 / item.weight);
-
-	createPatterns();
-	// try again in case images failed to load?
-	
-	setupTimers();
-}
-setInterval(loop, 1000/60);
-
-let patterns = {};
-let patternsInterval = setInterval(createPatterns, 1000);
-function createPatterns() {
-	let iconDiv = document.getElementById("icons");
-	let c = document.getElementById("pattern");
-	let patternCtx = c.getContext("2d");
-	for (let iconImg of iconDiv.children) {
-		let name = iconImg.src.substring(iconImg.src.lastIndexOf("/")+1).replace("-icon.png","");
-		let pattern = patternCtx.createPattern(iconImg, 'repeat');
-		patterns[name] = pattern;
-	}
-}
-
-function isBowserEvent() {
-	return wheelEvent === "reversal" || wheelEvent === "revolution";
-}
-
-function isPrizeChosen() {
-	if (wheelEvent == "prize") {
-		let finalRot = rotation % (Math.PI*2);
-		return (finalRot <= 3 * Math.PI / 2 && finalRot >= 3 * Math.PI / 2 - Math.PI / 6);
-	}
-	return false;
-}
-
-function arcText(text, radius, theta) {
-	// draw text along the circumference
-	// draw letter by letter for actual curved text
-	let textHeight = 50;
-	ctx.font = textHeight + "px Arial";
-	ctx.strokeStyle = "black";
-	ctx.fillStyle = "white";
-	ctx.translate(center, center);
-	ctx.rotate(theta);
-	ctx.strokeText(text, 0, radius+textHeight);
-	ctx.fillText(text, 0, radius+textHeight);
-	ctx.rotate(-theta);
-	ctx.translate(-center, -center);
-}
-
-function draw() {
-	ctx.clearRect(0,0,baseSize, baseSize);
-	if (items.length === 0) return;
-	if (wheelEvent === "prize") {
-		ctx.strokeStyle = "black";
-		ctx.fillStyle = "gold";
-		ctx.beginPath();
-		ctx.moveTo(center, center);
-		ctx.arc(center, center, r + margin - 5, 0+rotation, Math.PI*2/12+rotation);
-		ctx.lineTo(center, center);
-		ctx.fill();
-		ctx.stroke();
-		
-
-		arcText("P", r, rotation - Math.PI/2 +  Math.PI*2/12/2 + 0.18);
-		arcText("R", r, rotation - Math.PI/2 +  Math.PI*2/12/2 + 0.08);
-		arcText("I", r, rotation - Math.PI/2 +  Math.PI*2/12/2);
-		arcText("Z", r, rotation - Math.PI/2 +  Math.PI*2/12/2 - 0.08);
-		arcText("E", r, rotation - Math.PI/2 +  Math.PI*2/12/2 - 0.18);
-	}
-	
-	let totalWeight = items.map(x => x.weight).reduce((a,b)=>a+b,0);
-	let cumulativeWeight = 0;
-
-	for (let index = 0; index < items.length; index++) {
-		let item = items[index];
-		// 270 instead of 360 and +20 to aoid magentas (chroma-key)
-		let hue = Math.floor(270 / items.length * index) % 360 + 20;
-		let color = "hsl(" + hue + ",75%,50%)";
-		if (item.color !== undefined && item.color !== null) color = item.color;
-		item.t1 = cumulativeWeight / totalWeight * (2*Math.PI);
-		item.t2 = (cumulativeWeight + item.weight) / totalWeight * (2*Math.PI);
-		
-		cumulativeWeight += item.weight;	
-		ctx.fillStyle = color;
-		ctx.beginPath();
-		ctx.moveTo(center, center);
-		ctx.arc(center, center, r, item.t1+rotation, item.t2+rotation);
-		ctx.lineTo(center, center);
-		ctx.fill();
+	function init() {
+		preEventItems = JSON.parse(JSON.stringify(items));
+		let eventRandValue = Math.random();
+		console.log("eventRandValue", eventRandValue)
+		wheelEvent = (eventRandValue < 0.12) ? RandomFrom(["reversal", "revolution", "prize", "prize", "prize"]) : "";
 		if (isBowserEvent()) {
-			ctx.fillStyle = patterns.bowser;
-			ctx.fill();
-		} else if (item.isSub || item.pattern) {
-			ctx.fillStyle = patterns.star;
-			if (item.pattern) ctx.fillStyle = patterns[item.pattern];
-			ctx.fill();
-		}  
-	}
-	ctx.fillStyle = "#000";
-	for (let i=0; i<pegCount; i++) {
-		let theta = Math.PI*2 / pegCount * i + rotation;
-		let x = center + r * Math.cos(theta);
-		let y = center + r * Math.sin(theta);
-		ctx.beginPath();
-		ctx.arc(x, y, 5, 0, 2*Math.PI);
-		ctx.fill();
-	}
+			// check to see if a bowser event makes sense here
+			let minWeight = Math.min(999999, ...(items.map(x => x.weight)));
+			let maxWeight = Math.max(0, ...(items.map(x => x.weight)));
+			let maxToMinRatio = maxWeight / minWeight;
+			if (maxToMinRatio < 1.4) {
+				wheelEvent = "";
+				console.log("bowser event suppressed, weight ratio below threshold", maxToMinRatio)
+			} else {
+				console.log(maxWeight, minWeight)
+			}
+		}
 
-	ctx.beginPath();
-	ctx.moveTo(center, margin);
-	ctx.lineTo(center+15, 5);
-	ctx.lineTo(center, 0);
-	ctx.lineTo(center-15, 5);
-	ctx.fill();
-	
-	
-	// outlines
-	ctx.lineWidth = 2;
-	ctx.strokeStyle = "#000";	
-	ctx.beginPath();
-	ctx.arc(center, center, r, 0, 2*Math.PI);
-	ctx.stroke();
-	for (let item of items) {	
-		ctx.beginPath();
-		ctx.moveTo(center, center);
-		ctx.lineTo(center + r * Math.cos(item.t1+rotation), center + r * Math.sin(item.t1+rotation));
-		ctx.stroke();
+		let ytid = RandomFrom([
+			"gDn4NRVkG4Y", // BK Furnace Fun
+			"RMhhcz8wfEU", // SMRPG victory
+			"OhLVrfMKiKg", // DK64 bonus
+			"72qGczM5OTs", // runaway 5
+			"WV_0d4KfpK0", // Pilotwings intro
+			"3EjSwg-eNAo&t=11", // DKC3 bonus
+			"ABr_f0pV_y0", // SM64 slide
+			"yIFloLCk_Y0", // MK64 time trial
+			"g5qo57gwn9s", // SSB64 bonus,
+			"bcTk-xyIkug", // BKN&B bonus
+			"nlSBjGguILk", // Mario Golf TT speed golf
+			"E-4Nk466iIo", // Binding of Isaac arcade
+			"4lBl-9vb1Vs", // Sticker Star - Pay or Fray
+			"b2cPvHAcFVo", // Space Station Silicon Valley - bonus
+			"LepGlDFhcKM", // Malo Mart
+			"4GfXKM-2nak", // Paper Mario: Origami King - battle
+			"ctt0vcJlXiU", // New Donk City - day
+			"xiCvF1DU8bQ", // Yoshi's Crafted World - bonus
+			"AO-d2QvRES0", // Snipperclips - Retro reboot
+			"6j0HiMpV1HE", // Mario Paint - BGM 1
+			"4-18zfwvySw", // Plok
+			"Sw9S890zWaE", // Kirby 64
+			"IsrddmREt28", // Diddy Kong Racing - character select
+		]);
+		if (!ytid) ytid = "gDn4NRVkG4Y";
+		if (isBowserEvent()) ytid = "Rz-J4WJnkIM" // 3d World Bowser theme
+		music = PlayAudio(ytid);
+		if (confetti.length === 0) for (let i = 0; i < 100; i++) {
+			confetti.push({
+				x: Math.random() * window.innerWidth,
+				y: Math.random() * window.innerHeight,
+				timer: 100 * Math.random(),
+				color: ["red", "blue", "lime"][Math.floor(Math.random() * 3)]
+			});
+		}
+
+		items.forEach(item => item.text = item.name.substring(0, 14));
+
+		if (wheelEvent === "revolution") items.forEach(item => item.targetWeight = 1);
+		if (wheelEvent === "reversal") items.forEach(item => item.targetWeight = 1 / item.weight);
+
+		createPatterns();
+		// try again in case images failed to load?
+
+		setupTimers();
 	}
-	
-	
-	// name labels
-	ctx.fillStyle = "white";
-	ctx.strokeStyle = "#000";	
-	ctx.lineWidth = 5;
-	let textHeight = 30;
-	ctx.font = textHeight + "px Arial";
-	if (winnerIndex <= -1) {
-		for (let nameIndex = 0; nameIndex < items.length; nameIndex++) {
-			if (nameIndex >= nameRevealCount) break;
-			if (nameIndex < nameHideCount) continue;
-			let item = items[nameIndex];
-			let centerX = center + 0.75 * r * Math.cos((item.t1+item.t2)/2+rotation);
-			let centerY = center + 0.75 * r * Math.sin((item.t1+item.t2)/2+rotation);
-			ctx.strokeText(item.text, centerX, centerY + textHeight/4);
-			ctx.fillText(item.text, centerX, centerY + textHeight/4);
-		}	
-	}
-	
-	// winner name text
-	ctx.font = "50px Arial";
-	if (winnerIndex > -1) {
-		let winner = items[winnerIndex];
-		let text = winner.name;
-		let textWidth = ctx.measureText(text).width;
-		ctx.strokeText(text, center, center);
-		ctx.fillText(text, center, center);
-		
-		text = "wins!"
-		if (isPrizeChosen()) text = "wins + BONUS!"
-		ctx.strokeText(text, center, center + 60);
-		ctx.fillText(text, center, center + 60);
-		
-		// confetti
-		for (let c of confetti) {
-			ctx.fillStyle = c.color;
-			for (let a =0; a<4; a++)
-				ctx.fillRect(c.x, c.y + a * window.innerHeight/4, 3, 3);
+	setInterval(loop, 1000 / 60);
+
+	let patterns = {};
+	let patternsInterval = setInterval(createPatterns, 1000);
+	function createPatterns() {
+		try {
+			let iconDiv = document.getElementById("icons");
+			let c = document.getElementById("pattern");
+			let patternCtx = c.getContext("2d");
+			for (let iconImg of iconDiv.children) {
+				let name = iconImg.src.substring(iconImg.src.lastIndexOf("/") + 1).replace("-icon.png", "");
+				let pattern = patternCtx.createPattern(iconImg, 'repeat');
+				patterns[name] = pattern;
+			}
+		} catch (e) {
+			console.error(e)
 		}
 	}
-	
-	
-	if (bowserAdjust >= 1) {
-		drawBowserTitle("BOWSER", 450);
-		drawBowserTitle(wheelEvent.toUpperCase() , 550);
+
+	function isBowserEvent() {
+		return wheelEvent === "reversal" || wheelEvent === "revolution";
 	}
-}
 
-function drawBowserTitle(text, y) {	
-	ctx.lineWidth = 15;
-	ctx.fillStyle = "red";
-	ctx.strokeStyle = "#000";	
-	ctx.font = "100px Grobold";
-	ctx.strokeText(text, center, y);
-	ctx.fillText(text, center, y);
-}
-
-function getSelectedItem() {
-	if (items.length === 1) return items[0];
-	// PI/2 == bottom
-	let targetAngle = 3*Math.PI/2;
-	let selected = null;
-	for (let x of items) {
-		let p1 = (x.t1 + rotation) % (Math.PI*2);
-		let p2 = (x.t2 + rotation) % (Math.PI*2);
-		if (p2 <= p1) p2 = p1 + Math.PI*2;
-		if (p1 < targetAngle && p2 >= targetAngle) selected = x;
+	function isPrizeChosen() {
+		if (wheelEvent == "prize") {
+			let finalRot = rotation % (Math.PI * 2);
+			return (finalRot <= 3 * Math.PI / 2 && finalRot >= 3 * Math.PI / 2 - Math.PI / 6);
+		}
+		return false;
 	}
-	return selected;
-}
 
-function determineWinner() {
-	let winner = getSelectedItem();	
-	winnerIndex = items.indexOf(winner);
-	setTimeout(() => {SendWinner(winner)}, 6000);
-
-	// TEMPORARILY REMOVING WINDOW CLOSING
-	setTimeout(() => {
-		if (music) music.close();
-		if (cheer) cheer.close();
-		// SOME SORT OF CHROME CRASH TRIGGERED ON WINDOW CLOSE
-		//window.close();
-		cleanup();
-	}, 8000);
-}
-
-function cleanup() {
-	winnerIndex = -1;
-	nameRevealCount = 0;
- 	nameHideCount = 0;
-	rotationAccel = 1;
-	winnerIndex = -1;
-	bowserAdjust = -1;
-	items = [];
-}
-
-let nameRevealCount = 0;
-let nameHideCount = 0;
-let rotationAccel = 1;
-let winnerIndex = -1;
-let bowserAdjust = -1;
-function setupTimers() {
-	let timer = 2000;
-	
-	// show name tags
-	for (let i=0; i<items.length; i++) {
-		setTimeout(() => {nameRevealCount++}, timer);
-		timer += 200;
+	function arcText(text, radius, theta) {
+		// draw text along the circumference
+		// draw letter by letter for actual curved text
+		let textHeight = 50;
+		ctx.font = textHeight + "px Arial";
+		ctx.strokeStyle = "black";
+		ctx.fillStyle = "white";
+		ctx.translate(center, center);
+		ctx.rotate(theta);
+		ctx.strokeText(text, 0, radius + textHeight);
+		ctx.fillText(text, 0, radius + textHeight);
+		ctx.rotate(-theta);
+		ctx.translate(-center, -center);
 	}
-	timer += 1000;
+
+	function draw() {
+		ctx.clearRect(0, 0, baseSize, baseSize);
+		if (items.length === 0) return;
+		if (wheelEvent === "prize") {
+			ctx.strokeStyle = "black";
+			ctx.fillStyle = "gold";
+			ctx.beginPath();
+			ctx.moveTo(center, center);
+			ctx.arc(center, center, r + margin - 5, 0 + rotation, Math.PI * 2 / 12 + rotation);
+			ctx.lineTo(center, center);
+			ctx.fill();
+			ctx.stroke();
 
 
-	// bowser event
-	if (isBowserEvent()) {
-		setTimeout(PlayLaugh, timer);
-		setTimeout(() => {bowserAdjust = 2}, timer);
-		timer += 4000;
-		setTimeout(() => {bowserAdjust = 1}, timer);
-		timer += 3000;
-		setTimeout(() => {bowserAdjust = 0}, timer);
-		timer += 1000;
-	} else {
-		timer += 2000;
+			arcText("P", r, rotation - Math.PI / 2 + Math.PI * 2 / 12 / 2 + 0.18);
+			arcText("R", r, rotation - Math.PI / 2 + Math.PI * 2 / 12 / 2 + 0.08);
+			arcText("I", r, rotation - Math.PI / 2 + Math.PI * 2 / 12 / 2);
+			arcText("Z", r, rotation - Math.PI / 2 + Math.PI * 2 / 12 / 2 - 0.08);
+			arcText("E", r, rotation - Math.PI / 2 + Math.PI * 2 / 12 / 2 - 0.18);
+		}
+
+		let totalWeight = items.map(x => x.weight).reduce((a, b) => a + b, 0);
+		let cumulativeWeight = 0;
+
+		for (let index = 0; index < items.length; index++) {
+			let item = items[index];
+			// 270 instead of 360 and +20 to aoid magentas (chroma-key)
+			let hue = Math.floor(270 / items.length * index) % 360 + 20;
+			let color = "hsl(" + hue + ",75%,50%)";
+			if (item.color !== undefined && item.color !== null) color = item.color;
+			item.t1 = cumulativeWeight / totalWeight * (2 * Math.PI);
+			item.t2 = (cumulativeWeight + item.weight) / totalWeight * (2 * Math.PI);
+
+			cumulativeWeight += item.weight;
+			ctx.fillStyle = color;
+			ctx.beginPath();
+			ctx.moveTo(center, center);
+			ctx.arc(center, center, r, item.t1 + rotation, item.t2 + rotation);
+			ctx.lineTo(center, center);
+			ctx.fill();
+			if (isBowserEvent()) {
+				ctx.fillStyle = patterns.bowser;
+				ctx.fill();
+			} else if (item.isSub || item.pattern) {
+				ctx.fillStyle = patterns.star;
+				if (item.pattern) ctx.fillStyle = patterns[item.pattern];
+				ctx.fill();
+			}
+		}
+		ctx.fillStyle = "#000";
+		for (let i = 0; i < pegCount; i++) {
+			let theta = Math.PI * 2 / pegCount * i + rotation;
+			let x = center + r * Math.cos(theta);
+			let y = center + r * Math.sin(theta);
+			ctx.beginPath();
+			ctx.arc(x, y, 5, 0, 2 * Math.PI);
+			ctx.fill();
+		}
+
+		ctx.beginPath();
+		ctx.moveTo(center, margin);
+		ctx.lineTo(center + 15, 5);
+		ctx.lineTo(center, 0);
+		ctx.lineTo(center - 15, 5);
+		ctx.fill();
+
+
+		// outlines
+		ctx.lineWidth = 2;
+		ctx.strokeStyle = "#000";
+		ctx.beginPath();
+		ctx.arc(center, center, r, 0, 2 * Math.PI);
+		ctx.stroke();
+		for (let item of items) {
+			ctx.beginPath();
+			ctx.moveTo(center, center);
+			ctx.lineTo(center + r * Math.cos(item.t1 + rotation), center + r * Math.sin(item.t1 + rotation));
+			ctx.stroke();
+		}
+
+
+		// name labels
+		ctx.fillStyle = "white";
+		ctx.strokeStyle = "#000";
+		ctx.lineWidth = 5;
+		let textHeight = 30;
+		ctx.font = textHeight + "px Arial";
+		if (winnerIndex <= -1) {
+			for (let nameIndex = 0; nameIndex < items.length; nameIndex++) {
+				if (nameIndex >= nameRevealCount) break;
+				if (nameIndex < nameHideCount) continue;
+				let item = items[nameIndex];
+				let centerX = center + 0.75 * r * Math.cos((item.t1 + item.t2) / 2 + rotation);
+				let centerY = center + 0.75 * r * Math.sin((item.t1 + item.t2) / 2 + rotation);
+				ctx.strokeText(item.text, centerX, centerY + textHeight / 4);
+				ctx.fillText(item.text, centerX, centerY + textHeight / 4);
+			}
+		}
+
+		// winner name text
+		ctx.font = "50px Arial";
+		if (winnerIndex > -1) {
+			let winner = items[winnerIndex];
+			let text = winner.name;
+			let textWidth = ctx.measureText(text).width;
+			ctx.strokeText(text, center, center);
+			ctx.fillText(text, center, center);
+
+			text = "wins!"
+			if (isPrizeChosen()) text = "wins + BONUS!"
+			ctx.strokeText(text, center, center + 60);
+			ctx.fillText(text, center, center + 60);
+
+			// confetti
+			for (let c of confetti) {
+				ctx.fillStyle = c.color;
+				for (let a = 0; a < 4; a++)
+					ctx.fillRect(c.x, c.y + a * window.innerHeight / 4, 3, 3);
+			}
+		}
+
+
+		if (bowserAdjust >= 1) {
+			drawBowserTitle("BOWSER", 450);
+			drawBowserTitle(wheelEvent.toUpperCase(), 550);
+		}
 	}
-	
 
-	
+	function drawBowserTitle(text, y) {
+		ctx.lineWidth = 15;
+		ctx.fillStyle = "red";
+		ctx.strokeStyle = "#000";
+		ctx.font = "100px Grobold";
+		ctx.strokeText(text, center, y);
+		ctx.fillText(text, center, y);
+	}
 
-	// start spinning
-	setTimeout(() => {rotationSpeed = 0.01}, timer);
-	timer += 5;
-	// speed up
-	setTimeout(() => {rotationAccel = 1.02}, timer);
-	timer += 2000;
-	
-	// steady speed for a random duration
-	setTimeout(() => {rotationAccel = 1.00}, timer);
-	timer += 2000 + 1000*Math.random();
-	
-	// dampen speed
-	setTimeout(() => {rotationAccel = 0.99}, timer);
-	timer += 9000;
-	setTimeout(() => {rotationAccel = 0.9}, timer);
-	timer += 1000;
+	function getSelectedItem() {
+		if (items.length === 1) return items[0];
+		// PI/2 == bottom
+		let targetAngle = 3 * Math.PI / 2;
+		let selected = null;
+		for (let x of items) {
+			let p1 = (x.t1 + rotation) % (Math.PI * 2);
+			let p2 = (x.t2 + rotation) % (Math.PI * 2);
+			if (p2 <= p1) p2 = p1 + Math.PI * 2;
+			if (p1 < targetAngle && p2 >= targetAngle) selected = x;
+		}
+		return selected;
+	}
 
-	// random events
-	let randomRoll = Math.random();
-	if (randomRoll < 0.05) {
+	function determineWinner() {
+		let winner = getSelectedItem();
+		winnerIndex = items.indexOf(winner);
+		setTimeout(() => { SendWinner(winner) }, 6000);
+
+		// TEMPORARILY REMOVING WINDOW CLOSING
 		setTimeout(() => {
-			PlayLaugh();
-			rotationSpeed = -0.02;
-			rotationAccel = 1.04;
-		}, timer);
-		timer += 680;
-		setTimeout(() => {rotationAccel = 0.9}, timer);
+			if (music) music.close();
+			if (cheer) cheer.close();
+			// SOME SORT OF CHROME CRASH TRIGGERED ON WINDOW CLOSE
+			//window.close();
+			cleanup();
+		}, 8000);
+	}
+
+	function cleanup() {
+		winnerIndex = -1;
+		nameRevealCount = 0;
+		nameHideCount = 0;
+		rotationAccel = 1;
+		winnerIndex = -1;
+		bowserAdjust = -1;
+		items = [];
+	}
+
+	let nameRevealCount = 0;
+	let nameHideCount = 0;
+	let rotationAccel = 1;
+	let winnerIndex = -1;
+	let bowserAdjust = -1;
+	function setupTimers() {
+		let timer = 2000;
+
+		// show name tags
+		for (let i = 0; i < items.length; i++) {
+			setTimeout(() => { nameRevealCount++ }, timer);
+			timer += 200;
+		}
+		timer += 1000;
+
+
+		// bowser event
+		if (isBowserEvent()) {
+			setTimeout(PlayLaugh, timer);
+			setTimeout(() => { bowserAdjust = 2 }, timer);
+			timer += 4000;
+			setTimeout(() => { bowserAdjust = 1 }, timer);
+			timer += 3000;
+			setTimeout(() => { bowserAdjust = 0 }, timer);
+			timer += 1000;
+		} else {
+			timer += 2000;
+		}
+
+
+
+
+		// start spinning
+		setTimeout(() => { rotationSpeed = 0.01 }, timer);
+		timer += 5;
+		// speed up
+		setTimeout(() => { rotationAccel = 1.02 }, timer);
+		timer += 2000;
+
+		// steady speed for a random duration
+		setTimeout(() => { rotationAccel = 1.00 }, timer);
+		timer += 2000 + 1000 * Math.random();
+
+		// dampen speed
+		setTimeout(() => { rotationAccel = 0.99 }, timer);
+		timer += 9000;
+		setTimeout(() => { rotationAccel = 0.9 }, timer);
+		timer += 1000;
+
+		// random events
+		let randomRoll = Math.random();
+		if (randomRoll < 0.05) {
+			setTimeout(() => {
+				PlayLaugh();
+				rotationSpeed = -0.02;
+				rotationAccel = 1.04;
+			}, timer);
+			timer += 680;
+			setTimeout(() => { rotationAccel = 0.9 }, timer);
+			timer += 1000;
+		}
+
+		// hard stop
+		setTimeout(() => { cheer = PlayAudio("barWV7RWkq0"); }, timer);
+		setTimeout(() => { rotationSpeed = 0; rotationAccel = 1.00; }, timer);
+		timer += 1000;
+
+		// highlight winner cell
+		setTimeout(determineWinner, timer);
 		timer += 1000;
 	}
-	
-	// hard stop
-	setTimeout(() => {cheer = PlayAudio("barWV7RWkq0");}, timer);
-	setTimeout(() => {rotationSpeed = 0; rotationAccel = 1.00;}, timer);
-	timer += 1000;
-	
-	// highlight winner cell
-	setTimeout(determineWinner, timer);
-	timer += 1000;
-}
 
-function SendWinner(winningUser) {
-	let totalWeight = items.map(x => x.weight).reduce((a,b)=>a+b,0);
-	// got a null error here once on winningUser.weight... weird!
-	let winnerChance = winningUser.weight / totalWeight;
+	function SendWinner(winningUser) {
+		let totalWeight = items.map(x => x.weight).reduce((a, b) => a + b, 0);
+		// got a null error here once on winningUser.weight... weird!
+		let winnerChance = winningUser.weight / totalWeight;
 
-	// calc the chance from before event
-	let preEventWinWeight = preEventItems.find(x => x.name === winningUser.name).weight;
-	let preEventTotalWeight = preEventItems.map(x => x.weight).reduce((a,b)=>a+b,0);
-	let preEventChance = preEventWinWeight / preEventTotalWeight;
+		// calc the chance from before event
+		let preEventWinWeight = preEventItems.find(x => x.name === winningUser.name).weight;
+		let preEventTotalWeight = preEventItems.map(x => x.weight).reduce((a, b) => a + b, 0);
+		let preEventChance = preEventWinWeight / preEventTotalWeight;
 
-	let command = '!randomwin ' + winningUser.name + ' ' + preEventChance + ' ' + winnerChance;
-	console.log("Sending message " + command);
-	(new BroadcastChannel('helper')).postMessage(command);
-	
-	if (isPrizeChosen()) (new BroadcastChannel('helper')).postMessage('!bonusprize ' + winningUser.name);
-}
+		let command = '!randomwin ' + winningUser.name + ' ' + preEventChance + ' ' + winnerChance;
+		console.log("Sending message " + command);
+		(new BroadcastChannel('helper')).postMessage(command);
 
-
-function loop() {	
-	draw();
-	rotationSpeed *= rotationAccel;
-	rotation += rotationSpeed;
-
-	if (bowserAdjust === 1) {
-		items.forEach(item => {
-			item.weight += 0.05 * (item.targetWeight - item.weight)
-		});
-	}
-	if (bowserAdjust === 0) {
-		items.forEach(item => {
-			item.weight = item.targetWeight
-		});
-	}
-	
-	for (let c of confetti) {
-		c.y += c.timer/100 + 1;
-		if (c.y > window.innerHeight/4) c.y -= window.innerHeight/4;
-		c.x += (c.timer - 50)/50;
-		c.timer +=1;
-		if (c.timer > 100) c.timer -= 100;
+		if (isPrizeChosen()) (new BroadcastChannel('helper')).postMessage('!bonusprize ' + winningUser.name);
 	}
 
-	let currentPie = Math.floor(rotation / (Math.PI*2 / pegCount));
-	let previousPie = Math.floor((rotation-rotationSpeed) / (Math.PI*2 / pegCount));
-	if (currentPie !== previousPie) {
-		PlayTone();
+
+	function loop() {
+		draw();
+		rotationSpeed *= rotationAccel;
+		rotation += rotationSpeed;
+
+		if (bowserAdjust === 1) {
+			items.forEach(item => {
+				item.weight += 0.05 * (item.targetWeight - item.weight)
+			});
+		}
+		if (bowserAdjust === 0) {
+			items.forEach(item => {
+				item.weight = item.targetWeight
+			});
+		}
+
+		for (let c of confetti) {
+			c.y += c.timer / 100 + 1;
+			if (c.y > window.innerHeight / 4) c.y -= window.innerHeight / 4;
+			c.x += (c.timer - 50) / 50;
+			c.timer += 1;
+			if (c.timer > 100) c.timer -= 100;
+		}
+
+		let currentPie = Math.floor(rotation / (Math.PI * 2 / pegCount));
+		let previousPie = Math.floor((rotation - rotationSpeed) / (Math.PI * 2 / pegCount));
+		if (currentPie !== previousPie) {
+			PlayTone();
+		}
+
 	}
-	
-}
 
 
-function SetItems(x) {
-	items = x;
-}
-
-function PlayAudio(ytid) {
-	let w = window.open("https://www.youtube.com/watch?v=" + ytid);
-	return w;
-}
-
-function PlayTone() {
-	let tone = document.getElementById("audio1");
-	tone.pause();
-	tone.currentTime = 0;
-	tone.play();
-}
-
-function PlayLaugh() {
-	let tone = document.getElementById("bowserLaugh");
-	tone.pause();
-	tone.currentTime = 0;
-	tone.play();
-}
-
-function RandomFrom(list) {
-	let index = RandomNumber(list.length) - 1;
-	return list[index];
-}
-function RandomNumber(min, max) {
-	if (max === undefined) {
-		max = min;
-		min = 1;
+	function SetItems(x) {
+		items = x;
 	}
-	return min + Math.floor(Math.random() * (1+max-min))
-}
+
+	function PlayAudio(ytid) {
+		let w = window.open("https://www.youtube.com/watch?v=" + ytid);
+		return w;
+	}
+
+	function PlayTone() {
+		let tone = document.getElementById("audio1");
+		tone.pause();
+		tone.currentTime = 0;
+		tone.play();
+	}
+
+	function PlayLaugh() {
+		let tone = document.getElementById("bowserLaugh");
+		tone.pause();
+		tone.currentTime = 0;
+		tone.play();
+	}
+
+	function RandomFrom(list) {
+		let index = RandomNumber(list.length) - 1;
+		return list[index];
+	}
+	function RandomNumber(min, max) {
+		if (max === undefined) {
+			max = min;
+			min = 1;
+		}
+		return min + Math.floor(Math.random() * (1 + max - min))
+	}
 
 
-	</script>
+</script>
+
 </html>
