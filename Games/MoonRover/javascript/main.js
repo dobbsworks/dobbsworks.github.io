@@ -1,6 +1,7 @@
 var canvas;
 var ctx;
 var player = new Player(300, 300);
+var renderer = new Renderer(player);
 var sprites = [
     player,
     new EnemyWisper(400, 200)
@@ -47,8 +48,8 @@ function MainLoop() {
 function Draw() {
     ctx.fillStyle = "black";
     ctx.strokeStyle = "white";
-    ctx.lineWidth = 4;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    renderer.Update();
     for (let border of borders) {
         border.Draw();
     }

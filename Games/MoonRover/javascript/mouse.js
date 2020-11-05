@@ -64,3 +64,11 @@ function OnTouchMove(e) {
     mouseX = e.touches[0].pageX;
     mouseY = e.touches[0].pageY;
 }
+
+function GetGameMouseX() {
+    return renderer.UnmapX(mouseX);
+}
+
+function GetGameMouseY() {
+    return renderer.UnmapY(mouseY);
+}

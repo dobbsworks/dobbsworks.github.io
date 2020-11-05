@@ -26,8 +26,8 @@ class Weapon {
     }
 
     Fire() {
-        let xDif = player.x - mouseX;
-        let yDif = player.y - mouseY;
+        let xDif = player.x - GetGameMouseX();
+        let yDif = player.y - GetGameMouseY();
         let theta = Math.atan2(yDif, xDif);
 
         player.dx += this.knockbackPower * Math.cos(theta);
@@ -54,8 +54,8 @@ class Weapon {
 
 
     FireBullet(angle) {
-        let x = player.x - player.radius * Math.cos(angle);
-        let y = player.y - player.radius * Math.sin(angle);
+        let x = player.x;
+        let y = player.y;
         let bullet = new this.pelletType(x, y);
         bullet.dx = -this.pelletSpeed * Math.cos(angle) * 4;
         bullet.dy = -this.pelletSpeed * Math.sin(angle) * 4;

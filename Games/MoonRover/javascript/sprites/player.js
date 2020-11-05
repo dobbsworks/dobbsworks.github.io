@@ -23,6 +23,7 @@ class Player extends Sprite {
                         deathCount++;
                         setTimeout(() => {
                             player = new Player(0,0);
+                            renderer.target = player;
                             sprites.push(player)
                         },1000)
                     } else {

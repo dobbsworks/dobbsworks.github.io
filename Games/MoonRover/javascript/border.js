@@ -1,16 +1,10 @@
 class Border {
     Draw() {
         if (this.x !== undefined) {
-            ctx.beginPath();
-            ctx.moveTo(this.x, 0);
-            ctx.lineTo(this.x, canvas.height);
-            ctx.stroke();
+            renderer.VerticalLine(this.x);
         }
         if (this.y !== undefined) {
-            ctx.beginPath();
-            ctx.moveTo(0, this.y);
-            ctx.lineTo(canvas.width, this.y);
-            ctx.stroke();
+            renderer.HorizontalLine(this.y);
         }
     }
 }
@@ -23,10 +17,7 @@ class Platform extends Border {
         this.y = y;
     }
     Draw() {
-        ctx.beginPath();
-        ctx.moveTo(this.x1, this.y);
-        ctx.lineTo(this.x2, this.y);
-        ctx.stroke();
+        renderer.Line(this.x1,this.y,this.x2,this.y);
     }
 }
 

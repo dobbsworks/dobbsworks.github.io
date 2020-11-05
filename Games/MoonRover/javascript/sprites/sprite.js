@@ -10,13 +10,12 @@ class Sprite {
     radius = 30;
     frame = 0;
     Draw() {
-        ctx.strokeStyle = this.color;
+        ctx.strokeStyle = "black";
+        ctx.fillStyle = this.color;
         if (this.hurtTimer) {
-            ctx.strokeStyle = "magenta";
+            ctx.fillStyle = "magenta";
         }
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-        ctx.stroke();
+        renderer.Circle(this.x, this.y, this.radius);
     }
 
     Update() {
