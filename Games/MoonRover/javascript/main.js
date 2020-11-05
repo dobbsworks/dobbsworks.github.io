@@ -24,6 +24,7 @@ function Initialize() {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
     InitMouseHandlers();
+    InitKeyHandlers();
     weaponHandler.CreateInventoryBar();
     setInterval(MainLoop, 1000 / 60);
 }
