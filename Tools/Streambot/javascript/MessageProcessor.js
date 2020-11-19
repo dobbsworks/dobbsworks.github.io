@@ -126,14 +126,19 @@ function WriteMessage(message) {
 function WriteMessageRaw(message) {
 	let chatInput = document.getElementsByTagName('textarea')[0];
 	let chatButton = [...document.getElementsByTagName('button')].find(x => x.innerText === "Chat");
-	
-    var nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
-    nativeInputValueSetter.call(chatInput, message);
 
-    var ev2 = new Event('input', { bubbles: true});
-    chatInput.dispatchEvent(ev2);
+	SetInputValue(chatInput, message);
 	
 	chatButton.click();
+}
+
+function SetInputValue(inputEl, value) {
+	// simulates user input to work with React
+    var nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
+    nativeInputValueSetter.call(inputEl, value);
+
+    var ev2 = new Event('input', { bubbles: true});
+    inputEl.dispatchEvent(ev2);
 }
 
 function OnBroadcastMessage(message) {

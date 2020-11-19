@@ -187,11 +187,46 @@ function CommandResetTimer(user, args) {
 
 function CommandCloseQueue(user, args) {
 	isQueueOpen = false;
+	UpdateStreamTitleForQueue(false);
 	return "The queue is closed.";
 }
 function CommandOpenQueue(user, args) {
 	isQueueOpen = true;
+	UpdateStreamTitleForQueue(true);
 	return "The queue is open!";
+}
+
+function UpdateStreamTitleForQueue(isOpen) {
+	let quickButtons = Array.from(document.querySelectorAll("button.quick-action"));
+	let editInfoButton = quickButtons.find(x => x.innerText === "Edit Stream Info");
+	editInfoButton.click();
+
+	setTimeout(() => {
+		let textAreas = Array.from(document.querySelectorAll("textarea"));
+		let titleInput = textAreas.find(x => x.attributes.placeholder.value === "Enter a title");
+		let oldTitle = titleInput.value;
+		let newTitle = titleInput.value;
+		let closedTag = " (queue closed)";
+		if (isOpen) {
+			// opening queue? Remove the closed text
+			newTitle = newTitle.replace(closedTag, "");
+		} else {
+			if (newTitle.indexOf(closedTag) === -1) {
+				newTitle += closedTag;
+			}
+		}
+		if (oldTitle === newTitle) return;
+
+		SetInputValue(titleInput, newTitle);
+
+		setTimeout(() => {
+			let buttons = Array.from(document.querySelectorAll("button"));
+			let saveStreamInfoButton = buttons.find(x => x.innerText === "Done");
+			saveStreamInfoButton.click();
+
+		}, 500);
+
+	}, 500);
 }
 
 
@@ -290,7 +325,7 @@ function MarkUserAsPresent(username) {
 }
 
 // function SetUserMakerId(username, makerId) {
-	
+
 //     let record = {username: targetUser, id: makerId};
 //     StorageHandler.maker.upsert(record);
 // }
