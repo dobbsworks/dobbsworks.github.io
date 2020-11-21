@@ -1,5 +1,54 @@
 class RoomGenerator {
     CreateCorridor(width, height) {
+        let lowestPlatformY = height - 150;
+        let highestPlatformY = 300;
+        let minSpacePerPlatform = 225;
+        let totalVerticalSpace = lowestPlatformY - highestPlatformY;
+        let numberOfLines = 1 + Math.floor(totalVerticalSpace / minSpacePerPlatform);
+        let spacePerLine = totalVerticalSpace / (numberOfLines - 1); 
+
+        let room = this.CreateBaseRoom(width, height, lowestPlatformY - spacePerLine);
+
+        for (let lineNum = 0; lineNum < numberOfLines; lineNum++) {
+            let y = highestPlatformY + lineNum * spacePerLine;
+            let platformLine = this.CreatePlatformLine(width, 0, y)
+            room.borders.push(...(platformLine.borders));
+            room.sprites.push(...(platformLine.sprites));
+        }
+
+        return room;
+    }
+
+    CreateArenaRoom(width, height) {
+        let room = this.CreateBaseRoom(width, height, false);
+
+        let lowestPlatformY = height - 150;
+        let midPlatformY = lowestPlatformY - 225;
+        let playerPlatformY = midPlatformY - 200;
+
+        let bottomPlatform = new Platform(width/3, width*2/3, lowestPlatformY);
+        let leftPlatform = new Platform(30, width/3, midPlatformY);
+        let rightPlatform = new Platform(width*2/3, width - 30, midPlatformY);
+        let playerPlatform = new Platform(width/2-120, width/2+120, playerPlatformY);
+        
+        room.borders.push(bottomPlatform, leftPlatform, rightPlatform, playerPlatform);
+
+        for (let platform of [leftPlatform, rightPlatform, bottomPlatform]) {
+            let platformCenterX = (platform.x1 + platform.x2)/2;
+            let enemy = new EnemyGoombud(platformCenterX, platform.y - 30);
+            room.sprites.push(enemy);
+        }
+
+        return room;
+    }
+
+    CreateBossRoom(width, height) {
+        let room = this.CreateBaseRoom(width, height, false);
+
+        return room;
+    }
+
+    CreateBaseRoom(width, height, exitHeight) {
         let borders = [];
         let sprites = [];
         
@@ -8,21 +57,10 @@ class RoomGenerator {
         borders.push(new Floor(height));
         borders.push(new Ceiling(0));
 
-        let lowestPlatformY = height - 150;
-        let highestPlatformY = 300;
-        let minSpacePerPlatform = 225;
-        let totalVerticalSpace = lowestPlatformY - highestPlatformY;
-        let numberOfLines = 1 + Math.floor(totalVerticalSpace / minSpacePerPlatform);
-        let spacePerLine = totalVerticalSpace / (numberOfLines - 1); 
-
-        for (let lineNum = 0; lineNum < numberOfLines; lineNum++) {
-            let y = highestPlatformY + lineNum * spacePerLine;
-            let platformLine = this.CreatePlatformLine(width, 0, y)
-            borders.push(...(platformLine.borders));
-            sprites.push(...(platformLine.sprites));
+        if (exitHeight) {
+            let levelExit = new LevelExit(width, exitHeight)
+            sprites.push(levelExit);
         }
-
-        // Exit door? bottom right
 
         return {borders: borders, sprites: sprites};
     }

@@ -1,16 +1,18 @@
 var canvas;
 var ctx;
 var player = new Player(300, 300);
-var renderer = new Renderer(player);
-var sprites = [player];
-var room = new RoomGenerator().CreateCorridor(1500, 10000);
-var borders = room.borders;
-sprites.push(...(room.sprites));
+var renderer = new Renderer();
+var sprites = [];
+var borders = [];
+var levelHandler = new LevelHandler();
 var weaponHandler = new WeaponHandler();
 
 var loot = 0;
 var killCount = 0;
 var deathCount = 0;
+
+levelHandler.LoadZone();
+
 setTimeout(Initialize, 100);
 
 function Initialize() {
@@ -24,6 +26,7 @@ function Initialize() {
 
 function MainLoop() {
     weaponHandler.Update();
+    levelHandler.Update();
     for (let sprite of sprites) {
         if (sprite.Initialize && !sprite.initialized) {
             sprite.Initialize();
@@ -59,4 +62,5 @@ function Draw() {
     ctx.fillText("Loot: " + loot, 110, 21);
     ctx.fillText("Kills: " + killCount, 210, 21);
     ctx.fillText("Deaths: " + deathCount, 310, 21);
+    ctx.fillText("Level: " + levelHandler.GetLevelNumber(), 460, 21);
 }

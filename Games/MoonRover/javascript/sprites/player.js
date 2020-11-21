@@ -24,10 +24,10 @@ class Player extends Sprite {
                         this.isActive = false;
                         deathCount++;
                         setTimeout(() => {
-                            player = new Player(0,0);
+                            player = new Player(0, 0);
                             renderer.target = player;
                             sprites.push(player)
-                        },1000)
+                        }, 1000)
                     } else {
                         this.hurtTimer = 60;
                     }
@@ -36,6 +36,10 @@ class Player extends Sprite {
             if (touchingSprite instanceof Loot) {
                 touchingSprite.isActive = false;
                 loot += touchingSprite.value;
+            }
+            if (touchingSprite instanceof LevelExit) {
+                // level complete!
+                levelHandler.LoadZone();
             }
         }
         if (this.hurtTimer > 0) {

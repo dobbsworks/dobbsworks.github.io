@@ -66,6 +66,8 @@ class Weapon {
         let bullet = new this.pelletType(x, y);
         bullet.dx = -this.pelletSpeed * Math.cos(angle) * 4;
         bullet.dy = -this.pelletSpeed * Math.sin(angle) * 4;
+        bullet.dx += player.dx;
+        bullet.dy += player.dy;
         bullet.damage = this.pelletDamage;
         sprites.push(bullet);
     }
