@@ -7,4 +7,5 @@ class WeaponJetpack extends Weapon {
     pelletSpeed = 0.5;
     fixedSpread = false;
     cooldownTime = 3;
+    maxShotsBeforeLanding = 50;
 }

@@ -1,9 +1,15 @@
 class Border {
     Draw() {
         if (this.x !== undefined) {
+            ctx.strokeStyle = "black";
+            renderer.VerticalLine(this.x-2);
+            ctx.strokeStyle = "white";
             renderer.VerticalLine(this.x);
         }
         if (this.y !== undefined) {
+            ctx.strokeStyle = "black";
+            renderer.HorizontalLine(this.y+2);
+            ctx.strokeStyle = "white";
             renderer.HorizontalLine(this.y);
         }
     }
@@ -17,6 +23,9 @@ class Platform extends Border {
         this.y = y;
     }
     Draw() {
+        ctx.strokeStyle = "black";
+        renderer.Line(this.x1-2,this.y+2,this.x2-2,this.y+2);
+        ctx.strokeStyle = "white";
         renderer.Line(this.x1,this.y,this.x2,this.y);
     }
 }

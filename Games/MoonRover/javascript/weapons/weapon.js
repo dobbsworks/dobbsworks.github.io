@@ -11,6 +11,9 @@ class Weapon {
     deployTime = 10;
     fixedSpread = true;
 
+    maxShotsBeforeLanding = 3;
+    shotsSinceLastLanding = 0;
+
     // state
     cooldownTimer = 0;
     deployTimer = 0;
@@ -20,8 +23,12 @@ class Weapon {
     }
 
     PullTrigger() {
+        if (this.shotsSinceLastLanding >= this.maxShotsBeforeLanding) {
+            return;
+        }
         if (this.cooldownTimer <= 0 && this.deployTimer <= 0) {
             this.Fire();
+            this.shotsSinceLastLanding++;
         }
     }
 

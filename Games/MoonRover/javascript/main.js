@@ -2,17 +2,10 @@ var canvas;
 var ctx;
 var player = new Player(300, 300);
 var renderer = new Renderer(player);
-var sprites = [
-    player,
-    new EnemyWisper(400, 200)
-];
-var borders = [
-    new Ceiling(25),
-    new Floor(440),
-    new LeftWall(100),
-    new RightWall(600),
-    new Platform(250, 450, 300),
-];
+var sprites = [player];
+var room = new RoomGenerator().CreateCorridor(1500, 10000);
+var borders = room.borders;
+sprites.push(...(room.sprites));
 var weaponHandler = new WeaponHandler();
 
 var loot = 0;

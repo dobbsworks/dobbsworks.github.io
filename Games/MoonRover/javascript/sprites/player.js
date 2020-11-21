@@ -2,6 +2,7 @@ class Player extends Sprite {
     color = "blue";
     hp = 5;
     hurtTimer = 0;
+    isOnGround = false;
 
     Update() {
         if (isMouseDown) {
@@ -10,7 +11,8 @@ class Player extends Sprite {
         }
         this.ApplyGravity();
         this.UpdatePosition();
-        this.ReactToBorders();
+        let touchedBorders = this.ReactToBorders();
+        this.isOnGround = (touchedBorders.some(x => x instanceof Floor || x instanceof Platform));
 
         let touchingSprites = this.GetTouchingSprites();
         for (let touchingSprite of touchingSprites) {

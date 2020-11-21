@@ -48,9 +48,14 @@ class WeaponHandler {
             let chosenIndex = this.selectedWeaponIndex + mouseScroll;
             this.SelectWeaponByIndex(chosenIndex);
         }
+
+        let isPlayerOnGround = player && player.isOnGround;
         let currentWeapon = this.GetCurrent();
         if (currentWeapon) {
             currentWeapon.Update();
+            if (isPlayerOnGround) {
+                currentWeapon.shotsSinceLastLanding = 0;
+            }
         }
         if (this.oldWeaponIndex !== this.selectedWeaponIndex) {
             currentWeapon.SwitchTo();
