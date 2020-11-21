@@ -203,19 +203,22 @@ function UpdateStreamTitleForQueue(isOpen) {
 
 	setTimeout(() => {
 		let textAreas = Array.from(document.querySelectorAll("textarea"));
+		let allInputs = Array.from(document.querySelectorAll("input"));
 		let titleInput = textAreas.find(x => x.attributes.placeholder.value === "Enter a title");
-		let oldTitle = titleInput.value;
+		let categoryInput = allInputs.find(x => x.attributes.placeholder.value === "Search for a category");
+
 		let newTitle = titleInput.value;
 		let closedTag = " (queue closed)";
-		if (isOpen) {
-			// opening queue? Remove the closed text
-			newTitle = newTitle.replace(closedTag, "");
-		} else {
-			if (newTitle.indexOf(closedTag) === -1) {
-				newTitle += closedTag;
+		if (categoryInput && categoryInput.value === "Super Mario Maker 2") {
+			if (isOpen) {
+				// opening queue? Remove the closed text
+				newTitle = newTitle.replace(closedTag, "");
+			} else {
+				if (newTitle.indexOf(closedTag) === -1) {
+					newTitle += closedTag;
+				}
 			}
 		}
-		if (oldTitle === newTitle) return;
 
 		SetInputValue(titleInput, newTitle);
 
