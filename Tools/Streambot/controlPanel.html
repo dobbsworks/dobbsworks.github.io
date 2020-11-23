@@ -160,7 +160,7 @@
 			row.classList.add(level.status);
 			if (level.code === selectedLevelCode) row.classList.add("selected");
 			row.insertCell().innerHTML = level.code;
-			row.insertCell().innerHTML = (level.isSub ? "★" : "") + (level.afkStartTime ? " (AFK) " : "") + level.username;
+			row.insertCell().innerHTML = (level.afkStartTime ? " (AFK) " : "") + level.username;
 			row.insertCell().innerHTML = level.status;
 			if (level.status === "live") {
 				row.insertCell().innerHTML = GetTimeDiff(new Date(level.timeStarted), new Date());

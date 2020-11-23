@@ -204,8 +204,8 @@ function UpdateStreamTitleForQueue(isOpen) {
 	setTimeout(() => {
 		let textAreas = Array.from(document.querySelectorAll("textarea"));
 		let allInputs = Array.from(document.querySelectorAll("input"));
-		let titleInput = textAreas.find(x => x.attributes.placeholder.value === "Enter a title");
-		let categoryInput = allInputs.find(x => x.attributes.placeholder.value === "Search for a category");
+		let titleInput = textAreas.find(x => x.attributes.placeholder && x.attributes.placeholder.value === "Enter a title");
+		let categoryInput = allInputs.find(x => x.attributes.placeholder && x.attributes.placeholder.value === "Search for a category");
 
 		let newTitle = titleInput.value;
 		let closedTag = " (queue closed)";
