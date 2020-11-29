@@ -144,6 +144,7 @@ function LoadCommands() {
 		Command("gettoomanytokens", "CommandGetTooManyTokens", commandPermission.reward,commandDisplay.hidden),
 	
 		Command("addpoints", "CommandAddPoints",commandPermission.streamer, commandDisplay.hidden),
+		Command("give", "CommandGivePoints",commandPermission.all, commandDisplay.chat, "Give !tokens to another user. Usage: !give @user 100"),
 		Command("points", "CommandGetPoints",commandPermission.all, commandDisplay.chat),
 		Command("tokens", "CommandGetPoints",commandPermission.all, commandDisplay.chat),
 
@@ -176,6 +177,8 @@ function LoadCommands() {
 		AliasCommand("reward", "rewards"),
 		AliasCommand("pos", "position"),
 		AliasCommand("sounds", "soundlist"),
+		AliasCommand("givepoints", "give"),
+		AliasCommand("givetokens", "give"),
 	];
 }
 

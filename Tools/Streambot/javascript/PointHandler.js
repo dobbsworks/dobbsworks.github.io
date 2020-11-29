@@ -37,9 +37,41 @@ var pointHandler = {
 function CommandAddPoints(user, args) {
     let username = args[0].replace("@","");
     let pointValue = +(args[1]);
-    if (isNaN(pointValue)) return {success: false, message: `${pointValue} is not a number. Usage: !addpoints @user num`}
+    if (isNaN(pointValue)) {
+        if (isNaN(username)) {
+            return {success: false, message: `${pointValue} is not a number. Usage: !addpoints @user num`}
+        } else {
+            let temp = username;
+            username = pointValue;
+            pointValue = temp;
+        }
+    }
     pointHandler.addPoints(username, pointValue);
     return {success: true, message: `Added ${pointValue} tokens.`};
+}
+
+function CommandGivePoints(user, args) {
+    let targetUsername = args[0].replace("@","");
+    let pointValue = +(args[1]);
+    if (isNaN(pointValue)) {
+        if (isNaN(targetUsername)) {
+            return {success: false, message: `${pointValue} is not a number. Usage: !give @user num`}
+        } else {
+            let temp = username;
+            targetUsername = pointValue;
+            pointValue = temp;
+        }
+    }
+    let sourceUsername = user.username;
+    let sourcePoints = pointHandler.getPoints(sourceUsername);
+    let text = pointHandler.formatValue(pointValue);
+    if (sourcePoints < pointValue) {
+        return {success: false, message: `You do not have ${text} to give.`}
+    } else {
+        pointHandler.deductPoints(sourceUsername, pointValue);
+        pointHandler.addPoints(targetUsername, pointValue);
+        return {success: true, message: `${text} given to ${targetUsername}.`}
+    }
 }
 
 function CommandGetPoints(user, args) {
