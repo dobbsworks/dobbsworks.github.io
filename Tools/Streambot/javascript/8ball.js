@@ -22,6 +22,6 @@ function Command8Ball(user, args) {
         "Very doubtful."
     ];
     let responseIndex = Math.floor(Math.random() * responses.length);
-    let response = responses[responseIndex];
+    let response = "🎱 " + responses[responseIndex];
     return { success: true, message: response }
 }
