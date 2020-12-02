@@ -103,7 +103,7 @@ function LoadCommands() {
 		Command("bonusprize", "CommandBonusPrize", commandPermission.streamer, commandDisplay.hidden),
 		Command("resettimer", "CommandResetTimer", commandPermission.streamer, commandDisplay.panel),
 		Command("roll", "CommandRoll", commandPermission.all, commandDisplay.chat, "Roll the dice! Usage: !roll d6, !roll d20+3"),
-		Command("8ball", "CommandRoll", commandPermission.all, commandDisplay.chat, "Ask your question! Usage: !8ball Does Billy like me?"),
+		Command("8ball", "Command8Ball", commandPermission.all, commandDisplay.chat, "Ask your question! Usage: !8ball Does Billy like me?"),
 		Command("open", "CommandOpenQueue", commandPermission.streamer, commandDisplay.panel),
 		Command("close", "CommandCloseQueue", commandPermission.streamer, commandDisplay.panel),
 		//Command("secondqueueslot", "CommandQueueSlot", commandPermission.reward, commandDisplay.hidden),
