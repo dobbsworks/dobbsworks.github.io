@@ -101,6 +101,7 @@ function ProcessCommand(username, commandText, isReward, badges) {
 					// handle success/fail object
 					responseText = response.message;
 					if (response.success && command.cost) {
+						responseText = `[-${command.cost} tokens] ${responseText}`;
 						pointHandler.deductPoints(username, command.cost);
 					}
 				}

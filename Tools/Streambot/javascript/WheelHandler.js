@@ -150,14 +150,34 @@ function GetWheelData() {
 }
 
 function CommandBiggerSlice(user, args) {
+    let targetUser = args[0];
+    if (targetUser) {
+        targetUser = targetUser.replace("@","");
+        let success = UpgradeWheelSliceForUser(targetUser);
+        if (success) {
+            return { message: `Thank you! ${targetUser}'s slice has been upgraded!`, success: true };
+        } else {
+            return { message: "There are no valid levels to prioritize.", success: false };
+        }
+    } else {
+        let success = UpgradeWheelSliceForUser(user.username);
+        if (success) {
+            return { message: "Wheel slice upgraded!", success: true };
+        } else {
+            return { message: "There are no valid levels to prioritize.", success: false };
+        }
+    }
+}
+
+function UpgradeWheelSliceForUser(username) {
     // find all levels for this user that are pending and not priority
     let levels = StorageHandler.queue.values;
-    let userLevels = levels.filter(x => x.username === user.username && x.status === levelStatus.pending && !x.isPriority);
-    if (userLevels.length === 0) return { message: "There are no valid levels to prioritize.", success: false };
+    let userLevels = levels.filter(x => x.username === username && x.status === levelStatus.pending && !x.isPriority);
+    if (userLevels.length === 0) return false;
     let levelToPrioritze = userLevels[0];
     levelToPrioritze.weightPriorityPurchases += 1;
     StorageHandler.queue = levels;
-    return { message: "Wheel slice upgraded!", success: true };
+    return true;
 }
 
 
