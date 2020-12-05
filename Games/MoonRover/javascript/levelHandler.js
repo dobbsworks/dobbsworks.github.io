@@ -45,7 +45,7 @@ class LevelHandler {
         borders = room.borders;
         let enemies = room.sprites;
         enemies = enemies.filter(e => Math.abs(e.x - player.x) > 300 || Math.abs(e.y - player.y) > 300);
-        sprites = [player, ...enemies];
+        sprites = [player, ...enemies, new BossCore(700, 300)];
         renderer.target = player;
 
     }

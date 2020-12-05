@@ -9,6 +9,8 @@ class Sprite {
     color = "white";
     radius = 30;
     frame = 0;
+    maxHp = 3;
+
     Draw() {
         ctx.strokeStyle = "black";
         ctx.fillStyle = this.color;

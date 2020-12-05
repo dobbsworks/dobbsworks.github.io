@@ -11,7 +11,6 @@ class EnemyWisper extends Enemy {
         }
         let speed = 1;
         this.dx = this.direction * speed;
-        this.SharedEnemyUpdate();
     }
 
 }

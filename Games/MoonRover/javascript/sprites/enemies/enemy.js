@@ -1,7 +1,6 @@
 class Enemy extends Sprite {
     color = "red";
     direction = 1;
-    hp = 3;
     loot = 0;
 
     Initialize() {

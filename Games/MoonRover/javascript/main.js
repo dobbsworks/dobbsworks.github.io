@@ -6,6 +6,7 @@ var sprites = [];
 var borders = [];
 var levelHandler = new LevelHandler();
 var weaponHandler = new WeaponHandler();
+var overlayHandler = new OverlayHandler();
 
 var loot = 0;
 var killCount = 0;
@@ -28,14 +29,16 @@ function MainLoop() {
     weaponHandler.Update();
     levelHandler.Update();
     for (let sprite of sprites) {
-        if (sprite.Initialize && !sprite.initialized) {
-            sprite.Initialize();
+        if (!sprite.initialized) {
+            if (sprite.Initialize) sprite.Initialize();
             sprite.initialized = true;
+            sprite.hp = sprite.maxHp;
         }
         sprite.oldX = sprite.x;
         sprite.oldY = sprite.y;
         sprite.frame++;
         sprite.Update();
+        if (sprite instanceof Enemy) sprite.SharedEnemyUpdate();
     }
     sprites = sprites.filter(x => x.isActive);
     Draw();
@@ -57,10 +60,5 @@ function Draw() {
         ctx.strokeRect(0, 0, canvas.width, canvas.height);
     }
 
-    ctx.fillStyle = "white";
-    ctx.font = "20px Arial";
-    ctx.fillText("Loot: " + loot, 110, 21);
-    ctx.fillText("Kills: " + killCount, 210, 21);
-    ctx.fillText("Deaths: " + deathCount, 310, 21);
-    ctx.fillText("Level: " + levelHandler.GetLevelNumber(), 460, 21);
+    overlayHandler.Draw();
 }

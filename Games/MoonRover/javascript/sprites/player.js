@@ -1,6 +1,6 @@
 class Player extends Sprite {
     color = "blue";
-    hp = 5;
+    maxHp = 10;
     hurtTimer = 0;
     isOnGround = false;
 
@@ -16,8 +16,29 @@ class Player extends Sprite {
 
         let touchingSprites = this.GetTouchingSprites();
         for (let touchingSprite of touchingSprites) {
-            if (this.hurtTimer === 0) {
-                if (touchingSprite instanceof Enemy) {
+            if (touchingSprite instanceof Enemy) {
+
+                // calculate difference vector (player - enemy)
+                let bounceDx = player.x - touchingSprite.x;
+                let bounceDy = player.y - touchingSprite.y;
+                // scale to set magnitude
+                let enemyVelocityMagnitude = Math.sqrt(
+                    bounceDx ** 2 + bounceDy ** 2
+                );
+                let targetMagnitude = 3;
+                if (enemyVelocityMagnitude > 0) {
+                    let magnitudeScale = targetMagnitude / enemyVelocityMagnitude;
+                    bounceDx *= magnitudeScale;
+                    bounceDy *= magnitudeScale;
+                    // add enemy velocity
+                    bounceDx += touchingSprite.dx;
+                    bounceDy += touchingSprite.dy;
+                    // bounce off enemy
+                    player.dx = bounceDx;
+                    player.dy = bounceDy;
+                }
+
+                if (this.hurtTimer === 0) {
                     this.hp -= 1;
                     if (this.hp <= 0) {
                         // you are dead, not big surprise
@@ -30,6 +51,7 @@ class Player extends Sprite {
                         }, 1000)
                     } else {
                         this.hurtTimer = 60;
+
                     }
                 }
             }

@@ -568,7 +568,6 @@ var minigameAnswers = {
         "Backburner",
         "Bat Outta Hell",
         "Bazaar Bargain",
-        "Big Earner",
         "Blutsauger",
         "Bootlegger",
         "Boston Basher",
