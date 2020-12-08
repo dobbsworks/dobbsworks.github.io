@@ -245,7 +245,7 @@ function CommandRewards(user, args) {
         }
     } else {
         let commandsToDisplay = commands.filter(x => x.cost);
-        let commandList = commandsToDisplay.map(x => "!" + x.name).join(" ");
+        let commandList = commandsToDisplay.map(x => `!${x.name} [${x.cost}]`).join(", ");
         return 'Use "!rewards commandName" for more info about a command. Commands: ' + commandList;
     }
 }

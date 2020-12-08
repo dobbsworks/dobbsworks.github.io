@@ -44,7 +44,7 @@ function CommandAddLevel(user, args) {
 
 function GetMakerID(username) {
 	let makerRecord = StorageHandler.maker.getUser(username);
-	if (makerRecord) return makerRecord.id;
+	if (makerRecord) return makerRecord.maker;
 	return null;
 }
 
