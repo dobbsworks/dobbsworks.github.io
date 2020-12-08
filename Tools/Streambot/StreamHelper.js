@@ -109,6 +109,7 @@ function LoadCommands() {
 		//Command("secondqueueslot", "CommandQueueSlot", commandPermission.reward, commandDisplay.hidden),
 		Command("biggerwheelslice", "CommandBiggerSlice", commandPermission.reward, commandDisplay.hidden),
 		RewardCommand(500, "sliceup", "CommandBiggerSlice", commandPermission.all, "Increases the chance of your level being chosen on the wheel. Lasts until your level is chosen."),
+		RewardCommand(2500, "setmakerid", "CommandSetMakerId", commandPermission.all, "Sets your maker id. Once set, you can use !add without an id to queue the saved id. Usage: !setmakerid MYM-AKE-RID"),
 		Command("addcom", "CommandAddCommand", commandPermission.mod, commandDisplay.hidden, "Adds a text command for the duration of the stream. Usage: !addcom myCom This is the response"),
 	
 		Command("texttospeech", "CommandTTS", commandPermission.reward, commandDisplay.hidden),

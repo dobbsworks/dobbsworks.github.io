@@ -13,30 +13,56 @@ function CommandAddLevel(user, args) {
 	if (isQueueOpen) {
 		let userIsBlocked = StorageHandler.spamUsers.values.map(x => x.toLowerCase()).indexOf(user.username.toLowerCase()) > -1;
 		if (userIsBlocked) {
-			return " VoteNay VoteNay VoteNay For some reason you were flagged for possible spam/botting. Type !notSpam and then try again.";
+			return {success: false, message: " VoteNay VoteNay VoteNay For some reason you were flagged for possible spam/botting. Type !notSpam and then try again."};
 		} else {
 			let userInputCode = args[0];
+			if (!userInputCode) userInputCode = GetMakerID(user.username);
+			if (!userInputCode) {
+				return {success: false, message: `You did not include an id. Usage: !add LEV-ELC-ODE`};
+			}
 			let strippedCode = StripLevelCode(userInputCode);
 			if (strippedCode.length === 9) {
 				if (DoesUserHaveQueueSpace(user.username)) {
 					PushQueueEntry(user, strippedCode);
-					let queuePosition = StorageHandler.queue.values.filter(x => x.status === levelStatus.pending).length;
-					return "Your level has been queued, may the !wheel spin in your favor GivePLZ dobbswWheel ";
+					let formattedCode = strippedCode.match(/.{1,3}/g).join('-').toUpperCase();
+					return {success: true, message: `Your level (${formattedCode}) has been queued, may the !wheel spin in your favor GivePLZ dobbswWheel `};
 				} else {
 					if (DoesUserHaveReserve(user.username)) {
 						return CommandChangeLevel(user, args);
 					} else {
-						return "You're already in the queue, wait until one of your levels has been cleared, or use !change to swap out the level."
+						return {success: false, message: "You're already in the queue, wait until one of your levels has been cleared, or use !change to swap out the level."};
 					}
 				}
 			} else {
-				return "This level code has the wrong number of characters, can you double-check it?";
+				return {success: false, message: `This code has the wrong number of characters, can you double-check it?`};
 			}
 		}
 	} else {
-		return "The queue is closed right now. :(";
+		return {success: false, message: "The queue is closed right now. :("};
 	}
 }
+
+function GetMakerID(username) {
+	let makerRecord = StorageHandler.maker.getUser(username);
+	if (makerRecord) return makerRecord.id;
+	return null;
+}
+
+function CommandSetMakerId(user, args) {
+	let userInputCode = args[0];
+	let strippedCode = StripLevelCode(userInputCode);
+	let formattedCode = strippedCode.match(/.{1,3}/g).join('-').toUpperCase();
+	
+	if (strippedCode.length === 9) {
+		let record = {username: user.username, maker: formattedCode};
+		StorageHandler.maker.upsert(record);
+		return {success: true, message: `Your maker id has been set to ${formattedCode}! You can now use !add without an id to queue your maker id.`};
+	} else {
+		return {success: false, message: `This code has the wrong number of characters, can you double-check it?`};
+	}
+
+}
+
 function StripLevelCode(rawCodeText) {
 	let ret = "";
 	let validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toLowerCase();
