@@ -71,9 +71,17 @@ function CommandGivePoints(user, args) {
 }
 
 function CommandGetPoints(user, args) {
-    let num = pointHandler.getPoints(user.username);
+    let targetUsername = user.username;
+    if (args[0]) {
+        targetUsername = args[0].replace("@","");
+    }
+    let num = pointHandler.getPoints(targetUsername);
     let text = pointHandler.formatValue(num);
-    return {success: true, message: "You currently have " + text + "."};
+    if (targetUsername === user.username) {
+        return {success: true, message: `You currently have ${text}.`};
+    } else {
+        return {success: true, message: `${targetUsername} currently has ${text}.`};
+    }
 }
 
 function CommandGetTokens(user, args) {
