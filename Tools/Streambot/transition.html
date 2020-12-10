@@ -65,11 +65,11 @@
 					imageX: x,
 					imageY: y,
 					x: x * cellSize,
-					y: y * cellSize - 500 + Math.random()*30,
+					y: y * cellSize - 1000 + Math.random()*30,
 					dy: 0, 
 					baseY: y * cellSize,
 				}
-				if (cell.color !== "rgb(146,205,219)") cells.push(cell);
+				cells.push(cell);
 			}
 		}
 		return cells;
