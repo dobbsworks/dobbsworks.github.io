@@ -14,10 +14,6 @@
 			overflow: hidden;
 		}
 
-		body {
-			background-color: #92cddb;
-		}
-
 	</style>
 </head>
 
@@ -31,8 +27,10 @@
 
 	var cellSize = 50;
 	var cells = [];
+	var mode = "";
 
 	function Init() {
+		mode = "enter";
 		cells = CreateCells();
 		Loop();
 	}
@@ -66,7 +64,7 @@
 					imageY: y,
 					x: x * cellSize,
 					y: y * cellSize - 1000 + Math.random()*50,
-					dy: 0, 
+					dy: y**0.5, 
 					baseY: y * cellSize,
 				}
 				cells.push(cell);
@@ -95,10 +93,15 @@
 		for (let cell of cells) {
 			cell.dy += 0.1;
 			cell.y += cell.dy;
-			if (cell.y > cell.baseY) {
+			if (cell.y > cell.baseY && mode === "enter") {
 				cell.y -= (cell.y - cell.baseY);
 				cell.dy *= -0.3;
 			}
+			if (Math.abs(cell.dy) < 0.05) cell.dy = 0;
+		}
+		let maxSpeed = Math.max(...cells.map(x => x.dy));
+		if (maxSpeed === 0) {
+			mode = "leave";
 		}
 	}
 
