@@ -69,7 +69,7 @@
 					dy: 0, 
 					baseY: y * cellSize,
 				}
-				cells.push(cell);
+				if (cell.color !== "rgb(146,205,219)") cells.push(cell);
 			}
 		}
 		return cells;
@@ -82,6 +82,9 @@
 		for (let cell of cells) {
 			ctx.fillStyle = cell.color;
 			ctx.fillRect(cell.x, cell.y, cellSize, cellSize);
+			ctx.fillStyle = "#0008";
+			ctx.fillRect(cell.x + cellSize, cell.y, -3, cellSize);
+			ctx.fillRect(cell.x, cell.y + cellSize, cellSize, -3);
 		}
 	}
 
