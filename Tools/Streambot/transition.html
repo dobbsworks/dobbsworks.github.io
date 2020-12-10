@@ -18,42 +18,63 @@
 			background-color: #92cddb;
 		}
 
-		img {
-			display: none;
-		}
 	</style>
 </head>
 
 <body>
 
+	<canvas id="animation" width="800" height="600"></canvas>
 	<img src="baseImage.png" id="sourceImage" />
 
 </body>
 <script type="text/javascript">
 
 	function Init() {
-		GetCells();
+		let cells = GetCells();
+		TestDraw(cells);
 		console.log("done");
 	}
 
 	function GetCells() {
 		var image = document.getElementById("sourceImage");
-		if (image.width === 0) {
-			return false;
-		}
 		var tempCanvas = document.createElement("canvas");
-		document.body.appendChild(tempCanvas);
+		//document.body.appendChild(tempCanvas);
 		tempCanvas.width = image.width;
 		tempCanvas.height = image.height;
 		console.log(image.width, image.height)
 		var ctx = tempCanvas.getContext('2d');
 		ctx.drawImage(image, 0, 0);
-		var imageData = ctx.getImageData(0,0,1,1);
-		console.log(imageData);
-		return true;
+		var imageData = ctx.getImageData(0,0,image.width,image.height);
+
+		var cells = [];
+		for (let y=0; y<image.height; y++) {
+			for (let x=0; x<image.width; x++) {
+				let cellIndex = y * image.width + x;
+				let red = imageData[cellIndex];
+				let green = imageData[cellIndex+1];
+				let blue = imageData[cellIndex+2];
+				var cell = {
+					color: `rgb(${red},${green},${blue})`,
+					imageX: x,
+					imageY: y
+				}
+				cells.push(cell);
+			}
+		}
+		return cells;
 	}
 
-	Init();
+	function TestDraw(cells) {
+		var canvas = getElementById("animation");
+		var ctx = canvas.getContext('2d');
+		for (let cell of cells) {
+			ctx.fillStyle = cell.color;
+			ctx.fillRect(cell.imageX * 5, cell.imageY * 5, 3, 3);
+		}
+	}
+
+	var image = document.getElementById("sourceImage");
+	image.onload = Init;
 </script>
 
 </html>
