@@ -29,34 +29,45 @@
 </body>
 <script type="text/javascript">
 
+	var cellSize = 10;
+	var cells = [];
+
 	function Init() {
 		let cells = GetCells();
-		TestDraw(cells);
-		console.log("done");
+		Loop();
+	}
+
+	function Loop() {
+		Update();
+		Draw();
+		requestAnimationFrame(Loop);
 	}
 
 	function GetCells() {
 		var image = document.getElementById("sourceImage");
 		var tempCanvas = document.createElement("canvas");
-		//document.body.appendChild(tempCanvas);
 		tempCanvas.width = image.width;
 		tempCanvas.height = image.height;
 		console.log(image.width, image.height)
 		var ctx = tempCanvas.getContext('2d');
 		ctx.drawImage(image, 0, 0);
-		var imageData = ctx.getImageData(0,0,image.width,image.height);
+		var imageData = ctx.getImageData(0,0,image.width,image.height).data;
 
-		var cells = [];
+		cells = [];
 		for (let y=0; y<image.height; y++) {
 			for (let x=0; x<image.width; x++) {
-				let cellIndex = y * image.width + x;
+				let cellIndex = (y * image.width + x) * 4;
 				let red = imageData[cellIndex];
 				let green = imageData[cellIndex+1];
 				let blue = imageData[cellIndex+2];
 				var cell = {
 					color: `rgb(${red},${green},${blue})`,
 					imageX: x,
-					imageY: y
+					imageY: y,
+					x: x * cellSize,
+					y: y * cellSize - 500,
+					dy: 0, 
+					baseY: y * cellSize,
 				}
 				cells.push(cell);
 			}
@@ -64,12 +75,24 @@
 		return cells;
 	}
 
-	function TestDraw(cells) {
-		var canvas = document.getElementById("animation");
-		var ctx = canvas.getContext('2d');
+	function Draw() {
+		let canvas = document.getElementById("animation");
+		let ctx = canvas.getContext('2d');
+		ctx.clearRect(0,0,canvas.width,canvas.height);
 		for (let cell of cells) {
 			ctx.fillStyle = cell.color;
-			ctx.fillRect(cell.imageX * 5, cell.imageY * 5, 3, 3);
+			ctx.fillRect(cell.x, cell.y, cellSize, cellSize);
+		}
+	}
+
+	function Update() {
+		for (let cell of cells) {
+			cell.dy += 0.1;
+			cell.y += cell.dy;
+			if (cell.y > cell.baseY) {
+				cell.y -= (cell.y - cell.baseY);
+				cell.dy *= -0.3;
+			}
 		}
 	}
 
