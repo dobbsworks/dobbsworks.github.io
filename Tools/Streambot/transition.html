@@ -65,7 +65,7 @@
 	}
 
 	function TestDraw(cells) {
-		var canvas = getElementById("animation");
+		var canvas = document.getElementById("animation");
 		var ctx = canvas.getContext('2d');
 		for (let cell of cells) {
 			ctx.fillStyle = cell.color;
