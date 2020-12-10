@@ -64,6 +64,7 @@
 					imageY: y,
 					x: x * cellSize,
 					y: y * cellSize - 1000 + Math.random()*50,
+					dx: 0,
 					dy: y**0.5, 
 					baseY: y * cellSize,
 				}
@@ -93,15 +94,21 @@
 		for (let cell of cells) {
 			cell.dy += 0.1;
 			cell.y += cell.dy;
+			cell.x += cell.dx;
 			if (cell.y > cell.baseY && mode === "enter") {
 				cell.y -= (cell.y - cell.baseY);
 				cell.dy *= -0.3;
 			}
 			if (Math.abs(cell.dy) < 0.05) cell.dy = 0;
 		}
-		let maxSpeed = Math.max(...cells.map(x => x.dy));
+		let maxSpeed = Math.max(...cells.map(x => Math.abs(x.dy)));
 		if (maxSpeed === 0) {
+			console.log(cells.map(x => Math.abs(x.dy)));
 			mode = "leave";
+			for (let cell of cells) {
+				cell.dy = Math.random() * -5;
+				cell.dx = Math.random() - 0.5;
+			}
 		}
 	}
 
