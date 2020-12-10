@@ -29,11 +29,11 @@
 </body>
 <script type="text/javascript">
 
-	var cellSize = 10;
+	var cellSize = 50;
 	var cells = [];
 
 	function Init() {
-		let cells = GetCells();
+		cells = CreateCells();
 		Loop();
 	}
 
@@ -43,7 +43,7 @@
 		requestAnimationFrame(Loop);
 	}
 
-	function GetCells() {
+	function CreateCells() {
 		var image = document.getElementById("sourceImage");
 		var tempCanvas = document.createElement("canvas");
 		tempCanvas.width = image.width;
@@ -65,7 +65,7 @@
 					imageX: x,
 					imageY: y,
 					x: x * cellSize,
-					y: y * cellSize - 500,
+					y: y * cellSize - 500 + Math.random()*30,
 					dy: 0, 
 					baseY: y * cellSize,
 				}
