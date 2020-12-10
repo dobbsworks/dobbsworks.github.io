@@ -1,0 +1,59 @@
+<html>
+
+<head>
+	<title>test</title>
+
+	<style>
+		* {
+			transition-property: all;
+			transition-duration: 0.5s;
+		}
+
+		html,
+		body {
+			overflow: hidden;
+		}
+
+		body {
+			background-color: #92cddb;
+		}
+
+		img {
+			display: none;
+		}
+	</style>
+</head>
+
+<body>
+
+	<img src="baseImage.png" id="sourceImage" />
+
+</body>
+<script type="text/javascript">
+
+	function Init() {
+		GetCells();
+		console.log("done");
+	}
+
+	function GetCells() {
+		var image = document.getElementById("sourceImage");
+		if (image.width === 0) {
+			return false;
+		}
+		var tempCanvas = document.createElement("canvas");
+		document.body.appendChild(tempCanvas);
+		tempCanvas.width = image.width;
+		tempCanvas.height = image.height;
+		console.log(image.width, image.height)
+		var ctx = tempCanvas.getContext('2d');
+		ctx.drawImage(image, 0, 0);
+		var imageData = ctx.getImageData(0,0,1,1);
+		console.log(imageData);
+		return true;
+	}
+
+	Init();
+</script>
+
+</html>
