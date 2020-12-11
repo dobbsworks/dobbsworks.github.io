@@ -82,7 +82,7 @@
 
 	function Update() {
 		for (let cell of cells) {
-			cell.dy += 0.3;
+			cell.dy += 0.03;
 			cell.y += cell.dy;
 			cell.x += cell.dx;
 			if (cell.y > cell.baseY && mode === "enter") {
