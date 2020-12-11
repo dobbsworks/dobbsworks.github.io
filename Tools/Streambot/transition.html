@@ -27,7 +27,7 @@
 	}
 
 	function Loop() {
-		for (let i=0;i<3;i++) Update();
+		for (let i=0;i<4;i++) Update();
 		Draw();
 		requestAnimationFrame(Loop);
 	}
@@ -112,7 +112,7 @@
 		rec.onstop = e => ExportVid(new Blob(chunks, { type: 'video/webm' }));
 
 		rec.start();
-		setTimeout(() => rec.stop(), 3000); // stop recording in 3s
+		setTimeout(() => rec.stop(), 1000); // stop recording in 3s
 	}
 
 	function ExportVid(blob) {
