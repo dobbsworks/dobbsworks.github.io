@@ -32,7 +32,7 @@
 	}
 	
 	function ExportVid() {
-		capturer.stop();.
+		capturer.stop();
 		capturer.save( function( blob ) { 
 			const vid = document.createElement('video');
 			vid.src = URL.createObjectURL(blob);
