@@ -1,0 +1,130 @@
+<html>
+
+<head>
+	<title>test</title>
+
+	<style>
+	</style>
+</head>
+
+<body>
+
+	<canvas id="animation" width="850" height="500"></canvas>
+	<img src="baseImage.png" id="sourceImage" />
+
+</body>
+
+<script src="cap.js"></script>
+<script type="text/javascript">
+
+	var cellSize = 50;
+	var cells = [];
+	var mode = "";
+	var capturer;
+
+	function Init() {
+		capturer = new CCapture( { format: 'webm' } );
+		mode = "enter";
+		cells = CreateCells();
+		Loop();
+		capturer.start();
+		setTimeout(ExportVid, 3000);
+	}
+	
+	function ExportVid() {
+		capturer.stop();.
+		capturer.save( function( blob ) { 
+			const vid = document.createElement('video');
+			vid.src = URL.createObjectURL(blob);
+			vid.controls = true;
+			document.body.appendChild(vid);
+			const a = document.createElement('a');
+			a.download = 'myvid.webm';
+			a.href = vid.src;
+			a.textContent = 'download the video';
+			document.body.appendChild(a);
+		} );
+	}
+
+	function Loop() {
+		Update();
+		Draw();
+		requestAnimationFrame(Loop);
+	}
+
+	function CreateCells() {
+		var image = document.getElementById("sourceImage");
+		var tempCanvas = document.createElement("canvas");
+		tempCanvas.width = image.width;
+		tempCanvas.height = image.height;
+		var ctx = tempCanvas.getContext('2d');
+		ctx.drawImage(image, 0, 0);
+		var imageData = ctx.getImageData(0, 0, image.width, image.height).data;
+
+		cells = [];
+		for (let y = 0; y < image.height; y++) {
+			for (let x = 0; x < image.width; x++) {
+				let cellIndex = (y * image.width + x) * 4;
+				let red = imageData[cellIndex];
+				let green = imageData[cellIndex + 1];
+				let blue = imageData[cellIndex + 2];
+				var cell = {
+					color: `rgb(${red},${green},${blue})`,
+					imageX: x,
+					imageY: y,
+					x: x * cellSize,
+					y: y * cellSize - 700 + Math.random() * 50,
+					dx: 0,
+					dy: y ** 0.5,
+					baseY: y * cellSize,
+				}
+				cells.push(cell);
+			}
+		}
+		return cells;
+	}
+
+	function Draw() {
+		let canvas = document.getElementById("animation");
+		let ctx = canvas.getContext('2d');
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		for (let cell of cells) {
+			ctx.fillStyle = cell.color;
+			ctx.fillRect(cell.x, cell.y, cellSize, cellSize);
+			ctx.fillStyle = "#0008";
+			ctx.fillRect(cell.x + cellSize, cell.y, -3, cellSize);
+			ctx.fillRect(cell.x, cell.y + cellSize, cellSize, -3);
+			ctx.fillStyle = "#FFF8";
+			ctx.fillRect(cell.x, cell.y, 3, cellSize);
+			ctx.fillRect(cell.x, cell.y, cellSize, 3);
+		}
+		capturer.capture( canvas );
+	}
+
+	function Update() {
+		for (let cell of cells) {
+			cell.dy += 0.3;
+			cell.y += cell.dy;
+			cell.x += cell.dx;
+			if (cell.y > cell.baseY && mode === "enter") {
+				cell.y -= (cell.y - cell.baseY);
+				cell.dy *= -0.2;
+			}
+			if (Math.abs(cell.dy) < 0.07) cell.dy = 0;
+		}
+		let maxSpeed = Math.max(...cells.map(x => Math.abs(x.dy)));
+		if (maxSpeed === 0) {
+			mode = "leave";
+			for (let cell of cells) {
+				cell.dy = Math.random() * -2;
+				cell.dx = Math.random() - 0.5;
+			}
+		}
+	}
+
+
+	var image = document.getElementById("sourceImage");
+	image.onload = Init;
+</script>
+
+</html>
