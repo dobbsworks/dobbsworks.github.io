@@ -13,6 +13,11 @@ class Sprite {
 
     Draw() {
         ctx.strokeStyle = "black";
+        if (this.children) {
+            for (let child of this.children) {
+                renderer.Line(this.x, this.y, child.x, child.y);
+            }
+        }
         ctx.fillStyle = this.color;
         if (this.hurtTimer) {
             ctx.fillStyle = "magenta";

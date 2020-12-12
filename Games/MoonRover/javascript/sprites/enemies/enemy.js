@@ -15,6 +15,10 @@ class Enemy extends Sprite {
             for (let i=0; i<this.loot; i++) {
                 sprites.push(new Loot(this.x, this.y));
             }
+
+            if (this.OnDeath) {
+                this.OnDeath();
+            }
         }
     }
 
