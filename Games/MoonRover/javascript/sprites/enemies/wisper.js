@@ -1,4 +1,5 @@
 class EnemyWisper extends Enemy {
+    direction = 1;
     Update() {
         this.dy += 0.05 * Math.sin(this.frame / 20);
         this.UpdatePosition();

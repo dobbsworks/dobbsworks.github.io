@@ -29,16 +29,18 @@ function MainLoop() {
     weaponHandler.Update();
     levelHandler.Update();
     for (let sprite of sprites) {
-        if (!sprite.initialized) {
-            if (sprite.Initialize) sprite.Initialize();
-            sprite.initialized = true;
-            sprite.hp = sprite.maxHp;
+        if (sprite.isActive) {
+            if (!sprite.initialized) {
+                if (sprite.Initialize) sprite.Initialize();
+                sprite.initialized = true;
+                sprite.hp = sprite.maxHp;
+            }
+            sprite.oldX = sprite.x;
+            sprite.oldY = sprite.y;
+            sprite.frame++;
+            sprite.Update();
+            if (sprite instanceof Enemy) sprite.SharedEnemyUpdate();
         }
-        sprite.oldX = sprite.x;
-        sprite.oldY = sprite.y;
-        sprite.frame++;
-        sprite.Update();
-        if (sprite instanceof Enemy) sprite.SharedEnemyUpdate();
     }
     sprites = sprites.filter(x => x.isActive);
     Draw();

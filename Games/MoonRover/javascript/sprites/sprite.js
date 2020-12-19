@@ -12,10 +12,13 @@ class Sprite {
     maxHp = 3;
 
     Draw() {
+        if (this.OnBeforeDraw) this.OnBeforeDraw();
         ctx.strokeStyle = "black";
         if (this.children) {
             for (let child of this.children) {
-                renderer.Line(this.x, this.y, child.x, child.y);
+                if (child.isActive) {
+                    renderer.Line(this.x, this.y, child.x, child.y);
+                }
             }
         }
         ctx.fillStyle = this.color;
@@ -23,6 +26,7 @@ class Sprite {
             ctx.fillStyle = "magenta";
         }
         renderer.Circle(this.x, this.y, this.radius);
+        if (this.OnAfterDraw) this.OnAfterDraw();
     }
 
     Update() {

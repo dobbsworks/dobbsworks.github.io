@@ -1,4 +1,5 @@
 class EnemyGoombud extends Enemy {
+    direction = 1;
     Update() {
         this.ApplyGravity();
         this.UpdatePosition();

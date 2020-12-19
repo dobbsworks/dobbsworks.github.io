@@ -19,11 +19,16 @@ class Renderer {
             this.MapR(r), 
             0, 2 * Math.PI);
         ctx.fill();
-        ctx.stroke();
+        if (ctx.fillStyle !== "transparent") {
+            ctx.stroke();
+        }
     }
 
-    Line(x1,y1, x2,y2) {
+    Line(x1,y1, x2,y2, extraThickness) {
         ctx.lineWidth = 4 * this.zoom;
+        if (extraThickness) {
+            ctx.lineWidth = 4 * this.zoom * extraThickness;
+        }
         ctx.beginPath();
         ctx.moveTo(this.MapX(x1), this.MapY(y1));
         ctx.lineTo(this.MapX(x2), this.MapY(y2));

@@ -1,6 +1,6 @@
 class PlayerBullet extends Sprite {
     color = "cyan";
-    radius = 3;
+    radius = 5;
     damage = 1;
 
     Update() {

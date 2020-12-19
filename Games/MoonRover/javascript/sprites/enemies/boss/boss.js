@@ -29,11 +29,14 @@ class BossCoreBase extends BossPartBase {
     orbitSpeed = 100;
     orbitOffset = 0;
     timer = 0;
+    children = [];
 
     Initialize() {
-        let radPerChild = Math.PI*2 / this.children.length;
-        for (let i=0; i < this.children.length; i++) {
-            let child = this.children[i];
+        let radPerChild = Math.PI * 2 / this.childNodes.length;
+        for (let i = 0; i < this.childNodes.length; i++) {
+            let childClass = this.childNodes[i];
+            let child = new childClass(0,0);
+            this.children.push(child);
             if (child instanceof BossCoreBase) {
                 child.orbitSpeed += this.orbitSpeed;
                 child.orbitOffset += this.orbitOffset + radPerChild * i;
@@ -46,9 +49,9 @@ class BossCoreBase extends BossPartBase {
     Update() {
         this.timer++;
         this.BossPartUpdate();
-        let radPerChild = Math.PI*2 / this.children.length;
+        let radPerChild = Math.PI * 2 / this.children.length;
         let radOffset = this.timer / 10000 * this.orbitSpeed + this.orbitOffset;
-        for (let i=0; i < this.children.length; i++) {
+        for (let i = 0; i < this.children.length; i++) {
             let child = this.children[i];
             let targetX = this.x + this.orbitRadius * Math.cos(radPerChild * i + radOffset);
             let targetY = this.y + this.orbitRadius * Math.sin(radPerChild * i + radOffset);
@@ -67,12 +70,15 @@ class BossCoreBase extends BossPartBase {
 class BossCore extends BossCoreBase {
     orbitRadius = 150;
     orbitSpeed = 100;
-    children = [
-        new BossCore2(0, 0),
-        new BossCore2(0, 0),
-        new BossCore2(0, 0),
-        new BossCore2(0, 0),
-        new BossCore2(0, 0)
+    childNodes = [
+        BossCore2,
+        BossCore2,
+        BossCore2, 
+        BossCore2, 
+        BossCore2, 
+        BossCore2, 
+        BossCore2, 
+        BossCore2
     ];
 }
 
@@ -80,67 +86,12 @@ class BossCore extends BossCoreBase {
 class BossCore2 extends BossCoreBase {
     orbitRadius = 80;
     orbitSpeed = 100;
-    orbitOffset = Math.PI/2;
-    children = [
-        new BossPlating(0, 0),
-        new BossPlating(0, 0),
-        new BossShield(0, 0),
+    orbitOffset = Math.PI / 2;
+    childNodes = [
+        BossPlating,
+        BossPlating,
+        BossShield,
+        BossLaserCannon
     ];
-}
-
-class BossPlating extends BossPartBase {
-    color = "#600";
-    maxHp = 3;
-    Update() {
-        this.BossPartUpdate();
-    }
-}
-
-class BossShield extends BossPartBase {
-    color = "#060";
-    maxHp = 3;
-    shieldTimer = 0;
-    projection = null;
-
-    Update() {
-        this.shieldTimer++;
-        this.BossPartUpdate();
-        if (this.projection) {
-            this.projection.x = this.x;
-            this.projection.y = this.y;
-        }
-        if (this.shieldTimer > 300) {
-            this.shieldTimer = 0;
-            this.CreateProjection();
-        }
-    }
-
-    CreateProjection() {
-        this.projection = new BossShieldProjection(this.x, this.y);
-        sprites.push(this.projection);
-    }
-
-    OnDeath() {
-        if (this.projection) this.projection.isActive = false;
-    }
-}
-
-class BossShieldProjection extends Enemy {
-    color = "#0604";
-    maxHp = Infinity;
-    timer = 0;
-
-    Update() {
-        this.timer++;
-        if (this.timer < 20) {
-            this.radius *= 1.05;
-        }
-        if (this.timer > 200) {
-            this.radius /= 1.05;
-        }
-        if (this.radius < 30) {
-            this.isActive = false;
-        }
-    }
 }
 

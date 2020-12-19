@@ -1,7 +1,8 @@
-class EnemyGoomba extends Enemy {
-    direction = 1;
+class EnemyBullet extends Enemy {
+    color = "#F00";
+    radius = 5;
     Update() {
-        this.ApplyGravity();
+        //this.ApplyGravity();
         this.UpdatePosition();
         let touchedBorders = this.ReactToBorders();
         if (touchedBorders.some(x => x instanceof LeftWall)) {
@@ -10,7 +11,8 @@ class EnemyGoomba extends Enemy {
         if (touchedBorders.some(x => x instanceof RightWall)) {
             this.direction = -1;
         }
-        let speed = 1;
-        this.dx = this.direction * speed;
+        if (touchedBorders.length > 0) {
+            this.isActive = false;
+        }
     }
 }

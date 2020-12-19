@@ -55,6 +55,9 @@ class Player extends Sprite {
                     }
                 }
             }
+            if (touchingSprite instanceof EnemyBullet) {
+                touchingSprite.isActive = false;
+            }
             if (touchingSprite instanceof Loot) {
                 touchingSprite.isActive = false;
                 loot += touchingSprite.value;
