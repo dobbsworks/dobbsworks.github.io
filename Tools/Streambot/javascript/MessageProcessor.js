@@ -48,7 +48,13 @@ function ProcessChatMessage(messageEl, isReward) {
 
 	let bitTotal = Array.from(messageEl.querySelectorAll(".chat-line__message--cheer-amount")).map(x => +(x.innerText)).reduce((a,b)=>a+b,0);
 	if (bitTotal >= 5) {
-		TTSMessage(stitchedText.replace(/Cheer [\d]*/g, ""));
+		let trimmed = stitchedText;
+		let cheerTypes = ["Cheer", "Pogchamp", "BibleThump", "cheerwhal", "Corgo","uni","ShowLove","Party","SeemsGood","Pride","Kappa","FrankerZ","HeyGuys","DansGame","EleGiggle","TriHard","Kreygasm","4Head","SwiftRage","NotLikeThis","FailFish","VoHiYo","PJSalt","MrDestructoid","bday","RIPCheer","Shamrock"];
+		for (let cheerType of cheerTypes) {
+			let myRe = new RegExp(cheerType + ' [\d]*', 'g');
+			trimmed = trimmed.replace(myRe, "")
+		}
+		TTSMessage(trimmed);
 	}
 }
 
