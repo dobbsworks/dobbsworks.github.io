@@ -91,7 +91,8 @@ class BossCore2 extends BossCoreBase {
         BossPlating,
         BossPlating,
         BossShield,
-        BossLaserCannon
+        //BossLaserCannon,
+        BossMissileLauncher
     ];
 }
 

@@ -11,6 +11,7 @@ var overlayHandler = new OverlayHandler();
 var loot = 0;
 var killCount = 0;
 var deathCount = 0;
+var debugMode = false;
 
 levelHandler.LoadZone();
 
@@ -23,6 +24,8 @@ function Initialize() {
     InitKeyHandlers();
     weaponHandler.CreateInventoryBar();
     setInterval(MainLoop, 1000 / 60);
+
+    sprites.push(new BossMissile(100,100))
 }
 
 function MainLoop() {

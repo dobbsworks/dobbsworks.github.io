@@ -13,7 +13,7 @@ class PlayerBullet extends Sprite {
         
         let touchingSprites = this.GetTouchingSprites();
         for (let touchingSprite of touchingSprites) {
-            if (touchingSprite instanceof Enemy) {
+            if (touchingSprite instanceof Enemy && !(touchingSprite instanceof EnemyBullet)) {
                 touchingSprite.hp -= this.damage;
                 this.isActive = false;
             }

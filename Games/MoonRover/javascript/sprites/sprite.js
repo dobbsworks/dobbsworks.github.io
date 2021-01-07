@@ -27,6 +27,11 @@ class Sprite {
         }
         renderer.Circle(this.x, this.y, this.radius);
         if (this.OnAfterDraw) this.OnAfterDraw();
+
+        if (debugMode) {
+            ctx.strokeStyle = "white";
+            renderer.Line(this.x, this.y, this.x + this.dx * 20, this.y + this.dy * 20)
+        }
     }
 
     Update() {

@@ -66,6 +66,9 @@ class Player extends Sprite {
                 // level complete!
                 levelHandler.LoadZone();
             }
+            if (touchingSprite.OnTouchPlayer) {
+                touchingSprite.OnTouchPlayer();
+            }
         }
         if (this.hurtTimer > 0) {
             this.hurtTimer--;

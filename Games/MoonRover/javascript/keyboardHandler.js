@@ -9,4 +9,7 @@ function OnKeyDown(e) {
         let keyNumber = +(e.key);
         weaponHandler.SelectWeaponByIndex(keyNumber-1);
     }
+    if (keyText == "=") {
+        debugMode = !debugMode;
+    }
 }
