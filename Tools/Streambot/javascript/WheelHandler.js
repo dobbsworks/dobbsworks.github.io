@@ -197,6 +197,11 @@ function CommandSlice(user, args) {
     let levels = GetWheelData();
     let myLevel = levels.find(x => x.name === user.username);
     if (!myLevel) return "You don't have a level in the queue right now.";
+
+    if (args[0] === "up") {
+        return "Did you mean !sliceup instead? Use !slice to get data about your wheel chances, and !sliceup to buy an upgrade.";
+    }
+
     let myWeight = myLevel.weight;
     let totalWeight = levels.map(x => x.weight).reduce((a, b) => a + b, 0);
     let chance = (100 * myWeight / totalWeight).toFixed(1) + "%";

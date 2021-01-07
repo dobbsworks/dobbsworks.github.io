@@ -166,6 +166,7 @@ function LoadCommands() {
 
 		Command("so", "CommandShoutout", commandPermission.mod, commandDisplay.hidden, "Usage: !so username"),
 		Command("setshoutout", "CommandSetShoutout", commandPermission.mod, commandDisplay.hidden, "Usage: !so username Shout-out to $name!"),
+		Command("transfer", "CommandTransfer", commandPermission.mod, commandDisplay.hidden, "Transfers points, wheel color, etc to a new username (for when a user's name changes). Usage: !transfer oldName newName"),
 	];
 	aliases = [
 		AliasCommand("brb", "afk"),
