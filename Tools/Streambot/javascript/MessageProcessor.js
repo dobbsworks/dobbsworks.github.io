@@ -70,6 +70,15 @@ function ProcessCommand(username, commandText, isReward, badges) {
 	let commandName = commandArgs.splice(0,1)[0].toLowerCase();
 	if (commandName[0] !== "!") return;
 	let matchingCommands = GetCommandsByName(commandName.replace("!",""));
+
+	if (matchingCommands.length === 0) {
+		StorageHandler.invalidCommand.push({
+			username: username,
+			text: commandText,
+			timestamp: new Date()
+		})
+	}
+
     for (let command of matchingCommands) {
 		let hasValidPermission = false;
 		
