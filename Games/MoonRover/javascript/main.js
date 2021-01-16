@@ -6,7 +6,8 @@ var sprites = [];
 var borders = [];
 var levelHandler = new LevelHandler();
 var weaponHandler = new WeaponHandler();
-var overlayHandler = new OverlayHandler();
+var uiHandler = new UIHandler();
+var shopHandler = new ShopHandler();
 
 var loot = 0;
 var killCount = 0;
@@ -25,27 +26,30 @@ function Initialize() {
     weaponHandler.CreateInventoryBar();
     setInterval(MainLoop, 1000 / 60);
 
-    sprites.push(new BossMissile(100,100))
+    sprites.push(new BossMissile(100, 100))
 }
 
 function MainLoop() {
-    weaponHandler.Update();
-    levelHandler.Update();
-    for (let sprite of sprites) {
-        if (sprite.isActive) {
-            if (!sprite.initialized) {
-                if (sprite.Initialize) sprite.Initialize();
-                sprite.initialized = true;
-                sprite.hp = sprite.maxHp;
+    if (!shopHandler.isInShop) {
+        weaponHandler.Update();
+        levelHandler.Update();
+        for (let sprite of sprites) {
+            if (sprite.isActive) {
+                if (!sprite.initialized) {
+                    if (sprite.Initialize) sprite.Initialize();
+                    sprite.initialized = true;
+                    sprite.hp = sprite.maxHp;
+                }
+                sprite.oldX = sprite.x;
+                sprite.oldY = sprite.y;
+                sprite.frame++;
+                sprite.Update();
+                if (sprite instanceof Enemy) sprite.SharedEnemyUpdate();
             }
-            sprite.oldX = sprite.x;
-            sprite.oldY = sprite.y;
-            sprite.frame++;
-            sprite.Update();
-            if (sprite instanceof Enemy) sprite.SharedEnemyUpdate();
         }
+        sprites = sprites.filter(x => x.isActive);
     }
-    sprites = sprites.filter(x => x.isActive);
+    uiHandler.Update();
     Draw();
     UpdateMouseChanged();
 }
@@ -54,16 +58,16 @@ function Draw() {
     ctx.fillStyle = "black";
     ctx.strokeStyle = "white";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    renderer.Update();
-    for (let border of borders) {
-        border.Draw();
-    }
-    for (let sprite of sprites) {
-        sprite.Draw();
-    }
-    if (isMouseDown) {
-        ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+    if (!shopHandler.isInShop) {
+        renderer.Update();
+        for (let border of borders) {
+            border.Draw();
+        }
+        for (let sprite of sprites) {
+            sprite.Draw();
+        }
     }
 
-    overlayHandler.Draw();
+    uiHandler.Draw();
 }

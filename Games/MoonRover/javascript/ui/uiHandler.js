@@ -1,4 +1,16 @@
-class OverlayHandler {
+class UIHandler {
+
+    buttons = [];
+
+    Update() {
+        if (isMouseClicked()) {
+            for (let button of this.buttons) {
+                if (button.isMouseOver()) {
+                    button.onClick();
+                }
+            }
+        }
+    }
 
     Draw() {
 
@@ -28,6 +40,10 @@ class OverlayHandler {
                 upperBound + blockBorder, blockWidth - blockBorder * 2, blockHeight - blockBorder * 2);
         }
 
+        shopHandler.DrawShop();
+        for (let button of this.buttons) {
+            button.Draw();
+        }
     }
 
 }

@@ -66,4 +66,6 @@ class Renderer {
         let center = canvas.height / 2;
         return (y - center) / this.zoom + this.target.y;
     }
+
+    
 }
