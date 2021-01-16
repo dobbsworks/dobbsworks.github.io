@@ -8,4 +8,9 @@ class WeaponJetpack extends Weapon {
     fixedSpread = false;
     cooldownTime = 3;
     maxShotsBeforeLanding = 50;
+    
+    upgrades = [
+        new Upgrade(3, Upgrade.Type.scale, "knockbackPower", 1.4),
+        new Upgrade(3, Upgrade.Type.scale, "maxShotsBeforeLanding", 1.5),
+    ]
 }

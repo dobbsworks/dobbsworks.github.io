@@ -10,6 +10,11 @@ class UIHandler {
                 }
             }
         }
+        
+        for (let button of this.buttons) {
+            button.x += (button.targetX - button.x) / 10;
+            button.y += (button.targetY - button.y) / 10;
+        }
     }
 
     Draw() {

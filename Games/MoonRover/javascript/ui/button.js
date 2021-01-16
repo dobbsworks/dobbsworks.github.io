@@ -25,17 +25,20 @@ class Button extends UIElement {
         console.log(this.x, this.y)
     }
 
+    FillBox() {
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
     Draw() {
         ctx.fillStyle = this.colorPrimary;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        if (this.isDisabled) ctx.fillStyle = this.colorDisabled;
+        this.FillBox();
         if (this.isMouseOver()) {
             if (isMouseDown) {
                 ctx.fillStyle = this.colorShade;
-                ctx.fillRect(this.x, this.y, this.width, this.height);
             } else {
                 ctx.fillStyle = this.colorHighlight;
-                ctx.fillRect(this.x, this.y, this.width, this.height);
             }
+            this.FillBox();
             ctx.lineWidth = 4;
             ctx.strokeStyle = this.colorSecondary;
             ctx.strokeRect(this.x, this.y, this.width, this.height);

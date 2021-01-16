@@ -30,7 +30,9 @@ function Initialize() {
 }
 
 function MainLoop() {
-    if (!shopHandler.isInShop) {
+    if (shopHandler.isInShop) {
+        shopHandler.Update();
+    } else {
         weaponHandler.Update();
         levelHandler.Update();
         for (let sprite of sprites) {

@@ -18,6 +18,8 @@ class Weapon {
     cooldownTimer = 0;
     deployTimer = 0;
 
+    upgrades = [];
+
     SwitchTo() {
         this.deployTimer = this.deployTime;
     }
@@ -75,5 +77,24 @@ class Weapon {
     Update() {
         if (this.cooldownTimer > 0) this.cooldownTimer--;
         if (this.deployTimer > 0) this.deployTimer--;
+    }
+
+    GetAvailableUpgrades() {
+        return this.upgrades.filter(x => !x.isActive).slice(0, 2);
+    }
+
+    ApplyUpgrade(upgradeIndex) {
+        let upgrade = this.upgrades[upgradeIndex];
+        if (upgrade && !upgrade.isActive) {
+            upgrade.isActive = true;
+            for (let change of upgrade.changes) {
+                if (change.type === Upgrade.Type.add) {
+                    this[change.prop] += change.delta;
+                }
+                if (change.type === Upgrade.Type.scale) {
+                    this[change.prop] *= change.delta;
+                }
+            }
+        }
     }
 }
