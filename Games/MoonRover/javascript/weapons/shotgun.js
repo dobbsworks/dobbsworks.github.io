@@ -2,8 +2,9 @@ class WeaponShotgun extends Weapon {
     name = "Shotgun";
 
     upgrades = [
-        new Upgrade(3, Upgrade.Type.add, "cooldownTime", -5),
-        new Upgrade(3, Upgrade.Type.add, "maxShotsBeforeLanding", 1),
-        new Upgrade(3, Upgrade.Type.scale, "pelletSpread", 0.5),
+        Upgrade.CooldownScaleDown(3, 0.6),
+        Upgrade.ShotsUp(3, 1),
+        Upgrade.SpreadScaleDown(3, 0.5),
+        Upgrade.DamageUp(10, 1),
     ]
 }

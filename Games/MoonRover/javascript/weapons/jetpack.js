@@ -1,7 +1,7 @@
 class WeaponJetpack extends Weapon {
     name = "Jetpack";
     
-    knockbackPower = 0.4;
+    kickbackPower = 0.4;
     pelletCount = 1;
     pelletDamage = 0;
     pelletSpeed = 0.5;
@@ -10,7 +10,7 @@ class WeaponJetpack extends Weapon {
     maxShotsBeforeLanding = 50;
     
     upgrades = [
-        new Upgrade(3, Upgrade.Type.scale, "knockbackPower", 1.4),
-        new Upgrade(3, Upgrade.Type.scale, "maxShotsBeforeLanding", 1.5),
+        Upgrade.KickbackScaleUp(3, 1.4),
+        Upgrade.ShotsScaleUp(3, 1.5),
     ]
 }

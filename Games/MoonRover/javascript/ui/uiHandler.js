@@ -3,14 +3,18 @@ class UIHandler {
     buttons = [];
 
     Update() {
-        if (isMouseClicked()) {
-            for (let button of this.buttons) {
-                if (button.isMouseOver()) {
+        let mouseOverAnyButton = false;
+        for (let button of this.buttons) {
+            if (button.isMouseOver() && !button.isDisabled) {
+                mouseOverAnyButton = true;
+                if (isMouseClicked()) {
                     button.onClick();
                 }
             }
         }
-        
+
+        document.body.style.cursor = mouseOverAnyButton ? "pointer" : "unset";
+
         for (let button of this.buttons) {
             button.x += (button.targetX - button.x) / 10;
             button.y += (button.targetY - button.y) / 10;

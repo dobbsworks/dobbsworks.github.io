@@ -11,6 +11,6 @@ class UIElement {
     colorSurface = "#FFFFFF";
     colorText = "#DDDDDD";
     
-    colorDisabled = "#90A4AE";
+    colorDisabled = "#4f464e";
 
 }

@@ -4,21 +4,26 @@ var player = new Player(300, 300);
 var renderer = new Renderer();
 var sprites = [];
 var borders = [];
-var levelHandler = new LevelHandler();
-var weaponHandler = new WeaponHandler();
-var uiHandler = new UIHandler();
-var shopHandler = new ShopHandler();
+var levelHandler;
+var weaponHandler;
+var uiHandler;
+var shopHandler;
 
 var loot = 0;
 var killCount = 0;
 var deathCount = 0;
 var debugMode = false;
 
-levelHandler.LoadZone();
 
 setTimeout(Initialize, 100);
 
 function Initialize() {
+    levelHandler = new LevelHandler();
+    weaponHandler = new WeaponHandler();
+    uiHandler = new UIHandler();
+    shopHandler = new ShopHandler();
+
+    levelHandler.LoadZone();
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
     InitMouseHandlers();

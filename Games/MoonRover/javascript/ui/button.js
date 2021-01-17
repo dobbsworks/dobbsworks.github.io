@@ -22,13 +22,13 @@ class Button extends UIElement {
     }
 
     onClick() {
-        console.log(this.x, this.y)
     }
 
     FillBox() {
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
     Draw() {
+        if (!this.text) return;
         ctx.fillStyle = this.colorPrimary;
         if (this.isDisabled) ctx.fillStyle = this.colorDisabled;
         this.FillBox();
@@ -41,12 +41,28 @@ class Button extends UIElement {
             this.FillBox();
             ctx.lineWidth = 4;
             ctx.strokeStyle = this.colorSecondary;
-            ctx.strokeRect(this.x, this.y, this.width, this.height);
+            if (!this.isDisabled) {
+                ctx.strokeRect(this.x, this.y, this.width, this.height);
+            }
         }
         ctx.fillStyle = this.colorText;
-        ctx.font = "20px Arial";
+        ctx.font = "700 16px Arial";
         ctx.textAlign = "center"
-        ctx.fillText(this.text, this.x + this.width/2, this.y + 30);
+
+        let lines = this.text.split("\n");
+        let y = this.y + 30;
+        for (let line of lines) {
+            if (line.startsWith("$")) {
+                y += 10;
+                ctx.font = "800 20px Arial";
+                if (this.tooExpensive) {
+                    ctx.fillStyle = "#C33";
+                }
+            }
+            ctx.fillText(line, this.x + this.width/2, y);
+            y += 20;
+            ctx.font = "16px Arial";
+        }
     }
 
 

@@ -1,7 +1,7 @@
 class Weapon {
     // weapon stats
     name = "Base Weapon"
-    knockbackPower = 4;
+    kickbackPower = 4;
     pelletType = PlayerBullet;
     pelletCount = 3;
     pelletDamage = 1;
@@ -39,8 +39,8 @@ class Weapon {
         let yDif = player.y - GetGameMouseY();
         let theta = Math.atan2(yDif, xDif);
 
-        player.dx += this.knockbackPower * Math.cos(theta);
-        player.dy += this.knockbackPower * Math.sin(theta);
+        player.dx += this.kickbackPower * Math.cos(theta);
+        player.dy += this.kickbackPower * Math.sin(theta);
 
         let firstPelletAngle = - this.pelletSpread/2;
         if (this.fixedSpread) {
