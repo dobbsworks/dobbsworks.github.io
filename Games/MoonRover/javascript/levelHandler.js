@@ -19,6 +19,7 @@ class LevelHandler {
 
     LoadZone() {
         // resets all sprites, walls, etc.
+        shopHandler.EnterShop();
 
         this.currentZone++;
 
@@ -45,7 +46,8 @@ class LevelHandler {
         borders = room.borders;
         let enemies = room.sprites;
         enemies = enemies.filter(e => Math.abs(e.x - player.x) > 300 || Math.abs(e.y - player.y) > 300);
-        sprites = [player, ...enemies, new BossCore(700, 300)];
+        sprites = [player, ...enemies];
+        if (this.currentZone === 5) sprites.push(new BossCore(700, 300));
         renderer.target = player;
 
     }

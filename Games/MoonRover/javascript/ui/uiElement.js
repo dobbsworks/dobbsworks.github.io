@@ -9,7 +9,10 @@ class UIElement {
     colorHighlight = "#FFFFFF33"
 
     colorSurface = "#FFFFFF";
+    
     colorText = "#DDDDDD";
+    colorTextGood = "#578bbd";
+    colorTextBad = "#cb251d";
     
     colorDisabled = "#4f464e";
 

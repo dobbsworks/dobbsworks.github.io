@@ -30,8 +30,6 @@ function Initialize() {
     InitKeyHandlers();
     weaponHandler.CreateInventoryBar();
     setInterval(MainLoop, 1000 / 60);
-
-    sprites.push(new BossMissile(100, 100))
 }
 
 function MainLoop() {

@@ -13,7 +13,7 @@ class BossShield extends BossPartBase {
             this.projection.y = this.y;
         }
         if (this.shieldTimer > 300) {
-            this.shieldTimer = 0;
+            this.shieldTimer -= 300;
             this.CreateProjection();
         }
     }

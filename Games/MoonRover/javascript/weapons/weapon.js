@@ -1,13 +1,17 @@
 class Weapon {
+
     // weapon stats
     name = "Base Weapon"
     kickbackPower = 4;
     pelletType = PlayerBullet;
-    pelletCount = 3;
+    pelletCount = 1;
     pelletDamage = 1;
     pelletSpeed = 4;
-    pelletSpread = Math.PI/12;
-    cooldownTime = 30;
+    pelletSpread = Math.PI / 12;
+    get cooldownTime() {
+        return 60 / this.fireRate;
+    }
+    fireRate = 2;
     deployTime = 10;
     fixedSpread = true;
 
@@ -18,7 +22,11 @@ class Weapon {
     cooldownTimer = 0;
     deployTimer = 0;
 
+    cost = 0;
     upgrades = [];
+    initialUpgrades = [];
+    initialized = false;
+    flavor = "A fantastic weapon that sadly has no flavor text";
 
     SwitchTo() {
         this.deployTimer = this.deployTime;
@@ -34,6 +42,10 @@ class Weapon {
         }
     }
 
+    GetBreakdownText() {
+        return this.initialUpgrades.flatMap(x => x.GetBreakdownText()).join("\n");
+    }
+
     Fire() {
         let xDif = player.x - GetGameMouseX();
         let yDif = player.y - GetGameMouseY();
@@ -42,17 +54,17 @@ class Weapon {
         player.dx += this.kickbackPower * Math.cos(theta);
         player.dy += this.kickbackPower * Math.sin(theta);
 
-        let firstPelletAngle = - this.pelletSpread/2;
+        let firstPelletAngle = - this.pelletSpread / 2;
         if (this.fixedSpread) {
             if (this.pelletCount === 1) firstPelletAngle = 0;
             let spreadBetweenPellets = this.pelletSpread / this.pelletCount;
-            for (let i=0; i<this.pelletCount; i++) {
-                let angleDeviation = spreadBetweenPellets*i + firstPelletAngle;
+            for (let i = 0; i < this.pelletCount; i++) {
+                let angleDeviation = spreadBetweenPellets * i + firstPelletAngle;
                 this.FireBullet(theta + angleDeviation);
             }
         } else {
             // random spread
-            for (let i=0; i<this.pelletCount; i++) {
+            for (let i = 0; i < this.pelletCount; i++) {
                 let angleDeviation = Math.random() * this.pelletSpread + firstPelletAngle;
                 this.FireBullet(theta + angleDeviation);
             }
@@ -75,6 +87,10 @@ class Weapon {
     }
 
     Update() {
+        if (!this.initialized) {
+            this.initialized = true;
+            this.ApplyInitialUpgrades();
+        }
         if (this.cooldownTimer > 0) this.cooldownTimer--;
         if (this.deployTimer > 0) this.deployTimer--;
     }
@@ -83,8 +99,13 @@ class Weapon {
         return this.upgrades.filter(x => !x.isActive).slice(0, 2);
     }
 
-    ApplyUpgrade(upgradeIndex) {
-        let upgrade = this.upgrades[upgradeIndex];
+    ApplyInitialUpgrades() {
+        for (let upgrade of this.initialUpgrades) {
+            this.ApplyUpgrade(upgrade);
+        }
+    }
+
+    ApplyUpgrade(upgrade) {
         if (upgrade && !upgrade.isActive) {
             upgrade.isActive = true;
             for (let change of upgrade.changes) {
@@ -92,9 +113,13 @@ class Weapon {
                     this[change.prop] += change.delta;
                 }
                 if (change.type === Upgrade.Type.scale) {
-                    this[change.prop] *= change.delta;
+                    this[change.prop] *= (change.delta + 1);
                 }
             }
         }
+    }
+    ApplyUpgradeByIndex(upgradeIndex) {
+        let upgrade = this.upgrades[upgradeIndex];
+        this.ApplyUpgrade(upgrade);
     }
 }

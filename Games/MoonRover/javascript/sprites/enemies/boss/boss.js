@@ -36,6 +36,9 @@ class BossCoreBase extends BossPartBase {
         for (let i = 0; i < this.childNodes.length; i++) {
             let childClass = this.childNodes[i];
             let child = new childClass(0,0);
+            if (child instanceof BossShield) {
+                child.shieldTimer = -(this.orbitOffset / (2 * Math.PI) * 300) % 300
+            }
             this.children.push(child);
             if (child instanceof BossCoreBase) {
                 child.orbitSpeed += this.orbitSpeed;

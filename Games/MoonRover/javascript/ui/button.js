@@ -32,7 +32,7 @@ class Button extends UIElement {
         ctx.fillStyle = this.colorPrimary;
         if (this.isDisabled) ctx.fillStyle = this.colorDisabled;
         this.FillBox();
-        if (this.isMouseOver()) {
+        if (this.isMouseOver() && !this.isDisabled) {
             if (isMouseDown) {
                 ctx.fillStyle = this.colorShade;
             } else {
@@ -41,9 +41,7 @@ class Button extends UIElement {
             this.FillBox();
             ctx.lineWidth = 4;
             ctx.strokeStyle = this.colorSecondary;
-            if (!this.isDisabled) {
-                ctx.strokeRect(this.x, this.y, this.width, this.height);
-            }
+            ctx.strokeRect(this.x, this.y, this.width, this.height);
         }
         ctx.fillStyle = this.colorText;
         ctx.font = "700 16px Arial";

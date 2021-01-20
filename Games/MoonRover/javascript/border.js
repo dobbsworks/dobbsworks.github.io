@@ -22,11 +22,31 @@ class Platform extends Border {
         this.x2 = Math.max(x1, x2);
         this.y = y;
     }
+
     Draw() {
-        ctx.strokeStyle = "black";
-        renderer.Line(this.x1-2,this.y+2,this.x2-2,this.y+2);
-        ctx.strokeStyle = "white";
-        renderer.Line(this.x1,this.y,this.x2,this.y);
+        let image = document.getElementById("tileset-01");
+
+        ctx.drawImage(image, 8,8,8,8, 
+            renderer.MapX(this.x1),
+            renderer.MapY(this.y), 
+            renderer.MapR(32), 
+            1000);
+
+        ctx.drawImage(image, 8,8,8,8, 
+            renderer.MapX(this.x2 - 32),
+            renderer.MapY(this.y), 
+            renderer.MapR(32), 
+            1000);
+
+        ctx.drawImage(image, 16,0,8,8, 
+            renderer.MapX(this.x1),
+            renderer.MapY(this.y), 
+            renderer.MapR(this.x2-this.x1), 
+            renderer.MapR(32));
+        // ctx.strokeStyle = "black";
+        // renderer.Line(this.x1-2,this.y+2,this.x2-2,this.y+2);
+        // ctx.strokeStyle = "white";
+        // renderer.Line(this.x1,this.y,this.x2,this.y);
     }
 }
 

@@ -41,57 +41,103 @@ class ShopHandler {
 
     EnterShop() {
         this.isInShop = true;
+        uiHandler.Shelve();
+        if (this.mogIntroTimer > 0) this.InitializeButtons();
+    }
 
+    GetRandomWeapon() {
+        return new WeaponJetpack();
+    }
+
+    GetRandomUpgrades(num) {
         let availableUpgrades = weaponHandler.inventory.flatMap(w => {
             let weaponUpgrades = w.GetAvailableUpgrades();
             let indexes = weaponUpgrades.map(u => w.upgrades.indexOf(u));
             return indexes.map(i => ({ weapon: w, upgradeIndex: i, upgrade: w.upgrades[i] }));
-        })
+        });
+        let ret = [];
+        for (let i=0; i<num; i++) {
+            let upgrade = availableUpgrades.splice(Math.floor(Math.random() * availableUpgrades.length),1)[0];
+            if (upgrade) ret.push(upgrade);
+        }
+        return ret;
+    }
 
+    InitializeButtons() {
+        let availableWeapon = this.GetRandomWeapon();
+        let availableUpgrades = this.GetRandomUpgrades(4);
         let buttonLocations = [50, 175, 300].flatMap(y => [25, 200].map(x => ({ x: x, y: y })));
         this.buyButtons = [];
+
+        // new weapon
+        let weaponButtonlocation = buttonLocations.splice(0,1)[0];
+        if (availableWeapon) {
+            let buyButton = this.GetBuyButton(weaponButtonlocation, availableWeapon,
+                availableWeapon.name,
+                "New weapon",
+                availableWeapon.cost);
+                buyButton.colorPrimary = buyButton.colorPrimaryVariant;
+            this.buyButtons.push(buyButton);
+        } else {
+            let buyButton = new Button(weaponButtonlocation.x, weaponButtonlocation.y, "Out of stock!\nCheck back soon");
+            buyButton.isDisabled = true;
+            this.buyButtons.push(buyButton);
+        }
+
+        // upgrade buttons
         for (let buttonLocation of buttonLocations) {
             let upgrade = availableUpgrades.pop();
             if (upgrade) {
-                let buttonText = upgrade.weapon.name + " Upgrade"
-                    + "\n" + upgrade.upgrade.shortDescription
-                    + "\n$" + upgrade.upgrade.cost;
-                let buyButton = new Button(buttonLocation.x, buttonLocation.y, buttonText);
-
-                let buttonAction = () => {
-                    upgrade.weapon.ApplyUpgrade(upgrade.upgradeIndex);
-                    buyButton.isDisabled = true;
-                    buyButton.text = buyButton.text.split("$")[0] + "SOLD!";
-                    loot -= upgrade.upgrade.cost;
-                    shopHandler.RefreshAvailability();
-                }
-                buyButton.onClick = () => { shopHandler.GetPurchaseConfirmation(buttonAction); }
-                buyButton.cost = upgrade.upgrade.cost;
-                buyButton.upgrade = upgrade.upgrade;
+                let buyButton = this.GetBuyButton(buttonLocation, upgrade, 
+                    upgrade.weapon.name + " Upgrade",
+                    upgrade.upgrade.shortDescription,
+                    upgrade.upgrade.cost);
                 this.buyButtons.push(buyButton);
             }
         }
         shopHandler.RefreshAvailability();
 
         this.exitButton = new Button(550, 450, "Exit Shop");
-
-        this.buyButtons.forEach(x => x.x = -300);
-        this.exitButton.y += 300;
         this.exitButton.height = 50;
         this.exitButton.onClick = this.ExitShop;
 
-        uiHandler.buttons = [];
-
         let buttonsToAdd = [...(this.buyButtons), this.exitButton];
-        let buttonDelay = this.mogFace === this.mogFaces.logo ? 6500 : 100;
         for (let i = 0; i < buttonsToAdd.length; i++) {
             let button = buttonsToAdd[i];
-            setTimeout(() => {
-                uiHandler.buttons.push(button);
-            }, buttonDelay + i * 300);
+            button.x -= i * Math.pow(10,i);
+            uiHandler.elements.push(button);
         }
 
-        // easter egg buttons
+        this.CreateEasterEggButtons();
+    }
+
+    GetBuyButton(buttonLocation, upgradeOrWeapon, name, shortDescr, cost) {
+        let upgrade = upgradeOrWeapon.upgrade;
+        let weapon = upgrade ? null : upgradeOrWeapon;
+        let buttonText = name + "\n" + shortDescr + "\n$" + (cost ? cost : "FREE!");
+        let buyButton = new Button(buttonLocation.x, buttonLocation.y, buttonText);
+
+        let buttonAction = () => {
+            if (upgrade) upgradeOrWeapon.weapon.ApplyUpgradeByIndex(upgradeOrWeapon.upgradeIndex);
+            if (weapon) {
+                weaponHandler.AddWeapon(weapon);
+            }
+            buyButton.isDisabled = true;
+            buyButton.text = buyButton.text.split("$")[0] + "SOLD!";
+            loot -= cost;
+            shopHandler.RefreshAvailability();
+        }
+        buyButton.onClick = () => { shopHandler.GetPurchaseConfirmation(buyButton, buttonAction); }
+        buyButton.cost = cost;
+        buyButton.upgrade = weapon || upgrade;
+        buyButton.title = name;
+        buyButton.flavor = weapon ? weapon.flavor : `Give the ${upgradeOrWeapon.weapon.name} a little bit extra!`;
+        buyButton.shortDescription = shortDescr;
+        buyButton.breakdownText = (upgrade || weapon).GetBreakdownText();
+        return buyButton;
+    }
+
+    CreateEasterEggButtons() {
         let eggs = [
             new Button(515, 373, ""),
             new Button(560, 356, ""),
@@ -105,30 +151,43 @@ class ShopHandler {
             x.colorPrimary = "#F003";
             x.onClick = () => {shopHandler.SetTempFace(this.mogFaces[faceList[Math.floor(Math.random() * faceList.length)]])}
         });
-        uiHandler.buttons.push(...eggs);
+        uiHandler.elements.push(...eggs);
     }
 
     RefreshAvailability() {
         for (let button of this.buyButtons) {
             if (loot < button.cost) {
                 button.isDisabled = true;
-                if (!button.upgrade.isActive) {
+                if (button.upgrade && !button.upgrade.isActive) {
                     button.tooExpensive = true;
                 }
             }
         }
     }
 
-    GetPurchaseConfirmation(onConfirmCallback) {
-        uiHandler.buttons.forEach(x => {
+    GetPurchaseConfirmation(buyButton, onConfirmCallback) {
+        uiHandler.getButtons().forEach(x => {
             if (x !== shopHandler.exitButton) x.targetX -= 1000;
         });
         let cancelButton = new Button(25, 50, "Cancel");
-        let confirmButton = new Button(200, 50, "Confirm!");
-        [cancelButton, confirmButton].forEach(x => x.y -= 1000);
+        let confirmButton = new Button(200, 50, "Confirm!" + "\n$" + buyButton.cost);
+
+        let bgPanel = new Panel(25, 175, 325, 250);
+        bgPanel.colorPrimary = "#020a2eCC";
+        let titleBox = new Text(35, 200, buyButton.title);
+        titleBox.textAlign = "left";
+        titleBox.isBold = true;
+        let shortDescrBox = new Text(340, 200, buyButton.shortDescription);
+        shortDescrBox.textAlign = "right";
+
+        let flavorText = new Text(182, 240, buyButton.flavor + "\n\n" + buyButton.breakdownText);
+
+        let newElements = [bgPanel, cancelButton, confirmButton, titleBox, shortDescrBox, flavorText];
+
+        newElements.forEach(x => x.y -= 1000);
         let removeCancelConfirmButtons = () => {
-            uiHandler.buttons = uiHandler.buttons.filter(x => x != cancelButton && x != confirmButton);
-            uiHandler.buttons.forEach(x => {
+            uiHandler.elements = uiHandler.elements.filter(x => (x instanceof Button) && (x != cancelButton && x != confirmButton));
+            uiHandler.getButtons().forEach(x => {
                 if (x !== shopHandler.exitButton) x.targetX += 1000;
             });
         }
@@ -141,23 +200,31 @@ class ShopHandler {
             onConfirmCallback();
             shopHandler.SetTempFace(this.mogFaces.champ);
         }
-        uiHandler.buttons.push(cancelButton, confirmButton);
+        uiHandler.elements.push(...newElements);
         shopHandler.mogFace = (Math.random() > 0.5 ? this.mogFaces.hmm : this.mogFaces.owo);
     }
 
     ExitShop() {
         shopHandler.isInShop = false;
         shopHandler.mogFace = shopHandler.mogFaces.happy;
-        uiHandler.buttons = [];
+        uiHandler.Restore();
     }
 
     Update() {
-        this.mogIntroTimer++;
         this.mogBlinkTimer--;
         if (this.mogBlinkTimer < -this.mogBlinkDuration) {
             this.mogBlinkTimer = Math.random() < 0.8 ? this.mogBlinkGapDuration : this.mogBlinkGapDurationShort;
         }
-        if (this.mogIntroTimer === 200) this.mogFace = this.mogFaces.happy;
+
+        if (this.mogIntroTimer < 200) {
+            this.mogIntroTimer++;
+            if (isMouseDown) this.mogIntroTimer += 5;
+            if (this.mogIntroTimer >= 200) {
+                this.mogFace = this.mogFaces.happy;
+                this.InitializeButtons();
+            }
+        }
+
         if (this.mogTempFaceTimer > 0) {
             this.mogTempFaceTimer--;
             if (this.mogTempFaceTimer === 0) this.mogFace = this.mogFaces.happy;
@@ -200,7 +267,7 @@ class ShopHandler {
             if (face === this.mogFaces.happy && this.mogBlinkTimer < 0) {
                 face = this.mogFaces.blink;
             }
-            this.displayCtx.drawImage(mogs, face.x, face.y, face.w, face.h, 5, verticalOffset, face.w, face.h);
+            if (face) this.displayCtx.drawImage(mogs, face.x, face.y, face.w, face.h, 5, verticalOffset, face.w, face.h);
         }
 
         ctx.drawImage(this.displayCanvas, 441, 124, this.displayCanvas.width * 5, this.displayCanvas.height * 5)

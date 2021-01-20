@@ -1,11 +1,16 @@
 class WeaponHandler {
     inventory = [
         new WeaponShotgun(),
-        new WeaponJetpack(),
+        //new WeaponJetpack(),
     ];
 
     oldWeaponIndex = 0;
     selectedWeaponIndex = 0;
+
+    AddWeapon(weapon) {
+        this.inventory.push(weapon);
+        this.CreateInventoryBar();
+    }
 
     CreateInventoryBar() {
         // creates the divs for inv bar, sets handlers

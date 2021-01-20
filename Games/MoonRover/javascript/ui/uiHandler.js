@@ -1,10 +1,27 @@
 class UIHandler {
 
-    buttons = [];
+    elements = [];
+    history = [];
+    getButtons() {
+        return this.elements.filter(x => x instanceof Button);
+    }
+    RemoveButtons() {
+        this.elements = this.elements.filter(x => !(x instanceof Button));
+    }
+
+    Shelve() {
+        // throws all ui elements on a history stack for later retrieval
+        this.history.push(this.elements);
+        this.elements = [];
+    }
+    
+    Restore() {
+        this.elements = this.history.pop();
+    }
 
     Update() {
         let mouseOverAnyButton = false;
-        for (let button of this.buttons) {
+        for (let button of this.getButtons()) {
             if (button.isMouseOver() && !button.isDisabled) {
                 mouseOverAnyButton = true;
                 if (isMouseClicked()) {
@@ -15,9 +32,9 @@ class UIHandler {
 
         document.body.style.cursor = mouseOverAnyButton ? "pointer" : "unset";
 
-        for (let button of this.buttons) {
-            button.x += (button.targetX - button.x) / 10;
-            button.y += (button.targetY - button.y) / 10;
+        for (let el of this.elements) {
+            el.x += (el.targetX - el.x) / 10;
+            el.y += (el.targetY - el.y) / 10;
         }
     }
 
@@ -50,8 +67,8 @@ class UIHandler {
         }
 
         shopHandler.DrawShop();
-        for (let button of this.buttons) {
-            button.Draw();
+        for (let el of this.elements) {
+            el.Draw();
         }
     }
 
