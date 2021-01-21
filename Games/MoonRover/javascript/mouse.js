@@ -49,10 +49,11 @@ function OnMouseScroll(e) {
 
 function OnTouchStart(e) {
     //TODO - account for canvas position
-    mouseX = e.touches[0].pageX;
-    mouseY = e.touches[0].pageY;
+    mouseX = e.touches[0].pageX - canvas.offsetLeft;
+    mouseY = e.touches[0].pageY - canvas.offsetTop;
     isMouseDown = true;
     isMouseChanged = true;
+    e.preventDefault();
 }
 
 function OnTouchEnd(e) {
@@ -63,6 +64,7 @@ function OnTouchEnd(e) {
 function OnTouchMove(e) {
     mouseX = e.touches[0].pageX;
     mouseY = e.touches[0].pageY;
+    e.preventDefault();
 }
 
 function GetGameMouseX() {
