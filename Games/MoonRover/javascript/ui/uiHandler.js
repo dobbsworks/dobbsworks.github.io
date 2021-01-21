@@ -55,8 +55,8 @@ class UIHandler {
         ctx.fillText("Level: " + levelHandler.GetLevelNumber(), 370, 21);
         ctx.fillText("ms/frame: " + msPerFrameFormatted, 530, 21);
         ctx.fillText("Draw time: " + drawPercent + "%", 530, 40);
-        ctx.fillText(`Mouse ${isMouseDown ? "down" : "up  "}`, 50, 40);
-        ctx.fillText(`Mouse ${isMouseChanged ? "changed" : "unchanged"}`, 50, 59);
+        // ctx.fillText(`Mouse ${isMouseDown ? "down" : "up  "}`, 50, 40);
+        // ctx.fillText(`Mouse ${isMouseChanged ? "changed" : "unchanged"}`, 50, 59);
 
         // HP
         let leftBound = 10;
