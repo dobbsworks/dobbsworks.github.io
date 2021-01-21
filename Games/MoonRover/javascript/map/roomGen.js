@@ -12,6 +12,10 @@ class RoomGenerator {
         for (let lineNum = 0; lineNum < numberOfLines; lineNum++) {
             let y = highestPlatformY + lineNum * spacePerLine;
             let platformLine = this.CreatePlatformLine(width, 0, y)
+            platformLine.borders.forEach(p => {
+                if (p.x1 < 0) p.x1 = 0;
+                if (p.x2 > width) p.x2 = width;
+            })
             room.borders.push(...(platformLine.borders));
             room.sprites.push(...(platformLine.sprites));
         }
@@ -31,7 +35,7 @@ class RoomGenerator {
         let rightPlatform = new Platform(width*2/3, width - 30, midPlatformY);
         let playerPlatform = new Platform(width/2-120, width/2+120, playerPlatformY);
         
-        room.borders.push(bottomPlatform, leftPlatform, rightPlatform, playerPlatform);
+        room.borders.push(leftPlatform, rightPlatform, playerPlatform, bottomPlatform);
 
         for (let platform of [leftPlatform, rightPlatform, bottomPlatform]) {
             let platformCenterX = (platform.x1 + platform.x2)/2;
@@ -90,10 +94,13 @@ class RoomGenerator {
                 new Platform(x, x+platformWidth, y) :
                 new Platform(width-(x+platformWidth), width-x, y);
             x += platformWidth;
+            platform.x1 -= (platform.x1 % 32);
+            platform.x2 -= (platform.x2 % 32);
+            platform.y -= platform.y % 32;
+            platform.y += Math.floor(Math.random()*4 - 2) * 32;
 
-            let platformHitsWall = platform.x2 > width;
-
-            if (!platformHitsWall && Math.random() < platformProbability) {
+            if (Math.random() < platformProbability) {
+                platform.x2 += 32;
                 borders.push(platform);
                 if (Math.random() < enemyProbability) {
                     let platformCenterX = (platform.x1 + platform.x2) / 2;

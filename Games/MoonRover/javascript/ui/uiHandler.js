@@ -39,13 +39,24 @@ class UIHandler {
     }
 
     Draw() {
+        let msPerFrame = performanceData.map(x => x.total).reduce((a,b) => a+b,0) / performanceData.length;
+        let drawMsPerFrame = performanceData.map(x => x.draw).reduce((a,b) => a+b,0) / performanceData.length;
+        //let fps = Math.floor(1000 / msPerFrame) * 1;
+        let drawPercent = Math.floor(1000 * drawMsPerFrame / msPerFrame) / 10;
+
+        let msPerFrameFormatted = Math.floor(1000 * msPerFrame) / 1000;
 
         ctx.fillStyle = "white";
         ctx.font = "20px Arial";
-        ctx.fillText("Loot: " + loot, 110, 21);
-        ctx.fillText("Kills: " + killCount, 210, 21);
-        ctx.fillText("Deaths: " + deathCount, 310, 21);
-        ctx.fillText("Level: " + levelHandler.GetLevelNumber(), 460, 21);
+        ctx.textAlign = "left";
+        ctx.fillText("Loot: " + loot, 50, 21);
+        ctx.fillText("Kills: " + killCount, 150, 21);
+        ctx.fillText("Deaths: " + deathCount, 250, 21);
+        ctx.fillText("Level: " + levelHandler.GetLevelNumber(), 370, 21);
+        ctx.fillText("ms/frame: " + msPerFrameFormatted, 530, 21);
+        ctx.fillText("Draw time: " + drawPercent + "%", 530, 40);
+        ctx.fillText(`Mouse ${isMouseDown ? "down" : "up  "}`, 50, 40);
+        ctx.fillText(`Mouse ${isMouseChanged ? "changed" : "unchanged"}`, 50, 59);
 
         // HP
         let leftBound = 10;

@@ -30,13 +30,13 @@ class Platform extends Border {
             renderer.MapX(this.x1),
             renderer.MapY(this.y), 
             renderer.MapR(32), 
-            1000);
+            100000);
 
         ctx.drawImage(image, 8,8,8,8, 
             renderer.MapX(this.x2 - 32),
             renderer.MapY(this.y), 
             renderer.MapR(32), 
-            1000);
+            100000);
 
         ctx.drawImage(image, 16,0,8,8, 
             renderer.MapX(this.x1),

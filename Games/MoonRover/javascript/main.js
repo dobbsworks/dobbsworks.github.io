@@ -32,7 +32,9 @@ function Initialize() {
     setInterval(MainLoop, 1000 / 60);
 }
 
+var performanceData = [];
 function MainLoop() {
+    let t0 = performance.now();
     if (shopHandler.isInShop) {
         shopHandler.Update();
     } else {
@@ -55,8 +57,14 @@ function MainLoop() {
         sprites = sprites.filter(x => x.isActive);
     }
     uiHandler.Update();
+    let t1 = performance.now();
+
     Draw();
+    let t2 = performance.now();
     UpdateMouseChanged();
+    let perf = ({update: t1-t0, draw: t2-t1, total: t2-t0});
+    performanceData.push(perf);
+    if (performanceData.length > 200) performanceData.splice(0,1);
 }
 
 function Draw() {
