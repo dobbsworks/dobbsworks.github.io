@@ -46,7 +46,10 @@ class ShopHandler {
     }
 
     GetRandomWeapon() {
-        return new WeaponJetpack();
+        if (!weaponHandler.inventory.some(x => x instanceof WeaponJetpack)) {
+            return new WeaponJetpack();
+        }
+        return null;
     }
 
     GetRandomUpgrades(num) {
@@ -243,9 +246,6 @@ class ShopHandler {
         if (mogShopImage && mogShopImage.width) {
             ctx.drawImage(mogShopImage, 395, 65);
         }
-
-        ctx.imageSmoothingEnabled = false;
-
 
         this.displayCtx.clearRect(0, 0, this.displayCanvas.width, this.displayCanvas.height);
         // this.displayCtx.font = "900 18px Verdana";

@@ -8,6 +8,8 @@ class RoomGenerator {
         let spacePerLine = totalVerticalSpace / (numberOfLines - 1); 
 
         let room = this.CreateBaseRoom(width, height, lowestPlatformY - spacePerLine);
+        let bounds = [...room.borders];
+        room.borders = [];
 
         for (let lineNum = 0; lineNum < numberOfLines; lineNum++) {
             let y = highestPlatformY + lineNum * spacePerLine;
@@ -19,6 +21,7 @@ class RoomGenerator {
             room.borders.push(...(platformLine.borders));
             room.sprites.push(...(platformLine.sprites));
         }
+        room.borders.push(...(bounds));
 
         return room;
     }
@@ -35,7 +38,7 @@ class RoomGenerator {
         let rightPlatform = new Platform(width*2/3, width - 30, midPlatformY);
         let playerPlatform = new Platform(width/2-120, width/2+120, playerPlatformY);
         
-        room.borders.push(leftPlatform, rightPlatform, playerPlatform, bottomPlatform);
+        room.borders = [leftPlatform, rightPlatform, playerPlatform, bottomPlatform, ...room.borders];
 
         for (let platform of [leftPlatform, rightPlatform, bottomPlatform]) {
             let platformCenterX = (platform.x1 + platform.x2)/2;
@@ -66,7 +69,7 @@ class RoomGenerator {
             sprites.push(levelExit);
         }
 
-        return {borders: borders, sprites: sprites};
+        return {borders: borders, sprites: sprites, width: width, height: height};
     }
     
     CreatePlatformLine(width, x, y) {

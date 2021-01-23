@@ -24,6 +24,15 @@ class Renderer {
         }
     }
 
+    Tile(tile, x, y) {
+        let scale = 4;
+        tile.Draw(ctx, 
+            this.MapX(x - tile.width/2 * scale), 
+            this.MapY(y - tile.height/2 * scale),
+            scale * renderer.zoom
+        );
+    }
+
     Line(x1,y1, x2,y2, extraThickness) {
         ctx.lineWidth = 4 * this.zoom;
         if (extraThickness) {
@@ -36,11 +45,29 @@ class Renderer {
     }
 
     HorizontalLine(y) {
-        this.Line(-99999,y,99999,y);
+        if (player.y > y) y -= 32;
+        let image = document.getElementById("tileset-01");
+        let tileSize = renderer.MapR(32);
+        for (let x = 0; x < 10000; x += 32) {
+            let mappedX = renderer.MapX(x);
+            let mappedY = renderer.MapY(y);
+            if (mappedX < -tileSize || mappedX > canvas.width) continue;
+            if (mappedY < -tileSize || mappedY > canvas.height) continue;
+            ctx.drawImage(image, 16,0,8,8, mappedX, mappedY, tileSize, tileSize);
+        }
     }
 
     VerticalLine(x) {
-        this.Line(x,-99999,x,99999);
+        if (player.x > x) x -= 32;
+        let image = document.getElementById("tileset-01");
+        let tileSize = renderer.MapR(32);
+        for (let y = 0; y < 10000; y += 32) {
+            let mappedX = renderer.MapX(x);
+            let mappedY = renderer.MapY(y);
+            if (mappedX < -tileSize || mappedX > canvas.width) continue;
+            if (mappedY < -tileSize || mappedY > canvas.height) continue;
+            ctx.drawImage(image, 0,16,8,8, mappedX, mappedY, tileSize, tileSize);
+        }
     }
 
     MapX(x) {

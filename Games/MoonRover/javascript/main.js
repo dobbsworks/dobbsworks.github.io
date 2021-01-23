@@ -8,11 +8,11 @@ var levelHandler;
 var weaponHandler;
 var uiHandler;
 var shopHandler;
+var pauseHandler;
 
 var loot = 0;
 var killCount = 0;
 var deathCount = 0;
-var debugMode = false;
 
 
 setTimeout(Initialize, 100);
@@ -22,22 +22,25 @@ function Initialize() {
     weaponHandler = new WeaponHandler();
     uiHandler = new UIHandler();
     shopHandler = new ShopHandler();
+    pauseHandler = new PauseHandler();
 
     levelHandler.LoadZone();
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
     InitMouseHandlers();
     InitKeyHandlers();
+    InitializeTilesets();
     weaponHandler.CreateInventoryBar();
     setInterval(MainLoop, 1000 / 60);
 }
-
+let p = null;
 var performanceData = [];
 function MainLoop() {
     let t0 = performance.now();
     if (shopHandler.isInShop) {
         shopHandler.Update();
-    } else {
+    } else if (!pauseHandler.isPaused) {
         weaponHandler.Update();
         levelHandler.Update();
         for (let sprite of sprites) {
@@ -64,7 +67,7 @@ function MainLoop() {
     UpdateMouseChanged();
     let perf = ({update: t1-t0, draw: t2-t1, total: t2-t0});
     performanceData.push(perf);
-    if (performanceData.length > 200) performanceData.splice(0,1);
+    if (performanceData.length > 60) performanceData.splice(0,1);
 }
 
 function Draw() {
@@ -72,7 +75,7 @@ function Draw() {
     ctx.strokeStyle = "white";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (!shopHandler.isInShop) {
+    if (!shopHandler.isInShop && !pauseHandler.isPaused) {
         renderer.Update();
         for (let border of borders) {
             border.Draw();
@@ -81,6 +84,5 @@ function Draw() {
             sprite.Draw();
         }
     }
-
     uiHandler.Draw();
 }

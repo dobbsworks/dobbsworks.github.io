@@ -6,6 +6,7 @@ class LevelHandler {
     currentLevel = 1;
     currentZone = 0;
     isArena = false;
+    room = null;
 
     Update() {
         if (this.isArena) {
@@ -19,7 +20,6 @@ class LevelHandler {
 
     LoadZone() {
         // resets all sprites, walls, etc.
-        shopHandler.EnterShop();
 
         this.currentZone++;
 
@@ -28,23 +28,22 @@ class LevelHandler {
             this.currentLevel++;
         }
 
-        var room;
         player = new Player(300, 300);
 
         if (this.currentZone === 1) {
-            room = this.GetCorridor();
+            this.room = this.GetCorridor();
         } else if (this.currentZone === 2 || this.currentZone === 4) {
-            room = this.GetArena();
+            this.room = this.GetArena();
             player.x = 750;
             player.y = 250;
         } else if (this.currentZone === 3) {
-            room = this.GetChasm();
+            this.room = this.GetChasm();
         } else if (this.currentZone === 5) {
-            room = this.GetLair();
+            this.room = this.GetLair();
         } 
 
-        borders = room.borders;
-        let enemies = room.sprites;
+        borders = this.room.borders;
+        let enemies = this.room.sprites;
         enemies = enemies.filter(e => Math.abs(e.x - player.x) > 300 || Math.abs(e.y - player.y) > 300);
         sprites = [player, ...enemies];
         if (this.currentZone === 5) sprites.push(new BossCore(700, 300));

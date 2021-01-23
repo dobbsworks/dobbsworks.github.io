@@ -2,6 +2,8 @@ class UIHandler {
 
     elements = [];
     history = [];
+    debugMode = false;
+
     getButtons() {
         return this.elements.filter(x => x instanceof Button);
     }
@@ -14,7 +16,7 @@ class UIHandler {
         this.history.push(this.elements);
         this.elements = [];
     }
-    
+
     Restore() {
         this.elements = this.history.pop();
     }
@@ -38,13 +40,19 @@ class UIHandler {
         }
     }
 
+    FormatFPS(x) {
+        return (Math.floor(1000 * x) / 1000).toFixed(3);
+    }
     Draw() {
-        let msPerFrame = performanceData.map(x => x.total).reduce((a,b) => a+b,0) / performanceData.length;
-        let drawMsPerFrame = performanceData.map(x => x.draw).reduce((a,b) => a+b,0) / performanceData.length;
+        let msPerFrame = performanceData.map(x => x.total).reduce((a, b) => a + b, 0) / performanceData.length;
+        let drawMsPerFrame = performanceData.map(x => x.draw).reduce((a, b) => a + b, 0) / performanceData.length;
+        let updateMsPerFrame = performanceData.map(x => x.update).reduce((a, b) => a + b, 0) / performanceData.length;
         //let fps = Math.floor(1000 / msPerFrame) * 1;
         let drawPercent = Math.floor(1000 * drawMsPerFrame / msPerFrame) / 10;
 
-        let msPerFrameFormatted = Math.floor(1000 * msPerFrame) / 1000;
+        let msPerFrameFormatted = this.FormatFPS(msPerFrame);
+        let updateMsPerFrameFormatted = this.FormatFPS(updateMsPerFrame);
+        let drawMsPerFrameFormatted = this.FormatFPS(drawMsPerFrame);
 
         ctx.fillStyle = "white";
         ctx.font = "20px Arial";
@@ -53,10 +61,16 @@ class UIHandler {
         ctx.fillText("Kills: " + killCount, 150, 21);
         ctx.fillText("Deaths: " + deathCount, 250, 21);
         ctx.fillText("Level: " + levelHandler.GetLevelNumber(), 370, 21);
-        ctx.fillText("ms/frame: " + msPerFrameFormatted, 530, 21);
-        ctx.fillText("Draw time: " + drawPercent + "%", 530, 40);
-        // ctx.fillText(`Mouse ${isMouseDown ? "down" : "up  "}`, 50, 40);
-        // ctx.fillText(`Mouse ${isMouseChanged ? "changed" : "unchanged"}`, 50, 59);
+
+        if (this.debugMode) {
+            ctx.fillText("ms/frame: ", 550, 21);
+            ctx.fillText("ms/update: ", 550, 40);
+            ctx.fillText("ms/draw: ", 550, 59);
+            ctx.fillText(msPerFrameFormatted, 650, 21);
+            ctx.fillText(updateMsPerFrameFormatted, 650, 40);
+            ctx.fillText(drawMsPerFrameFormatted, 650, 59);
+        }
+
 
         // HP
         let leftBound = 10;

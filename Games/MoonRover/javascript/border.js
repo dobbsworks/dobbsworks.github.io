@@ -25,28 +25,32 @@ class Platform extends Border {
 
     Draw() {
         let image = document.getElementById("tileset-01");
+        let tileSize = renderer.MapR(32);
 
-        ctx.drawImage(image, 8,8,8,8, 
-            renderer.MapX(this.x1),
-            renderer.MapY(this.y), 
-            renderer.MapR(32), 
-            100000);
+        let roomHeight = levelHandler.room.height;
+        for (let y = this.y; y < roomHeight; y += 32) {
+            let mappedX1 = renderer.MapX(this.x1);
+            let mappedX2 = renderer.MapX(this.x2) - 16;
+            let mappedY = renderer.MapY(y);
+            if (mappedY < -tileSize || mappedY > canvas.height) continue;
+            if (mappedX1 > -tileSize && mappedX1 < canvas.width) {
+                ctx.drawImage(image, 8,8,8,8, mappedX1, mappedY, tileSize, tileSize);
+            }
+            if (mappedX2 > -tileSize && mappedX2 < canvas.width) {
+                ctx.drawImage(image, 8,8,8,8, mappedX2, mappedY, tileSize, tileSize);
+            }
+        }
 
-        ctx.drawImage(image, 8,8,8,8, 
-            renderer.MapX(this.x2 - 32),
-            renderer.MapY(this.y), 
-            renderer.MapR(32), 
-            100000);
-
-        ctx.drawImage(image, 16,0,8,8, 
-            renderer.MapX(this.x1),
-            renderer.MapY(this.y), 
-            renderer.MapR(this.x2-this.x1), 
-            renderer.MapR(32));
-        // ctx.strokeStyle = "black";
-        // renderer.Line(this.x1-2,this.y+2,this.x2-2,this.y+2);
-        // ctx.strokeStyle = "white";
-        // renderer.Line(this.x1,this.y,this.x2,this.y);
+        for (let x = this.x1; x < this.x2; x += 32) {
+            let mappedX = renderer.MapX(x);
+            let mappedY = renderer.MapY(this.y);
+            if (mappedX < -tileSize || mappedX > canvas.width) continue;
+            if (mappedY < -tileSize || mappedY > canvas.height) continue;
+            let isLeftTile = x === this.x1;
+            let isRightTile = x === this.x2 - 32;
+            let imageSlice = isLeftTile ? 8 : (isRightTile ? 24 : 16);
+            ctx.drawImage(image, imageSlice,0,8,8, mappedX, mappedY, tileSize, tileSize);
+        }
     }
 }
 

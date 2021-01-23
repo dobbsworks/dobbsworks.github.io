@@ -17,4 +17,8 @@ class EnemyGoombud extends Enemy {
         let speed = 1;
         this.dx = this.direction * speed;
     }
+
+    GetFrame() {
+        return this.AnimateByFrame(tileset.orangeBot);
+    }
 }

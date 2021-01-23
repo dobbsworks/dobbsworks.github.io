@@ -8,8 +8,9 @@ function OnKeyDown(e) {
     if ("123456789".indexOf(keyText) > -1) {
         let keyNumber = +(e.key);
         weaponHandler.SelectWeaponByIndex(keyNumber-1);
-    }
-    if (keyText == "=") {
-        debugMode = !debugMode;
+    } else if (keyText == "Escape") {
+        pauseHandler.onPauseButtonPressed();
+    } else {
+        //console.log(keyText)
     }
 }

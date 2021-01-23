@@ -21,17 +21,41 @@ class Sprite {
                 }
             }
         }
-        ctx.fillStyle = this.color;
-        if (this.hurtTimer) {
-            ctx.fillStyle = "magenta";
-        }
-        renderer.Circle(this.x, this.y, this.radius);
-        if (this.OnAfterDraw) this.OnAfterDraw();
 
-        if (debugMode) {
-            ctx.strokeStyle = "white";
-            renderer.Line(this.x, this.y, this.x + this.dx * 20, this.y + this.dy * 20)
+        if (this.IsOffScreen()) return;
+
+        if (this.GetFrame) {
+            let frame = this.GetFrame();
+            renderer.Tile(tileset.orangeBot.tiles[frame], this.x, this.y);
+        } else {
+            ctx.fillStyle = this.color;
+            if (this.hurtTimer) {
+                ctx.fillStyle = "magenta";
+            }
+            renderer.Circle(this.x, this.y, this.radius);
         }
+
+        if (this.OnAfterDraw) this.OnAfterDraw();
+        if (uiHandler.debugMode) {
+            ctx.strokeStyle = "white";
+            renderer.Line(this.x, this.y, this.x + this.dx * 20, this.y + this.dy * 20);
+            ctx.fillStyle = "#FFF0";
+            renderer.Circle(this.x, this.y, this.radius);
+        }
+    }
+
+    AnimateByFrame(frameset) {
+        return this.frame % frameset.tiles.length;
+    }
+
+    IsOffScreen() {
+        let buffer = renderer.MapR(this.r + 10);
+        let centerX = renderer.MapX(this.x);
+        let centerY = renderer.MapY(this.y);
+        if (centerX + buffer < 0) return true;
+        if (centerX - buffer > canvas.width) return true;
+        if (centerY + buffer < 0) return true;
+        if (centerY - buffer > canvas.height) return true;
     }
 
     Update() {
