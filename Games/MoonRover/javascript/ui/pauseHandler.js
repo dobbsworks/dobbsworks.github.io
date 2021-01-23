@@ -25,7 +25,9 @@ class PauseHandler {
 
         let buttonModels = [
             {text: "Toggle Debug Mode", action: () => {uiHandler.debugMode = !uiHandler.debugMode}},
-            {text: "Resume Game", action: pauseHandler.onPauseButtonPressed}
+            {text: "Resume Game", action: () => {
+                setTimeout(pauseHandler.onPauseButtonPressed, 100)
+            }}
         ]
         let buttons = [];
         let yMin = 200;

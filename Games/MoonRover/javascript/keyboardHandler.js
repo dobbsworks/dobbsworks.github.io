@@ -11,6 +11,6 @@ function OnKeyDown(e) {
     } else if (keyText == "Escape") {
         pauseHandler.onPauseButtonPressed();
     } else {
-        //console.log(keyText)
+        console.log(keyText)
     }
 }

@@ -30,7 +30,7 @@ class Platform extends Border {
         let roomHeight = levelHandler.room.height;
         for (let y = this.y; y < roomHeight; y += 32) {
             let mappedX1 = renderer.MapX(this.x1);
-            let mappedX2 = renderer.MapX(this.x2) - 16;
+            let mappedX2 = renderer.MapX(this.x2) - tileSize;
             let mappedY = renderer.MapY(y);
             if (mappedY < -tileSize || mappedY > canvas.height) continue;
             if (mappedX1 > -tileSize && mappedX1 < canvas.width) {
