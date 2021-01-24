@@ -48,12 +48,12 @@ class Renderer {
         if (player.y > y) y -= 32;
         let image = document.getElementById("tileset-01");
         let tileSize = renderer.MapR(32);
-        for (let x = 0; x < 10000; x += 32) {
+        for (let x = -32; x < levelHandler.room.width; x += 32) {
             let mappedX = renderer.MapX(x);
             let mappedY = renderer.MapY(y);
             if (mappedX < -tileSize || mappedX > canvas.width) continue;
             if (mappedY < -tileSize || mappedY > canvas.height) continue;
-            ctx.drawImage(image, 16,0,8,8, mappedX, mappedY, tileSize, tileSize);
+            ctx.drawImage(image, 0,0,8,8, mappedX, mappedY, tileSize, tileSize);
         }
     }
 
@@ -61,12 +61,12 @@ class Renderer {
         if (player.x > x) x -= 32;
         let image = document.getElementById("tileset-01");
         let tileSize = renderer.MapR(32);
-        for (let y = 0; y < 10000; y += 32) {
+        for (let y = 0; y < levelHandler.room.height; y += 32) {
             let mappedX = renderer.MapX(x);
             let mappedY = renderer.MapY(y);
             if (mappedX < -tileSize || mappedX > canvas.width) continue;
             if (mappedY < -tileSize || mappedY > canvas.height) continue;
-            ctx.drawImage(image, 0,16,8,8, mappedX, mappedY, tileSize, tileSize);
+            ctx.drawImage(image, 0,0,8,8, mappedX, mappedY, tileSize, tileSize);
         }
     }
 
