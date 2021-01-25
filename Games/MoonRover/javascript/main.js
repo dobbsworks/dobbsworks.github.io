@@ -31,13 +31,13 @@ function Initialize() {
     InitMouseHandlers();
     InitKeyHandlers();
     InitializeTilesets();
-    weaponHandler.CreateInventoryBar();
     setInterval(MainLoop, 1000 / 60);
 }
 let p = null;
 var performanceData = [];
 function MainLoop() {
     let t0 = performance.now();
+    uiHandler.Update();
     if (shopHandler.isInShop) {
         shopHandler.Update();
     } else if (!pauseHandler.isPaused) {
@@ -59,7 +59,6 @@ function MainLoop() {
         }
         sprites = sprites.filter(x => x.isActive);
     }
-    uiHandler.Update();
     let t1 = performance.now();
 
     Draw();

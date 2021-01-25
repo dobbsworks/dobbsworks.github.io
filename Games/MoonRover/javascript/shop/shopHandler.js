@@ -100,7 +100,7 @@ class ShopHandler {
         }
         shopHandler.RefreshAvailability();
 
-        this.exitButton = new Button(550, 450, "Exit Shop");
+        this.exitButton = new Button(canvas.width - 150, 450, "Exit Shop");
         this.exitButton.height = 50;
         this.exitButton.onClick = this.ExitShop;
 
@@ -142,10 +142,10 @@ class ShopHandler {
 
     CreateEasterEggButtons() {
         let eggs = [
-            new Button(515, 373, ""),
-            new Button(560, 356, ""),
-            new Button(560, 403, ""),
-            new Button(605, 417, ""),
+            new Button(canvas.width - 185, 373, ""),
+            new Button(canvas.width - 140, 356, ""),
+            new Button(canvas.width - 140, 403, ""),
+            new Button(canvas.width - 95, 417, ""),
         ];
         let faceList = Object.keys(shopHandler.mogFaces);
         eggs.forEach(x => {
@@ -244,7 +244,7 @@ class ShopHandler {
 
         let mogShopImage = document.getElementById("image-mogshop");
         if (mogShopImage && mogShopImage.width) {
-            ctx.drawImage(mogShopImage, 395, 65);
+            ctx.drawImage(mogShopImage, canvas.width - 305, 65);
         }
 
         this.displayCtx.clearRect(0, 0, this.displayCanvas.width, this.displayCanvas.height);
@@ -270,11 +270,11 @@ class ShopHandler {
             if (face) this.displayCtx.drawImage(mogs, face.x, face.y, face.w, face.h, 5, verticalOffset, face.w, face.h);
         }
 
-        ctx.drawImage(this.displayCanvas, 441, 124, this.displayCanvas.width * 5, this.displayCanvas.height * 5)
+        ctx.drawImage(this.displayCanvas, canvas.width - 259, 124, this.displayCanvas.width * 5, this.displayCanvas.height * 5)
 
         let mogShopGridImage = document.getElementById("image-mogshop-grid");
         if (mogShopGridImage && mogShopGridImage.width) {
-            ctx.drawImage(mogShopGridImage, 441, 124);
+            ctx.drawImage(mogShopGridImage, canvas.width - 259, 124);
         }
 
     }

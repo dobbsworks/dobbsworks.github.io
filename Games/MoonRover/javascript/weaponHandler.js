@@ -1,7 +1,7 @@
 class WeaponHandler {
     inventory = [
         new WeaponShotgun(),
-        //new WeaponJetpack(),
+        new WeaponJetpack(),
     ];
 
     oldWeaponIndex = 0;
@@ -9,29 +9,10 @@ class WeaponHandler {
 
     AddWeapon(weapon) {
         this.inventory.push(weapon);
-        this.CreateInventoryBar();
-    }
-
-    CreateInventoryBar() {
-        // creates the divs for inv bar, sets handlers
-        let container = document.getElementById("weaponContainer");
-        container.innerHTML = "";
-        for (let weapon of this.inventory) {
-            let div = document.createElement("div");
-            div.innerHTML = weapon.name;
-            let weaponIndex = this.inventory.indexOf(weapon);
-            div.onclick = this.GetWeaponSelectHandler(weaponIndex);
-            container.appendChild(div);
-        }
     }
 
     GetWeaponSelectHandler(index) {
         return () => weaponHandler.SelectWeaponByIndex(index);
-    }
-
-    UpdateInventoryBar() {
-        // draw cooldown animations, etc.
-
     }
 
     SelectWeaponByIndex(index) {
@@ -66,6 +47,12 @@ class WeaponHandler {
             currentWeapon.SwitchTo();
         }
         this.oldWeaponIndex = this.selectedWeaponIndex;
-        this.UpdateInventoryBar();
+
+        for (let weapon of this.inventory) {
+            if (!weapon.initialized) {
+                weapon.initialized = true;
+                weapon.ApplyInitialUpgrades();
+            }
+        }
     }
 }

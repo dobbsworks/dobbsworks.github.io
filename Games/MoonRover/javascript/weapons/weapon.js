@@ -87,10 +87,6 @@ class Weapon {
     }
 
     Update() {
-        if (!this.initialized) {
-            this.initialized = true;
-            this.ApplyInitialUpgrades();
-        }
         if (this.cooldownTimer > 0) this.cooldownTimer--;
         if (this.deployTimer > 0) this.deployTimer--;
     }
