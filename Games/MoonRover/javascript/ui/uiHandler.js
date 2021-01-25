@@ -44,19 +44,13 @@ class UIHandler {
         }
     }
 
-    FormatFPS(x) {
-        return (Math.floor(1000 * x) / 1000).toFixed(3);
-    }
     Draw() {
+        let t0 = performance.now();
+
         let msPerFrame = performanceData.map(x => x.total).reduce((a, b) => a + b, 0) / performanceData.length;
         let drawMsPerFrame = performanceData.map(x => x.draw).reduce((a, b) => a + b, 0) / performanceData.length;
         let updateMsPerFrame = performanceData.map(x => x.update).reduce((a, b) => a + b, 0) / performanceData.length;
         //let fps = Math.floor(1000 / msPerFrame) * 1;
-        let drawPercent = Math.floor(1000 * drawMsPerFrame / msPerFrame) / 10;
-
-        let msPerFrameFormatted = this.FormatFPS(msPerFrame);
-        let updateMsPerFrameFormatted = this.FormatFPS(updateMsPerFrame);
-        let drawMsPerFrameFormatted = this.FormatFPS(drawMsPerFrame);
 
         ctx.fillStyle = "white";
         ctx.font = "20px Arial";
@@ -66,14 +60,6 @@ class UIHandler {
         ctx.fillText("Deaths: " + deathCount, 250, 21);
         ctx.fillText("Level: " + levelHandler.GetLevelNumber(), 370, 21);
 
-        if (this.debugMode) {
-            ctx.fillText("ms/frame: ", canvas.width - 150, 21);
-            ctx.fillText("ms/update: ", canvas.width - 150, 40);
-            ctx.fillText("ms/draw: ", canvas.width - 150, 59);
-            ctx.fillText(msPerFrameFormatted, canvas.width - 50, 21);
-            ctx.fillText(updateMsPerFrameFormatted, canvas.width - 50, 40);
-            ctx.fillText(drawMsPerFrameFormatted, canvas.width - 50, 59);
-        }
 
         if (shopHandler.isInShop) {
             shopHandler.DrawShop();
@@ -86,6 +72,34 @@ class UIHandler {
 
         for (let el of this.elements) {
             el.Draw();
+        }
+
+        let uiDrawTime = performance.now() - t0;
+        if (this.debugMode) {
+            this.DrawDebugLines([
+                {text: "ms/frame", value: msPerFrame},
+                {text: "ms/update", value: updateMsPerFrame},
+                {text: "ms/draw", value: drawMsPerFrame},
+                {text: "ms/ui", value: uiDrawTime},
+            ])
+        }
+    }
+
+    FormatFPS(x) {
+        return (Math.floor(1000 * x) / 1000).toFixed(3);
+    }
+
+    DrawDebugLines(lines) {
+        let y = 21;
+        ctx.fillStyle = "black";
+        ctx.fillRect(canvas.width - 150 - 10, 0, 160, lines.length * 19 + 12);
+        ctx.fillStyle = "white";
+        ctx.font = "16px Arial";
+        ctx.textAlign = "left";
+        for (let line of lines) {
+            ctx.fillText(line.text + ": ", canvas.width - 150, y);
+            ctx.fillText(this.FormatFPS(line.value), canvas.width - 50, y);
+            y += 19;
         }
     }
 
