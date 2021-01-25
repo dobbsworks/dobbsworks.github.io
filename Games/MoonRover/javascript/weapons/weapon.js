@@ -13,14 +13,21 @@ class Weapon {
     }
     fireRate = 2;
     deployTime = 10;
+    get reloadTime() {
+        return 60 / this.reloadSpeed;
+    }
+    reloadSpeed = 4;
+    midAirReloadRatio = 0.15;
     fixedSpread = true;
 
-    maxShotsBeforeLanding = 3;
-    shotsSinceLastLanding = 0;
+    clipSize = 3;
+    shotsRemaining = 0;
 
     // state
     cooldownTimer = 0;
     deployTimer = 0;
+    reloadTimer = 0;
+
 
     cost = 0;
     upgrades = [];
@@ -31,14 +38,18 @@ class Weapon {
     SwitchTo() {
         this.deployTimer = this.deployTime;
     }
+    SwitchFrom() {
+        this.reloadTimer = 0;
+    }
 
     PullTrigger() {
-        if (this.shotsSinceLastLanding >= this.maxShotsBeforeLanding) {
+        this.reloadTimer = 0; // cancel current reload
+        if (this.shotsRemaining <= 0) {
             return;
         }
         if (this.cooldownTimer <= 0 && this.deployTimer <= 0) {
             this.Fire();
-            this.shotsSinceLastLanding++;
+            this.shotsRemaining--;
         }
     }
 
@@ -89,6 +100,12 @@ class Weapon {
     Update() {
         if (this.cooldownTimer > 0) this.cooldownTimer--;
         if (this.deployTimer > 0) this.deployTimer--;
+        while (this.reloadTimer >= this.reloadTime) {
+            this.reloadTimer -= this.reloadTime;
+            if (this.shotsRemaining < this.clipSize) {
+                this.shotsRemaining++;
+            }
+        }
     }
 
     GetAvailableUpgrades() {
@@ -99,6 +116,7 @@ class Weapon {
         for (let upgrade of this.initialUpgrades) {
             this.ApplyUpgrade(upgrade);
         }
+        this.shotsRemaining = this.clipSize;
     }
 
     ApplyUpgrade(upgrade) {

@@ -8,6 +8,7 @@ class WeaponJetpack extends Weapon {
         Upgrade.ShotsScale(3, 20),
     ]
     
+    reloadSpeed = 60;
     kickbackPower = 0.4;
     pelletSpeed = 0.5;
     fixedSpread = false;

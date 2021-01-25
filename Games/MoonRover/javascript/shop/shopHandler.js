@@ -40,6 +40,9 @@ class ShopHandler {
     exitButton = null;
 
     EnterShop() {
+        weaponHandler.ReloadAll();
+        isMouseDown = false;
+        isMouseChanged = false;
         this.isInShop = true;
         uiHandler.Shelve();
         if (this.mogIntroTimer > 0) this.InitializeButtons();

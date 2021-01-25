@@ -53,7 +53,7 @@ class Upgrade {
             shortDescription: "Increase kickback",
             statDescription: "kickback",
         },
-        maxShotsBeforeLanding: {
+        clipSize: {
             goodDirection: +1,
             shortDescription: "More mid-air shots",
             statDescription: "shot(s) before landing"
@@ -69,6 +69,12 @@ class Upgrade {
             shortDescription: "Faster fire rate",
             statDescriptionGood: "faster firing speed",
             statDescriptionBad: "slower firing speed",
+        },
+        reloadSpeed: {
+            goodDirection: +1,
+            shortDescription: "Faster reloads",
+            statDescriptionGood: "faster reload time",
+            statDescriptionBad: "slower reload time",
         },
         pelletCount: {
             goodDirection: +1,
@@ -102,7 +108,7 @@ class Upgrade {
     static ShotsChange(cost, shotsPlus) {
         let upgrade = new Upgrade(cost, [
             {
-                prop: "maxShotsBeforeLanding",
+                prop: "clipSize",
                 delta: shotsPlus,
                 type: Upgrade.Type.add
             }
@@ -113,7 +119,7 @@ class Upgrade {
     static ShotsScale(cost, shotsRatio) {
         let upgrade = new Upgrade(cost, [
             {
-                prop: "maxShotsBeforeLanding",
+                prop: "clipSize",
                 delta: shotsRatio,
                 type: Upgrade.Type.scale
             }
@@ -137,6 +143,17 @@ class Upgrade {
             {
                 prop: "fireRate",
                 delta: fireRateRatio,
+                type: Upgrade.Type.scale
+            }
+        ]);
+        return upgrade;
+    }
+
+    static ReloadSpeedScale(cost, reloadSpeedRatio) {
+        let upgrade = new Upgrade(cost, [
+            {
+                prop: "reloadSpeed",
+                delta: reloadSpeedRatio,
                 type: Upgrade.Type.scale
             }
         ]);

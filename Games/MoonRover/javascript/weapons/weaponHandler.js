@@ -1,6 +1,8 @@
 class WeaponHandler {
     inventory = [
         new WeaponShotgun(),
+        new WeaponShotgun(),
+        new WeaponJetpack(),
         new WeaponJetpack(),
     ];
 
@@ -21,12 +23,18 @@ class WeaponHandler {
             this.selectedWeaponIndex = 0;
         }
         if (this.selectedWeaponIndex >= this.inventory.length) {
-            this.selectedWeaponIndex = this.inventory.length-1;
+            this.selectedWeaponIndex = this.inventory.length - 1;
         }
     }
 
     GetCurrent() {
         return this.inventory[this.selectedWeaponIndex];
+    }
+
+    ReloadAll() {
+        for (let weapon of this.inventory) {
+            weapon.shotsRemaining = weapon.clipSize;
+        }
     }
 
     Update() {
@@ -39,11 +47,17 @@ class WeaponHandler {
         let currentWeapon = this.GetCurrent();
         if (currentWeapon) {
             currentWeapon.Update();
-            if (isPlayerOnGround) {
-                currentWeapon.shotsSinceLastLanding = 0;
+            if (currentWeapon.shotsRemaining < currentWeapon.clipSize) {
+                if (isPlayerOnGround) {
+                    currentWeapon.reloadTimer++;
+                } else {
+                    currentWeapon.reloadTimer += currentWeapon.midAirReloadRatio;
+                }
             }
         }
         if (this.oldWeaponIndex !== this.selectedWeaponIndex) {
+            let oldWeapon = weaponHandler.inventory[this.oldWeaponIndex];
+            if (oldWeapon) oldWeapon.SwitchFrom();
             currentWeapon.SwitchTo();
         }
         this.oldWeaponIndex = this.selectedWeaponIndex;

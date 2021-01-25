@@ -125,6 +125,8 @@ class UIHandler {
         let contentWidth = barWidth - margin*2;
         let portraitHeight = contentWidth / 1.5;
 
+        let portraitImage = document.getElementById("dog-rover");
+
         let weaponCount = 4;
         let weaponBlockHeight = (barHeight - portraitHeight - 50 - margin*3) / weaponCount - margin; 
 
@@ -132,7 +134,11 @@ class UIHandler {
         ctx.fillRect(0,0, barWidth, barHeight);
         
         ctx.fillStyle = "#170043cc";
+        ctx.strokeStyle = "#170043";
+        ctx.lineWidth = 4;
         ctx.fillRect(margin,margin, contentWidth, portraitHeight);
+        ctx.drawImage(portraitImage, margin,margin, contentWidth, portraitHeight);
+        ctx.strokeRect(margin,margin, contentWidth, portraitHeight);
 
         let weaponButtonYs = [0,1,2,3].map(i => portraitHeight + margin*2 + i * (weaponBlockHeight + margin))
         let weaponButtonX = margin;
@@ -155,8 +161,13 @@ class UIHandler {
         let isSelected = (weaponHandler.GetCurrent() === weapon);
         let isMouseOver = (mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h);
         ctx.fillStyle = "#170043cc";
-        if (isMouseOver) ctx.fillStyle = "#070033";
+        if (weapon.shotsRemaining <= 0) ctx.fillStyle = "#330007";
+        if (weapon.shotsRemaining >= weapon.clipSize) ctx.fillStyle = "#070043cc";
         ctx.fillRect(x,y,w,h);
+        if (isMouseOver) {
+            ctx.fillStyle = "#00000044";
+            ctx.fillRect(x,y,w,h);
+        }
         
         if (isSelected) {
             ctx.strokeStyle = "#FFF4";
@@ -171,12 +182,19 @@ class UIHandler {
         // AMMO
         // might could cache out weapon boxes to a canvas to reduce draw calls per frame
         ctx.fillStyle = "#77F";
-        let ammoBoxWidth = (w - padding*2) / weapon.maxShotsBeforeLanding;
-        for (let i=0; i<weapon.maxShotsBeforeLanding; i++) {
-            if (i >= weapon.maxShotsBeforeLanding - weapon.shotsSinceLastLanding) {
+        let ammoBoxWidth = (w - padding*2) / weapon.clipSize;
+        let ammoBoxHeight = 20;
+        let ammoBoxY = y + 40;
+        for (let i=0; i<weapon.clipSize; i++) {
+            if (i >= weapon.shotsRemaining) {
                 ctx.fillStyle = "#F77";
             }
-            ctx.fillRect(x + padding + ammoBoxWidth*i,y + 30,ammoBoxWidth-1,10);
+            ctx.fillRect(x + padding + ammoBoxWidth*i,ammoBoxY,ammoBoxWidth-1,ammoBoxHeight);
+            if (i == weapon.shotsRemaining) {
+                let reloadRatio = Math.min(1, weapon.reloadTimer / weapon.reloadTime);
+                ctx.fillStyle = "#77F";
+                ctx.fillRect(x + padding + ammoBoxWidth*i,ammoBoxY+ammoBoxHeight,ammoBoxWidth-1,-ammoBoxHeight * reloadRatio);
+            }
         }
     }
 
