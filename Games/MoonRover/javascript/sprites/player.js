@@ -4,7 +4,11 @@ class Player extends Sprite {
     hurtTimer = 0;
     isOnGround = false;
 
+    shake = 0; // used for ui shake, based on how sprite is jerked around
+
     Update() {
+        let oldSpeedSquared = this.dx **2 + this.dy **2
+        let isBounced = false;
         if (isMouseDown) {
             // weapon fired
             weaponHandler.GetCurrent().PullTrigger();
@@ -54,6 +58,7 @@ class Player extends Sprite {
 
                     }
                 }
+                isBounced = true;
             }
             if (touchingSprite instanceof EnemyBullet) {
                 touchingSprite.isActive = false;
@@ -74,6 +79,12 @@ class Player extends Sprite {
         if (this.hurtTimer > 0) {
             this.hurtTimer--;
         }
+        
+        let newSpeedSquared = this.dx **2 + this.dy **2
+        let jerk = Math.floor(Math.abs(newSpeedSquared - oldSpeedSquared) / 10);
+        this.shake += jerk;
+        if (isBounced) this.shake += 20;
+        if (this.shake > 0) this.shake--;
     }
 
 }

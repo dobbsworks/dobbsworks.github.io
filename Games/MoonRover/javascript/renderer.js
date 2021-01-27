@@ -72,6 +72,7 @@ class Renderer {
 
     MapX(x) {
         let center = canvas.width / 2;
+        center += 100; // sidebar
         return center + (x - this.target.x)*this.zoom;
     }
 
@@ -86,6 +87,7 @@ class Renderer {
     
     UnmapX(x) {
         let center = canvas.width / 2;
+        center += 100; // sidebar
         return (x - center) / this.zoom + this.target.x;
     }
     

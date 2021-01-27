@@ -29,7 +29,7 @@ class Weapon {
     reloadTimer = 0;
 
 
-    cost = 0;
+    cost = 10;
     upgrades = [];
     initialUpgrades = [];
     initialized = false;
@@ -55,6 +55,11 @@ class Weapon {
 
     GetBreakdownText() {
         return this.initialUpgrades.flatMap(x => x.GetBreakdownText()).join("\n");
+    }
+
+    GetSellPrice() {
+        let upgradeCost = this.upgrades.filter(x => x.isActive).map(x => x.cost).reduce((a,b)=>a+b,0);
+        return Math.floor((this.cost + upgradeCost) / 2);
     }
 
     Fire() {

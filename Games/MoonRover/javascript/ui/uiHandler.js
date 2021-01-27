@@ -52,22 +52,24 @@ class UIHandler {
         let updateMsPerFrame = performanceData.map(x => x.update).reduce((a, b) => a + b, 0) / performanceData.length;
         //let fps = Math.floor(1000 / msPerFrame) * 1;
 
-        ctx.fillStyle = "white";
+        ctx.fillStyle = "#00000077";
+        ctx.fillRect(240,0,430,31);
         ctx.font = "20px Arial";
         ctx.textAlign = "left";
-        ctx.fillText("Loot: " + loot, 50, 21);
-        ctx.fillText("Kills: " + killCount, 150, 21);
-        ctx.fillText("Deaths: " + deathCount, 250, 21);
-        ctx.fillText("Level: " + levelHandler.GetLevelNumber(), 370, 21);
+        ctx.fillStyle = "white";
+        ctx.fillText("Loot: " + loot, 250, 21);
+        ctx.fillText("Kills: " + killCount, 350, 21);
+        ctx.fillText("Deaths: " + deathCount, 450, 21);
+        ctx.fillText("Level: " + levelHandler.GetLevelNumber(), 570, 21);
 
 
         if (shopHandler.isInShop) {
             shopHandler.DrawShop();
+            this.DrawSideBar();
         } else if (pauseHandler.isPaused) {
 
         } else {
             this.DrawSideBar();
-            this.DrawHP()
         }
 
         for (let el of this.elements) {
@@ -137,7 +139,11 @@ class UIHandler {
         ctx.strokeStyle = "#170043";
         ctx.lineWidth = 4;
         ctx.fillRect(margin,margin, contentWidth, portraitHeight);
-        ctx.drawImage(portraitImage, margin,margin, contentWidth, portraitHeight);
+
+        let shakeFactor = Math.min(10, Math.max(0, player.shake));
+        let wiggleX = shakeFactor*Math.random() -shakeFactor/2 + 5;
+        let wiggleY = shakeFactor*Math.random() -shakeFactor/2 + 5;
+        ctx.drawImage(portraitImage, wiggleX,wiggleY, contentWidth/2, portraitHeight/2, margin,margin, contentWidth, portraitHeight);
         ctx.strokeRect(margin,margin, contentWidth, portraitHeight);
 
         let weaponButtonYs = [0,1,2,3].map(i => portraitHeight + margin*2 + i * (weaponBlockHeight + margin))
@@ -151,6 +157,7 @@ class UIHandler {
         }
 
         this.InitializeWeaponBar(weaponButtonX, weaponButtonYs, weaponButtonWidth, weaponButtonHeight);
+        this.DrawHP();
     }
 
     DrawWeaponButton(x, y, w, h, weapon) {
@@ -192,7 +199,7 @@ class UIHandler {
             ctx.fillRect(x + padding + ammoBoxWidth*i,ammoBoxY,ammoBoxWidth-1,ammoBoxHeight);
             if (i == weapon.shotsRemaining) {
                 let reloadRatio = Math.min(1, weapon.reloadTimer / weapon.reloadTime);
-                ctx.fillStyle = "#77F";
+                ctx.fillStyle = "#949";
                 ctx.fillRect(x + padding + ammoBoxWidth*i,ammoBoxY+ammoBoxHeight,ammoBoxWidth-1,-ammoBoxHeight * reloadRatio);
             }
         }

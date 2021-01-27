@@ -51,6 +51,7 @@ class Text extends UIElement {
                                 break;
                             }
                         }
+                        if (wordCountTest > 1 && wordCountTest === words.length) wordCountTest--;
                         ret.push(words.splice(0, wordCountTest).join(" "));
                     }
                     let t1 = performance.now();

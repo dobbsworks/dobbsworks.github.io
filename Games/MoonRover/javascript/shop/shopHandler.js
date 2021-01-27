@@ -37,7 +37,28 @@ class ShopHandler {
     }
     mogFace = this.mogFaces.logo;
     buyButtons = [];
+    sellButton = null;
     exitButton = null;
+
+
+
+    // menu stack
+    currentButtonSet = []; // list of buttons/panels [cancelButton, buyButton, infoPanel]
+    savedButtonSets = [];  // list of lists of previous menus [mainMenu, sellMenu]
+    ReturnToPreviousMenu() {
+        uiHandler.elements = uiHandler.elements.filter(x => this.currentButtonSet.indexOf(x) === -1);
+        shopHandler.currentButtonSet = shopHandler.savedButtonSets.pop();
+        shopHandler.currentButtonSet.forEach(a => a.targetY += 1000);
+    }
+    MoveToNewMenu(items) {
+        uiHandler.elements.push(...items);
+        shopHandler.currentButtonSet.forEach(a => a.targetY -= 1000);
+        shopHandler.savedButtonSets.push(shopHandler.currentButtonSet);
+        shopHandler.currentButtonSet = items;
+        shopHandler.currentButtonSet.forEach(a => a.y += 1000);
+    }
+
+
 
     EnterShop() {
         weaponHandler.ReloadAll();
@@ -69,10 +90,16 @@ class ShopHandler {
         return ret;
     }
 
+    GetButtonLocations() {
+        return [50, 175, 300].flatMap(y => [225, 400].map(x => ({ x: x, y: y })));
+    }
+
     InitializeButtons() {
+        this.currentButtonSet = [];
+        this.savedButtonSets = [];
         let availableWeapon = this.GetRandomWeapon();
         let availableUpgrades = this.GetRandomUpgrades(4);
-        let buttonLocations = [50, 175, 300].flatMap(y => [25, 200].map(x => ({ x: x, y: y })));
+        let buttonLocations = this.GetButtonLocations();
         this.buyButtons = [];
 
         // new weapon
@@ -90,6 +117,12 @@ class ShopHandler {
             this.buyButtons.push(buyButton);
         }
 
+        let sellButtonlocation = buttonLocations.splice(0,1)[0];
+        this.sellButton = new Button(sellButtonlocation.x, sellButtonlocation.y, "Sell Weapons");
+        this.sellButton.onClick = this.OnClickSell;
+        this.sellButton.colorPrimary = this.sellButton.colorPrimaryVariant;
+        this.buyButtons.push(this.sellButton);
+
         // upgrade buttons
         for (let buttonLocation of buttonLocations) {
             let upgrade = availableUpgrades.pop();
@@ -106,15 +139,46 @@ class ShopHandler {
         this.exitButton = new Button(canvas.width - 150, 450, "Exit Shop");
         this.exitButton.height = 50;
         this.exitButton.onClick = this.ExitShop;
+        uiHandler.elements.push(this.exitButton);
 
-        let buttonsToAdd = [...(this.buyButtons), this.exitButton];
-        for (let i = 0; i < buttonsToAdd.length; i++) {
-            let button = buttonsToAdd[i];
-            button.x -= i * Math.pow(10,i);
-            uiHandler.elements.push(button);
+        let buttonsToAdd = [...(this.buyButtons)];
+        shopHandler.MoveToNewMenu(buttonsToAdd);
+        this.CreateEasterEggButtons();
+    }
+
+
+    OnClickSell() {
+        let buttonLocations = shopHandler.GetButtonLocations();
+        
+        let sellButtons = [];
+        for (let i=0; i<weaponHandler.inventory.length; i++) {
+            let weapon = weaponHandler.inventory[i];
+            if (weapon) {
+                let pos = buttonLocations[i+2];
+                let cost = weapon.GetSellPrice();
+                let button = new Button(pos.x, pos.y, `Sell ${weapon.name}\n$${cost}`);
+                button.onClick = () => {
+                    let promptText = `Sell ${weapon.name} for $${cost}?`;
+                    let sellAction = () => {
+                        loot += cost;
+                        let index = weaponHandler.inventory.indexOf(weapon);
+                        weaponHandler.inventory.splice(index,1);
+                        shopHandler.ReturnToPreviousMenu();
+                        shopHandler.RefreshAvailability();
+                    }
+                    shopHandler.ConfirmSelection(promptText, weapon.name, "", weapon.flavor + "\n\n" + weapon.GetBreakdownText(), sellAction); 
+                }
+                sellButtons.push(button);
+            }
+        }
+        let cancelButton = new Button(buttonLocations[0].x, buttonLocations[0].y, "Cancel");
+        sellButtons.push(cancelButton);
+        cancelButton.width += buttonLocations[1].x - buttonLocations[0].x;
+        cancelButton.onClick = () => {
+            shopHandler.ReturnToPreviousMenu();
         }
 
-        this.CreateEasterEggButtons();
+        shopHandler.MoveToNewMenu(sellButtons);
     }
 
     GetBuyButton(buttonLocation, upgradeOrWeapon, name, shortDescr, cost) {
@@ -133,13 +197,14 @@ class ShopHandler {
             loot -= cost;
             shopHandler.RefreshAvailability();
         }
-        buyButton.onClick = () => { shopHandler.GetPurchaseConfirmation(buyButton, buttonAction); }
         buyButton.cost = cost;
         buyButton.upgrade = weapon || upgrade;
         buyButton.title = name;
         buyButton.flavor = weapon ? weapon.flavor : `Give the ${upgradeOrWeapon.weapon.name} a little bit extra!`;
         buyButton.shortDescription = shortDescr;
         buyButton.breakdownText = (upgrade || weapon).GetBreakdownText();
+        let promptText = `Purchase ${buyButton.title} for $${buyButton.cost}?`;
+        buyButton.onClick = () => { shopHandler.ConfirmSelection(promptText, buyButton.title, buyButton.shortDescription, buyButton.flavor + "\n\n" + buyButton.breakdownText, buttonAction); }
         return buyButton;
     }
 
@@ -161,52 +226,62 @@ class ShopHandler {
     }
 
     RefreshAvailability() {
-        for (let button of this.buyButtons) {
+        for (let button of shopHandler.buyButtons) {
             if (loot < button.cost) {
                 button.isDisabled = true;
                 if (button.upgrade && !button.upgrade.isActive) {
                     button.tooExpensive = true;
                 }
+            } else {
+                if (button.tooExpensive) {
+                    button.tooExpensive = false;
+                    button.isDisabled = false;
+                }
             }
+        }
+        if (weaponHandler.inventory.length <= 1) {
+            this.sellButton.isDisabled = true;
+        } else {
+            this.sellButton.isDisabled = false;
         }
     }
 
-    GetPurchaseConfirmation(buyButton, onConfirmCallback) {
-        uiHandler.getButtons().forEach(x => {
-            if (x !== shopHandler.exitButton) x.targetX -= 1000;
-        });
-        let cancelButton = new Button(25, 50, "Cancel");
-        let confirmButton = new Button(200, 50, "Confirm!" + "\n$" + buyButton.cost);
+    ConfirmSelection(prompt, panelTitle, panelSub, flavor, onConfirm) {
+        let buttonLocations = this.GetButtonLocations();
+        let cancelButton = new Button(buttonLocations[0].x, buttonLocations[0].y+50, "Cancel");
+        let confirmButton = new Button(buttonLocations[1].x, buttonLocations[1].y+50, "Confirm!");
+        [cancelButton, confirmButton].forEach(a => { a.height -=50})
 
-        let bgPanel = new Panel(25, 175, 325, 250);
+        let titlePanel = new Panel(buttonLocations[0].x, buttonLocations[0].y, 325, 25);
+        titlePanel.colorPrimary = "#022e0aCC";
+        let confirmText = new Text(buttonLocations[0].x + 10, buttonLocations[0].y + 18, prompt);
+        confirmText.isBold = true;
+        confirmText.textAlign = "left";
+
+        let bgPanel = new Panel(buttonLocations[2].x, buttonLocations[2].y, 325, 250);
         bgPanel.colorPrimary = "#020a2eCC";
-        let titleBox = new Text(35, 200, buyButton.title);
+        let titleBox = new Text(235, 200, panelTitle);
         titleBox.textAlign = "left";
         titleBox.isBold = true;
-        let shortDescrBox = new Text(340, 200, buyButton.shortDescription);
+        let shortDescrBox = new Text(540, 200, panelSub);
         shortDescrBox.textAlign = "right";
 
-        let flavorText = new Text(182, 240, buyButton.flavor + "\n\n" + buyButton.breakdownText);
+        let flavorText = new Text(382, 240, flavor);
+        flavorText.maxWidth = bgPanel.width - 20;
 
-        let newElements = [bgPanel, cancelButton, confirmButton, titleBox, shortDescrBox, flavorText];
+        let newElements = [titlePanel, confirmText, bgPanel, cancelButton, confirmButton, titleBox, shortDescrBox, flavorText];
 
-        newElements.forEach(x => x.y -= 1000);
-        let removeCancelConfirmButtons = () => {
-            uiHandler.elements = uiHandler.elements.filter(x => (x instanceof Button) && (x != cancelButton && x != confirmButton));
-            uiHandler.getButtons().forEach(x => {
-                if (x !== shopHandler.exitButton) x.targetX += 1000;
-            });
-        }
         cancelButton.onClick = () => {
-            removeCancelConfirmButtons();
+            shopHandler.ReturnToPreviousMenu();
             shopHandler.mogFace = (this.mogFaces.sad);
         }
         confirmButton.onClick = () => {
-            removeCancelConfirmButtons();
-            onConfirmCallback();
+            shopHandler.ReturnToPreviousMenu();
+            onConfirm();
+            weaponHandler.ReloadAll();
             shopHandler.SetTempFace(this.mogFaces.champ);
         }
-        uiHandler.elements.push(...newElements);
+        shopHandler.MoveToNewMenu(newElements);
         shopHandler.mogFace = (Math.random() > 0.5 ? this.mogFaces.hmm : this.mogFaces.owo);
     }
 
