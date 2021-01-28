@@ -74,10 +74,6 @@ var MinigameHandler = {
         // allow missing special characters
         let trimmedAnswer = MinigameHandler.answer.split('').filter(MinigameHandler.IsAlphanumeric).join('').toUpperCase();
         let trimmedGuess = guess.split('').filter(MinigameHandler.IsAlphanumeric).join('').toUpperCase();
-        let isGuessCorrect = trimmedAnswer === trimmedGuess;
-        if (isGuessCorrect) {
-            MinigameHandler.GameWin(user);
-        }
 
         // guess single letter
         if (MinigameHandler.gameType === "hangman" && guess.length === 1 && MinigameHandler.IsAlphanumeric(guess[0])) {
@@ -91,7 +87,17 @@ var MinigameHandler = {
                     pointHandler.addPoints(user.username, 10);
                     MinigameHandler.WriteMessage(`${revealedCount} ${guess.toUpperCase()}${revealedCount===1?"":"'s"}, ${user.username} has received ${pointHandler.formatValue(10)}.`);
                 }
+            } else {
+                MinigameHandler.WriteMessage(`There are no ${guess.toUpperCase()}'s.`);
             }
+            return;
+        }
+
+        let isGuessCorrect = trimmedAnswer === trimmedGuess;
+        if (isGuessCorrect) {
+            MinigameHandler.GameWin(user);
+        } else {
+            MinigameHandler.WriteMessage(`${user.username}, "${guess}" is incorrect.`);
         }
     },
 
