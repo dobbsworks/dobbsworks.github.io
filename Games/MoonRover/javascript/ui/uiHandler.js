@@ -148,6 +148,13 @@ class UIHandler {
         ctx.drawImage(portraitImage, wiggleX+5,wiggleY+5, contentWidth/2, portraitHeight/2, margin,margin, contentWidth, portraitHeight);
         ctx.strokeRect(margin,margin, contentWidth, portraitHeight);
 
+        if (player.hurtTimer > 0) {
+            ctx.globalCompositeOperation = "color";
+            ctx.fillStyle = "#FF000055";
+            ctx.fillRect(margin,margin, contentWidth, portraitHeight);
+            ctx.globalCompositeOperation = "source-over";
+        }
+
         let weaponButtonYs = [0,1,2,3].map(i => portraitHeight + margin*2 + i * (weaponBlockHeight + margin))
         let weaponButtonX = margin;
         let weaponButtonWidth = contentWidth;
