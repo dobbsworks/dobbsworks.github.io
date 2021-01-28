@@ -127,6 +127,7 @@ class UIHandler {
         let contentWidth = barWidth - margin*2;
         let portraitHeight = contentWidth / 1.5;
 
+        let portraitBg = document.getElementById("dog-bg");
         let portraitImage = document.getElementById("dog-rover");
 
         let weaponCount = 4;
@@ -141,9 +142,10 @@ class UIHandler {
         ctx.fillRect(margin,margin, contentWidth, portraitHeight);
 
         let shakeFactor = Math.min(10, Math.max(0, player.shake));
-        let wiggleX = shakeFactor*Math.random() -shakeFactor/2 + 5;
-        let wiggleY = shakeFactor*Math.random() -shakeFactor/2 + 5;
-        ctx.drawImage(portraitImage, wiggleX,wiggleY, contentWidth/2, portraitHeight/2, margin,margin, contentWidth, portraitHeight);
+        let wiggleX = shakeFactor*Math.random() -shakeFactor/2;
+        let wiggleY = shakeFactor*Math.random() -shakeFactor/2;
+        ctx.drawImage(portraitBg, wiggleX/2+5,wiggleY/2+5, contentWidth/2, portraitHeight/2, margin,margin, contentWidth, portraitHeight);
+        ctx.drawImage(portraitImage, wiggleX+5,wiggleY+5, contentWidth/2, portraitHeight/2, margin,margin, contentWidth, portraitHeight);
         ctx.strokeRect(margin,margin, contentWidth, portraitHeight);
 
         let weaponButtonYs = [0,1,2,3].map(i => portraitHeight + margin*2 + i * (weaponBlockHeight + margin))

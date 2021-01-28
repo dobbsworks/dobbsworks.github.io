@@ -141,6 +141,7 @@ function LoadCommands() {
 		MessageCommand("horse", "honse"),
 		MessageCommand("plunk", "plunk successful, thank you."),
 		MessageCommand("disney", "https://disneydunces.podbean.com/"),
+		MessageCommand("moonrover", "Moon Rover is a vanilla JS game built from chat's suggestions. Play the latest version here: https://dobbsworks.github.io/Games/MoonRover/"),
 	
 		Command("gettokens", "CommandGetTokens", commandPermission.reward, commandDisplay.hidden),
 		Command("getlotsoftokens", "CommandGetLotsOfTokens", commandPermission.reward, commandDisplay.hidden),
