@@ -39,8 +39,10 @@
 			width: 20px;
 			height: 20px;
 			border-radius: 50%;
-			position: relative;
-			top: 6px;
+			color: black;
+			font-size: 18px;
+			padding: 5px;
+			text-align: center;
 		}
 
 		button {
@@ -227,24 +229,24 @@
 		return displayMinutes.toString().padStart(2, "0") + ":" + displaySeconds.toString().padStart(2, "0");
 	}
 
-	function GetWarningLightColor() {
+	function UpdateWarningLight() {
 		let now = new Date();
 		let targetEndStreamTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12+9, 15, 0);
 		let minutesUntilStreamEnd = (targetEndStreamTime - now) / 1000 / 60;
 		let pendingLevels = StorageHandler.queue.values.filter(x => x.status === "pending");
 
 		let minutesLeftPerLevel = minutesUntilStreamEnd / pendingLevels.length;
-		if (minutesLeftPerLevel >= 15) return "lime";
-		if (minutesLeftPerLevel >= 12) return "greenyellow";
-		if (minutesLeftPerLevel >= 10) return "yellow";
-		if (minutesLeftPerLevel >= 8) return "orange";
-		return "red";
-	}
+		let color = "red";
+		if (minutesLeftPerLevel >= 8) color = "orange";
+		if (minutesLeftPerLevel >= 10) color = "yellow";
+		if (minutesLeftPerLevel >= 12) color = "greenyellow";
+		if (minutesLeftPerLevel >= 15) color = "lime";
 
-	function UpdateWarningLight() {
-		let color = GetWarningLightColor();
+		let displayText = Math.floor(minutesLeftPerLevel);
+
 		let element = document.getElementById("alertLight");
 		element.style.backgroundColor = color;
+		element.innerHTML = displayText;
 	}
 
 	function Loop() {
