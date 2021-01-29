@@ -24,9 +24,10 @@ class Sprite {
 
         if (this.IsOffScreen()) return;
 
-        if (this.GetFrame) {
-            let frame = this.GetFrame();
-            renderer.Tile(tileset.orangeBot.tiles[frame], this.x, this.y);
+        if (this.GetFrameData) {
+            let frameData = this.GetFrameData();
+            let frame = tileset.orangeBot.tiles[frameData.frame];
+            renderer.Tile(frame, this.x, this.y, frameData.xFlip);
         } else {
             ctx.fillStyle = this.color;
             if (this.hurtTimer) {

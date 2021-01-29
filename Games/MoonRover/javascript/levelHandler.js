@@ -28,7 +28,9 @@ class LevelHandler {
             this.currentLevel++;
         }
 
+        let oldHp = player.hp;
         player = new Player(300, 300);
+        player.hp = oldHp;
 
         if (this.currentZone === 1) {
             this.room = this.GetCorridor();

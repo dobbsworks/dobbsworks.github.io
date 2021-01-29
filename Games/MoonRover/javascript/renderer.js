@@ -24,13 +24,20 @@ class Renderer {
         }
     }
 
-    Tile(tile, x, y) {
+    Tile(tile, x, y, flip) {
+        if (!tile) return;
         let scale = 4;
+
+        ctx.translate(this.MapX(x), 0);
+        if (flip) ctx.scale(-1,1);
         tile.Draw(ctx, 
-            this.MapX(x - tile.width/2 * scale), 
+            this.MapR(- tile.width/2 * scale), 
             this.MapY(y - tile.height/2 * scale),
             scale * renderer.zoom
         );
+        if (flip) ctx.scale(-1,1);
+        ctx.translate(-this.MapX(x), 0);
+
     }
 
     Line(x1,y1, x2,y2, extraThickness) {

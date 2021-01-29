@@ -67,13 +67,10 @@ class Weapon {
         let yDif = player.y - GetGameMouseY();
         let theta = Math.atan2(yDif, xDif);
 
-        player.dx += this.kickbackPower * Math.cos(theta);
-        player.dy += this.kickbackPower * Math.sin(theta);
-
         let firstPelletAngle = - this.pelletSpread / 2;
         if (this.fixedSpread) {
             if (this.pelletCount === 1) firstPelletAngle = 0;
-            let spreadBetweenPellets = this.pelletSpread / this.pelletCount;
+            let spreadBetweenPellets = this.pelletCount === 1 ? 0 : (this.pelletSpread / (this.pelletCount - 1));
             for (let i = 0; i < this.pelletCount; i++) {
                 let angleDeviation = spreadBetweenPellets * i + firstPelletAngle;
                 this.FireBullet(theta + angleDeviation);
@@ -85,6 +82,9 @@ class Weapon {
                 this.FireBullet(theta + angleDeviation);
             }
         }
+
+        player.dx += this.kickbackPower * Math.cos(theta);
+        player.dy += this.kickbackPower * Math.sin(theta);
 
         this.cooldownTimer = this.cooldownTime;
     }

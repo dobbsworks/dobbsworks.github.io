@@ -4,7 +4,7 @@ class WeaponJetpack extends Weapon {
 
     initialUpgrades = [
         Upgrade.DamageScale(10, -1),
-        Upgrade.FireRateScale(3, 9),
+        Upgrade.FireRateScale(3, 10),
         Upgrade.ShotsScale(3, 20),
     ]
     

@@ -2,8 +2,7 @@ class WeaponHandler {
     inventory = [
         new WeaponShotgun(),
         new WeaponShotgun(),
-        new WeaponJetpack(),
-        new WeaponJetpack(),
+        new WeaponTest(),
     ];
 
     oldWeaponIndex = 0;

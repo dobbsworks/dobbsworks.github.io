@@ -5,19 +5,29 @@ class Upgrade {
         let descr = "Multiple changes"
         if (changes.length === 1) {
             let changeType = Upgrade.PropMap[changes[0].prop];
-            descr = changeType.shortDescription;
+            if (changeType) descr = changeType.shortDescription;
         }
         this.shortDescription = descr;
     }
     isActive = false;
     static Type = {
         "add": 0,
-        "scale": 1
+        "scale": 1,
+        "flavor": 2,
+    }
+    static Direction = {
+        "Good": "[good]",
+        "Bad": "[bad]",
+        "Neutral": "",
     }
 
     GetBreakdownText() {
         let lines = [];
         for (let change of this.changes) {
+            if (change.type === Upgrade.Type.flavor) {
+                lines.push(change.delta);
+                continue;
+            }
             let propInfo = Upgrade.PropMap[change.prop];
             let isGoodChange = (change.delta * propInfo.goodDirection > 0);
             let isBadChange = (change.delta * propInfo.goodDirection < 0);
@@ -29,6 +39,12 @@ class Upgrade {
             if (changeNumber.endsWith(".0")) changeNumber = changeValue.toFixed(0);
             if (changeValue > 0) changeNumber = "+" + changeNumber;
             if (change.type === Upgrade.Type.scale) changeNumber += "%";
+
+            if (change.type === Upgrade.Type.scale &&
+                change.delta % 1 === 0 &&
+                change.delta > 0) {
+                    changeNumber = "x" + change.delta;
+            }
 
             let propText = propInfo.statDescription;
             if (!propText) {
@@ -168,6 +184,15 @@ class Upgrade {
                 type: Upgrade.Type.add
             }
         ]);
+        return upgrade;
+    }
+
+    static Flavor(text, direction) {
+        if (!direction) direction = Upgrade.Direction.Neutral;
+        let upgrade = new Upgrade(0, [{
+            delta: direction + text,
+            type: Upgrade.Type.flavor
+        }]);
         return upgrade;
     }
 

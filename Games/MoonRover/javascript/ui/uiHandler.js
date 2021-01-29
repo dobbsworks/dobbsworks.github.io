@@ -123,37 +123,18 @@ class UIHandler {
         let barWidth = 200;
         let barHeight = canvas.height;
         let margin = 10;
+        let hpHeight = 40;
 
         let contentWidth = barWidth - margin*2;
         let portraitHeight = contentWidth / 1.5;
 
-        let portraitBg = document.getElementById("dog-bg");
-        let portraitImage = document.getElementById("dog-rover");
-
         let weaponCount = 4;
-        let weaponBlockHeight = (barHeight - portraitHeight - 50 - margin*3) / weaponCount - margin; 
+        let weaponBlockHeight = (barHeight - portraitHeight - hpHeight - margin*4) / weaponCount - margin; 
 
         ctx.fillStyle = "#3700B3cc";
         ctx.fillRect(0,0, barWidth, barHeight);
-        
-        ctx.fillStyle = "#170043cc";
-        ctx.strokeStyle = "#170043";
-        ctx.lineWidth = 4;
-        ctx.fillRect(margin,margin, contentWidth, portraitHeight);
 
-        let shakeFactor = Math.min(10, Math.max(0, player.shake));
-        let wiggleX = shakeFactor*Math.random() -shakeFactor/2;
-        let wiggleY = shakeFactor*Math.random() -shakeFactor/2;
-        ctx.drawImage(portraitBg, wiggleX/2+5,wiggleY/2+5, contentWidth/2, portraitHeight/2, margin,margin, contentWidth, portraitHeight);
-        ctx.drawImage(portraitImage, wiggleX+5,wiggleY+5, contentWidth/2, portraitHeight/2, margin,margin, contentWidth, portraitHeight);
-        ctx.strokeRect(margin,margin, contentWidth, portraitHeight);
-
-        if (player.hurtTimer > 0) {
-            ctx.globalCompositeOperation = "color";
-            ctx.fillStyle = "#FF000055";
-            ctx.fillRect(margin,margin, contentWidth, portraitHeight);
-            ctx.globalCompositeOperation = "source-over";
-        }
+        this.DrawPortrait(margin, margin, contentWidth, portraitHeight)
 
         let weaponButtonYs = [0,1,2,3].map(i => portraitHeight + margin*2 + i * (weaponBlockHeight + margin))
         let weaponButtonX = margin;
@@ -166,7 +147,32 @@ class UIHandler {
         }
 
         this.InitializeWeaponBar(weaponButtonX, weaponButtonYs, weaponButtonWidth, weaponButtonHeight);
-        this.DrawHP();
+        this.DrawHP(margin, barHeight - hpHeight - margin, contentWidth, hpHeight);
+    }
+
+    DrawPortrait(x, y, w, h) {
+        let portraitBg = document.getElementById("dog-bg");
+        let portraitImage = document.getElementById("dog-rover");
+        
+        ctx.fillStyle = "#170043cc";
+        ctx.strokeStyle = "#170043";
+        ctx.lineWidth = 4;
+        ctx.fillRect(x,y, w,h);
+
+        let shakeFactor = Math.min(10, Math.max(0, player.shake));
+        let wiggleX = shakeFactor*Math.random() -shakeFactor/2;
+        let wiggleY = shakeFactor*Math.random() -shakeFactor/2;
+        ctx.drawImage(portraitBg, wiggleX/2+5,wiggleY/2+5, w/2, h/2, x,y, w,h);
+        ctx.drawImage(portraitImage, wiggleX+5,wiggleY+5, w/2, h/2, x,y, w,h);
+        ctx.strokeRect(x,y, w,h);
+
+        if (player.hurtTimer > 0) {
+            let opacity = Math.min(0.5, player.hurtTimer/60);
+            ctx.fillStyle = `rgba(255,0,0,${opacity.toFixed(2)})`;
+            ctx.globalCompositeOperation = "color";
+            ctx.fillRect(x,y, w,h);
+            ctx.globalCompositeOperation = "source-over";
+        }
     }
 
     DrawWeaponButton(x, y, w, h, weapon) {
@@ -214,25 +220,16 @@ class UIHandler {
         }
     }
 
-    DrawHP() {
-        // HP
-        let leftBound = 10;
-        let upperBound = canvas.height - 50;
-        let blockHeight = 40;
-        let blockWidth = 17;
-        let blockPadding = 0;   // space between HP blocks
-        let blockBorder = 1;    // dark border around indiviual blocks
+    DrawHP(x, y, w, h) {
+        let blockBorder = 2;    // dark border around indiviual blocks
+        let blockWidth = (w-blockBorder) / player.maxHp - blockBorder;
 
         ctx.fillStyle = "#0208";
+        ctx.fillRect(x,y,w,h);
         for (let i = 0; i < player.maxHp; i++) {
-            ctx.fillRect(leftBound + i * (blockWidth + blockPadding + blockBorder),
-                upperBound, blockWidth, blockHeight);
-        }
-        ctx.fillStyle = "#0A0A";
-        for (let i = 0; i < player.hp; i++) {
-            ctx.fillRect(leftBound + i * (blockWidth + blockPadding + blockBorder) + blockBorder,
-                upperBound + blockBorder, blockWidth - blockBorder * 2, blockHeight - blockBorder * 2);
+            ctx.fillStyle = i < player.hp ? "#0A0A" : "#3008";
+            ctx.fillRect(x + i * (blockWidth + blockBorder) + blockBorder,
+                y + blockBorder, blockWidth, h - blockBorder * 2);
         }
     }
-
 }

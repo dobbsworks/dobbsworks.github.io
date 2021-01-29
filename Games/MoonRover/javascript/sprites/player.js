@@ -69,8 +69,8 @@ class Player extends Sprite {
             }
             if (touchingSprite instanceof LevelExit) {
                 // level complete!
-                shopHandler.EnterShop();
                 levelHandler.LoadZone();
+                shopHandler.EnterShop();
             }
             if (touchingSprite.OnTouchPlayer) {
                 touchingSprite.OnTouchPlayer();

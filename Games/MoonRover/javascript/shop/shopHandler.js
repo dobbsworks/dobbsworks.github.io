@@ -70,10 +70,11 @@ class ShopHandler {
     }
 
     GetRandomWeapon() {
-        if (!weaponHandler.inventory.some(x => x instanceof WeaponJetpack)) {
-            return new WeaponJetpack();
-        }
-        return null;
+        let weaponClasses = [WeaponShotgun, WeaponJetpack];
+        let unowned = weaponClasses.filter(x => !weaponHandler.inventory.some(y => y instanceof x));
+        if (unowned.length === 0) return null;
+        let toSell = unowned[Math.floor(Math.random() * unowned.length)];
+        return new toSell();
     }
 
     GetRandomUpgrades(num) {
