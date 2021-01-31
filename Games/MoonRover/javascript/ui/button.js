@@ -32,6 +32,10 @@ class Button extends UIElement {
         ctx.fillStyle = this.colorPrimary;
         if (this.isDisabled) ctx.fillStyle = this.colorDisabled;
         this.FillBox();
+        if (this.state) {
+            ctx.fillStyle = this.colorSecondary;
+            this.FillBox();
+        }
         if (this.isMouseOver() && !this.isDisabled) {
             if (isMouseDown) {
                 ctx.fillStyle = this.colorShade;

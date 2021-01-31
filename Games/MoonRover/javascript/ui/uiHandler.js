@@ -29,11 +29,19 @@ class UIHandler {
             if (button.isMouseOver() && !button.isDisabled) {
                 mouseOverAnyButton = true;
                 if (isMouseClicked()) {
-                    button.onClick();
+                    if (button instanceof Toggle) {
+                        button.Toggle();
+                    } else {
+                        button.onClick();
+                    }
                     isMouseDown = false;
                     isMouseChanged = false;
                 }
             }
+        }
+
+        for (let toggle of this.elements.filter(x => x instanceof Toggle)) {
+            if (toggle.IsOn) toggle.state = toggle.IsOn();
         }
 
         document.body.style.cursor = mouseOverAnyButton ? "pointer" : "unset";

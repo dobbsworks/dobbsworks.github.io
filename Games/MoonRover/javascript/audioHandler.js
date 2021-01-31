@@ -8,8 +8,9 @@ class AudioHandler {
     lowPassNode;
     gainNodeMusic;
     gainNodeSfx;
-    musicVolume = 4;
-    sfxVolume = 5;
+    initialMusicVolume = 0.8;
+    initialSfxVolume = 1;
+    volumeScale = 5;
 
     initialized = false;
     audioLibrary = {};
@@ -23,10 +24,10 @@ class AudioHandler {
             this.LoadAudioFiles();
     
             this.gainNodeMusic = this.audioCtxMusic.createGain();
-            this.gainNodeMusic.gain.value = this.musicVolume/10;
+            this.gainNodeMusic.gain.value = this.initialMusicVolume;
     
             this.gainNodeSfx = this.audioCtxMusic.createGain();
-            this.gainNodeSfx.gain.value = this.sfxVolume/10;
+            this.gainNodeSfx.gain.value = this.initialSfxVolume;
     
             this.lowPassNode = this.audioCtxMusic.createBiquadFilter();
             this.lowPassNode.type = "lowpass"
@@ -69,8 +70,38 @@ class AudioHandler {
         this.lowPassNode.frequency.setValueAtTime(turnOn ? 700 : 24000, this.audioCtxMusic.currentTime);
     }
 
-    //TODO
-    // Volume controls
+    GetMusicVolume() {
+        if (audioHandler.gainNodeMusic) {
+            return audioHandler.gainNodeMusic.gain.value * audioHandler.volumeScale;
+        } else {
+            return audioHandler.initialMusicVolume * audioHandler.volumeScale;
+        }
+    }
+
+    GetSfxVolume() {
+        if (audioHandler.gainNodeSfx) {
+            return audioHandler.gainNodeSfx.gain.value * audioHandler.volumeScale;
+        } else {
+            return audioHandler.initialSfxVolume * audioHandler.volumeScale;
+        }
+    }
+
+    SetMusicVolume(vol) {
+        if (audioHandler.gainNodeMusic) {
+            audioHandler.gainNodeMusic.gain.value = vol/audioHandler.volumeScale;
+        } else {
+            audioHandler.initialMusicVolume = vol/audioHandler.volumeScale;
+        }
+    }
+
+    SetSfxVolume(vol) {
+        if (audioHandler.gainNodeSfx) {
+            audioHandler.gainNodeSfx.gain.value = vol/audioHandler.volumeScale;
+            audioHandler.PlaySound("mog-happy");
+        } else {
+            audioHandler.initialSfxVolume = vol/audioHandler.volumeScale;
+        }
+    }
 
 
     SetBackgroundMusic(key) {
