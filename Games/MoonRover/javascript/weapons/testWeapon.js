@@ -7,7 +7,7 @@ class WeaponTest extends Weapon {
         Upgrade.ShotsScale(3, 99),
         Upgrade.ReloadSpeedScale(0, 99),
         Upgrade.DamageScale(0, 99),
-        Upgrade.Flavor("-25% respect", Upgrade.Direction.Bad),
+        Upgrade.Flavor("-35% respect", Upgrade.Direction.Bad),
     ];
     pelletSpread = Math.PI*2;
 

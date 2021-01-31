@@ -61,12 +61,16 @@ class ShopHandler {
 
 
     EnterShop() {
+        audioHandler.SetBackgroundMusic("");
         weaponHandler.ReloadAll();
         isMouseDown = false;
         isMouseChanged = false;
         this.isInShop = true;
         uiHandler.Shelve();
-        if (this.mogIntroTimer > 0) this.InitializeButtons();
+        if (this.mogIntroTimer > 0) {
+            this.InitializeButtons();
+            audioHandler.SetBackgroundMusic("music-shop");
+        }
     }
 
     GetRandomWeapon() {
@@ -275,21 +279,25 @@ class ShopHandler {
         cancelButton.onClick = () => {
             shopHandler.ReturnToPreviousMenu();
             shopHandler.mogFace = (this.mogFaces.sad);
+            audioHandler.PlaySound("mog-sad");
         }
         confirmButton.onClick = () => {
             shopHandler.ReturnToPreviousMenu();
             onConfirm();
             weaponHandler.ReloadAll();
             shopHandler.SetTempFace(this.mogFaces.champ);
+            audioHandler.PlaySound("mog-happy");
         }
         shopHandler.MoveToNewMenu(newElements);
         shopHandler.mogFace = (Math.random() > 0.5 ? this.mogFaces.hmm : this.mogFaces.owo);
+        audioHandler.PlaySound("mog-hmm");
     }
 
     ExitShop() {
         shopHandler.isInShop = false;
         shopHandler.mogFace = shopHandler.mogFaces.happy;
         uiHandler.Restore();
+        audioHandler.SetBackgroundMusic(levelHandler.currentMusic);
     }
 
     Update() {
@@ -301,9 +309,13 @@ class ShopHandler {
         if (this.mogIntroTimer < 200) {
             this.mogIntroTimer++;
             if (isMouseDown) this.mogIntroTimer += 5;
+            if (this.mogIntroTimer <= 100 && this.mogIntroTimer >= 94) {
+                audioHandler.PlaySound("mog-intro");
+            }
             if (this.mogIntroTimer >= 200) {
                 this.mogFace = this.mogFaces.happy;
                 this.InitializeButtons();
+                audioHandler.SetBackgroundMusic("music-shop");
             }
         }
 

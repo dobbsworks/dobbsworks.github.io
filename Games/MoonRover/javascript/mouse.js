@@ -3,6 +3,7 @@ var mouseY = 0;
 var mouseScroll = 0;
 var isMouseDown = false;
 var isMouseChanged = false;
+var hasUserInteracted = false;
 
 function InitMouseHandlers() {
     canvas.addEventListener("mousedown", OnMouseDown, false);
@@ -24,6 +25,7 @@ function isMouseClicked() {
 }
 
 function OnMouseDown(e) {
+    hasUserInteracted = true;
     if (e.button === 0) {
         isMouseDown = true;
         isMouseChanged = true;

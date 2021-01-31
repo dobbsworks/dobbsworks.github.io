@@ -42,17 +42,9 @@ class WeaponHandler {
             this.SelectWeaponByIndex(chosenIndex);
         }
 
-        let isPlayerOnGround = player && player.isOnGround;
         let currentWeapon = this.GetCurrent();
         if (currentWeapon) {
             currentWeapon.Update();
-            if (currentWeapon.shotsRemaining < currentWeapon.clipSize) {
-                if (isPlayerOnGround) {
-                    currentWeapon.reloadTimer++;
-                } else {
-                    currentWeapon.reloadTimer += currentWeapon.midAirReloadRatio;
-                }
-            }
         }
         if (this.oldWeaponIndex !== this.selectedWeaponIndex) {
             let oldWeapon = weaponHandler.inventory[this.oldWeaponIndex];

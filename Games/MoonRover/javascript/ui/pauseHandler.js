@@ -6,8 +6,12 @@ class PauseHandler {
             pauseHandler.isPaused = !pauseHandler.isPaused;
             if (pauseHandler.isPaused) {
                 pauseHandler.EnterPauseMenu()
+                audioHandler.SetLowPass(true);
+                audioHandler.PlaySound("pause");
             } else {
                 pauseHandler.ExitPauseMenu();
+                audioHandler.SetLowPass(false);
+                audioHandler.PlaySound("unpause");
             }
         }
     }
@@ -19,7 +23,7 @@ class PauseHandler {
         bgPanel.colorPrimary = "#020a2eCC";
         bgPanel.border = 4;
 
-        let title = new Text(canvas.width/2, 100, "PAUSED");
+        let title = new Text(canvas.width/2, 100, "PAWSED");
         title.fontSize = 48;
         title.isBold = true;
 

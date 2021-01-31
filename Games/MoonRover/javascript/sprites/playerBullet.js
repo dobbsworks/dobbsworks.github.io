@@ -15,6 +15,9 @@ class PlayerBullet extends Sprite {
         for (let touchingSprite of touchingSprites) {
             if (touchingSprite instanceof Enemy && !(touchingSprite instanceof EnemyBullet)) {
                 touchingSprite.hp -= this.damage;
+                if (touchingSprite.hp >= 0) {
+                    audioHandler.PlaySound("ow-01");
+                }
                 this.isActive = false;
             }
         }

@@ -55,7 +55,7 @@ class Player extends Sprite {
                         }, 1000)
                     } else {
                         this.hurtTimer = 60;
-
+                        audioHandler.PlaySound("pow-01");
                     }
                 }
                 isBounced = true;
@@ -66,6 +66,7 @@ class Player extends Sprite {
             if (touchingSprite instanceof Loot) {
                 touchingSprite.isActive = false;
                 loot += touchingSprite.value;
+                audioHandler.PlaySound("powerup-03");
             }
             if (touchingSprite instanceof LevelExit) {
                 // level complete!

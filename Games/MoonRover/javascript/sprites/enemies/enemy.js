@@ -18,6 +18,8 @@ class Enemy extends Sprite {
             if (this.OnDeath) {
                 this.OnDeath();
             }
+
+            audioHandler.PlaySound("ow-02");
         }
     }
 

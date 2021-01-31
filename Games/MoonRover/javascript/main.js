@@ -9,6 +9,7 @@ var weaponHandler;
 var uiHandler;
 var shopHandler;
 var pauseHandler;
+var audioHandler;
 
 var loot = 0;
 var killCount = 0;
@@ -23,7 +24,9 @@ function Initialize() {
     uiHandler = new UIHandler();
     shopHandler = new ShopHandler();
     pauseHandler = new PauseHandler();
+    audioHandler = new AudioHandler();
 
+    audioHandler.Initialize();
     levelHandler.LoadZone();
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");

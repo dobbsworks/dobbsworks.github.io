@@ -7,6 +7,7 @@ class LevelHandler {
     currentZone = 0;
     isArena = false;
     room = null;
+    currentMusic = "music-level-1"
 
     Update() {
         if (this.isArena) {

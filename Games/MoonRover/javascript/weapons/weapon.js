@@ -1,7 +1,8 @@
 class Weapon {
 
     // weapon stats
-    name = "Base Weapon"
+    name = "Base Weapon";
+    fireSound = "pew-01";
     kickbackPower = 4;
     pelletType = PlayerBullet;
     pelletCount = 1;
@@ -44,12 +45,13 @@ class Weapon {
 
     PullTrigger() {
         this.reloadTimer = 0; // cancel current reload
-        if (this.shotsRemaining <= 0) {
-            return;
-        }
         if (this.cooldownTimer <= 0 && this.deployTimer <= 0) {
-            this.Fire();
-            this.shotsRemaining--;
+            if (this.shotsRemaining > 0) {
+                this.Fire();
+                this.shotsRemaining--;
+            } else {
+                audioHandler.PlaySound("notify-05", true);
+            }
         }
     }
 
@@ -63,6 +65,8 @@ class Weapon {
     }
 
     Fire() {
+        audioHandler.PlaySound(this.fireSound);
+
         let xDif = player.x - GetGameMouseX();
         let yDif = player.y - GetGameMouseY();
         let theta = Math.atan2(yDif, xDif);
@@ -105,12 +109,28 @@ class Weapon {
     Update() {
         if (this.cooldownTimer > 0) this.cooldownTimer--;
         if (this.deployTimer > 0) this.deployTimer--;
-        while (this.reloadTimer >= this.reloadTime) {
-            this.reloadTimer -= this.reloadTime;
-            if (this.shotsRemaining < this.clipSize) {
-                this.shotsRemaining++;
+
+        let isPlayerOnGround = player && player.isOnGround;
+        if (this.shotsRemaining < this.clipSize) {
+            if (isPlayerOnGround) {
+                this.reloadTimer++;
+            } else {
+                this.reloadTimer += this.midAirReloadRatio;
+            }
+
+            while (this.reloadTimer >= this.reloadTime) {
+                this.reloadTimer -= this.reloadTime;
+                if (this.shotsRemaining < this.clipSize) {
+                    this.shotsRemaining++;
+                }
+            }
+            
+            // just now hit capacity
+            if (this.shotsRemaining === this.clipSize) {
+                //audioHandler.PlaySound("notify-01");
             }
         }
+
     }
 
     GetAvailableUpgrades() {
