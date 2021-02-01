@@ -133,7 +133,7 @@ class ShopHandler {
             let upgrade = availableUpgrades.pop();
             if (upgrade) {
                 let buyButton = this.GetBuyButton(buttonLocation, upgrade, 
-                    upgrade.weapon.name + " Upgrade",
+                    upgrade.weapon.name,
                     upgrade.upgrade.shortDescription,
                     upgrade.upgrade.cost);
                 this.buyButtons.push(buyButton);
@@ -161,7 +161,7 @@ class ShopHandler {
             if (weapon) {
                 let pos = buttonLocations[i+2];
                 let cost = weapon.GetSellPrice();
-                let button = new Button(pos.x, pos.y, `Sell ${weapon.name}\n$${cost}`);
+                let button = new Button(pos.x, pos.y, `${weapon.name}\n$${cost}`);
                 button.onClick = () => {
                     let promptText = `Sell ${weapon.name} for $${cost}?`;
                     let sellAction = () => {
@@ -193,7 +193,10 @@ class ShopHandler {
         let buyButton = new Button(buttonLocation.x, buttonLocation.y, buttonText);
 
         let buttonAction = () => {
-            if (upgrade) upgradeOrWeapon.weapon.ApplyUpgradeByIndex(upgradeOrWeapon.upgradeIndex);
+            if (upgrade) {
+                upgradeOrWeapon.weapon.ApplyUpgradeByIndex(upgradeOrWeapon.upgradeIndex);
+                upgradeOrWeapon.weapon.level++;
+            }
             if (weapon) {
                 weaponHandler.AddWeapon(weapon);
             }

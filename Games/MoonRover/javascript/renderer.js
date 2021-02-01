@@ -53,6 +53,11 @@ class Renderer {
 
     HorizontalLine(y) {
         if (player.y > y) y -= 32;
+        else {
+            ctx.fillStyle = "#5d6a6d";
+            let mappedY = renderer.MapY(y+32);
+            ctx.fillRect(0,mappedY,canvas.width,canvas.height);
+        }
         let image = document.getElementById("tileset-01");
         let tileSize = renderer.MapR(32);
         for (let x = -32; x < levelHandler.room.width; x += 32) {

@@ -114,7 +114,7 @@ class UIHandler {
     }
 
 
-    InitializeWeaponBar(x, ys, w, h) {
+    InitializeMainUI(x, ys, w, h) {
         if (this.initialized) return;
         this.initialized = true;
 
@@ -125,6 +125,12 @@ class UIHandler {
             button.onClick = weaponHandler.GetWeaponSelectHandler(i);
             this.elements.push(button);
         }
+
+        let pauseButton = new Button(10, 10, "");
+        pauseButton.width = 180;
+        pauseButton.height = 120;
+        pauseButton.onClick = pauseHandler.onPauseButtonPressed;
+        this.elements.push(pauseButton)
     }
 
     DrawSideBar() {
@@ -154,7 +160,7 @@ class UIHandler {
             this.DrawWeaponButton(weaponButtonX, weaponButtonYs[i], weaponButtonWidth, weaponButtonHeight, weapon);
         }
 
-        this.InitializeWeaponBar(weaponButtonX, weaponButtonYs, weaponButtonWidth, weaponButtonHeight);
+        this.InitializeMainUI(weaponButtonX, weaponButtonYs, weaponButtonWidth, weaponButtonHeight);
         this.DrawHP(margin, barHeight - hpHeight - margin, contentWidth, hpHeight);
     }
 

@@ -3,6 +3,7 @@ class Weapon {
     // weapon stats
     name = "Base Weapon";
     fireSound = "pew-01";
+    level = 1;
     kickbackPower = 4;
     pelletType = PlayerBullet;
     pelletCount = 1;

@@ -71,19 +71,23 @@ class AudioHandler {
     }
 
     GetMusicVolume() {
+        let ret = 0;
         if (audioHandler.gainNodeMusic) {
-            return audioHandler.gainNodeMusic.gain.value * audioHandler.volumeScale;
+            ret = audioHandler.gainNodeMusic.gain.value * audioHandler.volumeScale;
         } else {
-            return audioHandler.initialMusicVolume * audioHandler.volumeScale;
+            ret = audioHandler.initialMusicVolume * audioHandler.volumeScale;
         }
+        return +(ret.toFixed(2));
     }
 
     GetSfxVolume() {
+        let ret = 0;
         if (audioHandler.gainNodeSfx) {
-            return audioHandler.gainNodeSfx.gain.value * audioHandler.volumeScale;
+            ret = audioHandler.gainNodeSfx.gain.value * audioHandler.volumeScale;
         } else {
-            return audioHandler.initialSfxVolume * audioHandler.volumeScale;
+            ret = audioHandler.initialSfxVolume * audioHandler.volumeScale;
         }
+        return +(ret.toFixed(2));
     }
 
     SetMusicVolume(vol) {

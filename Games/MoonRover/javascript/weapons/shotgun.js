@@ -1,5 +1,8 @@
 class WeaponShotgun extends Weapon {
-    name = "Shotgun";
+    name = "The Blunderbuss";
+    flavor = "Fires multiple pellets, but in a wide area."
+    fireSound = "pow-01";
+    cost = 25;
     initialUpgrades = [
         Upgrade.PelletsChange(0, 2),
     ];

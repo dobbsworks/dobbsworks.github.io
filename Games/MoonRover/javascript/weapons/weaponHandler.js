@@ -1,7 +1,6 @@
 class WeaponHandler {
     inventory = [
-        new WeaponShotgun(),
-        new WeaponShotgun(),
+        new WeaponPeashooter(),
         new WeaponTest(),
     ];
 

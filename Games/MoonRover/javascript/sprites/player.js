@@ -55,7 +55,7 @@ class Player extends Sprite {
                         }, 1000)
                     } else {
                         this.hurtTimer = 60;
-                        audioHandler.PlaySound("pow-01");
+                        audioHandler.PlaySound("pow-03");
                     }
                 }
                 isBounced = true;

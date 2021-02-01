@@ -60,7 +60,7 @@ class LevelHandler {
 
     GetCorridor() {
         this.isArena = false;
-        return new RoomGenerator().CreateCorridor(10000, 1500);
+        return new RoomGenerator().CreateCorridor(10000, 700);
     }
 
     GetChasm() {
