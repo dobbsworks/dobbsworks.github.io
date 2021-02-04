@@ -182,6 +182,7 @@ function LoadCommands() {
 		AliasCommand("reward", "rewards"),
 		AliasCommand("pos", "position"),
 		AliasCommand("sounds", "soundlist"),
+		AliasCommand("sfx", "soundlist"),
 		AliasCommand("givepoints", "give"),
 		AliasCommand("givetokens", "give"),
 	];
