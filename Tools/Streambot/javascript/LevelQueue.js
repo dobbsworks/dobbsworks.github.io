@@ -141,6 +141,12 @@ function CommandList(user, args) {
 	if (unlistedCount > 0) {
 		ret += " and " + unlistedCount + " more.";
 	}
+	if (levelsToList.length === 0) {
+		ret = "No levels queued. ";
+		if (!isQueueOpen) {
+			ret += "Queue is closed.";
+		}
+	}
 	return ret;
 }
 

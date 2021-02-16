@@ -58,6 +58,12 @@ function CommandGivePoints(user, args) {
             return {success: false, message: `${pointValue} is not a number. Usage: !give @user num`}
         } 
     }
+    if (pointValue < 0) {
+        return {success: false, message: `Nice try.`}
+    }
+    if (pointValue % 1) {
+        return {success: false, message: `Integers please.`}
+    }
     let sourceUsername = user.username;
     let sourcePoints = pointHandler.getPoints(sourceUsername);
     let text = pointHandler.formatValue(pointValue);

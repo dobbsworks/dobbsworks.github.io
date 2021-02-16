@@ -37,6 +37,13 @@ function ProcessChatMessage(messageEl, isReward) {
 	
 	LogChatMessage({timestamp: new Date(), text: stitchedText, username: username, reward: isReward ? selectedReward : ""});
 
+	// adding kryptonite_bot, but if it ever goes rogue here's an alternate:
+	// if (username.toLowerCase().startsWith("manofsteel")) {
+	// 	setTimeout(() => {
+	// 		WriteMessageRaw("/ban " + username);
+	// 	},100)
+	// }
+
 	// Need to mark as present BEFORE processing command
 	MarkUserAsPresent(username);
 	

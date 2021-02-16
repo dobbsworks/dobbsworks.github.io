@@ -336,6 +336,12 @@
 	function determineWinner() {
 		let winner = getSelectedItem();
 		winnerIndex = items.indexOf(winner);
+
+		if (winnerIndex < 0) {
+			console.error("Invalid winner index")
+			console.log(JSON.stringify(items))
+		}
+
 		setTimeout(() => { SendWinner(winner) }, 6000);
 
 		// TEMPORARILY REMOVING WINDOW CLOSING
