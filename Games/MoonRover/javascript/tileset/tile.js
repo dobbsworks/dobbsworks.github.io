@@ -15,6 +15,4 @@ class Tile {
             this.x, this.y, this.width, this.height,
             targetX, targetY, dw, dh);
     }
-
-    //TODO recolor
 }

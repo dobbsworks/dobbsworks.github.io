@@ -67,6 +67,14 @@ class BossCoreBase extends BossPartBase {
             child.isCoreActive = false;
         }
     }
+
+    GetFrameData() {
+        return {
+            tileset: tileset.redcore,
+            frame: this.AnimateByFrame(tileset.redcore),
+            xFlip: this.direction > 0,
+        };
+    }
 }
 
 

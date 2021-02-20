@@ -1,0 +1,45 @@
+<html>
+
+<head>
+    <title>Moon Rover Studio</title>
+</head>
+<link rel="stylesheet" href="content/css/studio.css">
+<script src="javascript/studio.js"></script>
+
+<body>
+
+    <div id="sidebar">
+        <hr />
+        Variables that affect the animation:
+        <div id="varsContainer"></div>
+        <hr />
+        <div id="treeContainer"></div>
+        <hr />
+        <div id="exportDataContainer">
+            Data export appears here
+            <textarea readonly disabled id="exportData"></textarea>
+            <button onclick="CopyExportToClipboard()">Copy to clipboard</button>
+        </div>
+        <hr/>
+        <div id="importDataContainer">
+            Paste below to import data
+            <textarea id="importData"></textarea>
+            <button onclick="ImportData()">Import</button>
+        </div>
+        <hr/>
+        <button onclick="ExportFrames()">Export Frames</button>
+    </div>
+
+    <div id="topBar">
+
+    </div>
+    <canvas id="canvas" width="500" height="400"></canvas>
+    <canvas id="resizeCanvas" width="500" height="400"></canvas>
+    <canvas id="overlayCanvas" width="500" height="400"></canvas>
+    <canvas id="exportCanvas" width="500" height="24"></canvas>
+
+    <image id="enemy-parts-01" src="./content/images/enemy-parts-01.png?a=14"></image>
+
+</body>
+
+</html>

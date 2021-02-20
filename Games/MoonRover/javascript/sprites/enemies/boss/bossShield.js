@@ -26,6 +26,14 @@ class BossShield extends BossPartBase {
     OnDeath() {
         if (this.projection) this.projection.isActive = false;
     }
+
+    GetFrameData() {
+        return {
+            tileset: tileset.limecore,
+            frame: 0,
+            xFlip: this.direction > 0,
+        };
+    }
 }
 
 class BossShieldProjection extends Enemy {

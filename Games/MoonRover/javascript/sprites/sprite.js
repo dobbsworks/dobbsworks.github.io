@@ -26,7 +26,7 @@ class Sprite {
 
         if (this.GetFrameData) {
             let frameData = this.GetFrameData();
-            let frame = tileset.orangeBot.tiles[frameData.frame];
+            let frame = frameData.tileset.tiles[frameData.frame];
             renderer.Tile(frame, this.x, this.y, frameData.xFlip);
         } else {
             ctx.fillStyle = this.color;

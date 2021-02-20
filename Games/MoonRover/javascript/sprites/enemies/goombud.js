@@ -20,7 +20,8 @@ class EnemyGoombud extends Enemy {
 
     GetFrameData() {
         return {
-            frame: this.AnimateByFrame(tileset.orangeBot),
+            tileset: tileset.orangebot,
+            frame: this.AnimateByFrame(tileset.orangebot),
             xFlip: this.direction > 0,
         };
     }

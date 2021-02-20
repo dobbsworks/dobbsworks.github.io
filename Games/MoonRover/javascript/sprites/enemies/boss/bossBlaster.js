@@ -23,4 +23,12 @@ class BossBlaster extends BossPartBase {
         bullet.dx = bulletSpeed * Math.cos(playerDirection);
         bullet.dy = bulletSpeed * Math.sin(playerDirection);
     }
+
+    GetFrameData() {
+        return {
+            tileset: tileset.magentacore,
+            frame: 0,
+            xFlip: this.direction > 0,
+        };
+    }
 }

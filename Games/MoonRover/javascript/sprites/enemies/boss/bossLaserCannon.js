@@ -45,6 +45,14 @@ class BossLaserCannon extends BossPartBase {
         ctx.strokeStyle = `rgba(0,192,255,${chargeAmount})`;
         renderer.Line(this.x, this.y, distantX, distantY);
     }
+
+    GetFrameData() {
+        return {
+            tileset: tileset.purplecore,
+            frame: 0,
+            xFlip: this.direction > 0,
+        };
+    }
 }
 
 class EnemyLaserCannonBullet extends EnemyBullet {

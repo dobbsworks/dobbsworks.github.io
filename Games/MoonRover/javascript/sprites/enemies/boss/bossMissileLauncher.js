@@ -18,6 +18,14 @@ class BossMissileLauncher extends BossPartBase {
         sprites.push(bullet);
         
     }
+
+    GetFrameData() {
+        return {
+            tileset: tileset.yellowcore,
+            frame: 0,
+            xFlip: this.direction > 0,
+        };
+    }
 }
 
 class BossMissile extends Enemy {
