@@ -21,7 +21,7 @@ class BossMissileLauncher extends BossPartBase {
 
     GetFrameData() {
         return {
-            tileset: tileset.yellowcore,
+            tileset: tileset.purplecore,
             frame: 0,
             xFlip: this.direction > 0,
         };

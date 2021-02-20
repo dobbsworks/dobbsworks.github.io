@@ -300,6 +300,7 @@ class ShopHandler {
         shopHandler.isInShop = false;
         shopHandler.mogFace = shopHandler.mogFaces.happy;
         uiHandler.Restore();
+        levelHandler.LoadZone();
         audioHandler.SetBackgroundMusic(levelHandler.currentMusic);
     }
 

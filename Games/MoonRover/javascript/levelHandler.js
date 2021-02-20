@@ -8,6 +8,17 @@ class LevelHandler {
     isArena = false;
     room = null;
     currentMusic = "music-level-1"
+    levelIntroTimer = 0;
+    levelOutroTimer = 0;
+
+
+    levels = [
+        {name: "Impact Crater", color: "#212"},
+        {name: "Mining Site", color: "#343"},
+        {name: "Biodome", color: "#121"},
+        {name: "Transit Tube", color: "#112"},
+        {name: "Scrap Site", color: "#211"},
+    ]
 
     Update() {
         if (this.isArena) {
@@ -19,7 +30,64 @@ class LevelHandler {
         }
     }
 
+    DrawSwoops(ratio) {
+        let swoopColor = this.levels[this.currentLevel-1].color;
+        //if (shopHandler.isInShop) swoopColor = "#020a2e";
+        ratio = Math.max(0, Math.min(1, ratio));
+        let swoopyCount = 5;
+        let swoopyHeight = canvas.height / swoopyCount;
+        for (let swoopyIndex = 0; swoopyIndex < swoopyCount; swoopyIndex++) {
+            ctx.fillStyle = swoopColor;
+            let dir = swoopyIndex % 2 ? -1 : 1;
+            let x = canvas.width * (ratio**4) * dir;
+            ctx.fillRect(x, swoopyHeight * swoopyIndex, canvas.width, swoopyHeight + 1)
+        }
+    }
+
+    DrawTitle(ratio, text) {
+        ratio = Math.max(0, Math.min(1, ratio));
+        ctx.font = "italic 46px Arial";
+        ctx.textAlign = "center";
+        let opacity = Math.floor((1 - ratio) * 15).toString("16");
+        ctx.fillStyle = "#FFF" + opacity;
+        ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+    }
+
+    DrawLevelTransition() {
+        if (this.levelIntroTimer <= 0 && this.levelOutroTimer <= 0) return;
+
+        if (this.levelIntroTimer > 0) {
+            let ratio = 1 - this.levelIntroTimer / 60;
+            this.DrawSwoops(ratio);
+            this.DrawTitle(ratio, this.GetLevelName());
+            this.levelIntroTimer--;
+        }
+        if (this.levelOutroTimer > 0) {
+            let ratio = this.levelOutroTimer / 60;
+            this.DrawSwoops(ratio);
+            this.levelOutroTimer--;
+        }
+    }
+
+    ExitLevel() {
+        //this.levelOutroTimer = 90;
+        this.levelIntroTimer = 90;
+    }
+
+    GetLevelName() {
+        if (shopHandler.isInShop) return "";
+        let baseName = this.levels[this.currentLevel-1].name;
+        let ret = baseName + " " + this.currentZone;
+        return ret;
+    }
+
+    EnterLevel() {
+        this.levelIntroTimer = 90;
+    }
+
     LoadZone() {
+        this.EnterLevel(); 
+
         // resets all sprites, walls, etc.
 
         this.currentZone++;
@@ -43,7 +111,7 @@ class LevelHandler {
             this.room = this.GetChasm();
         } else if (this.currentZone === 5) {
             this.room = this.GetLair();
-        } 
+        }
 
         borders = this.room.borders;
         let enemies = this.room.sprites;
@@ -65,7 +133,7 @@ class LevelHandler {
 
     GetChasm() {
         this.isArena = false;
-        return new RoomGenerator().CreateCorridor(1500, 10000);
+        return new RoomGenerator().CreateCorridor(1500, 7000);
     }
 
     GetArena() {

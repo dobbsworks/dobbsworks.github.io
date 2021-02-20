@@ -180,8 +180,9 @@ class UIHandler {
         ctx.drawImage(portraitImage, wiggleX+5,wiggleY+5, w/2, h/2, x,y, w,h);
         ctx.strokeRect(x,y, w,h);
 
-        if (player.hurtTimer > 0) {
+        if (player.hurtTimer > 0 || player.hp <= 1) {
             let opacity = Math.min(0.5, player.hurtTimer/60);
+            if (player.hp <= 1) opacity = Math.max(0.5, Math.min(Math.sin(new Date() / 100), 0.8));
             ctx.fillStyle = `rgba(255,0,0,${opacity.toFixed(2)})`;
             ctx.globalCompositeOperation = "color";
             ctx.fillRect(x,y, w,h);

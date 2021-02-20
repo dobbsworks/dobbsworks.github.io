@@ -8,7 +8,7 @@ class AudioHandler {
     lowPassNode;
     gainNodeMusic;
     gainNodeSfx;
-    initialMusicVolume = 0.8;
+    initialMusicVolume = 0.0;
     initialSfxVolume = 1;
     volumeScale = 5;
 

@@ -77,6 +77,9 @@ function Draw() {
     ctx.strokeStyle = "white";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    let bgImage = document.getElementById("bg0" + levelHandler.currentLevel);
+    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+
     if (!shopHandler.isInShop && !pauseHandler.isPaused) {
         renderer.Update();
         for (let border of borders) {
@@ -87,4 +90,5 @@ function Draw() {
         }
     }
     uiHandler.Draw();
+    levelHandler.DrawLevelTransition();
 }

@@ -3,7 +3,7 @@ class WeaponTest extends Weapon {
     flavor = "The rise and fall of Rover"
     initialUpgrades = [
         Upgrade.PelletsChange(0, 127),
-        Upgrade.FireRateScale(3, 0.2),
+        Upgrade.FireRateScale(3, 3),
         Upgrade.ShotsScale(3, 99),
         Upgrade.ReloadSpeedScale(0, 99),
         Upgrade.DamageScale(0, 99),
