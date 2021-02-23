@@ -16,8 +16,6 @@
 
 		body {
 			background-color: #92cddb;
-			/* background-image: url("https://dobbsworks.github.io/Tools/Streambot/images/wheel-background.png"); */
-			/* background-size: cover; */
 		}
 
 		.frameContainer {
@@ -83,6 +81,7 @@
 		{ "title": "Shananigan Alert", "game": "Super Mario Maker 2", "duration": 28, "clippedBy": "Hudson_smm", "slug": "GoodAbrasiveFlyAMPEnergyCherry" },
 		{ "title": "nyoom", "game": "Celeste", "duration": 18, "clippedBy": "dobbsworks", "slug": "HandsomeHungryPlumDendiFace" },
 		{ "title": "Ferocious Sanctuary", "game": "Celeste", "duration": 27, "clippedBy": "dobbsworks", "slug": "KitschyStrangeLorisKappa" },
+		{ "title": "Oh baby, a triple", "game": "Team Fortress 2", "duration": 20, "clippedBy": "dobbsworks", "slug": "PlumpSaltyEchidnaAMPEnergy" },
 	];
 
 
@@ -91,7 +90,11 @@
 		var clipFrame = document.getElementById("clipFrame");
 		var clipTitle = document.getElementById("clipTitle");
 		clipFrame.src = urlPrefix + clip.slug + urlSuffix;
-		clipTitle.innerHTML = clip.title + "<br/>Clipped by: " + clip.clippedBy;
+		if (clip.clippedBy === "dobbsworks") {
+			clipTitle.innerHTML = clip.title
+		} else {
+			clipTitle.innerHTML = clip.title + "<br/>Clipped by: " + clip.clippedBy;
+		}
 		setTimeout(() => { clipFrame.style.opacity = "1" }, 500);
 
 		setTimeout(() => { clipFrame.style.opacity = "0.1" }, 1000 * clip.duration + 500);
