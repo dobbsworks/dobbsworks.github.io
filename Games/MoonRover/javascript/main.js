@@ -20,6 +20,14 @@ var deathCount = 0;
 setTimeout(Initialize, 100);
 
 function Initialize() {
+    let allImages = document.getElementsByTagName("image");
+    for (let image of allImages) {
+        if (image.width === 0) {
+            setTimeout(Initialize, 100);
+            return;
+        }
+    }
+
     levelHandler = new LevelHandler();
     weaponHandler = new WeaponHandler();
     uiHandler = new UIHandler();
@@ -39,6 +47,7 @@ function Initialize() {
     setInterval(MainLoop, 1000 / 60);
     mainMenuHandler.StartMainMenu();
 }
+
 let p = null;
 var performanceData = [];
 function MainLoop() {
