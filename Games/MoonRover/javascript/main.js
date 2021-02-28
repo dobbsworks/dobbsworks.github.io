@@ -23,6 +23,7 @@ function Initialize() {
     let allImages = document.getElementsByTagName("img");
     for (let image of allImages) {
         if (image.width === 0) {
+            console.log("image not loaded, trying again")
             setTimeout(Initialize, 100);
             return;
         }
