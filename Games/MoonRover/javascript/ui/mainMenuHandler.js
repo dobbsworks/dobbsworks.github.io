@@ -69,6 +69,10 @@ class MainMenuHandler {
 
         let titleImage = document.getElementById("title");
         let title = new UiImage(titleImage, canvas.width / 2 - titleImage.width / 2, 30);
+
+        let div = document.createElement("div");
+        div.innerHTML = (canvas.width / 2).toString() + " " + (titleImage.width / 2).toString();
+        document.body.appendChild(div)
         this.logo = title;
 
         let versionNum = new Text(canvas.width - 10, canvas.height - 10, "v0.1");
@@ -187,7 +191,7 @@ class MainMenuHandler {
             mainMenuHandler.StartGame();
         }
 
-        let newElements = [panel, title, portraitBg, imageEl, textPanel, name, text, backButton, playButton];
+        let newElements = [portraitBg, imageEl, textPanel, name, text, backButton, playButton];
         newElements.forEach(a => a.y += canvas.height);
         uiHandler.elements.push(...newElements);
     }
