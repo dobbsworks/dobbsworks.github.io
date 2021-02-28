@@ -26,17 +26,23 @@ class UIHandler {
     Update() {
         let mouseOverAnyButton = false;
         for (let button of this.getButtons()) {
-            if (button.isMouseOver() && !button.isDisabled) {
-                mouseOverAnyButton = true;
-                if (isMouseClicked()) {
-                    if (button instanceof Toggle) {
-                        button.Toggle();
-                    } else {
-                        button.onClick();
-                        audioHandler.PlaySound("beep-02");
+            if (button.isMouseOver()) {
+                if (button.isDisabled) {
+                    if (isMouseClicked()) {
+                        audioHandler.PlaySound("beep-03");
                     }
-                    isMouseDown = false;
-                    isMouseChanged = false;
+                } else {
+                    mouseOverAnyButton = true;
+                    if (isMouseClicked()) {
+                        if (button instanceof Toggle) {
+                            button.Toggle();
+                        } else {
+                            button.onClick();
+                            audioHandler.PlaySound("beep-02");
+                        }
+                        isMouseDown = false;
+                        isMouseChanged = false;
+                    }
                 }
             }
         }
@@ -60,8 +66,6 @@ class UIHandler {
         let drawMsPerFrame = performanceData.map(x => x.draw).reduce((a, b) => a + b, 0) / performanceData.length;
         let updateMsPerFrame = performanceData.map(x => x.update).reduce((a, b) => a + b, 0) / performanceData.length;
         //let fps = Math.floor(1000 / msPerFrame) * 1;
-
-
 
         if (shopHandler.isInShop) {
             shopHandler.DrawShop();

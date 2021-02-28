@@ -56,8 +56,7 @@ class MainMenuHandler {
     ];
 
 
-
-    StartMainMenu() {
+    InitializeMenu() {
         for (let i = 0; i < 100; i++) {
             this.starsX.push(Math.floor(Math.random() * canvas.width));
             this.starsY.push(Math.floor(Math.random() * canvas.height));
@@ -75,6 +74,23 @@ class MainMenuHandler {
         versionNum.textAlign = "right";
         versionNum.fontSize = 12;
 
+        let hiddenStartButton = new Button(0, 0, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nClick or tap");
+        hiddenStartButton.colorPrimary = "#0000";
+        hiddenStartButton.colorSecondary = "#0000";
+        hiddenStartButton.colorHighlight = "#0000";
+        hiddenStartButton.width = canvas.width;
+        hiddenStartButton.height = canvas.height;
+        hiddenStartButton.onClick = () => {
+            uiHandler.elements = uiHandler.elements.filter(x => x !== hiddenStartButton);
+            mainMenuHandler.StartMainMenu();
+        }
+
+        let newElements = [title, versionNum, hiddenStartButton];
+        uiHandler.elements.push(...newElements);
+    }
+
+    StartMainMenu() {
+
         let playButton = new Button(275, 350, "Play");
         playButton.height = 50;
         playButton.onClick = mainMenuHandler.OnClickPlay;
@@ -83,8 +99,7 @@ class MainMenuHandler {
         creditsButton.height = 50;
         creditsButton.onClick = mainMenuHandler.OnClickCredits;
 
-        let newElements = [title, versionNum, playButton, creditsButton];
-        uiHandler.elements.push(...newElements);
+        uiHandler.elements.push(playButton, creditsButton);
     }
 
     OnClickPlay() {

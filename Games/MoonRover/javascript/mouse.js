@@ -9,6 +9,7 @@ function InitMouseHandlers() {
     canvas.addEventListener("mousedown", OnMouseDown, false);
     canvas.addEventListener("mouseup", OnMouseUp, false);
     canvas.addEventListener("mousemove", OnMouseMove, false);
+    canvas.addEventListener("mouseout", OnMouseOut, false);
     canvas.addEventListener("touchstart", OnTouchStart, false);
     canvas.addEventListener("touchend", OnTouchEnd, false);
     canvas.addEventListener("touchmove", OnTouchMove, false);
@@ -42,6 +43,12 @@ function OnMouseUp(e) {
 function OnMouseMove(e) {
     mouseX = e.layerX;
     mouseY = e.layerY;
+}
+
+function OnMouseOut(e) {
+    OnMouseMove(e);
+    isMouseChanged = isMouseDown;
+    isMouseDown = false;
 }
 
 function OnMouseScroll(e) {

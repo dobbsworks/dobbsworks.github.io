@@ -49,7 +49,7 @@ function Initialize() {
     InitKeyHandlers();
     InitializeTilesets();
     setInterval(MainLoop, 1000 / 60);
-    mainMenuHandler.StartMainMenu();
+    mainMenuHandler.InitializeMenu();
 }
 
 let p = null;
