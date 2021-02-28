@@ -5,6 +5,7 @@ class Weapon {
     fireSound = "pew-01";
     level = 1;
     kickbackPower = 4;
+    knockbackPower = 4;
     pelletType = PlayerBullet;
     pelletCount = 1;
     pelletDamage = 1;
@@ -104,6 +105,7 @@ class Weapon {
         bullet.dx += player.dx;
         bullet.dy += player.dy;
         bullet.damage = this.pelletDamage;
+        bullet.knockback = this.knockbackPower;
         sprites.push(bullet);
     }
 

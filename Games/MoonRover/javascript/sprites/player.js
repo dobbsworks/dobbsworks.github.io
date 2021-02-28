@@ -88,6 +88,7 @@ class Player extends Sprite {
         this.shake += jerk;
         if (isBounced) this.shake += 20;
         if (this.shake > 0) this.shake--;
+        if (this.shake > 100) this.shake = 100;
     }
 
 }

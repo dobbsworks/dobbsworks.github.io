@@ -10,6 +10,7 @@ var uiHandler;
 var shopHandler;
 var pauseHandler;
 var audioHandler;
+var mainMenuHandler;
 
 var loot = 0;
 var killCount = 0;
@@ -25,9 +26,10 @@ function Initialize() {
     shopHandler = new ShopHandler();
     pauseHandler = new PauseHandler();
     audioHandler = new AudioHandler();
+    mainMenuHandler = new MainMenuHandler();
 
     audioHandler.Initialize();
-    levelHandler.LoadZone();
+    //levelHandler.LoadZone();
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false;
@@ -35,6 +37,7 @@ function Initialize() {
     InitKeyHandlers();
     InitializeTilesets();
     setInterval(MainLoop, 1000 / 60);
+    mainMenuHandler.StartMainMenu();
 }
 let p = null;
 var performanceData = [];
@@ -77,7 +80,8 @@ function Draw() {
     ctx.strokeStyle = "white";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    let bgImage = document.getElementById("bg0" + levelHandler.currentLevel);
+    let imageId = "bg0" + levelHandler.currentLevel;
+    let bgImage = document.getElementById(imageId);
     ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
 
     if (!shopHandler.isInShop && !pauseHandler.isPaused) {
@@ -89,6 +93,7 @@ function Draw() {
             sprite.Draw();
         }
     }
+    mainMenuHandler.DrawMenuBg();
     uiHandler.Draw();
     levelHandler.DrawLevelTransition();
 }

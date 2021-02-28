@@ -346,6 +346,9 @@ function CreateChatLogWindow() {
 		w.document.writeln("<tr><td>" + (new Date(m.timestamp)).toLocaleDateString() + " " + 
 			(new Date(m.timestamp)).toLocaleTimeString() + 
 			"</td><td>" + m.username + "</td><td>" + m.reward + "</td><td>" + m.text + "</td></tr>");
+			
+	// snapshot of point totals		
+	w.document.writeln("<tr><td>" + localStorage.points + "</td></tr>");
 	w.document.writeln("</table>");
 	StorageHandler.log.clear();
 }

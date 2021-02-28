@@ -3,7 +3,7 @@ class LevelHandler {
     // [-----------------level----------------]
     // [--zone--][--zone--][--zone--][--boss--]
 
-    currentLevel = 1;
+    currentLevel = 0;
     currentZone = 0;
     isArena = false;
     room = null;
@@ -86,6 +86,9 @@ class LevelHandler {
     }
 
     LoadZone() {
+        if (this.currentLevel === 0) {
+            this.currentLevel = 1;
+        }
         this.EnterLevel(); 
 
         // resets all sprites, walls, etc.

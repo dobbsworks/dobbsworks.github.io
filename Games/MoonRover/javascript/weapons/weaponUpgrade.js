@@ -69,6 +69,11 @@ class Upgrade {
             shortDescription: "Increase kickback",
             statDescription: "kickback",
         },
+        knockbackPower: {
+            goodDirection: +1,
+            shortDescription: "Increase knockback",
+            statDescription: "knockback",
+        },
         clipSize: {
             goodDirection: +1,
             shortDescription: "More mid-air shots",
@@ -115,6 +120,17 @@ class Upgrade {
             {
                 prop: "kickbackPower",
                 delta: kickbackRatio,
+                type: Upgrade.Type.scale
+            }
+        ]);
+        return upgrade;
+    }
+
+    static KnockbackScale(cost, knockbackRatio) {
+        let upgrade = new Upgrade(cost, [
+            {
+                prop: "knockbackPower",
+                delta: knockbackRatio,
                 type: Upgrade.Type.scale
             }
         ]);

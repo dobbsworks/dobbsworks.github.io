@@ -60,24 +60,19 @@ class UIHandler {
         let updateMsPerFrame = performanceData.map(x => x.update).reduce((a, b) => a + b, 0) / performanceData.length;
         //let fps = Math.floor(1000 / msPerFrame) * 1;
 
-        ctx.fillStyle = "#00000077";
-        ctx.fillRect(240,0,430,31);
-        ctx.font = "20px Arial";
-        ctx.textAlign = "left";
-        ctx.fillStyle = "white";
-        ctx.fillText("Loot: " + loot, 250, 21);
-        ctx.fillText("Kills: " + killCount, 350, 21);
-        ctx.fillText("Deaths: " + deathCount, 450, 21);
-        ctx.fillText("Level: " + levelHandler.GetLevelNumber(), 570, 21);
 
 
         if (shopHandler.isInShop) {
             shopHandler.DrawShop();
             this.DrawSideBar();
+            this.DrawLevelInfo();
         } else if (pauseHandler.isPaused) {
+            this.DrawLevelInfo();
+        } else if (mainMenuHandler.isOnMainMenu) {
 
         } else {
             this.DrawSideBar();
+            this.DrawLevelInfo();
         }
 
         for (let el of this.elements) {
@@ -93,6 +88,18 @@ class UIHandler {
                 {text: "ms/ui", value: uiDrawTime},
             ])
         }
+    }
+
+    DrawLevelInfo() {
+        ctx.fillStyle = "#00000077";
+        ctx.fillRect(240,0,430,31);
+        ctx.font = "20px Arial";
+        ctx.textAlign = "left";
+        ctx.fillStyle = "white";
+        ctx.fillText("Loot: " + loot, 250, 21);
+        ctx.fillText("Kills: " + killCount, 350, 21);
+        ctx.fillText("Deaths: " + deathCount, 450, 21);
+        ctx.fillText("Level: " + levelHandler.GetLevelNumber(), 570, 21);
     }
 
     FormatFPS(x) {

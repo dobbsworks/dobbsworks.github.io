@@ -38,8 +38,42 @@ class ShopHandler {
     mogFace = this.mogFaces.logo;
     buyButtons = [];
     sellButton = null;
+    repairButton = null;
+    chatButton = null;
     exitButton = null;
 
+    repairCost = 5;
+
+    conversations = [
+        "Funny story, my chasis is made from a repurposed refridgerator. When I first found out I was sort of mad about it, but I've [speed:0.2][face:champ]cooled[sound:mog-happy] off [speed]since then[face:blink]. ",
+        "What's up with these robots, huh? If a nice sentient vending machine shows up to offer you wares, [face:sad]you [speed:0.5]don't go around[speed] shooting lasers at it. [face:blink]That's not the way to get invited to parties. ",
+        "So… biological creature, eh? That's cool, that's cool. So you breathe and stuff then? Honestly I don't see how you put up with it, seems like too much work if you ask me. ",
+        "[face:owo]I like your capsule! [face:blink]It looks pretty cozy. [face:happy]I'd ask to come in for a tour, but it appears I'd only be able to get 4% of my chasis inside. [face:sad]Also your breatheable air might vent out, so there's that. ",
+        "The moon is a great place to work in sales. [sound:mog-happy][face:champ]It's true! [face:happy]The robots don't mind the cold-calling, and the humans are too polite to turn down my outrageous deals. Speaking of, you better act fast; these prices won't last long. ",
+        "Most of the robots up here were built on-site, but not me! I'm one of a kind. I was launched up here with some excavation equipment and some big liquid tanks. I was strapped to the side of the shuttle because there wasn't enough room inside. It was a toasty journey! ",
+        "Technically I wasn't supposed to get shipped up here. Drink and snack distribution isn't really my cup of tea, yeah? I had to take some initiative and find my own way up. What can I say, I'm a go-getter! ",
+        "The robots up here started wigging out a few days ago. It's been weird. Jerry over there won't talk to me anymore, just wants to pace back[pause:30] and[pause:30] forth. And Mike's started hovering ominously. Just goes to show, you can't really be sure you know someone until unauthorized radio waves start pouring out from the center of the colony. ",
+        "I'm not completely sure if my current wares are up to date the colony's safetly standards. I turned off my internal receiver pretty soon after I got here. I used to listen to a nice local station back on Earth, but up here it's just daily updates and a lot of cosmic radiation. Boring! ",
+        "A lot of robots around here don't have much control over their subsystems. I'm pretty special, though, gotta say. I've been carefully coded with complete control over everything going on this perfect, rectangular body! My source code is working exactly as written. Whether that's the intended design is another question… ",
+        "I've got a small patch of moss growing near my exhaust. It must be feeding off some pockets of gas at some of my stops. [face:champ]It makes for a great pet![face:happy] Low maintenance suits me just fine. ",
+        "I'm glad you're here, it's been a while since I've had any customers. Mining gear doesn't exactly fly off the shelves, you know? Especially when your usual buyers have all fled, and the only entities around for miles are robots that are ALREADY equipped. Maybe I should take out an ad or something. ",
+        "So the excavation site, I think it was going to be the start of some new construction or something. It's on hold now, probably a union thing. Or the deadly robots. Either way, it's a real shame. I was raking in some serious sales last week. Gotta figure out how to get my numbers back up. ",
+        "The other day I was poking at some of my internals and found a memory error. [face:champ]It turns out I can run DOOM! [face:sad][sound:mog-sad]Can't play it though, no hands, as you can see. [face]I might've overwritten something, but I'm sure I'd remember if it was something important. ",
+        "Don't worry, I'm not on solar power, so I'm open for business 24/7! [face:champ][sound:mog-happy]I'm on 100% nuclear, baby! [face]No shielding either, that burned up on the trip here. Sure, I flip an occasional bit, but that's not likely[face:logo] [face]to[face:dead] ca[face]use[face:logo] an[face]y er[pause:10]r[pause:20]o[pause:30]r[pause:40]s[speed:5], I've never felt better in my life! Trust me, I think I would know if anything weird was going on. ",
+        "I gotta say, I love it up here on the moon! Back on Earth there was this rat that kept trying to gnaw on my wires. [face:hmm]What a jerk! [face]I don't know if you've ever had someone chew on your insides, but it does not [pause:30] feel good. The problem sort of solved itself, though. Guess who can survive leaving Earth's atmosphere at mach 9? [face:dead]Not [pause:20]a [pause:20]rat.[face] ",
+        "That reduced gravitational pull is a real perk of lunar jobsites, let me tell you. Do you have any idea how hard it is for a vending machine to get around in Earth's gravity? Oh I tried some workarounds, believe me. Balancing on a skateboard is great for picking up speed, but when it comes to stopping, well, let's just say there are a few cities that I'm officially not welcome in anymore. ",
+        "You know what figuratively pushes my buttons? Moon dust! It gets [speed:0.4]everywhere[speed]. I'm friends with a few industrial vacuum cleaners back on Earth, I wonder if I could get them to move up here? If I can't get my vents cleaned out sometime soon I'm going to have to resort to desparate measures. ",
+        "There's a little restaurant a few miles up from that big crater you passed. I checked it out just yesterday! The food is really good, but[pause:50] [face:champ][sound:mog-happy]there's just no atmosphere.[face:owo] ",
+        "You know what people don't think about when they're on Earth? Moon rocks everywhere! You can't step outside without tripping over a dozen moon rocks! It's one of the perks I've found about working up here. I found one this morning that looks just like Deep Blue. [speed:0.8][face:blink]He's so dreamy… ",
+        "Look, I think your capsule is nice and all, but it really needs some more [face:champ]character[face]. Have you thought about bumper stickers? A nice \"How's my flying\" or something like that. None of the robots up here have bumper stickers. [face:champ]Except for me![face] I can't apply them though, no hands. ",
+        "Working on the moon has really opened my vision sensors. I feel like Earth was missing so much, and I want to share with it all the wonderful things I've learned to love about the moon. Top of the list: [face:champ]craters.[face] Earth needs more craters! The tricky part is keeping them from turning into lakes, so we'll need a big umbrella or something. Still working on the details. ",
+        "Humans always get so poetic about stars and constellations, but the locations and trajectories of each are already well-documented. I mean, anyone with half-a-core could calculate where everything will be on any given day. I ran a few million years of simulated star paths to see if gets any better, but not really. By the way, do not[pause:50] get attached to Ursa Minor, FYI. ",
+        "The ground here isn't great for plants. It's been way easier to just ship up some good soil and recycle it as needed. Good thing we aren't trying to just coat the entire moon with grass, can you imagine? [face:blink]What a useless plant. [face]Moss is where it's at. ",
+        "I've had a thread running on one of my auxillary processors for days now and I just can't get it to end. I don't even remember what it was doing, it's like having a song stuck in your head and the words aren't quite there. I'm sure it'll work itself out sooner or later, but I'm stuck with it for now. ",
+        "So do you know what the humans are studying up here? [face:sad]Because if it's how to turn perfectly nice mining robots into insensitive jerks, they're doing a great job. [face:owo]Carol stopped returning my calls and Brett won't give me the time of day. [face]Literally! Which is a problem since my internal time clock broke last week. Or maybe it was next month? Yesterday, definitely yesterday. ",
+        "I went into sleep mode face down last night. [face:sad]Big mistake! [face]I woke up with this persistent dead pixel on my screen that just wouldn't quit. It was so distracting that I tripped over another robot and landed face down right on a moon rock! Lo and behold, that just so happened to fix the dead pixel. Maybe I should slam my face against rocks more often! ", 
+    ];
+    currentConversation = "";
 
 
     // menu stack
@@ -71,6 +105,14 @@ class ShopHandler {
             this.InitializeButtons();
             audioHandler.SetBackgroundMusic("music-shop");
         }
+        let convoIndex = Math.floor(this.conversations.length * Math.random());
+        convoIndex = 14;
+        this.currentConversation = this.conversations.splice(convoIndex, 1)[0];
+        if (this.currentConversation) this.currentConversation =
+            this.currentConversation.
+                replace(/\. /g, ".[pause:40] ").
+                replace(/\?/g, "?[pause:50]").
+                replace(/\!/g, "![pause:50]");
     }
 
     GetRandomWeapon() {
@@ -88,15 +130,15 @@ class ShopHandler {
             return indexes.map(i => ({ weapon: w, upgradeIndex: i, upgrade: w.upgrades[i] }));
         });
         let ret = [];
-        for (let i=0; i<num; i++) {
-            let upgrade = availableUpgrades.splice(Math.floor(Math.random() * availableUpgrades.length),1)[0];
+        for (let i = 0; i < num; i++) {
+            let upgrade = availableUpgrades.splice(Math.floor(Math.random() * availableUpgrades.length), 1)[0];
             if (upgrade) ret.push(upgrade);
         }
         return ret;
     }
 
     GetButtonLocations() {
-        return [50, 175, 300].flatMap(y => [225, 400].map(x => ({ x: x, y: y })));
+        return [50, 175, 300, 425].flatMap(y => [225, 400].map(x => ({ x: x, y: y })));
     }
 
     InitializeButtons() {
@@ -108,13 +150,13 @@ class ShopHandler {
         this.buyButtons = [];
 
         // new weapon
-        let weaponButtonlocation = buttonLocations.splice(0,1)[0];
+        let weaponButtonlocation = buttonLocations.splice(0, 1)[0];
         if (availableWeapon) {
             let buyButton = this.GetBuyButton(weaponButtonlocation, availableWeapon,
                 availableWeapon.name,
                 "New weapon",
                 availableWeapon.cost);
-                buyButton.colorPrimary = buyButton.colorPrimaryVariant;
+            buyButton.colorPrimary = buyButton.colorPrimaryVariant;
             this.buyButtons.push(buyButton);
         } else {
             let buyButton = new Button(weaponButtonlocation.x, weaponButtonlocation.y, "Out of stock!\nCheck back soon");
@@ -122,23 +164,39 @@ class ShopHandler {
             this.buyButtons.push(buyButton);
         }
 
-        let sellButtonlocation = buttonLocations.splice(0,1)[0];
+        let sellButtonlocation = buttonLocations.splice(0, 1)[0];
         this.sellButton = new Button(sellButtonlocation.x, sellButtonlocation.y, "Sell Weapons");
         this.sellButton.onClick = this.OnClickSell;
         this.sellButton.colorPrimary = this.sellButton.colorPrimaryVariant;
         this.buyButtons.push(this.sellButton);
 
         // upgrade buttons
-        for (let buttonLocation of buttonLocations) {
+        for (let buttonLocation of buttonLocations.splice(0, 4)) {
             let upgrade = availableUpgrades.pop();
             if (upgrade) {
-                let buyButton = this.GetBuyButton(buttonLocation, upgrade, 
+                let buyButton = this.GetBuyButton(buttonLocation, upgrade,
                     upgrade.weapon.name,
                     upgrade.upgrade.shortDescription,
                     upgrade.upgrade.cost);
                 this.buyButtons.push(buyButton);
             }
         }
+
+        // repair button
+        let repairButtonlocation = buttonLocations.splice(0, 1)[0];
+        this.repairButton = new Button(repairButtonlocation.x, repairButtonlocation.y, "Repair x1\n$" + this.repairCost);
+        this.repairButton.onClick = this.OnClickRepair;
+        this.repairButton.cost = this.repairCost;
+        this.buyButtons.push(this.repairButton);
+
+        // chat button
+        if (this.currentConversation) {
+            let chatButtonlocation = buttonLocations.splice(0, 1)[0];
+            this.chatButton = new Button(chatButtonlocation.x, chatButtonlocation.y, "Let's chat!");
+            this.chatButton.onClick = this.OnClickChat;
+            this.buyButtons.push(this.chatButton);
+        }
+
         shopHandler.RefreshAvailability();
 
         this.exitButton = new Button(canvas.width - 150, 450, "Exit Shop");
@@ -151,15 +209,44 @@ class ShopHandler {
         this.CreateEasterEggButtons();
     }
 
+    OnClickRepair() {
+        player.hp += 1;
+        loot -= this.repairCost;
+        shopHandler.RefreshAvailability();
+        audioHandler.PlaySound("mog-happy");
+    }
+
+    OnClickChat() {
+        shopHandler.mogFace = (shopHandler.mogFaces.happy);
+
+        let buttonLocations = shopHandler.GetButtonLocations();
+        let bgPanel = new Panel(buttonLocations[0].x, buttonLocations[0].y, 325, 250);
+        bgPanel.colorPrimary = "#020a2eCC";
+
+        let chatText = new Text(buttonLocations[0].x + 10, buttonLocations[0].y + 20, shopHandler.currentConversation);
+        chatText.maxWidth = bgPanel.width - 20;
+        chatText.textAlign = "left";
+        chatText.font = "Courier New";
+        chatText.slowReveal = true;
+
+        let backButton = new Button(buttonLocations[5].x, buttonLocations[5].y + 50, "Back");
+        backButton.onClick = () => {
+            shopHandler.ReturnToPreviousMenu();
+            shopHandler.mogFace = (shopHandler.mogFaces.happy);
+        }
+
+        let newElements = [bgPanel, chatText, backButton];
+        shopHandler.MoveToNewMenu(newElements);
+    }
 
     OnClickSell() {
         let buttonLocations = shopHandler.GetButtonLocations();
-        
+
         let sellButtons = [];
-        for (let i=0; i<weaponHandler.inventory.length; i++) {
+        for (let i = 0; i < weaponHandler.inventory.length; i++) {
             let weapon = weaponHandler.inventory[i];
             if (weapon) {
-                let pos = buttonLocations[i+2];
+                let pos = buttonLocations[i + 2];
                 let cost = weapon.GetSellPrice();
                 let button = new Button(pos.x, pos.y, `${weapon.name}\n$${cost}`);
                 button.onClick = () => {
@@ -167,11 +254,11 @@ class ShopHandler {
                     let sellAction = () => {
                         loot += cost;
                         let index = weaponHandler.inventory.indexOf(weapon);
-                        weaponHandler.inventory.splice(index,1);
+                        weaponHandler.inventory.splice(index, 1);
                         shopHandler.ReturnToPreviousMenu();
                         shopHandler.RefreshAvailability();
                     }
-                    shopHandler.ConfirmSelection(promptText, weapon.name, "", weapon.flavor + "\n\n" + weapon.GetBreakdownText(), sellAction); 
+                    shopHandler.ConfirmSelection(promptText, weapon.name, "", weapon.flavor + "\n\n" + weapon.GetBreakdownText(), sellAction);
                 }
                 sellButtons.push(button);
             }
@@ -228,7 +315,10 @@ class ShopHandler {
             x.width = 30;
             x.height = 30;
             x.colorPrimary = "#F003";
-            x.onClick = () => {shopHandler.SetTempFace(this.mogFaces[faceList[Math.floor(Math.random() * faceList.length)]])}
+            x.onClick = () => {
+                shopHandler.SetTempFace(this.mogFaces[faceList[Math.floor(Math.random() * faceList.length)]]);
+                audioHandler.PlaySound("mog-happy");
+            }
         });
         uiHandler.elements.push(...eggs);
     }
@@ -252,13 +342,15 @@ class ShopHandler {
         } else {
             this.sellButton.isDisabled = false;
         }
+
+        this.repairButton.isDisabled = (player.hp >= player.maxHp);
     }
 
     ConfirmSelection(prompt, panelTitle, panelSub, flavor, onConfirm) {
         let buttonLocations = this.GetButtonLocations();
-        let cancelButton = new Button(buttonLocations[0].x, buttonLocations[0].y+50, "Cancel");
-        let confirmButton = new Button(buttonLocations[1].x, buttonLocations[1].y+50, "Confirm!");
-        [cancelButton, confirmButton].forEach(a => { a.height -=50})
+        let cancelButton = new Button(buttonLocations[0].x, buttonLocations[0].y + 50, "Cancel");
+        let confirmButton = new Button(buttonLocations[1].x, buttonLocations[1].y + 50, "Confirm!");
+        [cancelButton, confirmButton].forEach(a => { a.height -= 50 })
 
         let titlePanel = new Panel(buttonLocations[0].x, buttonLocations[0].y, 325, 25);
         titlePanel.colorPrimary = "#022e0aCC";
