@@ -13,7 +13,7 @@ function OnKeyDown(e) {
     } else if (keyText == "F11") {
         //openFullscreen();
     } else {
-        console.log(keyText)
+        //console.log(keyText)
     }
     //e.preventDefault();
 }

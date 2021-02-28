@@ -91,4 +91,12 @@ class Player extends Sprite {
         if (this.shake > 100) this.shake = 100;
     }
 
+    GetFrameData() {
+        return {
+            tileset: tileset.player,
+            frame: this.AnimateByFrame(tileset.player),
+            xFlip: this.direction > 0,
+        };
+    }
+
 }
