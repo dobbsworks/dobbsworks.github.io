@@ -86,6 +86,7 @@ class LevelHandler {
     }
 
     LoadZone() {
+        audioHandler.SetBackgroundMusic(levelHandler.currentMusic);
         if (this.currentLevel === 0) {
             this.currentLevel = 1;
         }

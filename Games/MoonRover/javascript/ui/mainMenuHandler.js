@@ -210,6 +210,7 @@ class MainMenuHandler {
     OnClickCredits() {
         mainMenuHandler.isOnCredits = true;
         uiHandler.Shelve();
+        audioHandler.SetBackgroundMusic("music-credits");
 
         // shuffle special thanks
         function shuffleArray(array) {
@@ -227,6 +228,7 @@ class MainMenuHandler {
             uiHandler.Restore();
             title.targetX += canvas.width / 4;
             mainMenuHandler.isOnCredits = false;
+            audioHandler.SetBackgroundMusic("music-title");
         }
 
         let title = mainMenuHandler.logo;
@@ -240,16 +242,16 @@ class MainMenuHandler {
                 creditItemY += 60;
                 let header = new Text(x, creditItemY, item);
                 header.x += canvas.width / 2;
-                header.fontSize = 20;
+                header.fontSize = 24;
                 newElements.push(header);
                 creditItemY += 40;
             } else {
                 for (let subItem of item) {
                     let row = new Text(x, creditItemY, subItem);
-                    row.fontSize = 12;
+                    row.fontSize = 16;
                     row.x += canvas.width / 2;
                     newElements.push(row);
-                    creditItemY += 16;
+                    creditItemY += 20;
                 }
             }
         }

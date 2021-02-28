@@ -8,7 +8,7 @@ class AudioHandler {
     lowPassNode;
     gainNodeMusic;
     gainNodeSfx;
-    initialMusicVolume = 0.0;
+    initialMusicVolume = 0.4;
     initialSfxVolume = 1;
     volumeScale = 5;
 
@@ -45,7 +45,7 @@ class AudioHandler {
                 }
             }
             
-            audioHandler.SetBackgroundMusic("music-level-1");
+            audioHandler.SetBackgroundMusic("music-title");
         } else {
             setTimeout(() => {audioHandler.Initialize.apply(audioHandler)}, 100);
         }
