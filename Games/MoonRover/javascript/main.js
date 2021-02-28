@@ -20,10 +20,17 @@ var deathCount = 0;
 setTimeout(Initialize, 100);
 
 function Initialize() {
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
+
     let allImages = document.getElementsByTagName("img");
     for (let image of allImages) {
         if (image.width === 0) {
-            console.log("image not loaded, trying again")
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.fillText("Loading resources, please wait...", canvas.width/2, canvas.height/2);
             setTimeout(Initialize, 100);
             return;
         }
@@ -38,10 +45,6 @@ function Initialize() {
     mainMenuHandler = new MainMenuHandler();
 
     audioHandler.Initialize();
-    //levelHandler.LoadZone();
-    canvas = document.getElementById("canvas");
-    ctx = canvas.getContext("2d");
-    ctx.imageSmoothingEnabled = false;
     InitMouseHandlers();
     InitKeyHandlers();
     InitializeTilesets();

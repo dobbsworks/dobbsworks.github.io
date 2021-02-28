@@ -5,7 +5,7 @@ class UIHandler {
     debugMode = false;
     initialized = false;
 
-    
+
     getButtons() {
         return this.elements.filter(x => x instanceof Button);
     }
@@ -33,6 +33,7 @@ class UIHandler {
                         button.Toggle();
                     } else {
                         button.onClick();
+                        audioHandler.PlaySound("beep-02");
                     }
                     isMouseDown = false;
                     isMouseChanged = false;
@@ -82,17 +83,17 @@ class UIHandler {
         let uiDrawTime = performance.now() - t0;
         if (this.debugMode) {
             this.DrawDebugLines([
-                {text: "ms/frame", value: msPerFrame},
-                {text: "ms/update", value: updateMsPerFrame},
-                {text: "ms/draw", value: drawMsPerFrame},
-                {text: "ms/ui", value: uiDrawTime},
+                { text: "ms/frame", value: msPerFrame },
+                { text: "ms/update", value: updateMsPerFrame },
+                { text: "ms/draw", value: drawMsPerFrame },
+                { text: "ms/ui", value: uiDrawTime },
             ])
         }
     }
 
     DrawLevelInfo() {
         ctx.fillStyle = "#00000077";
-        ctx.fillRect(240,0,430,31);
+        ctx.fillRect(240, 0, 430, 31);
         ctx.font = "20px Arial";
         ctx.textAlign = "left";
         ctx.fillStyle = "white";
@@ -125,7 +126,7 @@ class UIHandler {
         if (this.initialized) return;
         this.initialized = true;
 
-        for (let i=0; i<ys.length; i++) {
+        for (let i = 0; i < ys.length; i++) {
             let button = new Button(x, ys[i], "");
             button.width = w;
             button.height = h;
@@ -146,23 +147,23 @@ class UIHandler {
         let margin = 10;
         let hpHeight = 40;
 
-        let contentWidth = barWidth - margin*2;
+        let contentWidth = barWidth - margin * 2;
         let portraitHeight = contentWidth / 1.5;
 
         let weaponCount = 4;
-        let weaponBlockHeight = (barHeight - portraitHeight - hpHeight - margin*4) / weaponCount - margin; 
+        let weaponBlockHeight = (barHeight - portraitHeight - hpHeight - margin * 4) / weaponCount - margin;
 
         ctx.fillStyle = "#3700B3cc";
-        ctx.fillRect(0,0, barWidth, barHeight);
+        ctx.fillRect(0, 0, barWidth, barHeight);
 
         this.DrawPortrait(margin, margin, contentWidth, portraitHeight)
 
-        let weaponButtonYs = [0,1,2,3].map(i => portraitHeight + margin*2 + i * (weaponBlockHeight + margin))
+        let weaponButtonYs = [0, 1, 2, 3].map(i => portraitHeight + margin * 2 + i * (weaponBlockHeight + margin))
         let weaponButtonX = margin;
         let weaponButtonWidth = contentWidth;
         let weaponButtonHeight = weaponBlockHeight;
 
-        for (let i=0; i<weaponButtonYs.length; i++) {
+        for (let i = 0; i < weaponButtonYs.length; i++) {
             let weapon = weaponHandler.inventory[i];
             this.DrawWeaponButton(weaponButtonX, weaponButtonYs[i], weaponButtonWidth, weaponButtonHeight, weapon);
         }
@@ -174,25 +175,25 @@ class UIHandler {
     DrawPortrait(x, y, w, h) {
         let portraitBg = document.getElementById("dog-bg");
         let portraitImage = document.getElementById("dog-rover");
-        
+
         ctx.fillStyle = "#170043cc";
         ctx.strokeStyle = "#170043";
         ctx.lineWidth = 4;
-        ctx.fillRect(x,y, w,h);
+        ctx.fillRect(x, y, w, h);
 
         let shakeFactor = Math.min(10, Math.max(0, player.shake));
-        let wiggleX = shakeFactor*Math.random() -shakeFactor/2;
-        let wiggleY = shakeFactor*Math.random() -shakeFactor/2;
-        ctx.drawImage(portraitBg, wiggleX/2+5,wiggleY/2+5, w/2, h/2, x,y, w,h);
-        ctx.drawImage(portraitImage, wiggleX+5,wiggleY+5, w/2, h/2, x,y, w,h);
-        ctx.strokeRect(x,y, w,h);
+        let wiggleX = shakeFactor * Math.random() - shakeFactor / 2;
+        let wiggleY = shakeFactor * Math.random() - shakeFactor / 2;
+        ctx.drawImage(portraitBg, wiggleX / 2 + 5, wiggleY / 2 + 5, w / 2, h / 2, x, y, w, h);
+        ctx.drawImage(portraitImage, wiggleX + 5, wiggleY + 5, w / 2, h / 2, x, y, w, h);
+        ctx.strokeRect(x, y, w, h);
 
         if (player.hurtTimer > 0 || player.hp <= 1) {
-            let opacity = Math.min(0.5, player.hurtTimer/60);
+            let opacity = Math.min(0.5, player.hurtTimer / 60);
             if (player.hp <= 1) opacity = Math.max(0.5, Math.min(Math.sin(new Date() / 100), 0.8));
             ctx.fillStyle = `rgba(255,0,0,${opacity.toFixed(2)})`;
             ctx.globalCompositeOperation = "color";
-            ctx.fillRect(x,y, w,h);
+            ctx.fillRect(x, y, w, h);
             ctx.globalCompositeOperation = "source-over";
         }
     }
@@ -207,15 +208,15 @@ class UIHandler {
         ctx.fillStyle = "#170043cc";
         if (weapon.shotsRemaining <= 0) ctx.fillStyle = "#330007";
         if (weapon.shotsRemaining >= weapon.clipSize) ctx.fillStyle = "#070043cc";
-        ctx.fillRect(x,y,w,h);
+        ctx.fillRect(x, y, w, h);
         if (isMouseOver) {
             ctx.fillStyle = "#00000044";
-            ctx.fillRect(x,y,w,h);
+            ctx.fillRect(x, y, w, h);
         }
-        
+
         if (isSelected) {
             ctx.strokeStyle = "#FFF4";
-            ctx.strokeRect(x,y,w,h);
+            ctx.strokeRect(x, y, w, h);
         }
 
         ctx.fillStyle = "#EEE";
@@ -226,28 +227,28 @@ class UIHandler {
         // AMMO
         // might could cache out weapon boxes to a canvas to reduce draw calls per frame
         ctx.fillStyle = "#77F";
-        let ammoBoxWidth = (w - padding*2) / weapon.clipSize;
+        let ammoBoxWidth = (w - padding * 2) / weapon.clipSize;
         let ammoBoxHeight = 20;
         let ammoBoxY = y + 40;
-        for (let i=0; i<weapon.clipSize; i++) {
+        for (let i = 0; i < weapon.clipSize; i++) {
             if (i >= weapon.shotsRemaining) {
                 ctx.fillStyle = "#F77";
             }
-            ctx.fillRect(x + padding + ammoBoxWidth*i,ammoBoxY,ammoBoxWidth-1,ammoBoxHeight);
+            ctx.fillRect(x + padding + ammoBoxWidth * i, ammoBoxY, ammoBoxWidth - 1, ammoBoxHeight);
             if (i == weapon.shotsRemaining) {
                 let reloadRatio = Math.min(1, weapon.reloadTimer / weapon.reloadTime);
                 ctx.fillStyle = "#949";
-                ctx.fillRect(x + padding + ammoBoxWidth*i,ammoBoxY+ammoBoxHeight,ammoBoxWidth-1,-ammoBoxHeight * reloadRatio);
+                ctx.fillRect(x + padding + ammoBoxWidth * i, ammoBoxY + ammoBoxHeight, ammoBoxWidth - 1, -ammoBoxHeight * reloadRatio);
             }
         }
     }
 
     DrawHP(x, y, w, h) {
         let blockBorder = 2;    // dark border around indiviual blocks
-        let blockWidth = (w-blockBorder) / player.maxHp - blockBorder;
+        let blockWidth = (w - blockBorder) / player.maxHp - blockBorder;
 
         ctx.fillStyle = "#0208";
-        ctx.fillRect(x,y,w,h);
+        ctx.fillRect(x, y, w, h);
         for (let i = 0; i < player.maxHp; i++) {
             ctx.fillStyle = i < player.hp ? "#0A0A" : "#3008";
             ctx.fillRect(x + i * (blockWidth + blockBorder) + blockBorder,

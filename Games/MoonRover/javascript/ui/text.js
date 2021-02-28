@@ -99,7 +99,7 @@ class Text extends UIElement {
     Draw() {
         let newCharTime = false;
         if (!this.text) return;
-        if (this.pause) {
+        if (this.pause > 0) {
             this.pause--;
             if (isMouseDown) this.pause -= 2;
         } else {

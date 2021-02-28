@@ -12,6 +12,7 @@ class Button extends UIElement {
     width = 150;
     height = 100;
 
+    isMousedOver = false; //flag to watch for mouseover change
     isDisabled = false;
 
     isMouseOver() {
@@ -37,6 +38,11 @@ class Button extends UIElement {
             this.FillBox();
         }
         if (this.isMouseOver() && !this.isDisabled) {
+            if (!this.isMousedOver) {
+                // we just now moused over
+                audioHandler.PlaySound("beep-01");
+            }
+            this.isMousedOver = true;
             if (isMouseDown) {
                 ctx.fillStyle = this.colorShade;
             } else {
@@ -46,6 +52,8 @@ class Button extends UIElement {
             ctx.lineWidth = 4;
             ctx.strokeStyle = this.colorSecondary;
             ctx.strokeRect(this.x, this.y, this.width, this.height);
+        } else {
+            this.isMousedOver = false;
         }
         ctx.fillStyle = this.colorText;
         ctx.font = "700 16px Arial";
