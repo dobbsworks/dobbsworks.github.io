@@ -1,0 +1,263 @@
+<html>
+
+<head>
+    <style>
+        body {
+            margin: 0;
+            background-color: #92cddb;
+            overflow: hidden;
+        }
+
+        .ground {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-top: #418654 8px solid;
+            background: url(ground.png);
+            image-rendering: pixelated;
+            -webkit-animation: slide 0.75s linear infinite;
+        }
+
+        .ground::before {
+            display: block;
+            content: ' ';
+            width: 120%;
+            height: 8px;
+            position: relative;
+            background-color: #195c2e;
+        }
+
+        .bg {
+            height: 168px;
+            -webkit-animation-duration: 1.3s;
+            filter: brightness(0.8);
+            opacity: 0.5;
+        }
+
+        .midground {
+            height: 136px;
+            -webkit-animation-duration: 0.75s;
+            filter: brightness(1.2);
+        }
+
+        .fg {
+            height: 16px;
+            -webkit-animation-duration: 0.65s;
+        }
+
+
+
+
+        @-webkit-keyframes slide {
+            from {
+                background-position: 0 0;
+            }
+
+            to {
+                background-position: -32px 0;
+            }
+        }
+
+        @-webkit-keyframes cloudGlide {
+            0% {
+                left: 100%;
+                opacity: 0;
+            }
+
+            20% {
+                left: 80%;
+                opacity: 1;
+            }
+
+            80% {
+                left: 20%;
+                opacity: 1;
+            }
+
+            100% {
+                left: 0%;
+                opacity: 0;
+            }
+        }
+
+        .cloudGlide {
+            position: relative;
+            -webkit-animation: cloudGlide 175s linear infinite;
+            animation-delay: -100s;
+        }
+
+        .cloud1 {
+            left: 0px;
+            top: 124px;
+            height: 64px;
+            width: 296px;
+        }
+
+        .cloud2 {
+            left: 24px;
+            top: 100px;
+            height: 96px;
+            width: 248px;
+        }
+
+        .cloud3 {
+            left: 56px;
+            top: 84px;
+            height: 64px;
+            width: 104px;
+        }
+
+        .cloudPattern {
+            position: absolute;
+            background-color: transparent;
+            background-image: linear-gradient(45deg, white 25%, transparent 25%, transparent 75%, white 75%, white),
+                linear-gradient(45deg, white 25%, transparent 25%, transparent 75%, white 75%, white);
+            background-size: 16px 16px;
+            background-position: 0 0, 8px 8px;
+        }
+
+        .character {
+            display: block;
+            position: fixed;
+            background: url(sprites.png);
+            bottom: 144px;
+            height: 72px;
+            left: 80px;
+            width: 56px;
+            image-rendering: pixelated;
+            background-size: 224px;
+            background-position: 0 0;
+            -webkit-animation: charFrames 0.5s linear infinite;
+            z-index: 2;
+        }
+
+        @-webkit-keyframes charFrames {
+            0% {
+                background-position: -56px 0;
+            }
+
+            50% {
+                background-position: -56px 0;
+            }
+
+            50.001% {
+                background-position: -112px 0;
+            }
+
+            100% {
+                background-position: -112px 0;
+            }
+        }
+
+        .balloon {
+            display: block;
+            position: fixed;
+            background: url(balloon.png);
+            image-rendering: pixelated;
+            width: calc(32px * 8);
+            height: calc(48px * 8);
+            background-size: 256px;
+            left: 88px;
+            top: 10%;
+            -webkit-animation: bob 5s ease-in-out infinite;
+            z-index: 3;
+        }
+
+        @-webkit-keyframes bob {
+            0% {
+                top: 2%;
+            }
+
+            50% {
+                top: 8%;
+            }
+
+            100% {
+                top: 2%;
+            }
+        }
+
+
+@-webkit-keyframes cameo-slide {
+    from {
+        left: 1280px;
+    }
+    to {
+        left: -720px;
+    }
+}
+
+        .cameo {
+            image-rendering: pixelated;
+            position: absolute;
+            bottom: 24px;
+            transform: scale(8);
+            transform-origin: bottom left;
+            left: -100%;
+            -webkit-animation: cameo-slide 40.625s linear;
+        }
+
+        .background.cameo {
+            -webkit-animation-duration: 81.25s;
+            bottom: 176px;
+            filter: brightness(0.8);
+            opacity: 0.5;
+        }
+
+        .cameo.flying {
+            bottom: 300px;
+            -webkit-animation-direction: reverse;
+            -webkit-animation-duration: 15s;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cloudGlide">
+        <div class="cloudPattern cloud1"></div>
+        <div class="cloudPattern cloud2"></div>
+        <div class="cloudPattern cloud3"></div>
+    </div>
+    <div class="ground bg"></div>
+    <div class="ground midground"></div>
+    <div class="character"></div>
+    <div class="balloon"></div>
+
+    <div class="ground fg" id="cameoContainer"></div>
+</body>
+
+
+<script type="text/javascript">
+
+    var allCameos = ["dove","gq","turtle","kirb","snek","tank","wagon"];
+    var bgCameos = ["tank", "wagon"];
+    var availableCameos = [];
+
+    function AddCameo() {
+        if (availableCameos.length === 0) {
+            availableCameos = [...allCameos];
+        }
+        let cameoIndex = Math.floor(Math.random() * availableCameos.length);
+        let cameo = availableCameos.splice(cameoIndex, 1)[0];
+
+        let container = document.getElementById("cameoContainer");
+        let newEl = document.createElement("img");
+        newEl.classList.add("cameo");
+        
+        if (bgCameos.indexOf(cameo) > -1) {
+            newEl.classList.add("background");
+        }
+        if (cameo === "dove") newEl.classList.add("flying");
+        newEl.src = "cameos/" + cameo + ".png";
+        container.appendChild(newEl);
+        
+        let secondsUntilNext = Math.random() * 8 + 7;
+        setTimeout(AddCameo, secondsUntilNext*1000);
+    }
+
+    setTimeout(AddCameo, 2*1000);
+
+</script>
+
+</html>

@@ -1,0 +1,117 @@
+<html>
+
+<head>
+	<title>TNN</title>
+
+	<style>
+		html,body {
+			background-color: rgba(0,0,0,0);
+		}
+		canvas {
+			position: fixed;
+		}
+
+		#canvas2 {
+			z-index: 2;
+		}
+	</style>
+</head>
+
+<body>
+
+	<canvas id="canvas" width="800" height="600"></canvas>
+	<canvas id="canvas2" width="800" height="600"></canvas>
+
+</body>
+
+<script type="text/javascript">
+
+	var canvas;
+	var ctx;
+	var canvas2;
+	var ctx2;
+	var timer = 0;
+
+	function Init() {
+		canvas = document.getElementById("canvas");
+		ctx = canvas.getContext('2d');
+		canvas2 = document.getElementById("canvas2");
+		ctx2 = canvas2.getContext('2d');
+		CreateOverlay();
+		Loop();
+	}
+
+	function Loop() {
+		timer++;
+
+		if (!(timer % 60)) {
+			AddSymbol(timer);
+		}
+		if (timer > 500 & timer % 2) {
+			AddSymbol(timer);
+		}
+		if (timer > 1000) {
+			AddSymbol(timer);
+			AddSymbol(timer);
+		}
+		if (timer > 1500) {
+			AddSymbol(timer);
+			AddSymbol(timer);
+			AddSymbol(timer);
+		}
+		HandleOverlay(timer);
+		requestAnimationFrame(Loop);
+	}
+
+	function CreateOverlay() {
+		let borderWidth = 4;
+		let left = 150;
+		let top = 300;
+		let height = 40;
+		ctx2.fillStyle = "black"
+		ctx2.fillRect(left, top - 50, canvas2.width - left * 2, height + 50);
+		ctx2.fillStyle = "white"
+		ctx2.fillRect(left + borderWidth, top + borderWidth, canvas2.width - (left + borderWidth) * 2, height - borderWidth * 2);
+
+		ctx2.font = `normal 900 50px monospace`;
+		ctx2.textAlign = `center`;
+		ctx2.fillStyle = "white"
+		ctx2.strokeStyle = "black"
+		ctx2.fillText("HACK IN PROGRESS", canvas2.width / 2, top - 4);
+		ctx2.strokeText("HACK IN PROGRESS", canvas2.width / 2, top - 4);
+	}
+
+	function HandleOverlay(timer) {
+		let borderWidth = 4;
+		let left = 150;
+		let top = 300;
+		let height = 40;
+
+		ctx2.fillStyle = "lime"
+		let percentage = Math.atan2(timer - 60*10, 600) / (Math.PI / 2) * 1.7;
+		if (percentage > 1) percentage = 1;
+		canvas2.style.opacity = percentage*2;
+
+		let p = Math.floor(percentage*1000)/1000;
+		let bgColor = `rgba(0,0,0,${p})`;
+		document.body.style.backgroundColor = bgColor;
+		if (percentage > 0) {
+			ctx2.fillRect(left + borderWidth, top + borderWidth, (canvas2.width - (left + borderWidth) * 2) * percentage, height - borderWidth * 2);
+		}
+	}
+
+	function AddSymbol(timer) {
+		var x = canvas.width * Math.random();
+		var y = canvas.height * Math.random();
+		var size = Math.floor(Math.random() * 50) + 5;
+		if (timer > 60*20) size *= 2;
+		ctx.font = `${size}px Arial`;
+		ctx.textAlign = `center`;
+		ctx.fillText("🐢", x, y);
+	}
+
+	setTimeout(Init, 3000);
+
+</script>
+
+</html>
