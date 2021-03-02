@@ -7,7 +7,7 @@ class RoomGenerator {
         let numberOfLines = 1 + Math.floor(totalVerticalSpace / minSpacePerPlatform);
         let spacePerLine = totalVerticalSpace / (numberOfLines - 1); 
 
-        let room = this.CreateBaseRoom(width, height, lowestPlatformY - spacePerLine);
+        let room = this.CreateBaseRoom(width, height, true);
         let bounds = [...room.borders];
         room.borders = [];
 
@@ -65,7 +65,8 @@ class RoomGenerator {
         borders.push(new Ceiling(0));
 
         if (exitHeight) {
-            let levelExit = new LevelExit(width, exitHeight)
+            let offset = Math.min(width/2, height/2);
+            let levelExit = new LevelExit(width - offset, height - offset)
             sprites.push(levelExit);
         }
 

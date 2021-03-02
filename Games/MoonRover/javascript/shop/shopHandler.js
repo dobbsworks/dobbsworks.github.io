@@ -106,7 +106,6 @@ class ShopHandler {
             audioHandler.SetBackgroundMusic("music-shop");
         }
         let convoIndex = Math.floor(this.conversations.length * Math.random());
-        convoIndex = 14;
         this.currentConversation = this.conversations.splice(convoIndex, 1)[0];
         if (this.currentConversation) this.currentConversation =
             this.currentConversation.
@@ -393,6 +392,7 @@ class ShopHandler {
         shopHandler.mogFace = shopHandler.mogFaces.happy;
         uiHandler.Restore();
         audioHandler.SetBackgroundMusic(levelHandler.currentMusic);
+        levelHandler.LoadZone();
     }
 
     Update() {

@@ -24,7 +24,8 @@ class LevelHandler {
         if (this.isArena) {
             let exit = sprites.find(x => x instanceof LevelExit);
             if (!exit && this.AreAllEnemiesDefeated()) {
-                exit = new LevelExit(player.x, player.y);
+                let offset = levelHandler.room.width / 2;
+                exit = new LevelExit(offset, levelHandler.room.height + offset);
                 sprites.push(exit);
             }
         }
@@ -147,7 +148,7 @@ class LevelHandler {
 
     GetLair() {
         this.isArena = true;
-        return new RoomGenerator().CreateArenaRoom(3000, 3000);
+        return new RoomGenerator().CreateArenaRoom(1500, 1000);
     }
 
     GetLevelNumber() {

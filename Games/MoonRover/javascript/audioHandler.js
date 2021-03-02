@@ -61,7 +61,7 @@ class AudioHandler {
                 node: this.audioCtxMusic.createMediaElementSource(audioFile),
                 src: audioFile,
                 isMusic: isMusic,
-                isSfx: isSfx
+                isSfx: isSfx,
             };
         }
     }
@@ -118,7 +118,9 @@ class AudioHandler {
             }
         }
         let bgm = this.audioLibrary[key];
-        if (bgm) bgm.src.play();
+        if (bgm) {
+            bgm.src.play();
+        }
     }
 
     PlaySound(key, preventInterrupt) {
