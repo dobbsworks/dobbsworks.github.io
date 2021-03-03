@@ -14,7 +14,7 @@ class LevelExit extends Sprite {
     GetFrameData() {
         return {
             tileset: tileset.star,
-            frame: this.AnimateByFrame(tileset.star),
+            frame: Math.floor(this.frame/2) % tileset.star.tiles.length,
             xFlip: false,
         };
     }

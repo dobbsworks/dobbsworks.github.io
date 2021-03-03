@@ -8,6 +8,10 @@ class WeaponHandler {
     selectedWeaponIndex = 0;
 
     AddWeapon(weapon) {
+        if (!weapon.initialized) {
+            weapon.initialized = true;
+            weapon.ApplyInitialUpgrades();
+        }
         this.inventory.push(weapon);
     }
 

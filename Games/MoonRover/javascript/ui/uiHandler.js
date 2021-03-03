@@ -153,9 +153,10 @@ class UIHandler {
 
         let contentWidth = barWidth - margin * 2;
         let portraitHeight = contentWidth / 1.5;
+        let extraDataHeight = hpHeight;
 
         let weaponCount = 4;
-        let weaponBlockHeight = (barHeight - portraitHeight - hpHeight - margin * 4) / weaponCount - margin;
+        let weaponBlockHeight = (barHeight - portraitHeight - hpHeight - extraDataHeight - margin * 5) / weaponCount - margin;
 
         ctx.fillStyle = "#3700B3cc";
         ctx.fillRect(0, 0, barWidth, barHeight);
@@ -233,7 +234,7 @@ class UIHandler {
         ctx.fillStyle = "#77F";
         let ammoBoxWidth = (w - padding * 2) / weapon.clipSize;
         let ammoBoxHeight = 20;
-        let ammoBoxY = y + 40;
+        let ammoBoxY = y + h - ammoBoxHeight - padding;
         for (let i = 0; i < weapon.clipSize; i++) {
             if (i >= weapon.shotsRemaining) {
                 ctx.fillStyle = "#F77";

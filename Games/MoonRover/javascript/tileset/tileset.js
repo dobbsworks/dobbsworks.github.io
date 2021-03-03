@@ -24,11 +24,11 @@ class Tileset {
 
 var tileset = {};
 function InitializeTilesets() {
-    let imageIds = ["player", "orangebot","tealbot","yellowbot","limebot","cyanbot","bluebot","purplecore","bluecore","limecore","orangecore","redcore","magentacore", "star"];
+    let imageIds = ["player", "orangebot","tealbot","yellowbot","limebot","cyanbot","bluebot","purplecore","bluecore","limecore","orangecore","redcore","magentacore", "star", "coin"];
 
     for (let imageId of imageIds) {
         let image = document.getElementById(imageId);
         tileset[imageId] = new Tileset(image);
-        tileset[imageId].SliceIntoTiles(image.width / 24);
+        tileset[imageId].SliceIntoTiles(image.width / image.height);
     }
 }
