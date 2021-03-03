@@ -4,7 +4,7 @@ class UIHandler {
     history = [];
     debugMode = false;
     initialized = false;
-
+    timer = 0;
 
     getButtons() {
         return this.elements.filter(x => x instanceof Button);
@@ -24,6 +24,7 @@ class UIHandler {
     }
 
     Update() {
+        this.timer++;
         let mouseOverAnyButton = false;
         for (let button of this.getButtons()) {
             if (button.isMouseOver()) {
@@ -70,14 +71,12 @@ class UIHandler {
         if (shopHandler.isInShop) {
             shopHandler.DrawShop();
             this.DrawSideBar();
-            this.DrawLevelInfo();
         } else if (pauseHandler.isPaused) {
-            this.DrawLevelInfo();
+            
         } else if (mainMenuHandler.isOnMainMenu) {
 
         } else {
             this.DrawSideBar();
-            this.DrawLevelInfo();
         }
 
         for (let el of this.elements) {
@@ -93,18 +92,6 @@ class UIHandler {
                 { text: "ms/ui", value: uiDrawTime },
             ])
         }
-    }
-
-    DrawLevelInfo() {
-        ctx.fillStyle = "#00000077";
-        ctx.fillRect(240, 0, 430, 31);
-        ctx.font = "20px Arial";
-        ctx.textAlign = "left";
-        ctx.fillStyle = "white";
-        ctx.fillText("Loot: " + loot, 250, 21);
-        ctx.fillText("Kills: " + killCount, 350, 21);
-        ctx.fillText("Deaths: " + deathCount, 450, 21);
-        ctx.fillText("Level: " + levelHandler.GetLevelNumber(), 570, 21);
     }
 
     FormatFPS(x) {
@@ -153,7 +140,7 @@ class UIHandler {
 
         let contentWidth = barWidth - margin * 2;
         let portraitHeight = contentWidth / 1.5;
-        let extraDataHeight = hpHeight;
+        let extraDataHeight = hpHeight / 2;
 
         let weaponCount = 4;
         let weaponBlockHeight = (barHeight - portraitHeight - hpHeight - extraDataHeight - margin * 5) / weaponCount - margin;
@@ -173,8 +160,28 @@ class UIHandler {
             this.DrawWeaponButton(weaponButtonX, weaponButtonYs[i], weaponButtonWidth, weaponButtonHeight, weapon);
         }
 
+        this.DrawExtraData(margin, barHeight - hpHeight - extraDataHeight - margin * 2, contentWidth, extraDataHeight);
+
         this.InitializeMainUI(weaponButtonX, weaponButtonYs, weaponButtonWidth, weaponButtonHeight);
         this.DrawHP(margin, barHeight - hpHeight - margin, contentWidth, hpHeight);
+    }
+
+    DrawExtraData(x, y, w, h) {
+        let coinImage = document.getElementById("coin");
+        let coinSrcSize = coinImage.height;
+        let coinScale = 2;
+        let coinUiSize = coinSrcSize * coinScale;
+        let srcIndex = Math.floor(this.timer / 4) % (coinImage.width / coinSrcSize);
+        ctx.drawImage(coinImage, coinSrcSize * srcIndex, 0, coinSrcSize, coinSrcSize, x + w - coinUiSize + coinScale, y - coinScale, coinUiSize, coinUiSize);
+
+        let fontSize = h - 4;
+        ctx.font = fontSize + "px Courier New";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "right";
+        ctx.fillText(loot, x + w - coinUiSize, y + fontSize);
+        
+        ctx.textAlign = "left";
+        ctx.fillText("Level " + levelHandler.GetLevelNumber(), x, y + fontSize);
     }
 
     DrawPortrait(x, y, w, h) {

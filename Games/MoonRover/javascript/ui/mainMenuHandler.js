@@ -7,6 +7,7 @@ class MainMenuHandler {
     scroll = 0;
     logo = null;
     isOnCredits = false;
+    shootingStars = [];
 
     creditItems = [
         "A game by Dobbs",
@@ -296,7 +297,25 @@ class MainMenuHandler {
             ctx.drawImage(this.starLayers[i], x + canvas.width, y + canvas.height);
         }
 
+        function AddShootingStar(x,y) {
+            mainMenuHandler.shootingStars.push({x: x, y: y, dx: Math.random() + 1, dy: Math.random() + 1});
+        }
+        if (this.shootingStars.length < 2) {
+            AddShootingStar(canvas.width * Math.random() - canvas.width/2, 0);
+        }
+        if (this.shootingStars.length < 100 && isMouseDown) {
+            AddShootingStar(mouseX, mouseY);
+        }
+
+        ctx.fillStyle = "#FFF";
+        for (let star of this.shootingStars) {
+            ctx.fillRect(star.x, star.y, 2, 2);
+            star.x += star.dx;
+            star.y += star.dy;
+        }
+        this.shootingStars = this.shootingStars.filter(a => a.y < canvas.height);
     }
+
 
     CreateStarLayerImage(scale, color) {
         let newCanvas = document.createElement("canvas");
