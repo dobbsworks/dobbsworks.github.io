@@ -31,7 +31,7 @@ var soundboardHandler = {
     baseUrl: "https://dobbsworks.github.io/Tools/Streambot/audio/",
     masterVolume: 0.8,
     initialized: false,
-    maxConcurrent: 2,
+    maxConcurrent: 3,
     pendingSounds: [],
     playingSounds: [],
     sounds: [
@@ -50,7 +50,7 @@ var soundboardHandler = {
         { volume: 0.8, key: "sm64-game-over", file: "sm64-game-over.mp3" },
         { volume: 0.8, key: "drum-rimshot", file: "drum-rimshot.mp3" },
         { volume: 0.8, key: "crickets", file: "crickets.mp3" },
-        { volume: 0.2, key: "space", file: "space.mp3" },
+        { volume: 0.17, key: "space", file: "space.mp3" },
         { volume: 0.2, key: "space-dad", file: "space-dad.mp3" },
         { volume: 0.3, key: "space-space", file: "space-space.mp3" },
         { volume: 0.1, key: "diggy-hole", file: "diggy-hole.mp3" },
