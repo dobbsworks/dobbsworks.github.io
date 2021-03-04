@@ -163,6 +163,7 @@ function LoadCommands() {
 		RewardCommand(25, "levelidea", "CommandLevelIdea", commandPermission.all, "Generates a random level idea."),
 		
 		RewardCommand(100, "sound", "CommandSoundBoard", commandPermission.all, "Play a sound. Use !sounds for a list of options."),
+		RewardCommand(75, "soundrandom", "CommandSoundBoardRandom", commandPermission.all, "Play a random sound from the soundboard. Use !sound to play a specific sound."),
 		Command("soundlist", "CommandSoundList", commandPermission.all, "Display sounds for !soundboard"),
 
 		Command("so", "CommandShoutout", commandPermission.mod, commandDisplay.hidden, "Usage: !so username"),
