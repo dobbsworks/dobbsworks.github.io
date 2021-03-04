@@ -27,10 +27,10 @@ function Initialize() {
     let allImages = document.getElementsByTagName("img");
     for (let image of allImages) {
         if (image.width === 0) {
-            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "white";
             ctx.textAlign = "center";
-            ctx.fillText("Loading resources, please wait...", canvas.width/2, canvas.height/2);
+            ctx.fillText("Loading resources, please wait...", canvas.width / 2, canvas.height / 2);
             setTimeout(Initialize, 100);
             return;
         }
@@ -62,18 +62,20 @@ function MainLoop() {
     } else if (!pauseHandler.isPaused) {
         weaponHandler.Update();
         levelHandler.Update();
-        for (let sprite of sprites) {
-            if (sprite.isActive) {
-                if (!sprite.initialized) {
-                    if (sprite.Initialize) sprite.Initialize();
-                    sprite.initialized = true;
-                    sprite.hp = sprite.maxHp;
+        if (levelHandler.levelOutroTimer <= 0) {
+            for (let sprite of sprites) {
+                if (sprite.isActive) {
+                    if (!sprite.initialized) {
+                        if (sprite.Initialize) sprite.Initialize();
+                        sprite.initialized = true;
+                        sprite.hp = sprite.maxHp;
+                    }
+                    sprite.oldX = sprite.x;
+                    sprite.oldY = sprite.y;
+                    sprite.frame++;
+                    sprite.Update();
+                    if (sprite instanceof Enemy) sprite.SharedEnemyUpdate();
                 }
-                sprite.oldX = sprite.x;
-                sprite.oldY = sprite.y;
-                sprite.frame++;
-                sprite.Update();
-                if (sprite instanceof Enemy) sprite.SharedEnemyUpdate();
             }
         }
         sprites = sprites.filter(x => x.isActive);
@@ -83,9 +85,9 @@ function MainLoop() {
     Draw();
     let t2 = performance.now();
     UpdateMouseChanged();
-    let perf = ({update: t1-t0, draw: t2-t1, total: t2-t0});
+    let perf = ({ update: t1 - t0, draw: t2 - t1, total: t2 - t0 });
     performanceData.push(perf);
-    if (performanceData.length > 60) performanceData.splice(0,1);
+    if (performanceData.length > 60) performanceData.splice(0, 1);
 }
 
 function Draw() {

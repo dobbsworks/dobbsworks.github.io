@@ -7,17 +7,17 @@ class LevelHandler {
     currentZone = 0;
     isArena = false;
     room = null;
-    currentMusic = "music-level-1"
+    //currentMusic = "music-level-1"
     levelIntroTimer = 0;
     levelOutroTimer = 0;
 
 
     levels = [
-        {name: "Impact Crater", color: "#212"},
-        {name: "Mining Site", color: "#343"},
-        {name: "Biodome", color: "#121"},
-        {name: "Transit Tube", color: "#112"},
-        {name: "Scrap Site", color: "#211"},
+        { name: "Impact Crater", color: "#212" },
+        { name: "Mining Site", color: "#343" },
+        { name: "Biodome", color: "#121" },
+        { name: "Transit Tube", color: "#112" },
+        { name: "Scrap Site", color: "#211" },
     ]
 
     Update() {
@@ -32,7 +32,7 @@ class LevelHandler {
     }
 
     DrawSwoops(ratio) {
-        let swoopColor = this.levels[this.currentLevel-1].color;
+        let swoopColor = this.levels[this.currentLevel - 1].color;
         //if (shopHandler.isInShop) swoopColor = "#020a2e";
         ratio = Math.max(0, Math.min(1, ratio));
         let swoopyCount = 5;
@@ -40,7 +40,7 @@ class LevelHandler {
         for (let swoopyIndex = 0; swoopyIndex < swoopyCount; swoopyIndex++) {
             ctx.fillStyle = swoopColor;
             let dir = swoopyIndex % 2 ? -1 : 1;
-            let x = canvas.width * (ratio**4) * dir;
+            let x = canvas.width * (ratio ** 4) * dir;
             ctx.fillRect(x, swoopyHeight * swoopyIndex, canvas.width, swoopyHeight + 1)
         }
     }
@@ -67,19 +67,32 @@ class LevelHandler {
             let ratio = this.levelOutroTimer / 60;
             this.DrawSwoops(ratio);
             this.levelOutroTimer--;
+
+            if (this.levelOutroTimer <= 0) {
+                if (levelHandler.currentZone === 2 || levelHandler.currentZone === 5) {
+                    shopHandler.EnterShop();
+                } else {
+                    levelHandler.LoadZone();
+                }
+            }
         }
     }
 
     ExitLevel() {
-        //this.levelOutroTimer = 90;
-        this.levelIntroTimer = 90;
+        this.levelOutroTimer = 90;
+        //this.levelIntroTimer = 90;
     }
 
     GetLevelName() {
         if (shopHandler.isInShop) return "";
-        let baseName = this.levels[this.currentLevel-1].name;
+        let baseName = this.levels[this.currentLevel - 1].name;
         let ret = baseName + " " + this.currentZone;
         return ret;
+    }
+
+    SetLevelMusic() {
+        let musicName = "music-level-" + this.currentLevel;
+        audioHandler.SetBackgroundMusic(musicName);
     }
 
     EnterLevel() {
@@ -87,11 +100,10 @@ class LevelHandler {
     }
 
     LoadZone() {
-        audioHandler.SetBackgroundMusic(levelHandler.currentMusic);
         if (this.currentLevel === 0) {
             this.currentLevel = 1;
         }
-        this.EnterLevel(); 
+        this.EnterLevel();
 
         // resets all sprites, walls, etc.
 
@@ -101,6 +113,7 @@ class LevelHandler {
             this.currentZone = 1;
             this.currentLevel++;
         }
+        this.SetLevelMusic();
 
         let oldHp = player.hp;
         player = new Player(300, 300);
@@ -122,7 +135,7 @@ class LevelHandler {
         let enemies = this.room.sprites;
         enemies = enemies.filter(e => Math.abs(e.x - player.x) > 300 || Math.abs(e.y - player.y) > 300);
         sprites = [player, ...enemies];
-        if (this.currentZone === 5) sprites.push(new BossCore(this.room.width/2, this.room.height / 3));
+        if (this.currentZone === 5) sprites.push(new BossCore(this.room.width / 2, this.room.height / 3));
         renderer.target = player;
 
     }

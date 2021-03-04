@@ -73,7 +73,6 @@ class Player extends Sprite {
                 touchingSprite.isActive = false;
                 this.shake = 0;
                 levelHandler.ExitLevel();
-                shopHandler.EnterShop();
                 return;
             }
             if (touchingSprite.OnTouchPlayer) {

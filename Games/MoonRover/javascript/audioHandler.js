@@ -14,6 +14,7 @@ class AudioHandler {
 
     initialized = false;
     audioLibrary = {};
+    currentBgm = null;
 
     Initialize() {
         if (this.initialized) return;
@@ -109,6 +110,7 @@ class AudioHandler {
 
 
     SetBackgroundMusic(key) {
+        if (this.currentBgm === key) return;
         // stop all other music
         for (let k in this.audioLibrary) {
             let audioObject = this.audioLibrary[k];
@@ -121,6 +123,7 @@ class AudioHandler {
         if (bgm) {
             bgm.src.play();
         }
+        this.currentBgm = key;
     }
 
     PlaySound(key, preventInterrupt) {

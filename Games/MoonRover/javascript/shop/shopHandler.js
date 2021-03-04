@@ -391,7 +391,6 @@ class ShopHandler {
         shopHandler.isInShop = false;
         shopHandler.mogFace = shopHandler.mogFaces.happy;
         uiHandler.Restore();
-        audioHandler.SetBackgroundMusic(levelHandler.currentMusic);
         levelHandler.LoadZone();
     }
 
