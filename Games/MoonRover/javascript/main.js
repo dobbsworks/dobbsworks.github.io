@@ -74,6 +74,7 @@ function MainLoop() {
                     sprite.oldY = sprite.y;
                     sprite.frame++;
                     sprite.Update();
+                    sprite.SharedSpriteUpdate();
                     if (sprite instanceof Enemy) sprite.SharedEnemyUpdate();
                 }
             }

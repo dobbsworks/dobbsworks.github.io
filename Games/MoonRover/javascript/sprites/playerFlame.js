@@ -13,11 +13,11 @@ class PlayerFlame extends PlayerBullet {
         let touchingSprites = this.GetTouchingSprites();
         for (let touchingSprite of touchingSprites) {
             if (touchingSprite instanceof Enemy && !(touchingSprite instanceof EnemyBullet)) {
-                this.ApplyDamage(touchingSprite);
-                if (touchingSprite.hp >= 0) {
-                    audioHandler.PlaySound("ow-01");
-                }
+                //this.ApplyDamage(touchingSprite);
+                touchingSprite.Ignite();
                 this.isActive = false;
+                // TODO handle fire isActive
+                // TODO also special case on shield
             }
         }
 

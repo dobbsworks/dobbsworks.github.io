@@ -11,6 +11,37 @@ class Sprite {
     frame = 0;
     maxHp = 3;
 
+    // tracks how much fire has hit. Reach threshold to catch fire
+    ignition = 0;
+    ignitionTimer = 0;
+    // tracks how much longer to burn
+    burnTimer = 0;
+
+    Ignite() {
+        // sprite has touched fire, increment values to see if burn begins
+        this.ignition++;
+        this.ignitionTimer = 60;
+    }
+
+    SharedSpriteUpdate() {
+        if (this.ignition > 0) {
+            this.ignitionTimer--;
+            if (this.ignitionTimer <= 0) {
+                this.ignition = 0;
+            }
+            if (this.ignition >= 3) {
+                this.burnTimer = 60 * 3;
+            }
+        }
+        if (this.burnTimer > 0) {
+            this.burnTimer--;
+            // TODO: damage over time
+            if (Math.random() < 0.2) {
+                sprites.push(new Flame(this.x, this.y));
+            }
+        }
+    }
+
     Draw() {
         if (this.OnBeforeDraw) this.OnBeforeDraw();
         ctx.strokeStyle = "black";

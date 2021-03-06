@@ -4,8 +4,10 @@ class Flame extends Sprite {
     duration = 60*2;
 
     Initialize() {
-        this.dy = -5;
-        this.dx = (Math.random() * 4) - 2;
+        this.dy = -2;
+        this.dx = (Math.random() - 0.5);
+        this.x += (Math.random() - 0.5) * 20;
+        this.y += (Math.random() - 0.5) * 20;
     }
 
     Update() {
