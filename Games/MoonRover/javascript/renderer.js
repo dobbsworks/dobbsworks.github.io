@@ -1,4 +1,4 @@
-class Renderer { 
+class Renderer {
     constructor(target) {
         this.target = target;
     }
@@ -10,13 +10,21 @@ class Renderer {
         this.zoom += (this.targetZoom - this.zoom) * 0.05;
     }
 
-    Circle(x,y,r) {
+    Text(x, y, fontSize, text) {
+        ctx.lineWidth = 10 * this.zoom;
+        ctx.font = fontSize + "px Courier New";
+        ctx.textAlign = "center";
+        ctx.strokeText(text, this.MapX(x), this.MapY(y));
+        ctx.fillText(text, this.MapX(x), this.MapY(y));
+    }
+
+    Circle(x, y, r) {
         ctx.lineWidth = 2 * this.zoom;
         ctx.beginPath();
         ctx.arc(
-            this.MapX(x), 
+            this.MapX(x),
             this.MapY(y),
-            this.MapR(r), 
+            this.MapR(r),
             0, 2 * Math.PI);
         ctx.fill();
         if (ctx.fillStyle !== "transparent") {
@@ -29,18 +37,18 @@ class Renderer {
         let scale = 4;
 
         ctx.translate(this.MapX(x), 0);
-        if (flip) ctx.scale(-1,1);
-        tile.Draw(ctx, 
-            this.MapR(- tile.width/2 * scale), 
-            this.MapY(y - tile.height/2 * scale),
+        if (flip) ctx.scale(-1, 1);
+        tile.Draw(ctx,
+            this.MapR(- tile.width / 2 * scale),
+            this.MapY(y - tile.height / 2 * scale),
             scale * renderer.zoom
         );
-        if (flip) ctx.scale(-1,1);
+        if (flip) ctx.scale(-1, 1);
         ctx.translate(-this.MapX(x), 0);
 
     }
 
-    Line(x1,y1, x2,y2, extraThickness) {
+    Line(x1, y1, x2, y2, extraThickness) {
         ctx.lineWidth = 4 * this.zoom;
         if (extraThickness) {
             ctx.lineWidth = 4 * this.zoom * extraThickness;
@@ -55,8 +63,8 @@ class Renderer {
         if (player.y > y) y -= 32;
         else {
             ctx.fillStyle = "#5d6a6d";
-            let mappedY = renderer.MapY(y+32);
-            ctx.fillRect(0,mappedY,canvas.width,canvas.height);
+            let mappedY = renderer.MapY(y + 32);
+            ctx.fillRect(0, mappedY, canvas.width, canvas.height);
         }
         let image = document.getElementById("tileset-01");
         let tileSize = renderer.MapR(32);
@@ -65,7 +73,7 @@ class Renderer {
             let mappedY = renderer.MapY(y);
             if (mappedX < -tileSize || mappedX > canvas.width) continue;
             if (mappedY < -tileSize || mappedY > canvas.height) continue;
-            ctx.drawImage(image, 0,0,8,8, mappedX, mappedY, tileSize, tileSize);
+            ctx.drawImage(image, 0, 0, 8, 8, mappedX, mappedY, tileSize, tileSize);
         }
     }
 
@@ -78,35 +86,35 @@ class Renderer {
             let mappedY = renderer.MapY(y);
             if (mappedX < -tileSize || mappedX > canvas.width) continue;
             if (mappedY < -tileSize || mappedY > canvas.height) continue;
-            ctx.drawImage(image, 0,0,8,8, mappedX, mappedY, tileSize, tileSize);
+            ctx.drawImage(image, 0, 0, 8, 8, mappedX, mappedY, tileSize, tileSize);
         }
     }
 
     MapX(x) {
         let center = canvas.width / 2;
         center += 100; // sidebar
-        return center + (x - this.target.x)*this.zoom;
+        return center + (x - this.target.x) * this.zoom;
     }
 
     MapY(y) {
         let center = canvas.height / 2;
-        return center + (y - this.target.y)*this.zoom;
+        return center + (y - this.target.y) * this.zoom;
     }
 
     MapR(r) {
-        return r*this.zoom;
+        return r * this.zoom;
     }
-    
+
     UnmapX(x) {
         let center = canvas.width / 2;
         center += 100; // sidebar
         return (x - center) / this.zoom + this.target.x;
     }
-    
+
     UnmapY(y) {
         let center = canvas.height / 2;
         return (y - center) / this.zoom + this.target.y;
     }
 
-    
+
 }

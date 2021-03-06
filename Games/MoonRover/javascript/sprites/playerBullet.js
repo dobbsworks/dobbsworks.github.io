@@ -15,7 +15,7 @@ class PlayerBullet extends Sprite {
         let touchingSprites = this.GetTouchingSprites();
         for (let touchingSprite of touchingSprites) {
             if (touchingSprite instanceof Enemy && !(touchingSprite instanceof EnemyBullet)) {
-                touchingSprite.hp -= this.damage;
+                this.ApplyDamage(touchingSprite);
                 if (touchingSprite.hp >= 0) {
                     audioHandler.PlaySound("ow-01");
                     if (!(touchingSprite instanceof BossCore)) {
@@ -28,6 +28,16 @@ class PlayerBullet extends Sprite {
                 }
                 this.isActive = false;
             }
+        }
+    }
+    
+    ApplyDamage(enemy) {
+        let oldEnemyHpRounded = Math.floor(enemy.hp);
+        enemy.hp -= this.damage;
+        let newEnemyHpRounded = Math.floor(enemy.hp);
+        let visibleDamageAmount = oldEnemyHpRounded - newEnemyHpRounded;
+        if (visibleDamageAmount > 0) {
+            sprites.push(new DamageIndicator(enemy, visibleDamageAmount));
         }
     }
 }

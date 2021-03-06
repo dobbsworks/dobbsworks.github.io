@@ -108,7 +108,7 @@ class RoomGenerator {
                 borders.push(platform);
                 if (Math.random() < enemyProbability) {
                     let platformCenterX = (platform.x1 + platform.x2) / 2;
-                    let enemy = new EnemyOrbiter(platformCenterX, platform.y - 30);
+                    let enemy = new EnemyGoombud(platformCenterX, platform.y - 30);
                     sprites.push(enemy);
                 }
             }

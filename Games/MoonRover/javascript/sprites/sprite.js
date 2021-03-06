@@ -138,7 +138,11 @@ class Sprite {
         this.dy *= 0.98;
     }
 
-    ApplyGravity() {
-        this.dy += 0.07;
+    ApplyGravity(optionalScaleValue) {
+        let gravityValue = 0.07;
+        if (optionalScaleValue !== undefined) {
+            gravityValue *= optionalScaleValue;
+        }
+        this.dy += gravityValue;
     }
 }
