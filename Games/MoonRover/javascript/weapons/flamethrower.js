@@ -1,24 +1,25 @@
 class WeaponFlamethrower extends Weapon {
     name = "Flamethrower";
-    flavor = "How does it create flames in a vacuum? Nobody knows!"
+    flavor = "Great for dealing with crowds of baddies. "
+    fireSound = "ow-01";
 
     initialUpgrades = [
-        Upgrade.Flavor("Launches fire instead of pellets", Upgrade.Direction.Good),
-        Upgrade.FireRateScale(3, 10),
-        Upgrade.KickbackScale(3, -1),
+        Upgrade.Flavor("Set foes aflame to deal steady damage", Upgrade.Direction.Good),
+        Upgrade.Flavor("No kickback", Upgrade.Direction.Bad),
+        Upgrade.Flavor("\nCreates flames in a vacuum... somehow", Upgrade.Direction.Neutral),
     ]
     
-    pelletDamage = 0.25;
+    kickbackPower = 0;
+    fireRate = 20;
     reloadSpeed = 8;
     pelletSpeed = 0.5;
     fixedSpread = false;
     clipSize = 30;
     cost = 25;
+    pierce = 10;
     pelletSpread = Math.PI / 6;
     pelletType = PlayerFlame;
     
     upgrades = [
-        // Upgrade.KickbackScale(3, .4),
-        // Upgrade.ShotsScale(3, .5),
     ]
 }

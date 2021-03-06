@@ -11,6 +11,7 @@ class Weapon {
     pelletDamage = 1;
     pelletSpeed = 4;
     pelletSpread = Math.PI / 12;
+    pierce = 0; // number of extra enemy hits // TODO
     get cooldownTime() {
         return 60 / this.fireRate;
     }
@@ -106,6 +107,7 @@ class Weapon {
         bullet.dy += player.dy;
         bullet.damage = this.pelletDamage;
         bullet.knockback = this.knockbackPower;
+        bullet.pierce = this.pierce;
         sprites.push(bullet);
     }
 

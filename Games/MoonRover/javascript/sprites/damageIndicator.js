@@ -10,7 +10,7 @@ class DamageIndicator extends Sprite {
 
     Initialize() {
         this.dy = -5;
-        this.dx = 10 * Math.random() - 5;
+        this.dx = 5 * (Math.random() - 0.5);
     }
 
     Update() {

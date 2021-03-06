@@ -16,6 +16,7 @@ class Sprite {
     ignitionTimer = 0;
     // tracks how much longer to burn
     burnTimer = 0;
+    burnDamageTimer = 0;
 
     Ignite() {
         // sprite has touched fire, increment values to see if burn begins
@@ -35,10 +36,26 @@ class Sprite {
         }
         if (this.burnTimer > 0) {
             this.burnTimer--;
-            // TODO: damage over time
+            this.burnDamageTimer++;
+            if (this.burnDamageTimer >= 60) {
+                this.burnDamageTimer = 0;
+                this.ApplyDamage(1);
+            }
             if (Math.random() < 0.2) {
                 sprites.push(new Flame(this.x, this.y));
             }
+        } else {
+            this.burnDamageTimer = 0;
+        }
+    }
+
+    ApplyDamage(damageAmount) {
+        let oldHp = Math.floor(this.hp);
+        this.hp -= damageAmount;
+        let newHp = Math.floor(this.hp);
+        let visibleDamageAmount = oldHp - newHp;
+        if (visibleDamageAmount > 0) {
+            sprites.push(new DamageIndicator(this, visibleDamageAmount));
         }
     }
 

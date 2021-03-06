@@ -1,6 +1,9 @@
 class PlayerFlame extends PlayerBullet {
     timer = 0;
     duration = 60*2;
+    pierce = 0;
+
+    burnedSprites = [];
 
     Update() {
         this.timer++;
@@ -13,11 +16,19 @@ class PlayerFlame extends PlayerBullet {
         let touchingSprites = this.GetTouchingSprites();
         for (let touchingSprite of touchingSprites) {
             if (touchingSprite instanceof Enemy && !(touchingSprite instanceof EnemyBullet)) {
-                //this.ApplyDamage(touchingSprite);
-                touchingSprite.Ignite();
-                this.isActive = false;
-                // TODO handle fire isActive
-                // TODO also special case on shield
+                if (touchingSprite instanceof BossShieldProjection) {
+                    this.isActive = false;
+                } else if (this.burnedSprites.indexOf(touchingSprite) > -1) {
+                    // flame already affected this sprite, we can skip it
+                } else {
+                    touchingSprite.Ignite();
+                    if (this.pierce <= 0) {
+                        this.isActive = false;
+                    } else {
+                        this.pierce--;
+                    }
+                    this.burnedSprites.push(touchingSprite);
+                }
             }
         }
 
