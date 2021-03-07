@@ -210,7 +210,7 @@ class ShopHandler {
 
     OnClickRepair() {
         player.hp += 1;
-        loot -= this.repairCost;
+        loot -= shopHandler.repairCost;
         shopHandler.RefreshAvailability();
         audioHandler.PlaySound("mog-happy");
     }

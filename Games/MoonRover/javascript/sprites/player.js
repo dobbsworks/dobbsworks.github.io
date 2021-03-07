@@ -47,12 +47,11 @@ class Player extends Sprite {
                     if (this.hp <= 0) {
                         // you are dead, not big surprise
                         this.isActive = false;
+                        this.Explode();
                         deathCount++;
                         setTimeout(() => {
-                            player = new Player(0, 0);
-                            renderer.target = player;
-                            sprites.push(player)
-                        }, 1000)
+                            mainMenuHandler.ReturnToMainMenu();
+                        }, 3000)
                     } else {
                         this.hurtTimer = 60;
                         audioHandler.PlaySound("pow-03");

@@ -14,6 +14,9 @@ class Text extends UIElement {
     fontSize = 16;
     font = "Arial";
     maxWidth = 305;
+    get height() {
+        return (this.fontSize + 4) * this.lines.length;
+    }
 
     lines = [];
     commands = [];
@@ -32,6 +35,7 @@ class Text extends UIElement {
         let ret = [];
         let lines = this.text.split("\n");
         for (let line of lines) {
+            //if (!line.endsWith(" ")) line += " ";
             if (ctx.measureText(this.RemoveCommands(line)).width <= this.maxWidth) {
                 ret.push(line);
             } else {

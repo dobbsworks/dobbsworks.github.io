@@ -8,6 +8,7 @@ class MainMenuHandler {
     logo = null;
     isOnCredits = false;
     shootingStars = [];
+    hiddenStartButton = null;
 
     creditItems = [
         "A game by Dobbs",
@@ -30,6 +31,7 @@ class MainMenuHandler {
             "MarioMakerFanGPB",
             "zombieslicer15_",
             "IAmTheSupernova",
+            "notnowgwen",
             "oofprobich",
             "Ehnu",
             "SirBroozer_",
@@ -58,10 +60,13 @@ class MainMenuHandler {
 
 
     InitializeMenu() {
+        this.starsX = [];
+        this.starsY = [];
         for (let i = 0; i < 100; i++) {
             this.starsX.push(Math.floor(Math.random() * canvas.width));
             this.starsY.push(Math.floor(Math.random() * canvas.height));
         }
+        this.starLayers = [];
         this.starLayers.push(this.CreateStarLayerImage(1, "#FFFD"));
         this.starLayers.push(this.CreateStarLayerImage(2, "#FFFA"));
         this.starLayers.push(this.CreateStarLayerImage(4, "#FFF4"));
@@ -71,26 +76,41 @@ class MainMenuHandler {
         let title = new UiImage(titleImage, canvas.width / 2 - titleImage.width / 2, 30);
         this.logo = title;
 
-        let versionNum = new Text(canvas.width - 10, canvas.height - 10, "v0.1");
-        versionNum.textAlign = "right";
-        versionNum.fontSize = 12;
+        let versionNum = new Button(canvas.width - 60, canvas.height - 40, "v0.1");
+        versionNum.colorPrimary = "#0000";
+        versionNum.colorSecondary = "#0000";
+        versionNum.colorHighlight = "#0006";
+        versionNum.width = 60;
+        versionNum.height = 40;
+        versionNum.onClick = mainMenuHandler.OnClickVersionNum;
 
-        let hiddenStartButton = new Button(0, 0, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nClick or tap");
-        hiddenStartButton.colorPrimary = "#0000";
-        hiddenStartButton.colorSecondary = "#0000";
-        hiddenStartButton.colorHighlight = "#0000";
-        hiddenStartButton.width = canvas.width;
-        hiddenStartButton.height = canvas.height;
-        hiddenStartButton.onClick = () => {
-            uiHandler.elements = uiHandler.elements.filter(x => x !== hiddenStartButton);
+        this.hiddenStartButton = new Button(0, 0, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nClick or tap");
+        this.hiddenStartButton.colorPrimary = "#0000";
+        this.hiddenStartButton.colorSecondary = "#0000";
+        this.hiddenStartButton.colorHighlight = "#0000";
+        this.hiddenStartButton.width = canvas.width;
+        this.hiddenStartButton.height = canvas.height;
+        this.hiddenStartButton.onClick = () => {
             mainMenuHandler.StartMainMenu();
         }
 
-        let newElements = [title, versionNum, hiddenStartButton];
+        let newElements = [title, this.hiddenStartButton, versionNum];
         uiHandler.elements.push(...newElements);
     }
 
+    ReturnToMainMenu() {
+        sprites = [];
+        borders = [];
+        uiHandler.elements = [];
+        levelHandler = new LevelHandler();
+        mainMenuHandler.starLayers = [];
+        mainMenuHandler.isOnMainMenu = true;
+        mainMenuHandler.InitializeMenu();
+        mainMenuHandler.StartMainMenu();
+    }
+
     StartMainMenu() {
+        uiHandler.elements = uiHandler.elements.filter(x => x !== this.hiddenStartButton);
 
         let playButton = new Button(275, 350, "Play");
         playButton.height = 50;
@@ -259,6 +279,38 @@ class MainMenuHandler {
         uiHandler.elements.push(...newElements);
     }
 
+    OnClickVersionNum() {
+        uiHandler.Shelve();
+
+        let scrollAmount = 100;
+
+        let textObj = new Text(200, 50, versionHistory.join('\n\n'));
+        textObj.textAlign = "left";
+        textObj.SplitTextIntoLines();
+
+        let nextButton = new Button(550, 200, "Scroll Down");
+        nextButton.isDisabled = (textObj.targetY + textObj.height <= 450);
+        nextButton.onClick = () => {
+            textObj.targetY -= scrollAmount;
+            nextButton.isDisabled = (textObj.targetY + textObj.height <= 450);
+            prevButton.isDisabled = (textObj.targetY >= 50);
+        }
+
+        let prevButton = new Button(550, 50, "Scroll Up");
+        prevButton.isDisabled = true;
+        prevButton.onClick = () => {
+            textObj.targetY += scrollAmount;
+            nextButton.isDisabled = (textObj.targetY + textObj.height <= 450);
+            prevButton.isDisabled = (textObj.targetY >= 50);
+        }
+
+
+        let backButton = new Button(550, 350, "Main Menu");
+        backButton.onClick = () => {uiHandler.Restore()};
+
+        let newElements = [backButton, textObj, nextButton, prevButton];
+        uiHandler.elements.push(...newElements);
+    }
 
     DrawMenuBg() {
         if (!this.isOnMainMenu) return;

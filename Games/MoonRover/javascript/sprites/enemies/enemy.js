@@ -10,6 +10,7 @@ class Enemy extends Sprite {
         if (this.hp <= 0) {
             killCount++;
             this.isActive = false;
+            this.Explode();
             
             for (let i=0; i<this.loot; i++) {
                 sprites.push(new Loot(this.x, this.y));

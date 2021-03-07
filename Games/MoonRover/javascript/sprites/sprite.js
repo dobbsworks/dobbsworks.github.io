@@ -24,6 +24,18 @@ class Sprite {
         this.ignitionTimer = 60;
     }
 
+    Explode() {
+        let explodeCount = 6;
+        let explodeSpeed = 2;
+        for (let i = 0; i < explodeCount; i++) {
+            let e = new Explosion(this.x, this.y)
+            let theta = i * 2 * Math.PI / explodeCount;
+            e.dx = explodeSpeed * Math.cos(theta);
+            e.dy = explodeSpeed * Math.sin(theta);
+            sprites.push(e);
+        }
+    }
+
     SharedSpriteUpdate() {
         if (this.ignition > 0) {
             this.ignitionTimer--;
