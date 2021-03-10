@@ -24,6 +24,9 @@ class ShopHandler {
     mogBlinkDuration = 7;
     mogIntroTimer = -180;
     mogTempFaceTimer = 0;
+    fadeDuration = 60;
+    fadeInTimer = 0;
+    fadeOutTimer = 0;
 
     mogFaces = {
         "logo": { x: 0, y: 0, w: 37, h: 36 },
@@ -71,7 +74,7 @@ class ShopHandler {
         "The ground here isn't great for plants. It's been way easier to just ship up some good soil and recycle it as needed. Good thing we aren't trying to just coat the entire moon with grass, can you imagine? [face:blink]What a useless plant. [face]Moss is where it's at. ",
         "I've had a thread running on one of my auxillary processors for days now and I just can't get it to end. I don't even remember what it was doing, it's like having a song stuck in your head and the words aren't quite there. I'm sure it'll work itself out sooner or later, but I'm stuck with it for now. ",
         "So do you know what the humans are studying up here? [face:sad]Because if it's how to turn perfectly nice mining robots into insensitive jerks, they're doing a great job. [face:owo]Carol stopped returning my calls and Brett won't give me the time of day. [face]Literally! Which is a problem since my internal time clock broke last week. Or maybe it was next month? Yesterday, definitely yesterday. ",
-        "I went into sleep mode face down last night. [face:sad]Big mistake! [face]I woke up with this persistent dead pixel on my screen that just wouldn't quit. It was so distracting that I tripped over another robot and landed face down right on a moon rock! Lo and behold, that just so happened to fix the dead pixel. Maybe I should slam my face against rocks more often! ", 
+        "I went into sleep mode face down last night. [face:sad]Big mistake! [face]I woke up with this persistent dead pixel on my screen that just wouldn't quit. It was so distracting that I tripped over another robot and landed face down right on a moon rock! Lo and behold, that just so happened to fix the dead pixel. Maybe I should slam my face against rocks more often! ",
     ];
     currentConversation = "";
 
@@ -95,6 +98,7 @@ class ShopHandler {
 
 
     EnterShop() {
+        this.fadeInTimer = this.fadeDuration-1;
         audioHandler.SetBackgroundMusic("");
         weaponHandler.ReloadAll();
         isMouseDown = false;
@@ -200,7 +204,7 @@ class ShopHandler {
 
         this.exitButton = new Button(canvas.width - 150, 450, "Exit Shop");
         this.exitButton.height = 50;
-        this.exitButton.onClick = this.ExitShop;
+        this.exitButton.onClick = this.FadeOutShop;
         uiHandler.elements.push(this.exitButton);
 
         let buttonsToAdd = [...(this.buyButtons)];
@@ -387,9 +391,14 @@ class ShopHandler {
         audioHandler.PlaySound("mog-hmm");
     }
 
+    FadeOutShop() {
+        shopHandler.mogFace = shopHandler.mogFaces.happy;
+        uiHandler.elements = [];
+        shopHandler.fadeOutTimer = shopHandler.fadeDuration-1;
+    }
+
     ExitShop() {
         shopHandler.isInShop = false;
-        shopHandler.mogFace = shopHandler.mogFaces.happy;
         uiHandler.Restore();
         levelHandler.LoadZone();
     }
@@ -417,6 +426,11 @@ class ShopHandler {
             this.mogTempFaceTimer--;
             if (this.mogTempFaceTimer === 0) this.mogFace = this.mogFaces.happy;
         }
+
+        if (this.fadeOutTimer === 1) {
+            this.fadeOutTimer = 0;
+            this.ExitShop();
+        }
     }
 
     SetTempFace(face, duration) {
@@ -433,10 +447,6 @@ class ShopHandler {
         }
 
         this.displayCtx.clearRect(0, 0, this.displayCanvas.width, this.displayCanvas.height);
-        // this.displayCtx.font = "900 18px Verdana";
-        // this.displayCtx.fillStyle = "#141414";
-        // this.displayCtx.textAlign = "center"
-        // this.displayCtx.fillText("TEST",this.displayCanvas.width/2,18);
 
         let mogs = document.getElementById("image-mogs");
         if (mogs && mogs.width) {
@@ -462,7 +472,24 @@ class ShopHandler {
             ctx.drawImage(mogShopGridImage, canvas.width - 259, 124);
         }
 
+        if (this.fadeInTimer > 0) {
+            this.DrawFade(this.fadeInTimer / this.fadeDuration);
+            this.fadeInTimer--;
+        }
+
+        if (this.fadeOutTimer > 0) {
+            this.DrawFade((this.fadeDuration - this.fadeOutTimer) / this.fadeDuration);
+            this.fadeOutTimer--;
+        }
     }
 
+    DrawFade(ratio) {
+        // 0 for transparent
+        // 1 for opaque
+        let opacityHex = ratio.toString(16).slice(2, 3);
+        let fadeColor = levelHandler.GetLevelColor() + opacityHex;
+        ctx.fillStyle = fadeColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
 
 }

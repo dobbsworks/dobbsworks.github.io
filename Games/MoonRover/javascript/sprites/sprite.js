@@ -61,13 +61,21 @@ class Sprite {
         }
     }
 
-    ApplyDamage(damageAmount) {
+    ApplyDamage(damageAmount, bouncer, knockback) {
         let oldHp = Math.floor(this.hp);
         this.hp -= damageAmount;
         let newHp = Math.floor(this.hp);
         let visibleDamageAmount = oldHp - newHp;
         if (visibleDamageAmount > 0) {
             sprites.push(new DamageIndicator(this, visibleDamageAmount));
+        }
+        
+        if (bouncer && knockback && !(this instanceof BossCore)) {
+            // TODO
+            // vector should be normalized to make grazing shots less forceful
+            let theta = Math.atan2(this.y - bouncer.y, this.x - bouncer.x);
+            this.dx += knockback * Math.cos(theta);
+            this.dy += knockback * Math.sin(theta);
         }
     }
 
@@ -86,14 +94,20 @@ class Sprite {
 
         if (this.GetFrameData) {
             let frameData = this.GetFrameData();
-            let frame = frameData.tileset.tiles[frameData.frame];
-            renderer.Tile(frame, this.x, this.y, frameData.xFlip);
+            if (frameData) {
+                let frame = frameData.tileset.tiles[frameData.frame];
+                renderer.Tile(frame, this.x, this.y, frameData.xFlip);
+            }
         } else {
             ctx.fillStyle = this.color;
-            if (this.hurtTimer) {
-                ctx.fillStyle = "magenta";
-            }
             renderer.Circle(this.x, this.y, this.radius);
+        }
+
+        if (this.bubbleShieldTimer > 0) {
+            let renderShield = this.bubbleShieldTimer > 30 || this.bubbleShieldTimer % 2;
+            if (renderShield) {
+                renderer.Tile(tileset.shield.tiles[0], this.x, this.y, false);
+            }
         }
 
         if (this.OnAfterDraw) this.OnAfterDraw();

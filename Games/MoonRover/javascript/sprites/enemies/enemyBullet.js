@@ -9,4 +9,12 @@ class EnemyBullet extends Enemy {
             this.isActive = false;
         }
     }
+
+    GetFrameData() {
+        return {
+            tileset: tileset.pellets,
+            frame: 1,
+            xFlip: false,
+        };
+    }
 }

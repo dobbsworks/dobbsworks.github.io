@@ -8,9 +8,9 @@ class WeaponShotgun extends Weapon {
     ];
 
     upgrades = [
-        Upgrade.FireRateScale(3, 0.5),
-        Upgrade.ShotsChange(3, 1),
-        Upgrade.SpreadScale(3, -0.5),
-        Upgrade.DamageScale(10, 0.5),
+        Upgrade.FireRateScale(10, 0.5),
+        Upgrade.ShotsChange(10, 1),
+        Upgrade.SpreadScale(15, -0.5),
+        Upgrade.DamageScale(25, 1),
     ]
 }

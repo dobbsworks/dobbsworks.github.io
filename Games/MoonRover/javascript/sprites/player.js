@@ -2,14 +2,24 @@ class Player extends Sprite {
     color = "blue";
     maxHp = 10;
     hurtTimer = 0;
+    bubbleShieldTimer = 0;
     isOnGround = false;
 
     shake = 0; // used for ui shake, based on how sprite is jerked around
 
     Update() {
         let oldSpeedSquared = this.dx **2 + this.dy **2
+
+        if (oldSpeedSquared > 10**2) {
+            this.dx *= 0.999;
+            this.dy *= 0.999;
+        }
+
+        let isShielded = (this.bubbleShieldTimer > 0);
+
         let isBounced = false;
         if (isMouseDown) {
+        // if (isMouseDown && !isShielded) {
             // weapon fired
             weaponHandler.GetCurrent().PullTrigger();
         }
@@ -30,6 +40,13 @@ class Player extends Sprite {
                     bounceDx ** 2 + bounceDy ** 2
                 );
                 let targetMagnitude = 3;
+                if (isShielded) {
+                    targetMagnitude = Math.sqrt(oldSpeedSquared);
+                    let shieldDamage = Math.ceil(targetMagnitude / 4);
+                    if (targetMagnitude > 2) {
+                        touchingSprite.ApplyDamage(shieldDamage, this, targetMagnitude);
+                    }
+                }
                 if (enemyVelocityMagnitude > 0) {
                     let magnitudeScale = targetMagnitude / enemyVelocityMagnitude;
                     bounceDx *= magnitudeScale;
@@ -42,7 +59,9 @@ class Player extends Sprite {
                     player.dy = bounceDy;
                 }
 
-                if (this.hurtTimer === 0) {
+                if (isShielded) {
+                    audioHandler.PlaySound("notify-04");
+                } else if (this.hurtTimer === 0) {
                     this.hp -= 1;
                     if (this.hp <= 0) {
                         // you are dead, not big surprise
@@ -88,6 +107,7 @@ class Player extends Sprite {
         if (isBounced) this.shake += 20;
         if (this.shake > 0) this.shake--;
         if (this.shake > 100) this.shake = 100;
+        if (this.bubbleShieldTimer > 0) this.bubbleShieldTimer--;
     }
 
     GetFrameData() {

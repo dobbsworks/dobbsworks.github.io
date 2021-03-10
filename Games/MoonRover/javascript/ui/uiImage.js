@@ -13,11 +13,20 @@ class UiImage extends UIElement {
     scale = 1;
 
     Draw() {
-        ctx.drawImage(this.image, this.x, this.y, this.image.width * this.scale, this.image.height * this.scale)
+        this.DrawTileOrImage();
         if (this.isSilhoutte) {
             ctx.globalCompositeOperation = "xor";
-            ctx.drawImage(this.image, this.x, this.y);
+            this.DrawTileOrImage();
             ctx.globalCompositeOperation = "source-over";
+        }
+        ctx.filter = "none";
+    }
+
+    DrawTileOrImage() {
+        if (this.image instanceof Tile) {
+            this.image.Draw(ctx, this.x, this.y, this.scale);
+        } else {
+            ctx.drawImage(this.image, this.x, this.y, this.image.width * this.scale, this.image.height * this.scale);
         }
     }
 

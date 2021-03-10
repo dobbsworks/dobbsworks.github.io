@@ -31,8 +31,17 @@ class LevelHandler {
         }
     }
 
+    GetLevelColor() {
+        let levelNum = this.currentLevel - 1;
+        if (shopHandler.isInShop && shopHandler.fadeOutTimer > 0 && this.currentZone >= 5) {
+            // exiting shop into new level
+            levelNum++;
+        }
+        return this.levels[levelNum].color;
+    }
+
     DrawSwoops(ratio) {
-        let swoopColor = this.levels[this.currentLevel - 1].color;
+        let swoopColor = this.GetLevelColor();
         //if (shopHandler.isInShop) swoopColor = "#020a2e";
         ratio = Math.max(0, Math.min(1, ratio));
         let swoopyCount = 5;

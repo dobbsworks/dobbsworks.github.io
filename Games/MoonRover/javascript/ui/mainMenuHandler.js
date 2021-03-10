@@ -76,10 +76,10 @@ class MainMenuHandler {
         let title = new UiImage(titleImage, canvas.width / 2 - titleImage.width / 2, 30);
         this.logo = title;
 
-        let versionNum = new Button(canvas.width - 60, canvas.height - 40, "v0.1");
-        versionNum.colorPrimary = "#0000";
+        let versionNum = new Button(canvas.width - 60, canvas.height - 40, "v" + versionNumber);
+        versionNum.colorPrimary = "#0007";
         versionNum.colorSecondary = "#0000";
-        versionNum.colorHighlight = "#0006";
+        versionNum.colorHighlight = "#000B";
         versionNum.width = 60;
         versionNum.height = 40;
         versionNum.onClick = mainMenuHandler.OnClickVersionNum;
@@ -99,10 +99,13 @@ class MainMenuHandler {
     }
 
     ReturnToMainMenu() {
+        loot = 0;
         sprites = [];
         borders = [];
         uiHandler.elements = [];
         levelHandler = new LevelHandler();
+        weaponHandler = new WeaponHandler();
+        shopHandler = new ShopHandler();
         mainMenuHandler.starLayers = [];
         mainMenuHandler.isOnMainMenu = true;
         mainMenuHandler.InitializeMenu();
@@ -112,15 +115,36 @@ class MainMenuHandler {
     StartMainMenu() {
         uiHandler.elements = uiHandler.elements.filter(x => x !== this.hiddenStartButton);
 
-        let playButton = new Button(275, 350, "Play");
-        playButton.height = 50;
+        let bigButtonWidth = 200;
+        let smallButtonWidth = 150;
+        let contentHeight = 125;
+        let margin = 25;
+        let smallButtonHeight = (contentHeight - margin) / 2;
+        let y1 = 300;
+        let y2 = y1 + margin + smallButtonHeight
+
+        let xMid = (canvas.width - bigButtonWidth) / 2;
+        let x1 = xMid - smallButtonWidth - margin;
+        let x2 = xMid + bigButtonWidth + margin;
+
+        let playButton = new Button(xMid, y1, "Play");
+        playButton.height = contentHeight;
+        playButton.width = bigButtonWidth;
         playButton.onClick = mainMenuHandler.OnClickPlay;
 
-        let creditsButton = new Button(475, 350, "Credits");
-        creditsButton.height = 50;
+        let optionsButton = new Button(x1, y1, "Options");
+        optionsButton.onClick = null;
+        let helpButton = new Button(x1, y2, "Help");
+        helpButton.onClick = null;
+        let achievementsButton = new Button(x2, y1, "Achievements");
+        achievementsButton.onClick = mainMenuHandler.OnClickAchievements;
+        let creditsButton = new Button(x2, y2, "Credits");
         creditsButton.onClick = mainMenuHandler.OnClickCredits;
+        [creditsButton, optionsButton, helpButton, achievementsButton].forEach(a => a.height = smallButtonHeight);
+        [optionsButton, helpButton].forEach(a => a.isDisabled = true);
 
-        uiHandler.elements.push(playButton, creditsButton);
+
+        uiHandler.elements.push(playButton, creditsButton, optionsButton, helpButton, achievementsButton);
     }
 
     OnClickPlay() {
@@ -306,9 +330,66 @@ class MainMenuHandler {
 
 
         let backButton = new Button(550, 350, "Main Menu");
-        backButton.onClick = () => {uiHandler.Restore()};
+        backButton.onClick = () => { uiHandler.Restore() };
 
         let newElements = [backButton, textObj, nextButton, prevButton];
+        uiHandler.elements.push(...newElements);
+    }
+
+    OnClickAchievements() {
+        uiHandler.Shelve();
+
+        let achieves = Object.values(achievementHandler.achievements);
+        let margin = 25;
+        let size = 72;
+
+        let cols = 5;
+        let rows = 2;
+        let totalWidth = cols * size + (cols - 1) * margin;
+
+        let titleObj = new Text(canvas.width / 2 - totalWidth / 2, 350 + 20, "");
+        titleObj.fontSize = 20;
+        titleObj.isBold = true;
+        titleObj.textAlign = "left";
+
+        let textObj = new Text(titleObj.x, titleObj.y + 20, "Click or tap for details");
+        textObj.maxWidth = size * 3 + margin * 2;
+        textObj.textAlign = "left";
+
+        let achieveButtons = [];
+        for (let y = 50, row = 0; row < rows; row++, y += margin + size) {
+            for (let x = canvas.width / 2 - totalWidth / 2, col = 0; col < cols; col++, x += margin + size) {
+                let achieve = achieves.splice(0, 1)[0];
+                if (achieve) {
+                    let b = new Button(x, y, " ");
+                    b.width = size;
+                    b.height = size;
+                    b.colorPrimary = "#0000";
+                    b.onClick = () => {
+                        titleObj.text = achieve.name;
+                        if (achieve.unlocked) {
+                            textObj.text = achieve.descr + "\nUnlocked: " + achieve.unlockedTimestamp.toLocaleString();
+                        } else {
+                            textObj.text = achieve.descr + "\nLOCKED"
+                        }
+                    }
+                    let backdropTileIndex = (achieve.unlocked ? 0 : 1);
+                    let backdrop = new UiImage(tileset.achievements.tiles[backdropTileIndex], x, y);
+                    backdrop.scale = 2;
+                    let img = new UiImage(tileset.achievements.tiles[achieve.imageIndex], x, y);
+                    img.scale = 2;
+                    img.isSilhoutte = !achieve.unlocked;
+                    achieveButtons.push(b, backdrop, img);
+                }
+            }
+        }
+
+        let backButton = new Button(canvas.width / 2 + totalWidth / 2 + margin - (margin + size) * 2, 350, "Main Menu");
+        backButton.height = size;
+        backButton.width = size * 2 + margin;
+        backButton.onClick = () => { uiHandler.Restore() };
+
+        let newElements = [titleObj, textObj, backButton, ...achieveButtons];
         uiHandler.elements.push(...newElements);
     }
 
@@ -349,11 +430,11 @@ class MainMenuHandler {
             ctx.drawImage(this.starLayers[i], x + canvas.width, y + canvas.height);
         }
 
-        function AddShootingStar(x,y) {
-            mainMenuHandler.shootingStars.push({x: x, y: y, dx: Math.random() + 1, dy: Math.random() + 1});
+        function AddShootingStar(x, y) {
+            mainMenuHandler.shootingStars.push({ x: x, y: y, dx: Math.random() + 1, dy: Math.random() + 1 });
         }
         if (this.shootingStars.length < 2) {
-            AddShootingStar(canvas.width * Math.random() - canvas.width/2, 0);
+            AddShootingStar(canvas.width * Math.random() - canvas.width / 2, 0);
         }
         if (this.shootingStars.length < 100 && isMouseDown) {
             AddShootingStar(mouseX, mouseY);

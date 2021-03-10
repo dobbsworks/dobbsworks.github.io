@@ -6,9 +6,13 @@ class Text extends UIElement {
         this.targetY = y;
         this.x = x;
         this.y = y;
-        this.text = text;
+        this._text = text;
     }
 
+    set text(val) {
+        this._text = val;
+        this.SplitTextIntoLines();
+    }
     textAlign = "center";
     isBold = false;
     fontSize = 16;
@@ -33,7 +37,7 @@ class Text extends UIElement {
     SplitTextIntoLines() {
         // divides on spaces/newlines to avoid breaking maxwidth
         let ret = [];
-        let lines = this.text.split("\n");
+        let lines = this._text.split("\n");
         for (let line of lines) {
             //if (!line.endsWith(" ")) line += " ";
             if (ctx.measureText(this.RemoveCommands(line)).width <= this.maxWidth) {
@@ -102,7 +106,7 @@ class Text extends UIElement {
     revealIndex = 0;
     Draw() {
         let newCharTime = false;
-        if (!this.text) return;
+        if (!this._text) return;
         if (this.pause > 0) {
             this.pause--;
             if (isMouseDown) this.pause -= 2;

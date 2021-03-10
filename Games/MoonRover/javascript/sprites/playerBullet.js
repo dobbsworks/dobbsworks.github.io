@@ -1,43 +1,57 @@
 class PlayerBullet extends Sprite {
-    color = "cyan";
+    timer = 0;
     radius = 5;
     damage = 1;
     knockback = 5;
+    pierce = 0;
+    duration = Infinity;
+
+    damagedSprites = [];
 
     Update() {
+        this.CheckExpiration();
         this.ApplyGravity();
         this.UpdatePosition();
         let touchedBorders = this.ReactToBorders();
         if (touchedBorders.length > 0) {
             this.isActive = false;
         }
-        
+
+        this.CheckForEnemyHits(false);
+    }
+
+    CheckForEnemyHits(canHitEnemyBullets) {
         let touchingSprites = this.GetTouchingSprites();
         for (let touchingSprite of touchingSprites) {
-            if (touchingSprite instanceof Enemy && !(touchingSprite instanceof EnemyBullet)) {
-                this.ApplyDamage(touchingSprite);
+            if (touchingSprite instanceof Enemy) {
+                if (!canHitEnemyBullets && touchingSprite instanceof EnemyBullet) continue;
+
+                touchingSprite.ApplyDamage(this.damage, this, this.knockback);
                 if (touchingSprite.hp >= 0) {
                     audioHandler.PlaySound("ow-01");
-                    if (!(touchingSprite instanceof BossCore)) {
-                        // TODO
-                        // vector should be normalized to make grazing shots less forceful
-                        let theta = Math.atan2(touchingSprite.y - this.y, touchingSprite.x - this.x);
-                        touchingSprite.dx += this.knockback * Math.cos(theta);
-                        touchingSprite.dy += this.knockback * Math.sin(theta);
-                    }
                 }
-                this.isActive = false;
+
+                this.damagedSprites.push(touchingSprite);
+                this.pierce--;
+                if (this.pierce < 0) {
+                    this.isActive = false;
+                }
             }
         }
     }
-    
-    ApplyDamage(enemy) {
-        let oldEnemyHpRounded = Math.floor(enemy.hp);
-        enemy.hp -= this.damage;
-        let newEnemyHpRounded = Math.floor(enemy.hp);
-        let visibleDamageAmount = oldEnemyHpRounded - newEnemyHpRounded;
-        if (visibleDamageAmount > 0) {
-            sprites.push(new DamageIndicator(enemy, visibleDamageAmount));
+
+    CheckExpiration() {
+        this.timer++;
+        if (this.timer > this.duration) {
+            this.isActive = false;
         }
+    }
+
+    GetFrameData() {
+        return {
+            tileset: tileset.pellets,
+            frame: 0,
+            xFlip: false,
+        };
     }
 }

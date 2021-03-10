@@ -24,6 +24,8 @@ class Button extends UIElement {
 
     onClick() {
     }
+    onMouseOver() {
+    }
 
     FillBox() {
         ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -41,6 +43,7 @@ class Button extends UIElement {
             if (!this.isMousedOver) {
                 // we just now moused over
                 audioHandler.PlaySound("beep-01");
+                if (this.onMouseOver) this.onMouseOver();
             }
             this.isMousedOver = true;
             if (isMouseDown) {

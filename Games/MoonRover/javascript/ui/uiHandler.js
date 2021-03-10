@@ -38,7 +38,7 @@ class UIHandler {
                         if (button instanceof Toggle) {
                             button.Toggle();
                         } else {
-                            button.onClick();
+                            if (button.onClick) button.onClick();
                             audioHandler.PlaySound("beep-02");
                         }
                         isMouseDown = false;
@@ -69,8 +69,8 @@ class UIHandler {
         //let fps = Math.floor(1000 / msPerFrame) * 1;
 
         if (shopHandler.isInShop) {
-            shopHandler.DrawShop();
             this.DrawSideBar();
+            shopHandler.DrawShop();
         } else if (pauseHandler.isPaused) {
             
         } else if (mainMenuHandler.isOnMainMenu) {
@@ -250,7 +250,12 @@ class UIHandler {
             if (i == weapon.shotsRemaining) {
                 let reloadRatio = Math.min(1, weapon.reloadTimer / weapon.reloadTime);
                 ctx.fillStyle = "#949";
-                ctx.fillRect(x + padding + ammoBoxWidth * i, ammoBoxY + ammoBoxHeight, ammoBoxWidth - 1, -ammoBoxHeight * reloadRatio);
+                if (ammoBoxHeight > ammoBoxWidth) {
+                    ctx.fillRect(x + padding + ammoBoxWidth * i, ammoBoxY + ammoBoxHeight, ammoBoxWidth - 1, -ammoBoxHeight * reloadRatio);
+                } else {
+                    ctx.fillRect(x + padding + ammoBoxWidth * i, ammoBoxY + ammoBoxHeight, ammoBoxWidth * reloadRatio - 1, -ammoBoxHeight);
+
+                }
             }
         }
     }

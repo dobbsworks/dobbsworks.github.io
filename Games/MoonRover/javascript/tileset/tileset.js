@@ -24,7 +24,7 @@ class Tileset {
 
 var tileset = {};
 function InitializeTilesets() {
-    let imageIds = ["player", "orangebot","tealbot","yellowbot","limebot","cyanbot","bluebot","purplecore","bluecore","limecore","orangecore","redcore","magentacore", "star", "coin", "flame", "explosion"];
+    let imageIds = ["player", "orangebot","tealbot","yellowbot","limebot","cyanbot","bluebot","purplecore","bluecore","limecore","orangecore","redcore","magentacore", "star", "coin", "flame", "pellets", "explosion", "shield", "achievements"];
 
     for (let imageId of imageIds) {
         let image = document.getElementById(imageId);

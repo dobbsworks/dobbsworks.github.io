@@ -1,7 +1,7 @@
 class WeaponHandler {
     inventory = [
         new WeaponPeashooter(),
-        new WeaponFlamethrower(),
+        new WeaponPelletShield(),
         new WeaponTest(),
     ];
 
@@ -47,8 +47,9 @@ class WeaponHandler {
         }
 
         let currentWeapon = this.GetCurrent();
-        if (currentWeapon) {
-            currentWeapon.Update();
+        for (let weapon of this.inventory) {
+            let isHolstered = (weapon !== currentWeapon);
+            weapon.Update(isHolstered);
         }
         if (this.oldWeaponIndex !== this.selectedWeaponIndex) {
             let oldWeapon = weaponHandler.inventory[this.oldWeaponIndex];

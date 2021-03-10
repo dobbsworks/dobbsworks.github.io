@@ -13,6 +13,7 @@ class WeaponJetpack extends Weapon {
     pelletSpeed = 0.5;
     fixedSpread = false;
     cost = 0;
+    initialPelletDistance = 30;
     
     upgrades = [
         Upgrade.KickbackScale(3, .4),

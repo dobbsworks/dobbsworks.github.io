@@ -1,12 +1,10 @@
 class PlayerFlame extends PlayerBullet {
-    timer = 0;
-    duration = 60*2;
     pierce = 0;
 
     burnedSprites = [];
 
     Update() {
-        this.timer++;
+        this.CheckExpiration();
         this.UpdatePosition();
         let touchedBorders = this.ReactToBorders();
         if (touchedBorders.length > 0) {
@@ -30,10 +28,6 @@ class PlayerFlame extends PlayerBullet {
                     this.burnedSprites.push(touchingSprite);
                 }
             }
-        }
-
-        if (this.timer > this.duration) {
-            this.isActive = false;
         }
     }
 

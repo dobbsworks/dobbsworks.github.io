@@ -11,7 +11,9 @@ class Weapon {
     pelletDamage = 1;
     pelletSpeed = 4;
     pelletSpread = Math.PI / 12;
+    pelletDuration = Infinity;
     pierce = 0; // number of extra enemy hits // TODO
+    shieldDuration = 0;
     get cooldownTime() {
         return 60 / this.fireRate;
     }
@@ -21,8 +23,10 @@ class Weapon {
         return 60 / this.reloadSpeed;
     }
     reloadSpeed = 4;
+    holsterReloadRatio = 0;
     midAirReloadRatio = 0.15;
     fixedSpread = true;
+    initialPelletDistance = 20;
 
     clipSize = 3;
     shotsRemaining = 0;
@@ -43,7 +47,7 @@ class Weapon {
         this.deployTimer = this.deployTime;
     }
     SwitchFrom() {
-        this.reloadTimer = 0;
+        if (!this.holsterReloadRatio) this.reloadTimer = 0;
     }
 
     PullTrigger() {
@@ -78,6 +82,9 @@ class Weapon {
         if (this.fixedSpread) {
             if (this.pelletCount === 1) firstPelletAngle = 0;
             let spreadBetweenPellets = this.pelletCount === 1 ? 0 : (this.pelletSpread / (this.pelletCount - 1));
+            if (this.pelletSpread === Math.PI * 2) {
+                spreadBetweenPellets = this.pelletSpread / this.pelletCount;
+            }
             for (let i = 0; i < this.pelletCount; i++) {
                 let angleDeviation = spreadBetweenPellets * i + firstPelletAngle;
                 this.FireBullet(theta + angleDeviation);
@@ -98,8 +105,10 @@ class Weapon {
 
 
     FireBullet(angle) {
-        let x = player.x;
-        let y = player.y;
+        if (this.shieldDuration) player.bubbleShieldTimer = this.shieldDuration;
+        if (!this.pelletType) return;
+        let x = player.x - this.initialPelletDistance * Math.cos(angle);
+        let y = player.y - this.initialPelletDistance * Math.sin(angle);
         let bullet = new this.pelletType(x, y);
         bullet.dx = -this.pelletSpeed * Math.cos(angle) * 4;
         bullet.dy = -this.pelletSpeed * Math.sin(angle) * 4;
@@ -108,20 +117,20 @@ class Weapon {
         bullet.damage = this.pelletDamage;
         bullet.knockback = this.knockbackPower;
         bullet.pierce = this.pierce;
+        bullet.duration = this.pelletDuration;
         sprites.push(bullet);
     }
 
-    Update() {
+    Update(isHolstered) {
         if (this.cooldownTimer > 0) this.cooldownTimer--;
         if (this.deployTimer > 0) this.deployTimer--;
 
         let isPlayerOnGround = player && player.isOnGround;
         if (this.shotsRemaining < this.clipSize) {
-            if (isPlayerOnGround) {
-                this.reloadTimer++;
-            } else {
-                this.reloadTimer += this.midAirReloadRatio;
-            }
+            let reloadAmount = 1;
+            if (isHolstered) reloadAmount *= this.holsterReloadRatio;
+            if (!isPlayerOnGround) reloadAmount *= this.midAirReloadRatio;
+            this.reloadTimer += reloadAmount;
 
             while (this.reloadTimer >= this.reloadTime) {
                 this.reloadTimer -= this.reloadTime;

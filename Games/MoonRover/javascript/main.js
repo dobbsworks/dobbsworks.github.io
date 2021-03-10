@@ -6,6 +6,7 @@ var sprites = [];
 var borders = [];
 var levelHandler;
 var weaponHandler;
+var achievementHandler;
 var uiHandler;
 var shopHandler;
 var pauseHandler;
@@ -36,10 +37,11 @@ function Initialize() {
         }
     }
 
+    achievementHandler = new AchievementHandler();
     levelHandler = new LevelHandler();
     weaponHandler = new WeaponHandler();
-    uiHandler = new UIHandler();
     shopHandler = new ShopHandler();
+    uiHandler = new UIHandler();
     pauseHandler = new PauseHandler();
     audioHandler = new AudioHandler();
     mainMenuHandler = new MainMenuHandler();
@@ -50,6 +52,7 @@ function Initialize() {
     InitializeTilesets();
     setInterval(MainLoop, 1000 / 60);
     mainMenuHandler.InitializeMenu();
+    achievementHandler.Initialize();
 }
 
 let p = null;
@@ -81,6 +84,7 @@ function MainLoop() {
         }
         sprites = sprites.filter(x => x.isActive);
     }
+    achievementHandler.Update();
     let t1 = performance.now();
 
     Draw();
@@ -112,4 +116,5 @@ function Draw() {
     mainMenuHandler.DrawMenuBg();
     uiHandler.Draw();
     levelHandler.DrawLevelTransition();
+    achievementHandler.Draw();
 }

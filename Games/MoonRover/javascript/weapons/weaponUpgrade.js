@@ -76,8 +76,8 @@ class Upgrade {
         },
         clipSize: {
             goodDirection: +1,
-            shortDescription: "More mid-air shots",
-            statDescription: "shot(s) before landing"
+            shortDescription: "More shots",
+            statDescription: "shot(s) before reloading"
         },
         pelletSpread: {
             goodDirection: -1,
@@ -99,8 +99,18 @@ class Upgrade {
         },
         pelletCount: {
             goodDirection: +1,
-            shortDescription: "pellets per shot",
+            shortDescription: "Pellets per shot",
             statDescription: "pellets per shot",
+        },
+        pelletDuration: {
+            goodDirection: +1,
+            shortDescription: "Pellet duration",
+            statDescription: "longer projectile duration",
+        },
+        shieldDuration: {
+            goodDirection: +1,
+            shortDescription: "Longer shield",
+            statDescription: "longer shield duration",
         }
     }
 
@@ -198,6 +208,28 @@ class Upgrade {
                 prop: "pelletCount",
                 delta: pelletsPlus,
                 type: Upgrade.Type.add
+            }
+        ]);
+        return upgrade;
+    }
+
+    static ShieldDurationScale(cost, shieldDurationScale) {
+        let upgrade = new Upgrade(cost, [
+            {
+                prop: "shieldDuration",
+                delta: shieldDurationScale,
+                type: Upgrade.Type.scale
+            }
+        ]);
+        return upgrade;
+    }
+
+    static PelletDurationScale(cost, pelletDurationScale) {
+        let upgrade = new Upgrade(cost, [
+            {
+                prop: "pelletDuration",
+                delta: pelletDurationScale,
+                type: Upgrade.Type.scale
             }
         ]);
         return upgrade;

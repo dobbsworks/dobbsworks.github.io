@@ -14,6 +14,7 @@ class WeaponFireCannon extends Weapon {
     cost = 25;
     pelletSpread = Math.PI / 24;
     pelletType = PlayerFlame;
+    pelletDuration = 60 * 2;
     
     upgrades = [
     ]
