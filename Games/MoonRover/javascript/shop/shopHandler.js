@@ -119,7 +119,7 @@ class ShopHandler {
     }
 
     GetRandomWeapon() {
-        let weaponClasses = [WeaponShotgun, WeaponJetpack, WeaponFlamethrower, WeaponFireCannon];
+        let weaponClasses = [WeaponShotgun, WeaponJetpack, WeaponFlamethrower, WeaponFireCannon, WeaponBubbleShield, WeaponPelletShield];
         let unowned = weaponClasses.filter(x => !weaponHandler.inventory.some(y => y instanceof x));
         if (unowned.length === 0) return null;
         let toSell = unowned[Math.floor(Math.random() * unowned.length)];

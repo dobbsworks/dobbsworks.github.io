@@ -84,6 +84,7 @@ class Achievement {
         if (achieved) {
             this.unlocked = true;
             this.unlockedTimestamp = new Date();
+            audioHandler.PlaySound("powerup-04");
         }
         return achieved;
     }
