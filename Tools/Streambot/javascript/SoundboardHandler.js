@@ -1,11 +1,11 @@
 function CommandSoundBoard(user, args) {
     let searchString = args[0];
-    let results = soundboardHandler.play(searchString);
+    let results = soundboardHandler.play(searchString, user.username);
     return results;
 }
 
 function CommandSoundBoardRandom(user, args) {
-    let results = soundboardHandler.play("random");
+    let results = soundboardHandler.play("random", user.username);
     return results;
 }
 
@@ -32,6 +32,8 @@ var soundboardHandler = {
     masterVolume: 0.8,
     initialized: false,
     maxConcurrent: 3,
+    perUserWaiting: 1000 * 60,
+    userTimes: {},
     pendingSounds: [],
     playingSounds: [],
     sounds: [
@@ -83,8 +85,20 @@ var soundboardHandler = {
             soundboardHandler.initialized = true;
         }
     },
-    play: (arg) => {
+    play: (arg, username) => {
         soundboardHandler.initSounds();
+
+        if (!username) return {success: false, message: "Username missing! (Dobbs goofed up the code)"};
+        username = username.toLowerCase();
+        let userLastTime = soundboardHandler.userTimes[username];
+        if (userLastTime) {
+            let timeSinceLast = (new Date() - userLastTime);
+            let secondsLeftToWait = Math.ceil((soundboardHandler.perUserWaiting - timeSinceLast) / 1000);
+            if (secondsLeftToWait > 0) {
+                return {success: false, message: `You can play a sound again in ${secondsLeftToWait+1} seconds.`};
+            }
+        }
+
         let sound = soundboardHandler.findSound(arg);
         if (!sound) return {success: false, message: "Sound not found, use !sounds to check available options"};
         let url = soundboardHandler.baseUrl + sound.file;
@@ -93,8 +107,8 @@ var soundboardHandler = {
         if (audio.volume > 1) audio.volume = 1;
         if (audio.volume < 0) audio.volume = 0;
         if (audio.duration > 15) return {success: false, message: "ok, so Dobbs might've goofed this sound up, try a different one."};
-        //audio.play();
         soundboardHandler.pendingSounds.push(audio);
+        soundboardHandler.userTimes[username] = new Date();
         return {success: true, message: `Playing sound ${sound.id}, ${sound.key}.`};
     },
     update: () => {
