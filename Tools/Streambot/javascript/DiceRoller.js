@@ -1,6 +1,11 @@
 function CommandRoll(user, args) {
     let rawRollString = args.join('').replace(/\s/g, '').toLowerCase();
     let hasInvalidChars = rawRollString.replace(/[\d,d,+,-]/g, '').length > 0;
+
+    if (rawRollString.indexOf("d") === -1) {
+        return 'Include "d" to indicate number of face on each die. Example usages: "!roll d6" or "!roll d20+3" or "!roll 3d8-d6"'
+    }
+
     if (hasInvalidChars) {
         return 'Invalid roll! Example usages: "!roll d6" or "!roll d20+3" or "!roll 3d8-d6"'
     } else {
