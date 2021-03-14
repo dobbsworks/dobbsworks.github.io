@@ -110,6 +110,7 @@ class MainMenuHandler {
         mainMenuHandler.isOnMainMenu = true;
         mainMenuHandler.InitializeMenu();
         mainMenuHandler.StartMainMenu();
+        achievementHandler.RunReset();
     }
 
     StartMainMenu() {

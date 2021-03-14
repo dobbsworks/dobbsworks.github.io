@@ -1,5 +1,5 @@
 class WeaponPelletShield extends Weapon {
-    name = "The Swarm Shield";
+    name = "Swarm Shield";
     flavor = "Surrounds you with an orbiting field of protective drones."
     fireSound = "notify-01";
     cost = 35;

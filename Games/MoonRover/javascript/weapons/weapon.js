@@ -10,8 +10,12 @@ class Weapon {
     pelletCount = 1;
     pelletDamage = 1;
     pelletSpeed = 4;
+    pelletGravityScale = 1;
     pelletSpread = Math.PI / 12;
     pelletDuration = Infinity;
+
+    effectDuration = 60 * 1;
+
     pierce = 0; // number of extra enemy hits // TODO
     shieldDuration = 0;
     get cooldownTime() {
@@ -30,6 +34,14 @@ class Weapon {
 
     clipSize = 3;
     shotsRemaining = 0;
+
+    maxBounces = 0;
+
+    // grenade/bomb weapons
+    triggeredWeapon = null;
+    explodeOnEnemy = false;
+    explodeOnWall = false;
+    explodeOnExpire = false;
 
     // state
     cooldownTimer = 0;
@@ -51,10 +63,12 @@ class Weapon {
     }
 
     PullTrigger() {
-        this.reloadTimer = 0; // cancel current reload
+        if (this.shotsRemaining > 0 || player.isOnGround) {
+            this.reloadTimer = 0; // cancel current reload
+        }
         if (this.cooldownTimer <= 0 && this.deployTimer <= 0) {
             if (this.shotsRemaining > 0) {
-                this.Fire();
+                this.Fire(player);
                 this.shotsRemaining--;
             } else {
                 audioHandler.PlaySound("notify-05", true);
@@ -67,16 +81,21 @@ class Weapon {
     }
 
     GetSellPrice() {
-        let upgradeCost = this.upgrades.filter(x => x.isActive).map(x => x.cost).reduce((a,b)=>a+b,0);
+        let upgradeCost = this.upgrades.filter(x => x.isActive).map(x => x.cost).reduce((a, b) => a + b, 0);
         return Math.floor((this.cost + upgradeCost) / 2);
     }
 
-    Fire() {
+    Fire(source) {
         audioHandler.PlaySound(this.fireSound);
 
-        let xDif = player.x - GetGameMouseX();
-        let yDif = player.y - GetGameMouseY();
-        let theta = Math.atan2(yDif, xDif);
+        let theta = 0;
+        if (source === player) {
+            let xDif = player.x - GetGameMouseX();
+            let yDif = player.y - GetGameMouseY();
+            theta = Math.atan2(yDif, xDif);
+        } else {
+            theta = Math.atan2(-source.dy, -source.dx);
+        }
 
         let firstPelletAngle = - this.pelletSpread / 2;
         if (this.fixedSpread) {
@@ -87,37 +106,48 @@ class Weapon {
             }
             for (let i = 0; i < this.pelletCount; i++) {
                 let angleDeviation = spreadBetweenPellets * i + firstPelletAngle;
-                this.FireBullet(theta + angleDeviation);
+                this.FireBullet(theta + angleDeviation, source);
             }
         } else {
             // random spread
             for (let i = 0; i < this.pelletCount; i++) {
                 let angleDeviation = Math.random() * this.pelletSpread + firstPelletAngle;
-                this.FireBullet(theta + angleDeviation);
+                this.FireBullet(theta + angleDeviation, source);
             }
         }
 
-        player.dx += this.kickbackPower * Math.cos(theta);
-        player.dy += this.kickbackPower * Math.sin(theta);
+        if (source === player) {
+            player.dx += this.kickbackPower * Math.cos(theta);
+            player.dy += this.kickbackPower * Math.sin(theta);
+        }
 
         this.cooldownTimer = this.cooldownTime;
     }
 
 
-    FireBullet(angle) {
+    FireBullet(angle, source) {
         if (this.shieldDuration) player.bubbleShieldTimer = this.shieldDuration;
         if (!this.pelletType) return;
-        let x = player.x - this.initialPelletDistance * Math.cos(angle);
-        let y = player.y - this.initialPelletDistance * Math.sin(angle);
+        let x = source.x - this.initialPelletDistance * Math.cos(angle);
+        let y = source.y - this.initialPelletDistance * Math.sin(angle);
         let bullet = new this.pelletType(x, y);
         bullet.dx = -this.pelletSpeed * Math.cos(angle) * 4;
         bullet.dy = -this.pelletSpeed * Math.sin(angle) * 4;
-        bullet.dx += player.dx;
-        bullet.dy += player.dy;
+        bullet.gravityScale = this.pelletGravityScale;
+        if (source === player) {
+            bullet.dx += player.dx;
+            bullet.dy += player.dy;
+        }
         bullet.damage = this.pelletDamage;
         bullet.knockback = this.knockbackPower;
         bullet.pierce = this.pierce;
         bullet.duration = this.pelletDuration;
+        bullet.effectDuration = this.effectDuration;
+        bullet.triggeredWeapon = this.triggeredWeapon;
+        bullet.explodeOnEnemy = this.explodeOnEnemy;
+        bullet.explodeOnWall = this.explodeOnWall;
+        bullet.explodeOnExpire = this.explodeOnExpire;
+        bullet.maxBounces = this.maxBounces;
         sprites.push(bullet);
     }
 
@@ -138,7 +168,7 @@ class Weapon {
                     this.shotsRemaining++;
                 }
             }
-            
+
             // just now hit capacity
             if (this.shotsRemaining === this.clipSize) {
                 //audioHandler.PlaySound("notify-01");
@@ -156,6 +186,9 @@ class Weapon {
             this.ApplyUpgrade(upgrade);
         }
         this.shotsRemaining = this.clipSize;
+        if (this.triggeredWeapon) {
+            this.triggeredWeapon.ApplyInitialUpgrades();
+        }
     }
 
     ApplyUpgrade(upgrade) {

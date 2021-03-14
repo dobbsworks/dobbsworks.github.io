@@ -1,5 +1,5 @@
 class WeaponShotgun extends Weapon {
-    name = "The Blunderbuss";
+    name = "Blunderbuss";
     flavor = "Fires multiple pellets, but in a wide area."
     fireSound = "pow-01";
     cost = 25;

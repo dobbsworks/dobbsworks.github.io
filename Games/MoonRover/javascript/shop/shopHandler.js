@@ -44,6 +44,8 @@ class ShopHandler {
     repairButton = null;
     chatButton = null;
     exitButton = null;
+    buysThisVisit = 0;
+    weaponBuysThisRun = 0;
 
     repairCost = 5;
 
@@ -104,6 +106,7 @@ class ShopHandler {
         isMouseDown = false;
         isMouseChanged = false;
         this.isInShop = true;
+        this.buysThisVisit = 0
         uiHandler.Shelve();
         if (this.mogIntroTimer > 0) {
             this.InitializeButtons();
@@ -119,7 +122,21 @@ class ShopHandler {
     }
 
     GetRandomWeapon() {
-        let weaponClasses = [WeaponShotgun, WeaponJetpack, WeaponFlamethrower, WeaponFireCannon, WeaponBubbleShield, WeaponPelletShield];
+        let weaponClasses = [
+            WeaponPeashooter,
+            WeaponShotgun, 
+            WeaponJetpack, 
+            WeaponFlamethrower, 
+            WeaponFireCannon, 
+            WeaponBubbleShield, 
+            WeaponPelletShield, 
+            WeaponMagnetCannon, 
+            WeaponMagnetGrenade,
+            WeaponFireGrenade,
+            // WeaponBouncer,
+            // WeaponPropulsionEngine,
+            // WeaponKicker,
+        ];
         let unowned = weaponClasses.filter(x => !weaponHandler.inventory.some(y => y instanceof x));
         if (unowned.length === 0) return null;
         let toSell = unowned[Math.floor(Math.random() * unowned.length)];
@@ -127,7 +144,7 @@ class ShopHandler {
     }
 
     GetRandomUpgrades(num) {
-        let availableUpgrades = weaponHandler.inventory.flatMap(w => {
+        let availableUpgrades = weaponHandler.GetWeaponsAndSubweapons().flatMap(w => {
             let weaponUpgrades = w.GetAvailableUpgrades();
             let indexes = weaponUpgrades.map(u => w.upgrades.indexOf(u));
             return indexes.map(i => ({ weapon: w, upgradeIndex: i, upgrade: w.upgrades[i] }));
@@ -177,8 +194,9 @@ class ShopHandler {
         for (let buttonLocation of buttonLocations.splice(0, 4)) {
             let upgrade = availableUpgrades.pop();
             if (upgrade) {
+                let weaponName = (upgrade.weapon.rootParent || upgrade.weapon).name;
                 let buyButton = this.GetBuyButton(buttonLocation, upgrade,
-                    upgrade.weapon.name,
+                    weaponName,
                     upgrade.upgrade.shortDescription,
                     upgrade.upgrade.cost);
                 this.buyButtons.push(buyButton);
@@ -283,25 +301,39 @@ class ShopHandler {
         let buyButton = new Button(buttonLocation.x, buttonLocation.y, buttonText);
 
         let buttonAction = () => {
+            this.buysThisVisit++;
             if (upgrade) {
                 upgradeOrWeapon.weapon.ApplyUpgradeByIndex(upgradeOrWeapon.upgradeIndex);
                 upgradeOrWeapon.weapon.level++;
             }
             if (weapon) {
+                this.weaponBuysThisRun++;
                 weaponHandler.AddWeapon(weapon);
             }
             buyButton.isDisabled = true;
+            buyButton.purchased = true;
             buyButton.text = buyButton.text.split("$")[0] + "SOLD!";
             loot -= cost;
             shopHandler.RefreshAvailability();
         }
+        buyButton.isWeapon = (!!weapon);
         buyButton.cost = cost;
         buyButton.upgrade = weapon || upgrade;
         buyButton.title = name;
-        buyButton.flavor = weapon ? weapon.flavor : `Give the ${upgradeOrWeapon.weapon.name} a little bit extra!`;
+        if (weapon) {
+            buyButton.flavor = weapon.flavor;
+        } else {
+            buyButton.flavor = `Give the ${upgradeOrWeapon.weapon.name} a little bit extra!`;
+            if (upgradeOrWeapon.weapon.rootParent) {
+                buyButton.flavor = `Upgrade this item's secondary projectiles!`;
+            }
+        }
         buyButton.shortDescription = shortDescr;
         buyButton.breakdownText = (upgrade || weapon).GetBreakdownText();
         let promptText = `Purchase ${buyButton.title} for $${buyButton.cost}?`;
+        if (upgrade) {
+            promptText = `Upgrade ${buyButton.title} for $${buyButton.cost}?`;
+        }
         buyButton.onClick = () => { shopHandler.ConfirmSelection(promptText, buyButton.title, buyButton.shortDescription, buyButton.flavor + "\n\n" + buyButton.breakdownText, buttonAction); }
         return buyButton;
     }
@@ -328,18 +360,16 @@ class ShopHandler {
 
     RefreshAvailability() {
         for (let button of shopHandler.buyButtons) {
-            if (loot < button.cost) {
-                button.isDisabled = true;
-                if (button.upgrade && !button.upgrade.isActive) {
-                    button.tooExpensive = true;
-                }
+            button.inventoryFull = weaponHandler.inventory.length >= 4;
+            button.tooExpensive = loot < button.cost;
+
+            if (button.isWeapon) {
+                button.isDisabled = (button.inventoryFull || button.tooExpensive || button.purchased);
             } else {
-                if (button.tooExpensive) {
-                    button.tooExpensive = false;
-                    button.isDisabled = false;
-                }
+                button.isDisabled = (button.tooExpensive || button.purchased);
             }
         }
+
         if (weaponHandler.inventory.length <= 1) {
             this.sellButton.isDisabled = true;
         } else {

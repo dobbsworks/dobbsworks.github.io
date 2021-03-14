@@ -11,8 +11,8 @@ class Player extends Sprite {
         let oldSpeedSquared = this.dx **2 + this.dy **2
 
         if (oldSpeedSquared > 10**2) {
-            this.dx *= 0.999;
-            this.dy *= 0.999;
+            this.dx *= 0.995;
+            this.dy *= 0.995;
         }
 
         let isShielded = (this.bubbleShieldTimer > 0);
@@ -44,6 +44,8 @@ class Player extends Sprite {
                     targetMagnitude = Math.sqrt(oldSpeedSquared);
                     let shieldDamage = Math.ceil(targetMagnitude / 4);
                     if (targetMagnitude > 2) {
+                        console.log(targetMagnitude)
+                        achievementHandler.shieldBashDamage = shieldDamage;
                         touchingSprite.ApplyDamage(shieldDamage, this, targetMagnitude);
                     }
                 }
@@ -61,6 +63,8 @@ class Player extends Sprite {
 
                 if (isShielded) {
                     audioHandler.PlaySound("notify-04");
+                } else if (touchingSprite.shortedTimer > 0) {
+                    // no damage
                 } else if (this.hurtTimer === 0) {
                     this.hp -= 1;
                     if (this.hp <= 0) {

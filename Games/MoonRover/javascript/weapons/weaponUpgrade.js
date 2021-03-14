@@ -104,13 +104,24 @@ class Upgrade {
         },
         pelletDuration: {
             goodDirection: +1,
-            shortDescription: "Pellet duration",
-            statDescription: "longer projectile duration",
+            shortDescription: "Projectile range",
+            statDescription: "longer projectile range",
         },
         shieldDuration: {
             goodDirection: +1,
             shortDescription: "Longer shield",
             statDescription: "longer shield duration",
+        },
+        effectDuration: {
+            goodDirection: +1,
+            shortDescription: "Longer effect",
+            statDescriptionGood: "longer effect duration",
+            statDescriptionBad: "shorter effect duration",
+        },
+        maxBounces: {
+            goodDirection: +1,
+            shortDescription: "More ricochets",
+            statDescription: "more ricochets"
         }
     }
 
@@ -230,6 +241,28 @@ class Upgrade {
                 prop: "pelletDuration",
                 delta: pelletDurationScale,
                 type: Upgrade.Type.scale
+            }
+        ]);
+        return upgrade;
+    }
+
+    static EffectDurationScale(cost, effectDurationScale) {
+        let upgrade = new Upgrade(cost, [
+            {
+                prop: "effectDuration",
+                delta: effectDurationScale,
+                type: Upgrade.Type.scale
+            }
+        ]);
+        return upgrade;
+    }
+
+    static RicochetsChange(cost, maxBouncesPlus) {
+        let upgrade = new Upgrade(cost, [
+            {
+                prop: "maxBounces",
+                delta: maxBouncesPlus,
+                type: Upgrade.Type.add
             }
         ]);
         return upgrade;

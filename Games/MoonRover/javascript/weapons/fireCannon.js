@@ -15,6 +15,7 @@ class WeaponFireCannon extends Weapon {
     pelletSpread = Math.PI / 24;
     pelletType = PlayerFlame;
     pelletDuration = 60 * 2;
+    pelletGravityScale = 0;
     
     upgrades = [
     ]

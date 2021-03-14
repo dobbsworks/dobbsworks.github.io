@@ -20,6 +20,7 @@ class WeaponFlamethrower extends Weapon {
     pelletSpread = Math.PI / 6;
     pelletType = PlayerFlame;
     pelletDuration = 60 * 2;
+    pelletGravityScale = 0;
     
     upgrades = [
         Upgrade.ShotsScale(15, .5),

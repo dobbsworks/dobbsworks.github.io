@@ -3,15 +3,64 @@ class AchievementHandler {
         demo: new Achievement(0,
             "Sample Achievement",
             "Have %0 Mooney in your inventory",
-            [10],
+            [100],
             (vars) => { return loot >= vars[0] }
+        ),
+        shopAll: new Achievement(0,
+            "Bargain Hunter",
+            "Purchase %0 weapons/upgrades in one shopping trip",
+            [5],
+            (vars) => { 
+                return shopHandler.buysThisVisit >= vars[0];
+            }
+        ),
+        weaponBuys: new Achievement(0,
+            "Buyer's Remorse",
+            "Purchase %0 weapons in one run",
+            [9],
+            (vars) => { 
+                return shopHandler.weaponBuysThisRun >= vars[0];
+            }
+        ),
+        upgradeWeapon: new Achievement(0,
+            "This Is My Boomstick",
+            "Upgrade a single weapon %0 times in one run",
+            [5],
+            (vars) => { 
+                return Math.max(weaponHandler.inventory.map(x => x.level)) - 1 >= vars[0];
+            }
+        ),
+        ramming: new Achievement(0,
+            "Ramming Speed",
+            "Deal %0 damage with a shield bash",
+            [4],
+            (vars) => { 
+                return this.shieldBashDamage >= vars[0];
+            }
+        ),
+        quickfire: new Achievement(0,
+            "Fried Circuits",
+            "Ignite %0 robots in %1 seconds",
+            [5, 3],
+            (vars) => { 
+                let now = new Date();
+                let targetTime = vars[1]*1000;
+                return this.ignitionTimes.filter(a => now - a < targetTime).length >= vars[0] 
+            }
         )
     }
+
+    ignitionTimes = [];
+    shieldBashDamage = 0;
 
     displays = [];
     displayTimes = [20, 340, 360];
 
     Initialize() {
+    }
+
+    RunReset() {
+        this.ignitionTimes = []
     }
 
     Update() {
@@ -21,6 +70,7 @@ class AchievementHandler {
         }
         for (let achieve of Object.values(this.achievements)) {
             let achieved = achieve.CheckForUnlock();
+            if (!achieved) achieved = achieve.manualUnlock;
             if (achieved) {
                 this.displays.push({ achievement: achieve, timer: 0 })
             }
@@ -45,10 +95,10 @@ class AchievementHandler {
             let textWidth = ctx.measureText(name).width
             let margin = 10;
             let height = fontSize + margin * 2;
-            let width = Math.max(100, textWidth + margin * 2);
+            let width = Math.max(150, textWidth + margin * 2);
             let x = canvas.width - width;
             let y = canvas.height - height * ratio;
-            ctx.fillRect(x, y, width, height);
+            ctx.fillRect(x-10, y, width + 10, height);
             ctx.fillStyle = "white";
             ctx.fillText(name, x + margin, y + margin + fontSize);
 
@@ -77,6 +127,7 @@ class Achievement {
     imageIndex = 2;
     unlocked = false;
     unlockedTimestamp = null;
+    manualUnlock = false;
 
     CheckForUnlock() {
         if (this.unlocked) return false;

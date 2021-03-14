@@ -58,8 +58,12 @@ class BossCoreBase extends BossPartBase {
             let child = this.children[i];
             let targetX = this.x + this.orbitRadius * Math.cos(radPerChild * i + radOffset);
             let targetY = this.y + this.orbitRadius * Math.sin(radPerChild * i + radOffset);
-            child.dx = targetX - child.x;
-            child.dy = targetY - child.y;
+            let targetDx = targetX - child.x;
+            let targetDy = targetY - child.y;
+            child.dx += (targetDx - child.dx)/10;
+            child.dy += (targetDy - child.dy)/10;
+            child.dx *= 0.9;
+            child.dy *= 0.9;
         }
     }
     OnDeath() {

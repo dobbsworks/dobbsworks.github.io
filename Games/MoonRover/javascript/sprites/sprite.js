@@ -11,6 +11,9 @@ class Sprite {
     frame = 0;
     maxHp = 3;
 
+    // tracks short circuit status
+    shortedTimer = 0;
+
     // tracks how much fire has hit. Reach threshold to catch fire
     ignition = 0;
     ignitionTimer = 0;
@@ -37,12 +40,24 @@ class Sprite {
     }
 
     SharedSpriteUpdate() {
+        if (this.shortedTimer > 0) {
+            this.shortedTimer--;
+            this.ApplyGravity();
+            this.UpdatePosition();
+            this.ReactToBorders();
+        }
         if (this.ignition > 0) {
             this.ignitionTimer--;
             if (this.ignitionTimer <= 0) {
                 this.ignition = 0;
             }
             if (this.ignition >= 3) {
+                if (this.burnTimer <= 0) {
+                    // just now started burning
+                    if (!(this instanceof EnemyBullet)) {
+                        achievementHandler.ignitionTimes.push(new Date());
+                    }
+                }
                 this.burnTimer = 60 * 3;
             }
         }
@@ -61,6 +76,13 @@ class Sprite {
         }
     }
 
+    Magnetize(duration) {
+        this.shortedTimer = duration;
+        sprites.filter(x => x instanceof Shock && x.parent === this).forEach(x => x.isActive = false);
+        sprites.push(new Shock(this, duration));
+
+    }
+
     ApplyDamage(damageAmount, bouncer, knockback) {
         let oldHp = Math.floor(this.hp);
         this.hp -= damageAmount;
@@ -69,7 +91,7 @@ class Sprite {
         if (visibleDamageAmount > 0) {
             sprites.push(new DamageIndicator(this, visibleDamageAmount));
         }
-        
+
         if (bouncer && knockback && !(this instanceof BossCore)) {
             // TODO
             // vector should be normalized to make grazing shots less forceful
@@ -150,13 +172,14 @@ class Sprite {
         return sprites.filter(x => x !== this && this.IsTouchingSprite(x));
     }
 
-    ReactToBorders() {
+    ReactToBorders(bounciness) {
         let touchedBorders = [];
+        if (!bounciness) bounciness = 0;
         for (let border of borders) {
             if (border instanceof Floor) {
                 if (this.y > border.y - this.radius) {
                     this.y = border.y - this.radius;
-                    this.dy = 0;
+                    this.dy *= -bounciness;
                     this.dx *= 0.9;
                     touchedBorders.push(border);
                 }
@@ -164,21 +187,21 @@ class Sprite {
             if (border instanceof Ceiling) {
                 if (this.y < border.y + this.radius) {
                     this.y = border.y + this.radius;
-                    this.dy = 0;
+                    this.dy *= -bounciness;
                     touchedBorders.push(border);
                 }
             }
             if (border instanceof LeftWall) {
                 if (this.x < border.x + this.radius) {
                     this.x = border.x + this.radius;
-                    this.dx = 0;
+                    this.dx *= -bounciness;
                     touchedBorders.push(border);
                 }
             }
             if (border instanceof RightWall) {
                 if (this.x > border.x - this.radius) {
                     this.x = border.x - this.radius;
-                    this.dx = 0;
+                    this.dx *= -bounciness;
                     touchedBorders.push(border);
                 }
             }
@@ -192,8 +215,8 @@ class Sprite {
                     let isNewXInBounds = this.x >= border.x1 && this.x <= border.x2;
                     if (isOldXInBounds && isNewXInBounds) {
                         this.y = border.y - this.radius;
-                        this.dy = 0;
-                        this.dx *= 0.9;
+                        this.dy *= -bounciness;
+                        this.dx *= !!bounciness ? 1 : 0.9;
                         touchedBorders.push(border);
                     }
                 }

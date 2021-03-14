@@ -5,11 +5,9 @@ class PlayerFlame extends PlayerBullet {
 
     Update() {
         this.CheckExpiration();
+        this.ApplyGravity(this.gravityScale);
         this.UpdatePosition();
-        let touchedBorders = this.ReactToBorders();
-        if (touchedBorders.length > 0) {
-            this.isActive = false;
-        }
+        this.ReactToBorders();
         
         let touchingSprites = this.GetTouchingSprites();
         for (let touchingSprite of touchingSprites) {

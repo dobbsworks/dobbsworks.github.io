@@ -7,6 +7,21 @@ class WeaponHandler {
     oldWeaponIndex = 0;
     selectedWeaponIndex = 0;
 
+    GetWeaponsAndSubweapons() {
+        // for weapons like grenades that trigger other weapons
+        let ret = [...this.inventory];
+        for (let i = 0; i < ret.length; i++) {
+            let child = ret[i].triggeredWeapon;
+            if (child) {
+                let rootParent = ret[i].rootParent;
+                if (!rootParent) rootParent = ret[i];
+                child.rootParent = rootParent;
+                ret.push(child);
+            }
+        }
+        return ret;
+    }
+
     AddWeapon(weapon) {
         if (!weapon.initialized) {
             weapon.initialized = true;

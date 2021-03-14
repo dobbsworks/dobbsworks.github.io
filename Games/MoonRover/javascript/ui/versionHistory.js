@@ -1,7 +1,20 @@
+//• New weapon: Kinetic Launcher - pellets bounce off of walls and enemies. 
 var versionHistoryData = [
     {
+        v: "0.3", d: "2021-03-14", t:
+            `This update is the bomb!
+
+• Added a new system to allow weapon pellets to trigger a different weapon's pellets. This allows for grenade/bomb type weapons.
+• New weapon: Lode Stone - shorts out enemies for a short period and attracts coins. 
+• New weapon: Ferrous Wheel - lob this bomb at enemies to create a pulse of magnetic energy. 
+• New weapon: Fire Bomb - this bomb explodes into flames, dealing slow burn damage to all enemies in the blast. 
+• Levels now spawn floating coins, allowing you to pick up some extra cash. 
+• Disabled buy button on new weapons if you already have 4 weapons. (Thanks, MMFan). `
+    },
+    {
         v: "0.2", d: "2021-03-09", t:
-            `
+            `The best offense is a good defense!
+
 • Purchased weapons now reset after death. (Thanks, MMFan)
 • New weapon: Bubble Shield - deals ramming damage based on your speed. 
 • New weapon: Swarm Shield - creates orbiting projectiles that collide with enemies. 

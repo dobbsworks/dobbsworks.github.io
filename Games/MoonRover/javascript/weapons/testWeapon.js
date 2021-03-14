@@ -1,5 +1,5 @@
 class WeaponTest extends Weapon {
-    name = "The Dev Exit";
+    name = "Dev Exit";
     flavor = "The rise and fall of Rover"
     initialUpgrades = [
         Upgrade.PelletsChange(0, 127),
