@@ -21,7 +21,7 @@ class MainMenuHandler {
             "daesnek",
             "ShinerMax",
             "gamequeued",
-            "erictheformer",
+            "LurkingTurtleGamer",
             "Kirbska",
             "mastertank56",
             "GFE_12",

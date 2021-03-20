@@ -4,6 +4,9 @@ class EnemyBlooper extends Enemy {
     timer = 0;
     aimTimer = 0;
     reloadTimer = 0;
+    vertAccel = 0.02;
+    horizAccel = 0.4;
+    inertia = 0;
 
     Initialize() {
         this.direction = (Math.random() > 0.5 ? -1 : 1);
@@ -18,17 +21,20 @@ class EnemyBlooper extends Enemy {
         let floorBound = Math.min(...platformYs.filter(y => y > this.y));
         let ceilBound = Math.max(...platformYs.filter(y => y < this.y));
         let targetY = (floorBound + ceilBound) / 2;
-        this.dy += (this.y > targetY ? -1 : 1) * 0.02;
+        this.dy += (this.y > targetY ? -1 : 1) * this.vertAccel;
         
         this.timer++;
         if (this.timer > 6 * 60) {
             this.timer = 0;
             this.direction *= -1;
-            this.dx += 0.4 * this.direction;
+            this.dx += this.horizAccel * this.direction;
         }
 
         if (Math.abs(this.dx) > 3) {
-            this.dx *= 0.98;
+            this.dx *= this.inertia;
+        }
+        if (Math.abs(this.dy) > 3) {
+            this.dx *= this.inertia;
         }
 
         this.reloadTimer++;

@@ -172,15 +172,16 @@ class Sprite {
         return sprites.filter(x => x !== this && this.IsTouchingSprite(x));
     }
 
-    ReactToBorders(bounciness) {
+    ReactToBorders(bounciness, inertia) {
         let touchedBorders = [];
         if (!bounciness) bounciness = 0;
+        if (inertia === null || inertia === undefined) inertia = 0.9;
         for (let border of borders) {
             if (border instanceof Floor) {
                 if (this.y > border.y - this.radius) {
                     this.y = border.y - this.radius;
                     this.dy *= -bounciness;
-                    this.dx *= 0.9;
+                    this.dx *= inertia;
                     touchedBorders.push(border);
                 }
             }
@@ -216,7 +217,7 @@ class Sprite {
                     if (isOldXInBounds && isNewXInBounds) {
                         this.y = border.y - this.radius;
                         this.dy *= -bounciness;
-                        this.dx *= !!bounciness ? 1 : 0.9;
+                        this.dx *= !!bounciness ? 1 : inertia;
                         touchedBorders.push(border);
                     }
                 }

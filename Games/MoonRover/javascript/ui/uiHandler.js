@@ -72,7 +72,7 @@ class UIHandler {
             this.DrawSideBar();
             shopHandler.DrawShop();
         } else if (pauseHandler.isPaused) {
-            
+
         } else if (mainMenuHandler.isOnMainMenu) {
 
         } else {
@@ -179,7 +179,7 @@ class UIHandler {
         ctx.fillStyle = "white";
         ctx.textAlign = "right";
         ctx.fillText(loot, x + w - coinUiSize, y + fontSize);
-        
+
         ctx.textAlign = "left";
         ctx.fillText("Level " + levelHandler.GetLevelNumber(), x, y + fontSize);
     }
@@ -262,14 +262,31 @@ class UIHandler {
 
     DrawHP(x, y, w, h) {
         let blockBorder = 2;    // dark border around indiviual blocks
-        let blockWidth = (w - blockBorder) / player.maxHp - blockBorder;
-
-        ctx.fillStyle = "#0208";
+        ctx.fillStyle = "#020";
         ctx.fillRect(x, y, w, h);
-        for (let i = 0; i < player.maxHp; i++) {
-            ctx.fillStyle = i < player.hp ? "#0A0A" : "#3008";
-            ctx.fillRect(x + i * (blockWidth + blockBorder) + blockBorder,
-                y + blockBorder, blockWidth, h - blockBorder * 2);
+
+        let fullWidth = w - blockBorder;
+        ctx.fillStyle = "#300"
+        ctx.fillRect(x + blockBorder, y + blockBorder, fullWidth, h - blockBorder * 2);
+
+        ctx.fillStyle = "#0A0"
+        let filledWidth = player.hp / player.maxHp * fullWidth;
+        ctx.fillRect(x + blockBorder, y + blockBorder, filledWidth, h - blockBorder * 2);
+
+
+        ctx.fillStyle = "#020";
+        let blockWidth = (fullWidth ) / player.maxHp;
+        for (let i = 1; i <= player.maxHp; i++) {
+            ctx.fillRect(x + blockBorder/2 + blockWidth * i, y + blockBorder, blockBorder, h - blockBorder * 2);
         }
+
+
+        // ctx.fillStyle = "#0208";
+        // ctx.fillRect(x, y, w, h);
+        // for (let i = 0; i < player.maxHp; i++) {
+        //     ctx.fillStyle = i < player.hp ? "#0A0A" : "#3008";
+        //     ctx.fillRect(x + i * (blockWidth + blockBorder) + blockBorder,
+        //         y + blockBorder, blockWidth, h - blockBorder * 2);
+        // }
     }
 }

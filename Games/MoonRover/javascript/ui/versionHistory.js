@@ -1,5 +1,14 @@
-//• New weapon: Kinetic Launcher - pellets bounce off of walls and enemies. 
 var versionHistoryData = [
+    {
+        v: "0.4", d: "2021-03-19", t:
+            `The more stuff update!
+
+• Two new enemies to give you trouble, good luck!
+• Added enemy spawn rules - different robots spawn in levels based on your current progress.
+• New weapon: Kinetic Launcher - pellets bounce off of walls and enemies . 
+• New weapon: Propulsion Engine - doesn't deal much damage, but great for getting around fast. 
+• New weapon: Supermatter Flinger - sends enemies flying! `
+    },
     {
         v: "0.3", d: "2021-03-14", t:
             `This update is the bomb!

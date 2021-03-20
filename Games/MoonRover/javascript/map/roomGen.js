@@ -118,7 +118,7 @@ class RoomGenerator {
     CreateSpritesForPlatform(platform) {
         let sprites = [];
         let lootProbability = 0.30;
-        let enemyProbability = 0.40;
+        let enemyProbability = 0.25 + 0.10 * levelHandler.currentLevel;
 
         let platformCenterX = (platform.x1 + platform.x2) / 2;
 
@@ -132,11 +132,40 @@ class RoomGenerator {
         }
 
         if (Math.random() < enemyProbability) {
-            let enemy = new EnemyGoombud(platformCenterX, platform.y - 30);
+            let enemyType = this.GetRandomEnemyType();
+            let enemy = new enemyType(platformCenterX, platform.y - 30);
             sprites.push(enemy);
         }
 
         return sprites;
+    }
+
+    GetRandomEnemyType() {
+        let level = levelHandler.currentLevel;
+        let zone = levelHandler.currentZone;
+        /*
+            [----1----][----2----][----3----][----4----][----5----]
+            [---EnemyGoombud---------------------]
+                    [------EnemyFloater----------------]
+                        [------EnemyBlooper-----------------------]
+                            [------------EnemyOrbiter-------------]
+                                    [---------EnemyHopper---------]
+                                                [--EnemyGrounder--]
+        */
+        let enemySpawnZones = [
+            { type: EnemyGoombud, start: 1.0, end: 4.5 },
+            { type: EnemyFloater, start: 1.5, end: 5 },
+            { type: EnemyBlooper, start: 2.0, end: 6 },
+            { type: EnemyOrbiter, start: 2.5, end: 6 },
+            { type: EnemyHopper, start: 3.0, end: 6 },
+            { type: EnemyGrounder, start: 4.0, end: 6 },
+        ];
+        let progress = level + zone / 5;
+        let availableEnemies = enemySpawnZones.
+            filter(a => a.start <= progress && a.end > progress).
+            map(a => a.type);
+        let selectedIndex = Math.floor(Math.random() * availableEnemies.length);
+        return availableEnemies[selectedIndex];
     }
 
     GetLootCoordinates(centerX, centerY) {

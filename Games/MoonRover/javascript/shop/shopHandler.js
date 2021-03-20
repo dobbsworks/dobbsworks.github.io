@@ -133,9 +133,9 @@ class ShopHandler {
             WeaponMagnetCannon, 
             WeaponMagnetGrenade,
             WeaponFireGrenade,
-            // WeaponBouncer,
-            // WeaponPropulsionEngine,
-            // WeaponKicker,
+            WeaponBouncer,
+            WeaponPropulsionEngine,
+            WeaponKicker,
         ];
         let unowned = weaponClasses.filter(x => !weaponHandler.inventory.some(y => y instanceof x));
         if (unowned.length === 0) return null;
