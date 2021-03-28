@@ -88,6 +88,7 @@ class Player extends Sprite {
             if (touchingSprite instanceof Loot) {
                 touchingSprite.isActive = false;
                 loot += touchingSprite.value;
+                achievementHandler.lifetimeLoot += touchingSprite.value;
                 audioHandler.PlaySound("powerup-03");
             }
             if (touchingSprite instanceof LevelExit) {
@@ -112,6 +113,10 @@ class Player extends Sprite {
         if (this.shake > 0) this.shake--;
         if (this.shake > 100) this.shake = 100;
         if (this.bubbleShieldTimer > 0) this.bubbleShieldTimer--;
+
+        achievementHandler.playerSpeeds.push(Math.sqrt(newSpeedSquared));
+        let targetLength = 60 * 10;
+        achievementHandler.playerSpeeds = achievementHandler.playerSpeeds.slice(-targetLength);
     }
 
     GetFrameData() {

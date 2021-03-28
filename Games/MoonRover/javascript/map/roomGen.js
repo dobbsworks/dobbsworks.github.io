@@ -26,31 +26,28 @@ class RoomGenerator {
         return room;
     }
 
-    CreateArenaRoom(width, height) {
+    CreateArenaRoom(width, height, includeEnemies) {
         let room = this.CreateBaseRoom(width, height, false);
 
-        let lowestPlatformY = height - 150;
-        let midPlatformY = lowestPlatformY - 225;
-        let playerPlatformY = midPlatformY - 200;
+        let lowestPlatformY = height - 32*5;
+        let midPlatformY = lowestPlatformY - 32*5;
+        let playerPlatformY = midPlatformY - 32*8;
 
-        let bottomPlatform = new Platform(width / 3, width * 2 / 3, lowestPlatformY);
-        let leftPlatform = new Platform(30, width / 3, midPlatformY);
-        let rightPlatform = new Platform(width * 2 / 3, width - 30, midPlatformY);
-        let playerPlatform = new Platform(width / 2 - 120, width / 2 + 120, playerPlatformY);
+        let platformWidth = (width / 4) - (width / 4) % 32
 
-        room.borders = [leftPlatform, rightPlatform, playerPlatform, bottomPlatform, ...room.borders];
+        let bottomPlatform = new Platform(width / 2 - platformWidth / 2, width / 2 + platformWidth / 2, lowestPlatformY);
+        let leftPlatform = new Platform(64, 64 + platformWidth, midPlatformY);
+        let rightPlatform = new Platform(width - 64 - platformWidth, width - 64, midPlatformY);
+        let playerPlatform = new Platform(bottomPlatform.x1 - 64, bottomPlatform.x2 + 64, playerPlatformY);
+        
+        if (includeEnemies) room.borders.push(playerPlatform);
+        room.borders = [leftPlatform, rightPlatform, bottomPlatform, ...room.borders];
 
-        for (let platform of [leftPlatform, rightPlatform, bottomPlatform]) {
-            let platformCenterX = (platform.x1 + platform.x2) / 2;
-            let enemy = new EnemyGoombud(platformCenterX, platform.y - 30);
-            room.sprites.push(enemy);
+        if (includeEnemies) {
+            for (let platform of [leftPlatform, rightPlatform, bottomPlatform]) {
+                room.sprites.push(...this.CreateSpritesForPlatform(platform, true));
+            }
         }
-
-        return room;
-    }
-
-    CreateBossRoom(width, height) {
-        let room = this.CreateBaseRoom(width, height, false);
 
         return room;
     }
@@ -115,7 +112,7 @@ class RoomGenerator {
         return { borders: borders, sprites: sprites };
     }
 
-    CreateSpritesForPlatform(platform) {
+    CreateSpritesForPlatform(platform, forceEnemy) {
         let sprites = [];
         let lootProbability = 0.30;
         let enemyProbability = 0.25 + 0.10 * levelHandler.currentLevel;
@@ -131,7 +128,7 @@ class RoomGenerator {
             }
         }
 
-        if (Math.random() < enemyProbability) {
+        if (Math.random() < enemyProbability || forceEnemy) {
             let enemyType = this.GetRandomEnemyType();
             let enemy = new enemyType(platformCenterX, platform.y - 30);
             sprites.push(enemy);

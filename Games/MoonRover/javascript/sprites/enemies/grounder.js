@@ -2,6 +2,7 @@ class EnemyGrounder extends Enemy {
     maxHp = 7;
     direction = 1;
     aggro = false;
+    jumpCharge = 0;
 
     Update() {
         this.ApplyGravity();
@@ -17,11 +18,13 @@ class EnemyGrounder extends Enemy {
         }
 
         let isOnGround = ground || floor;
+        if (isOnGround) this.jumpCharge++;
         if (this.aggro) {
             this.direction = (this.x > player.x ? -1 : 1);
             let playerHeightDist = this.y - player.y;
-            if (playerHeightDist > 0 && isOnGround) {
+            if (playerHeightDist > 0 && isOnGround && this.jumpCharge > 20) {
                 // jump
+                this.jumpCharge = 0;
                 let jumpHeight = playerHeightDist / 60;
                 if (jumpHeight < 4) jumpHeight = 4;
                 if (jumpHeight > 10) jumpHeight = 10;

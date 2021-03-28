@@ -1,5 +1,13 @@
 var versionHistoryData = [
     {
+        v: "0.5", d: "2021-03-28", t:
+            `Boss fights!
+
+• Each level now ends with a unique boss fight!
+• Added a few new achievements to unlock. 
+• Zones now get slightly larger as you get further in the game, allowing for more enemies. `
+    },
+    {
         v: "0.4", d: "2021-03-19", t:
             `The more stuff update!
 

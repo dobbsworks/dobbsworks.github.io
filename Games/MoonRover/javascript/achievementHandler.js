@@ -1,12 +1,18 @@
 class AchievementHandler {
     achievements = {
-        demo: new Achievement(0,
-            "Sample Achievement",
+        beatGame: new Achievement(
+            "Good Boy!",
+            "Beat the game",
+            [1],
+            (vars) => { return this.lifetimeRunCompletes >= vars[0] }
+        ),
+        loot: new Achievement(
+            "On A Budget",
             "Have %0 Mooney in your inventory",
-            [100],
+            [300],
             (vars) => { return loot >= vars[0] }
         ),
-        shopAll: new Achievement(0,
+        shopAll: new Achievement(
             "Bargain Hunter",
             "Purchase %0 weapons/upgrades in one shopping trip",
             [5],
@@ -14,7 +20,7 @@ class AchievementHandler {
                 return shopHandler.buysThisVisit >= vars[0];
             }
         ),
-        weaponBuys: new Achievement(0,
+        weaponBuys: new Achievement(
             "Buyer's Remorse",
             "Purchase %0 weapons in one run",
             [9],
@@ -22,7 +28,7 @@ class AchievementHandler {
                 return shopHandler.weaponBuysThisRun >= vars[0];
             }
         ),
-        upgradeWeapon: new Achievement(0,
+        upgradeWeapon: new Achievement(
             "This Is My Boomstick",
             "Upgrade a single weapon %0 times in one run",
             [5],
@@ -30,7 +36,7 @@ class AchievementHandler {
                 return Math.max(weaponHandler.inventory.map(x => x.level)) - 1 >= vars[0];
             }
         ),
-        ramming: new Achievement(0,
+        ramming: new Achievement(
             "Ramming Speed",
             "Deal %0 damage with a shield bash",
             [4],
@@ -38,7 +44,7 @@ class AchievementHandler {
                 return this.shieldBashDamage >= vars[0];
             }
         ),
-        quickfire: new Achievement(0,
+        quickfire: new Achievement(
             "Fried Circuits",
             "Ignite %0 robots in %1 seconds",
             [5, 3],
@@ -47,13 +53,45 @@ class AchievementHandler {
                 let targetTime = vars[1]*1000;
                 return this.ignitionTimes.filter(a => now - a < targetTime).length >= vars[0] 
             }
+        ),
+        highspeed: new Achievement(
+            "Gotta Go Fast",
+            "Maintain a speed of %0 units/second for %1 seconds",
+            [20, 3],
+            (vars) => { 
+                let requiredVal = vars[0];
+                let requiredCount = vars[1]*60;
+                return this.playerSpeeds.length >= requiredCount &&
+                    this.playerSpeeds.slice(-requiredCount).every(x => x >= requiredVal);
+            }
+        ),
+        lifetimeLoot: new Achievement(
+            "Coin Collector",
+            "Collect %0 Mooney across all runs",
+            [5000],
+            (vars) => { 
+                return this.lifetimeLoot >= vars[0];
+            }
+        ),
+        lifetimeKills: new Achievement(
+            "Beggin' For Scraps",
+            "Destroy %0 robots across all runs",
+            [500],
+            (vars) => { 
+                return this.lifetimeKills >= vars[0];
+            }
         )
     }
 
     ignitionTimes = [];
+    playerSpeeds = [];
     shieldBashDamage = 0;
+    lifetimeLoot = 0;
+    lifetimeKills = 0;
+    lifetimeRunCompletes = 0;
 
     displays = [];
+    // controls pop-up alert speed
     displayTimes = [20, 340, 360];
 
     Initialize() {
@@ -61,6 +99,8 @@ class AchievementHandler {
 
     RunReset() {
         this.ignitionTimes = []
+        this.playerSpeeds = []
+        this.shieldBashDamage = 0;
     }
 
     Update() {
@@ -112,8 +152,7 @@ class AchievementHandler {
 }
 
 class Achievement {
-    constructor(id, name, descr, variables, unlockFunc) {
-        this.id = id;
+    constructor(name, descr, variables, unlockFunc) {
         this.name = name;
         this.variables = variables;
         this.unlockFunc = unlockFunc;

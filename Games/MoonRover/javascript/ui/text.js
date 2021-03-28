@@ -53,7 +53,7 @@ class Text extends UIElement {
                     while (words.length) {
                         let wordCountTest = 1;
                         for (let textWidth = 0;
-                            wordCountTest < words.length;
+                            wordCountTest <= words.length;
                             wordCountTest++) {
                             let proposedLine = words.slice(0, wordCountTest);
                             textWidth = ctx.measureText(this.RemoveCommands(proposedLine.join(" "))).width;

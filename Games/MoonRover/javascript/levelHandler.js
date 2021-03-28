@@ -10,6 +10,7 @@ class LevelHandler {
     //currentMusic = "music-level-1"
     levelIntroTimer = 0;
     levelOutroTimer = 0;
+    levelTimer = 0;
 
 
     levels = [
@@ -21,7 +22,9 @@ class LevelHandler {
     ]
 
     Update() {
+        this.levelTimer++;
         if (this.isArena) {
+            this.CheckBossDefeat();
             let exit = sprites.find(x => x instanceof LevelExit);
             if (!exit && this.AreAllEnemiesDefeated()) {
                 let offset = levelHandler.room.width / 2;
@@ -79,7 +82,14 @@ class LevelHandler {
 
             if (this.levelOutroTimer <= 0) {
                 if (levelHandler.currentZone === 2 || levelHandler.currentZone === 5) {
-                    shopHandler.EnterShop();
+                    if (levelHandler.currentLevel === 5) {
+                        // VICTORY!
+                        achievementHandler.lifetimeRunCompletes++;
+                        mainMenuHandler.ReturnToMainMenu();
+                        mainMenuHandler.OnClickCredits();
+                    } else {
+                        shopHandler.EnterShop();
+                    }
                 } else {
                     levelHandler.LoadZone();
                 }
@@ -104,8 +114,19 @@ class LevelHandler {
         audioHandler.SetBackgroundMusic(musicName);
     }
 
+    GetCurrentLootMultiplier() {
+        // loot drops are scaled down over time
+        // 0-----30s----60s-----90s-----120s
+        // x1----x1-----x0.7----x0.4----x0.1
+        let sec = 60;
+        if (this.levelTimer < 30 * sec) return 1;
+        if (this.levelTimer > 120 * sec) return 0.1;
+        return 1.3 - this.levelTimer / (100 * sec);
+    }
+
     EnterLevel() {
         this.levelIntroTimer = 90;
+        this.levelTimer = 0;
     }
 
     LoadZone() {
@@ -132,19 +153,30 @@ class LevelHandler {
             this.room = this.GetCorridor();
         } else if (this.currentZone === 2 || this.currentZone === 4) {
             this.room = this.GetArena();
-            player.x = 750;
-            player.y = 250;
+            player.x = this.room.width/2;
+            player.y = 125;
         } else if (this.currentZone === 3) {
             this.room = this.GetChasm();
         } else if (this.currentZone === 5) {
             this.room = this.GetLair();
+            player.x = this.room.width/2;
+            player.y = this.room.height;
         }
 
         borders = this.room.borders;
         let enemies = this.room.sprites;
         enemies = enemies.filter(e => Math.abs(e.x - player.x) > 300 || Math.abs(e.y - player.y) > 300);
         sprites = [player, ...enemies];
-        if (this.currentZone === 5) sprites.push(new BossCore(this.room.width / 2, this.room.height / 3));
+        if (this.currentZone === 5) {
+            let bossType = [
+                BossBodyPlate,
+                BossBodyLaser,
+                BossBodyMissile,
+                BossBodyBlaster,
+                BossBodyFinal,
+            ][this.currentLevel-1]
+            sprites.push(new bossType(this.room.width / 2, this.room.height / 3));
+        }
         renderer.target = player;
 
     }
@@ -153,24 +185,49 @@ class LevelHandler {
         return sprites.filter(x => x instanceof Enemy).length === 0;
     }
 
+    CheckBossDefeat() {
+        let isThisBoss = sprites.some(x => x instanceof BossPartBase)
+        if (isThisBoss) {
+            let isBossDefeated = !sprites.some(x => x.bossWeapon) ||
+                !sprites.some(x => x instanceof BossCoreBase);
+            if (isBossDefeated) {
+                let totalLoot = 10 * levelHandler.currentLevel + 10;
+                let toDestroy = sprites.filter(x => x instanceof BossPartBase);
+                let avgLootPer = Math.floor(totalLoot / toDestroy.length);
+
+                for (let part of toDestroy) {
+                    part.hp = 0;
+                    part.loot = avgLootPer;
+                    totalLoot -= avgLootPer;
+                }
+                // remainder loot
+                toDestroy[0].loot += totalLoot;
+            }
+        }
+    }
+
     GetCorridor() {
         this.isArena = false;
-        return new RoomGenerator().CreateCorridor(10000, 700);
+        let height = 700 + 100 * (this.currentLevel - 1);
+        return new RoomGenerator().CreateCorridor(10000, height);
     }
 
     GetChasm() {
         this.isArena = false;
-        return new RoomGenerator().CreateCorridor(1500, 7000);
+        let width = 1500 + 200 * (this.currentLevel - 1);
+        return new RoomGenerator().CreateCorridor(width, 7000);
     }
 
     GetArena() {
         this.isArena = true;
-        return new RoomGenerator().CreateArenaRoom(1500, 1000);
+        return new RoomGenerator().CreateArenaRoom(1500, 1000, true);
     }
 
     GetLair() {
         this.isArena = true;
-        return new RoomGenerator().CreateArenaRoom(1500, 1000);
+        let room = new RoomGenerator().CreateArenaRoom(1500, 600, false);
+        room.borders = room.borders.filter(x => !(x instanceof Platform));
+        return room;
     }
 
     GetLevelNumber() {

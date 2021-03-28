@@ -3,11 +3,12 @@ class BossMissileLauncher extends BossPartBase {
     color = "#B90";
     maxHp = 3;
     timer = 0;
+    bossWeapon = true;
 
     Update() {
         this.timer++;
         this.BossPartUpdate();
-        if (this.timer > 1200) {
+        if (this.timer > 600) {
             this.timer = 0;
             this.FireBullet();
         }

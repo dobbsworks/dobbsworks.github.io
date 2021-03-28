@@ -3,7 +3,8 @@ class Enemy extends Sprite {
     loot = 0;
 
     Initialize() {
-        this.loot = 2 + Math.ceil(Math.random() * 3)
+        this.loot = 2 + Math.ceil(Math.random() * 4);
+        if (this instanceof BossPartBase) this.loot = 0;
     }
 
     SharedEnemyUpdate() {
@@ -11,8 +12,12 @@ class Enemy extends Sprite {
             killCount++;
             this.isActive = false;
             this.Explode();
+            if (!(this instanceof EnemyBullet)) {
+                achievementHandler.lifetimeKills += 1;
+            }
             
-            for (let i=0; i<this.loot; i++) {
+            let lootScale = levelHandler.GetCurrentLootMultiplier()
+            for (let i=0; i<this.loot * lootScale; i++) {
                 sprites.push(new Loot(this.x, this.y));
             }
 

@@ -274,6 +274,7 @@ class ShopHandler {
                     let promptText = `Sell ${weapon.name} for $${cost}?`;
                     let sellAction = () => {
                         loot += cost;
+                        achievementHandler.lifetimeLoot += cost;
                         let index = weaponHandler.inventory.indexOf(weapon);
                         weaponHandler.inventory.splice(index, 1);
                         shopHandler.ReturnToPreviousMenu();

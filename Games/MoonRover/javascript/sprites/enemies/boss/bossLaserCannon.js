@@ -5,6 +5,7 @@ class BossLaserCannon extends BossPartBase {
     timer = 0;
     targetTime = 60 * 10;
     lockInTime = 60 * 7;
+    bossWeapon = true;
 
     targetX = 0;
     targetY = 0;
@@ -48,7 +49,7 @@ class BossLaserCannon extends BossPartBase {
 
     GetFrameData() {
         return {
-            tileset: tileset.purplecore,
+            tileset: tileset.bluecore,
             frame: 0,
             xFlip: this.direction > 0,
         };

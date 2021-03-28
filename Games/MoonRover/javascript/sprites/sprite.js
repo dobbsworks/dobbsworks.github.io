@@ -92,7 +92,7 @@ class Sprite {
             sprites.push(new DamageIndicator(this, visibleDamageAmount));
         }
 
-        if (bouncer && knockback && !(this instanceof BossCore)) {
+        if (bouncer && knockback && !this.stationary) {
             // TODO
             // vector should be normalized to make grazing shots less forceful
             let theta = Math.atan2(this.y - bouncer.y, this.x - bouncer.x);

@@ -3,6 +3,7 @@ class BossBlaster extends BossPartBase {
     color = "#609";
     maxHp = 3;
     timer = 0;
+    bossWeapon = true;
 
     Update() {
         this.timer++;
