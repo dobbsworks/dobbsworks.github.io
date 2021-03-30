@@ -14,6 +14,43 @@
 			left: 0;
 			top: 0;
 		}
+
+		.card {
+			z-index: 1;
+			position: fixed;
+			font-family: system-ui;
+			width: 45%;
+			left: 100%;
+			color: #222;
+			background-color: #EEE;
+			border-radius: 15px;
+			box-shadow: #00000082 0 0 21px 7px;
+		}
+
+		.cardContent {
+			padding: 0 20px 20px 20px;
+		}
+
+		.header {
+			background-color: #222;
+			color: #FFF;
+			padding: 10px 20px;
+			border-radius: 10px 10px 0 0;
+		}
+
+		.title {
+			padding: 15px 0px 0 20px;
+			font-size: 18pt;
+		}
+
+		p {
+			margin: 5px 0;
+		}
+
+		* {
+			transition-property: all;
+			transition-duration: 0.5s;
+		}
 	</style>
 </head>
 
@@ -29,7 +66,11 @@
 			<image id="d20" src="https://dobbsworks.github.io/Tools/Streambot/images/d20.png"></image>
 		</div>
 	</div>
+	<div id="cards">
+
+	</div>
 </body>
+<script src="https://dobbsworks.github.io/Tools/Streambot/javascript/IronswornData.js"></script>
 <script type="text/javascript">
 
 	let canvas = document.getElementById("canvas");
@@ -49,6 +90,8 @@
 	let baseY = canvas.height - (tileSize + gapBetweenDice);
 
 	let timeRollEnd = 60;
+
+	let card = null;
 
 	loop();
 	//setInterval(loop, 1000 / 60);
@@ -130,13 +173,21 @@
 			ctx.fillStyle = bg + opacityHex;
 			ctx.fillRect(0, y, canvas.width, tileSize);
 		}
-	}
 
-	// function SendWinner(winningUser) {
-	// 	// let command = '!randomwin ' + winningUser.name + ' ' + preEventChance + ' ' + winnerChance;
-	// 	// console.log("Sending message " + command);
-	// 	// (new BroadcastChannel('helper')).postMessage(command);
-	// }
+		if (card) {
+			ctx.fillStyle = "#555555";
+			ctx.fillRect(card.x, 0, canvas.width, canvas.height);
+			ctx.fillStyle = "#CCCCCC";
+			ctx.textAlign = "left";
+			ctx.font = "12px Arial";
+			let lines = card.text.split("\n");
+			let y = 20;
+			for (let line of lines) {
+				ctx.fillText(line.trim(), card.x, y, canvas.width / 2);
+				y += 20;
+			}
+		}
+	}
 
 
 	function loop() {
@@ -190,8 +241,8 @@
 			action: true,
 			dice: [
 				{ d: 6, modifier: modifier, x: tileSize },
-				{ d: 10, modifier: 0, x: tileSize * 2 + gapBetweenDice * 3 },
-				{ d: 10, modifier: 0, x: tileSize * 3 + gapBetweenDice * 3 },
+				{ d: 10, modifier: 0, x: tileSize * 2 },
+				{ d: 10, modifier: 0, x: tileSize * 3 },
 			]
 		});
 	}
@@ -234,7 +285,10 @@
 			if (d10a.result === d10b.result) result += " (match)";
 
 			let response = `@${diceSet.username} rolled a [${d6.value}]+${d6.modifier} against [${d10a.value}] and [${d10b.value}] for a ${result}.`;
-			console.log(response);
+
+			let command = '!say ' + response;
+			console.log("Sending message " + command);
+			(new BroadcastChannel('helper')).postMessage(command);
 		}
 	}
 
@@ -261,6 +315,41 @@
 	}
 
 
+	function TestCard() {
+		let cardContainer = document.getElementById("cards")
+		let cardDiv = document.createElement("div");
+		cardDiv.classList.add("card");
+		let text = ironswornData.moves["Face Danger"].text;
+		let title = "Face Danger";
+		let header = ironswornData.moves["Face Danger"].type + " Move";
+
+		let html = `<div class="header">${header}</div>` +
+			`<div class="title">${title}</div>` +
+			`<div class="cardContent">`;
+		let lines = text.split("\n").map(a => a.trim());
+		let isBulleted = false;
+		for (let line of lines) {
+			if (line.startsWith("• ")) {
+				if (!isBulleted) {
+					isBulleted = true;
+					html += "<ul>";
+				}
+				html += "<li>" + line.replace("• ", "") + "</li>";
+			} else {
+				if (isBulleted) {
+					isBulleted = false;
+					html += "</ul>";
+				}
+				html += "<span>" + line + "</span>";
+			}
+		}
+		//"<p>" + text.split("\n").join("</p><p>") + "</p>" +
+		//`</div>`;
+
+		cardDiv.innerHTML = html;
+		cardContainer.appendChild(cardDiv);
+		setTimeout(() => { cardDiv.style.left = "50%"; }, 100);
+	}
 </script>
 
 </html>

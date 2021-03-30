@@ -156,6 +156,10 @@ function ProcessCommand(username, commandText, isReward, badges) {
 	}
 }
 
+function CommandSay(user, args) {
+	WriteMessage(args.join(' '));
+}
+
 function WriteMessage(message) {
 	WriteMessageRaw(" dobbswBeepBoop " + message);
 }

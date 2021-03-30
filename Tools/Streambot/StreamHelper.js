@@ -172,6 +172,8 @@ function LoadCommands() {
 		Command("transfer", "CommandTransfer", commandPermission.mod, commandDisplay.hidden, "Transfers points, wheel color, etc to a new username (for when a user's name changes). Usage: !transfer oldName newName"),
 
 		Command("ironroll", "CommandIronswornRoll", commandPermission.all, commandDisplay.hidden, "Roll an Ironsworn action."),
+		Command("ironreroll", "CommandIronswornReroll", commandPermission.all, commandDisplay.hidden, "Reroll an Ironsworn action."),
+		Command("say", "CommandSay", commandPermission.streamer, commandDisplay.hidden, "Broadcast message."),
 	];
 	aliases = [
 		AliasCommand("brb", "afk"),
@@ -342,7 +344,7 @@ function CreateOverlayWindow() {
 /////////////////////////////////////////////////
 
 function CreateIronswornWindow() {
-	let w = window.open("", "Dice Roller", "width=950,height=500,left=1740");
+	let w = window.open("", "Dice Roller", "width=950,height=700,left=1740");
 
 	let request = new XMLHttpRequest();
 	let url = "https://dobbsworks.github.io/Tools/Streambot/ironsworn.html?q=" + (+(new Date()));

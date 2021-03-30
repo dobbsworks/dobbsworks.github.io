@@ -45,15 +45,34 @@ function RollDice(n, d) {
 }
 
 
-
-function CommandIronswornRoll(user, args) {
+function IronswornAllowed(user) {
     let allowedUsers = ["dobbsworks","GameQueued","DaeSnek","LurkingTurtleGamer"].map(a => a.toLowerCase());
-    if (allowedUsers.indexOf(user.username.toLowerCase()) === -1) {
-        return {success: false};
-    } else {
+    let allowed = allowedUsers.indexOf(user.username.toLowerCase()) > -1;
+    return allowed;
+}
+function CommandIronswornRoll(user, args) {
+    if (IronswornAllowed(user)) {
         if (!ironSwornWindow) {
             ironSwornWindow = CreateIronswornWindow();
+            setTimeout(() => {
+                CommandIronswornRoll(user, args);
+            }, 2000);
         }
         ironSwornWindow.RequestRoll(user.username, 3);
+        return {success: true};
+    } else {
+        return {success: false};
+    }
+}
+function CommandIronswornReroll(user, args) {
+    if (IronswornAllowed(user)) {
+        if (!args || args.join('').length === 0) {
+            return {success: false, message: "Include which dice to reroll with A B and C. Example: !ironReroll AB to reroll dice 1 & 2"};
+        } else {
+            ironSwornWindow.RequestReroll(user.username, args.join(''));
+            return {success: true};
+        }
+    } else {
+        return {success: false};
     }
 }
