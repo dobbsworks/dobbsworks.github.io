@@ -1,0 +1,112 @@
+<html>
+
+<head>
+	<title>Dice Roller</title>
+
+	<style>
+		html,
+		body {
+			overflow: hidden;
+		}
+
+		canvas {
+			position: fixed;
+			left: 0;
+			top: 0;
+		}
+	</style>
+</head>
+
+<body>
+	<canvas id="canvas"></canvas>
+	<div style="display:none;">
+		<div id="diceImage">
+			<image id="d4" src="https://dobbsworks.github.io/Tools/Streambot/images/d4.png"></image>
+			<image id="d6" src="https://dobbsworks.github.io/Tools/Streambot/images/d6.png"></image>
+			<image id="d8" src="https://dobbsworks.github.io/Tools/Streambot/images/d8.png"></image>
+			<image id="d10" src="https://dobbsworks.github.io/Tools/Streambot/images/d10.png"></image>
+			<image id="d12" src="https://dobbsworks.github.io/Tools/Streambot/images/d12.png"></image>
+			<image id="d20" src="https://dobbsworks.github.io/Tools/Streambot/images/d20.png"></image>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+
+	let canvas = document.getElementById("canvas");
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight;
+	let ctx = canvas.getContext("2d");
+	ctx.textAlign = "center";
+
+	let diceSets = [];
+	let tileSize = 135;
+	let gapBetweenDice = 50;
+
+	setInterval(loop, 1000 / 60);
+
+	function draw() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+		for (let diceSet of diceSets) {
+			let y = diceSet.y - Math.floor(tileSize/2);
+			for (let die of diceSet.dice) {
+				let x = die.x - Math.floor(tileSize/2);
+				let img = document.getElementById("d" + die.d);
+				ctx.drawImage(img, 0, 0, tileSize, tileSize, x, y, tileSize, tileSize)
+			}
+		}
+	}
+
+	// function SendWinner(winningUser) {
+	// 	// let command = '!randomwin ' + winningUser.name + ' ' + preEventChance + ' ' + winnerChance;
+	// 	// console.log("Sending message " + command);
+	// 	// (new BroadcastChannel('helper')).postMessage(command);
+	// }
+
+
+	function loop() {
+		for (let diceSet of diceSets) {
+			if (!diceSet.y) diceSet.y = 0;
+			for (let die of diceSet.dice) {
+				if (!die.timer) die.timer = 0;
+				if (!die.x) {
+					let totalWidth = diceSet.dice.length * (tileSize + gapBetweenDice) - gapBetweenDice;
+					let startX = canvas.width / 2 - totalWidth / 2;
+					let index = diceSet.dice.indexOf(die);
+					die.x = startX + index * (tileSize + gapBetweenDice);
+				}
+				die.timer++;
+			}
+		}
+		
+		draw();
+	}
+
+	// called from stream bot
+	function RequestRoll(username, modifier) {
+		diceSets.push({
+			username: username,
+			y: 0,
+			dice: [
+				{d: 6, modifer: modifier},
+				{placeholder: null},
+				{d: 10, modifer: 0},
+				{d: 10, modifer: 0},
+			]
+		});
+	}
+
+
+
+	function RandomNumber(min, max) {
+		if (max === undefined) {
+			max = min;
+			min = 1;
+		}
+		return min + Math.floor(Math.random() * (1 + max - min))
+	}
+
+
+</script>
+
+</html>
