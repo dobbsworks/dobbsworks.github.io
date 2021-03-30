@@ -37,23 +37,98 @@
 	canvas.height = window.innerHeight;
 	let ctx = canvas.getContext("2d");
 	ctx.textAlign = "center";
+	ctx.lineWidth = 4;
+
+	let bg = "#434343";
 
 	let diceSets = [];
 	let tileSize = 135;
-	let gapBetweenDice = 50;
+	let tileRows = 6;
+	let tileCols = 8;
+	let gapBetweenDice = 10;
+	let baseY = canvas.height - (tileSize + gapBetweenDice);
 
-	setInterval(loop, 1000 / 60);
+	let timeRollEnd = 60;
+
+	loop();
+	//setInterval(loop, 1000 / 60);
 
 	function draw() {
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.fillStyle = bg;
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 		for (let diceSet of diceSets) {
-			let y = diceSet.y - Math.floor(tileSize/2);
+			let y = diceSet.y - Math.floor(tileSize / 2);
+			if (y < -100) continue;
 			for (let die of diceSet.dice) {
-				let x = die.x - Math.floor(tileSize/2);
+				if (!die) continue;
+				let tileIndex = Math.floor(
+					((timeRollEnd - die.timer) * 0.5) ** 2 / 20
+				);
+				if (die.timer > timeRollEnd) tileIndex = 0;
+				let sx = tileSize * (Math.floor(tileIndex / tileCols) % tileRows);
+				let sy = tileSize * (tileIndex % tileRows);
+				let x = die.x - Math.floor(tileSize / 2);
 				let img = document.getElementById("d" + die.d);
-				ctx.drawImage(img, 0, 0, tileSize, tileSize, x, y, tileSize, tileSize)
+				ctx.drawImage(img, sx, sy, tileSize, tileSize, x, y, tileSize, tileSize)
 			}
+
+			ctx.fillStyle = "#FFFFFF";
+			ctx.strokeStyle = "#000000";
+			ctx.font = "16px Arial";
+			ctx.textAlign = "left";
+			DrawText(diceSet.username, diceSet.dice[0].x - 40, diceSet.y - 45);
+			ctx.textAlign = "center";
+
+			// dice num
+			for (let die of diceSet.dice) {
+				let textOpacity = (die.timer - timeRollEnd) / 20;
+				ctx.fillStyle = "#FFFFFF" + RatioToHex(textOpacity);
+				ctx.strokeStyle = "#000000" + RatioToHex(textOpacity);
+				ctx.font = "36px Arial";
+				DrawText(die.value, die.x, diceSet.y + 10);
+				if (die.modifier) {
+					let mod = die.modifier;
+					if (mod > 0) mod = "+" + mod;
+					ctx.font = "24px Arial";
+					DrawText(mod, die.x + 35, diceSet.y + 45);
+				}
+
+				if (die.result) {
+					let resultOpacity = (die.resultTimer - timeRollEnd) / 20;
+					// hit/miss
+					let text = "✔";
+					if (die.result === "hit") {
+						ctx.fillStyle = "#00FF00" + RatioToHex(resultOpacity);
+					} else {
+						text = "✖";
+						ctx.fillStyle = "#FF0000" + RatioToHex(resultOpacity);
+					}
+					ctx.beginPath();
+					ctx.arc(die.x + 45, diceSet.y + 45, 15, 0, 2 * Math.PI);
+					ctx.stroke();
+					ctx.fill();
+
+					ctx.fillStyle = "#FFFFFF" + RatioToHex(resultOpacity);
+					ctx.strokeStyle = "#000000" + RatioToHex(resultOpacity);
+					ctx.font = "12px Arial";
+					DrawText(text, die.x + 45, diceSet.y + 50);
+				}
+			}
+
+			if (diceSet.dice.every(a => a.timer > timeRollEnd)) {
+				if (!diceSet.sent) {
+					diceSet.sent = true;
+					SendResponse(diceSet);
+				}
+			}
+
+			// overlay to fade out
+			let distFromBase = diceSet.y - baseY;
+			let opacityRatio = distFromBase > 0 ? distFromBase / (canvas.height - baseY) : -distFromBase / baseY;
+			let opacityHex = RatioToHex(opacityRatio);
+			ctx.fillStyle = bg + opacityHex;
+			ctx.fillRect(0, y, canvas.width, tileSize);
 		}
 	}
 
@@ -66,20 +141,45 @@
 
 	function loop() {
 		for (let diceSet of diceSets) {
-			if (!diceSet.y) diceSet.y = 0;
+			if (!diceSet.y) diceSet.y = canvas.height;
+
+			let diceSetIndex = diceSets.indexOf(diceSet);
+			diceSet.targetY = canvas.height - (tileSize + gapBetweenDice) *
+				(diceSets.length - diceSetIndex);
+
+			if (Math.abs(diceSet.y - diceSet.targetY) > 1) {
+				diceSet.y += (diceSet.targetY - diceSet.y) * 0.05;
+			}
+
 			for (let die of diceSet.dice) {
-				if (!die.timer) die.timer = 0;
-				if (!die.x) {
-					let totalWidth = diceSet.dice.length * (tileSize + gapBetweenDice) - gapBetweenDice;
-					let startX = canvas.width / 2 - totalWidth / 2;
-					let index = diceSet.dice.indexOf(die);
-					die.x = startX + index * (tileSize + gapBetweenDice);
+				if (!die.value) {
+					die.value = RandomNumber(1, die.d);
 				}
+				if (!die.timer) die.timer = 0;
+				if (!die.resultTimer) die.resultTimer = 0;
 				die.timer++;
+				die.resultTimer++;
+			}
+
+			if (diceSet.action && !diceSet.processed) {
+				// ironsworn action roll
+				let d6 = diceSet.dice.find(a => a.d === 6);
+				let score = d6.value + d6.modifier;
+				let hitCount = 0;
+				for (let d10 of diceSet.dice.filter(a => a.d === 10)) {
+					if (d10.value < score) {
+						d10.result = "hit";
+						hitCount++;
+					} else {
+						d10.result = "miss";
+					}
+				}
+				diceSet.processed = true;
 			}
 		}
-		
+
 		draw();
+		requestAnimationFrame(loop);
 	}
 
 	// called from stream bot
@@ -87,16 +187,70 @@
 		diceSets.push({
 			username: username,
 			y: 0,
+			action: true,
 			dice: [
-				{d: 6, modifer: modifier},
-				{placeholder: null},
-				{d: 10, modifer: 0},
-				{d: 10, modifer: 0},
+				{ d: 6, modifier: modifier, x: tileSize },
+				{ d: 10, modifier: 0, x: tileSize * 2 + gapBetweenDice * 3 },
+				{ d: 10, modifier: 0, x: tileSize * 3 + gapBetweenDice * 3 },
 			]
 		});
 	}
+	function RequestReroll(username, keys) {
+		// keys = "ABC" or "B A" or " a"
+		keys = keys.split(" ").join("").toUpperCase();
+		let keyMap = "ABC";
+		let matchingSets = diceSets.filter(a => a.username === username);
+		let latestSet = matchingSets[matchingSets.length - 1];
+		if (latestSet) {
+			for (let i = 0; i < keyMap.length; i++) {
+				if (keys.indexOf(keyMap[i]) > -1) {
+					// reroll die #i
+					let die = latestSet.dice[i];
+					die.timer = 0;
+					die.resultTimer = 0;
+					die.value = null;
+				}
+			}
+			if (keys.indexOf("A") > -1) {
+				// rerolling d6? Need to recalc results
+				for (let die of latestSet.dice) die.resultTimer = 0;
+			}
+			latestSet.reroll = true;
+			latestSet.processed = false;
+			latestSet.sent = false;
+		}
+	}
 
 
+	function SendResponse(diceSet) {
+		if (diceSet.action) {
+			let d6 = diceSet.dice[0];
+			let d10a = diceSet.dice[1];
+			let d10b = diceSet.dice[2];
+
+			let result = "MISS";
+			if (d10a.result === "hit" || d10b.result === "hit") result = "WEAK HIT";
+			if (d10a.result === "hit" && d10b.result === "hit") result = "STRONG HIT";
+			if (d10a.result === d10b.result) result += " (match)";
+
+			let response = `@${diceSet.username} rolled a [${d6.value}]+${d6.modifier} against [${d10a.value}] and [${d10b.value}] for a ${result}.`;
+			console.log(response);
+		}
+	}
+
+	function RatioToHex(ratio) {
+		if (ratio < 0) ratio = 0;
+		let ret = Math.floor(ratio * 256).toString(16);
+		if (ret.length > 2) ret = "00";
+		if (ret.length == 1) ret = "0" + ret;
+		if (ratio > 1) ret = "FF";
+		return ret;
+	}
+
+	function DrawText(t, x, y) {
+		ctx.strokeText(t, x, y);
+		ctx.fillText(t, x, y);
+	}
 
 	function RandomNumber(min, max) {
 		if (max === undefined) {

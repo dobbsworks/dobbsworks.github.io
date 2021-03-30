@@ -43,3 +43,17 @@ function RollDice(n, d) {
     for (let i=0; i<n; i++) ret.push(Math.ceil(Math.random()*d));
     return ret;
 }
+
+
+
+function CommandIronswornRoll(user, args) {
+    let allowedUsers = ["dobbsworks","GameQueued","DaeSnek","LurkingTurtleGamer"].map(a => a.toLowerCase());
+    if (allowedUsers.indexOf(user.username.toLowerCase()) === -1) {
+        return {success: false};
+    } else {
+        if (!ironSwornWindow) {
+            ironSwornWindow = CreateIronswornWindow();
+        }
+        ironSwornWindow.RequestRoll(user.username, 3);
+    }
+}

@@ -3,6 +3,7 @@ let isQueueOpen = true;
 let queueWindow = null;
 let overlayWindow = null;
 let marqueeWindow = null;
+let ironSwornWindow = null;
 let streamerName = "dobbsworks";
 var StorageHandler;
 
@@ -169,6 +170,8 @@ function LoadCommands() {
 		Command("so", "CommandShoutout", commandPermission.mod, commandDisplay.hidden, "Usage: !so username"),
 		Command("setshoutout", "CommandSetShoutout", commandPermission.mod, commandDisplay.hidden, "Usage: !so username Shout-out to $name!"),
 		Command("transfer", "CommandTransfer", commandPermission.mod, commandDisplay.hidden, "Transfers points, wheel color, etc to a new username (for when a user's name changes). Usage: !transfer oldName newName"),
+
+		Command("ironroll", "CommandIronswornRoll", commandPermission.all, commandDisplay.hidden, "Roll an Ironsworn action."),
 	];
 	aliases = [
 		AliasCommand("brb", "afk"),
@@ -325,6 +328,24 @@ function CreateOverlayWindow() {
 
 	let request = new XMLHttpRequest();
 	let url = "https://dobbsworks.github.io/Tools/Streambot/sidebar.html?q=" + (+(new Date()));
+	request.open("GET", url, true);
+	request.onload = () => {
+		w.document.write(request.responseText);
+	}
+	request.send();
+
+	return w;
+}
+
+/////////////////////////////////////////////////
+// IRONSWORN PANEL
+/////////////////////////////////////////////////
+
+function CreateIronswornWindow() {
+	let w = window.open("", "Dice Roller", "width=950,height=500,left=1740");
+
+	let request = new XMLHttpRequest();
+	let url = "https://dobbsworks.github.io/Tools/Streambot/ironsworn.html?q=" + (+(new Date()));
 	request.open("GET", url, true);
 	request.onload = () => {
 		w.document.write(request.responseText);
