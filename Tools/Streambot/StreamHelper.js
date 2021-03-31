@@ -175,6 +175,8 @@ function LoadCommands() {
 		Command("ironroll", "CommandIronswornRoll", commandPermission.all, commandDisplay.hidden, "Roll an Ironsworn action."),
 		Command("ironreroll", "CommandIronswornReroll", commandPermission.all, commandDisplay.hidden, "Reroll an Ironsworn action."),
 		Command("say", "CommandSay", commandPermission.streamer, commandDisplay.hidden, "Broadcast message."),
+		Command("moves", "CommandIronswornMoves", commandPermission.all, commandDisplay.hidden, "Check an Ironsworn move."),
+		Command("assets", "CommandIronswornAssets", commandPermission.all, commandDisplay.hidden, "Check an Ironsworn asset."),
 	];
 	aliases = [
 		AliasCommand("brb", "afk"),

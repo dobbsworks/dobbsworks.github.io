@@ -31,6 +31,7 @@
 			padding: 0 20px 20px 20px;
 			height: 450px;
 			overflow: auto;
+			position: relative;
 		}
 
 		.header {
@@ -55,6 +56,21 @@
 			transition-property: all;
 			transition-duration: 0.5s;
 		}
+
+		table {
+			width: calc(100% - 40px);
+			table-layout: fixed;
+			border-collapse: collapse;
+			position: absolute;
+			left: 20px;
+			bottom: 20px;
+		}
+
+		td {
+			text-align: center;
+			border: solid 1px #434343;
+			padding: 5px;
+		}
 	</style>
 </head>
 
@@ -73,7 +89,7 @@
 	<div id="cards"></div>
 
 </body>
-<script src="https://dobbsworks.github.io/Tools/Streambot/javascript/IronswornData.js?q=4"></script>
+<script src="https://dobbsworks.github.io/Tools/Streambot/javascript/IronswornData.js?q=1.11"></script>
 <script type="text/javascript">
 
 	let canvas = document.getElementById("canvas");
@@ -312,16 +328,22 @@
 
 	function FindCard(searchText) {
 		searchText = searchText.toLowerCase();
-		let record = [...ironswornData.moves, ...ironswornData.assets].
+		let deck = "Move";
+		let record = ironswornData.moves.
 			find(a => a.name.toLowerCase().indexOf(searchText) > -1);
 
-		
-		if (move) {
-			AddCard(move);
+		if (!record) {
+			deck = "Asset";
+			record = ironswornData.assets.
+				find(a => a.name.toLowerCase().indexOf(searchText) > -1);
+		}
+
+		if (record) {
+			AddCard(record, deck);
 		}
 	}
 
-	function AddCard(record) {
+	function AddCard(record, deck) {
 		let oldCards = document.getElementsByClassName("card");
 		for (let card of oldCards) {
 			card.style.left = "100%";
@@ -335,7 +357,7 @@
 		cardDiv.classList.add("card");
 		let text = record.text;
 		let title = record.name;
-		let header = record.type + " Move";
+		let header = record.type + (deck === "Move" ? " Move" : "");
 
 		let html = `<div class="header">${header}</div>` +
 			`<div class="title">${title}</div>` +
@@ -357,7 +379,28 @@
 				html += "<p>" + line + "</p>";
 			}
 		}
+
+		if (record.track) {
+			html += `<table class="track"><tbody><tr>`;
+
+			if (record.track.numeric) {
+				let cellCount = Math.max(5, record.track.numeric);
+				for (let i = 0; i <= cellCount; i++) {
+					if (i <= record.track.numeric) {
+						html += `<td>+${i}</td>`
+					} else {
+						html += `<td></td>`
+					}
+				}
+			} else {
+				for (let option of record.track.options) {
+					html += `<td>${option}</td>`
+				}
+			}
+			html += `</tr></tbody></table>`;
+		}
 		html += `</div>`;
+
 
 		cardDiv.innerHTML = html;
 		cardContainer.appendChild(cardDiv);

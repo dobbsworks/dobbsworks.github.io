@@ -90,3 +90,17 @@ function CommandIronswornMoves(user, args) {
         return {success: false};
     }
 }
+function CommandIronswornAssets(user, args) {
+    if (IronswornAllowed(user)) {
+        if (!ironSwornWindow) {
+            ironSwornWindow = CreateIronswornWindow();
+            setTimeout(() => {
+                CommandIronswornAssets(user, args);
+            }, 2000);
+        }
+        ironSwornWindow.FindCard(user.username, args.join(' '));
+        return {success: true};
+    } else {
+        return {success: false};
+    }
+}

@@ -789,9 +789,9 @@ var ironswornData = {
                 • Geared for war: Mark encumbered. When you Endure Harm in a fight, add +2 and take +1 momentum on a hit.
                 ⚪ When you Clash while you are geared for war, add +1.
                 ⚪ When you Compel in a situation where strength of arms is a factor, add +2. `,
-                track: {
-                    options: ["Lightly Armored", "Geared For War"]
-                }
+            track: {
+                options: ["Lightly Armored", "Geared For War"]
+            }
         }, {
             name: "Long-Arm",
             type: "Combat Talent",
@@ -863,9 +863,9 @@ var ironswornData = {
             text: `⚫ When you create a simulacrum, roll +heart. On a strong hit, your creation is given unnatural life. If it aids you as you make a move to assault or overcome an obstacle through strength, add +2. It has 3 health and suffers harm as appropriate, but is not a companion and may not be healed. At 0 health, it is dead. On a weak hit, as above, but if you roll a 1 on your action die when aided by your creation, you must Face Danger +heart to keep it from turning on you (as a formidable foe).
                 ⚪ Your simulacrum has 6 health.
                 ⚪ When you perform this ritual, add +1 and take +1 momentum on a hit.`,
-                track: {
-                    numeric: 6
-                }
+            track: {
+                numeric: 6
+            }
         }, {
             name: "Bind",
             type: "Ritual",
@@ -890,9 +890,9 @@ var ironswornData = {
             text: `⚫ When you consume the mystical essence of your surroundings, roll +wits. On a strong hit, add the value of your action die to your essence track (max 6). You may then Secure an Advantage or Face Danger +essence to create minor mystical effects or illusions. If you do, suffer -1 essence and take +1 momentum on a hit. On a weak hit, as above, but capturing these energies is harrowing; Endure Stress (2 stress).
                 ⚪ You may Compel +essence (and suffer -1 essence) through a show of power.
                 ⚪ When you perform this ritual, add +1 and take +1 essence on a hit.`,
-                track: {
-                    numeric: 5
-                }
+            track: {
+                numeric: 5
+            }
         }, {
             name: "Leech",
             type: "Ritual",
@@ -905,9 +905,9 @@ var ironswornData = {
             text: `⚫ When you focus on a source of light and capture its essence, roll +wits. On a strong hit, set your light track to +6. On a weak hit, make it +3. Then, when you make a move to overcome or navigate darkness, you may add +2 and suffer -1 light.
                 ⚪ You may use your light to Strike or Clash against a dark-dwelling foe. Choose the amount of light to unleash, and roll +light (instead of +iron or +edge). Suffer -light equal to that amount. On a hit, your harm is 1+your unleashed light.
                 ⚪ When you perform this ritual, add +1 and take +1 momentum on a hit.`,
-                track: {
-                    numeric: 6
-                }
+            track: {
+                numeric: 6
+            }
         }, {
             name: "Talisman",
             type: "Ritual",
@@ -962,6 +962,16 @@ var ironswornData = {
             text: `⚫ When you paint yourself in blood and ash, roll +wits. On a strong hit, you may add +2 and take +1 momentum on a hit when you Secure an Advantage or Compel using fear or intimidation. If you roll a 1 on your action die when making a move aided by your visage, the magic is spent. On a weak hit, as above, but the blood must be your own; Endure Harm (2 harm).
                 ⚪ As above, and you may also add +1 when you Strike, Clash, or Battle.
                 ⚪ When you perform this ritual, add +1 and take +1 momentum on a hit.`
+        },
+        {
+            name: "Poison Expert",
+            type: "Path",
+            text: `⚫ When you prepare poisoned arrows, suffer -1 supply and roll +wits. On a strong hit, set your arrow track to +5. On a weak hit, add up to +2. On a miss, Face Danger +iron. When you Strike a foe with a poisoned arrow, inflict +2 harm on a hit and suffer -1 arrow.
+                ⚪ As above, but do not Face Danger on a miss while preparing poisoned arrows.
+                ⚪ When you attempt to Heal an ally, companion, or other character suffering from the effects of poison, add +2. `,
+            track: {
+                numeric: 5
+            }
         },
     ]
 }
