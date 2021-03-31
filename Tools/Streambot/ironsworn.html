@@ -73,7 +73,7 @@
 	<div id="cards"></div>
 
 </body>
-<script src="https://dobbsworks.github.io/Tools/Streambot/javascript/IronswornData.js?q=3"></script>
+<script src="https://dobbsworks.github.io/Tools/Streambot/javascript/IronswornData.js?q=4"></script>
 <script type="text/javascript">
 
 	let canvas = document.getElementById("canvas");
@@ -94,8 +94,8 @@
 
 	let timeRollEnd = 60;
 
-	loop();
-	//setInterval(loop, 1000 / 60);
+	//loop();
+	setInterval(loop, 1000 / 60);
 
 	function draw() {
 		ctx.fillStyle = bg;
@@ -175,21 +175,21 @@
 			ctx.fillRect(0, y, canvas.width, tileSize);
 		}
 
-		let cards = document.getElementsByClassName("cardContent");
-		for (let card of cards) {
-			if (card.timer > 180 && !card.scrollStop) {
-				if (card.timer % 3 === 0) card.scrollBy(0, 1);
-				let maxScroll = card.scrollHeight - card.clientHeight;
-				if (maxScroll === card.scrollTop) {
-					// reached the end
-					card.timer = -Infinity;
-					setTimeout(() => {
-						card.timer = 0;
-						card.scrollBy(0, -card.scrollHeight);
-					}, 3000)
-				}
-			}
-		}
+		// let cards = document.getElementsByClassName("cardContent");
+		// for (let card of cards) {
+		// 	if (card.timer > 180 && !card.scrollStop) {
+		// 		if (card.timer % 3 === 0) card.scrollBy(0, 1);
+		// 		let maxScroll = card.scrollHeight - card.clientHeight;
+		// 		if (maxScroll === card.scrollTop) {
+		// 			// reached the end
+		// 			card.timer = -Infinity;
+		// 			setTimeout(() => {
+		// 				card.timer = 0;
+		// 				card.scrollBy(0, -card.scrollHeight);
+		// 			}, 3000)
+		// 		}
+		// 	}
+		// }
 	}
 
 
@@ -232,17 +232,20 @@
 			}
 		}
 
+		// remove off-screen rolls
+		diceSets = diceSets.filter(a => a.y > -200);
+
 		let cards = document.getElementsByClassName("cardContent");
 		for (let card of cards) {
 			if (!card.timer) card.timer = 0;
 			card.timer++;
-			if (!card.onwheel) {
-				card.onwheel = () => { card.scrollStop = true; }
-				card.onclick = () => { card.scrollStop = true; }
-			}
+			// if (!card.onwheel) {
+			// 	card.onwheel = () => { card.scrollStop = true; }
+			// 	card.onclick = () => { card.scrollStop = true; }
+			// }
 		}
 		draw();
-		requestAnimationFrame(loop);
+		//requestAnimationFrame(loop);
 	}
 
 	// called from stream bot
@@ -337,6 +340,14 @@
 	}
 
 	function AddCard(record) {
+		let oldCards = document.getElementsByClassName("card");
+		for (let card of oldCards) {
+			card.style.left = "100%";
+			setTimeout(() => {
+				card.parentElement.removeChild(card);
+			}, 1000)
+		}
+
 		let cardContainer = document.getElementById("cards")
 		let cardDiv = document.createElement("div");
 		cardDiv.classList.add("card");
@@ -361,11 +372,10 @@
 					isBulleted = false;
 					html += "</ul>";
 				}
-				html += "<span>" + line + "</span>";
+				html += "<p>" + line + "</p>";
 			}
 		}
-		//"<p>" + text.split("\n").join("</p><p>") + "</p>" +
-		//`</div>`;
+		html += `</div>`;
 
 		cardDiv.innerHTML = html;
 		cardContainer.appendChild(cardDiv);

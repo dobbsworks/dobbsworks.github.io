@@ -76,3 +76,17 @@ function CommandIronswornReroll(user, args) {
         return {success: false};
     }
 }
+function CommandIronswornMoves(user, args) {
+    if (IronswornAllowed(user)) {
+        if (!ironSwornWindow) {
+            ironSwornWindow = CreateIronswornWindow();
+            setTimeout(() => {
+                CommandIronswornMoves(user, args);
+            }, 2000);
+        }
+        ironSwornWindow.FindCard(user.username, args.join(' '));
+        return {success: true};
+    } else {
+        return {success: false};
+    }
+}
