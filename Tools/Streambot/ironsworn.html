@@ -24,7 +24,7 @@
 			color: #222;
 			background-color: #EEE;
 			border-radius: 15px;
-			box-shadow: #00000082 0 0 21px 7px;
+			box-shadow: #00000082 0px 15px 21px 7px;
 		}
 
 		.cardContent {
@@ -174,22 +174,6 @@
 			ctx.fillStyle = bg + opacityHex;
 			ctx.fillRect(0, y, canvas.width, tileSize);
 		}
-
-		// let cards = document.getElementsByClassName("cardContent");
-		// for (let card of cards) {
-		// 	if (card.timer > 180 && !card.scrollStop) {
-		// 		if (card.timer % 3 === 0) card.scrollBy(0, 1);
-		// 		let maxScroll = card.scrollHeight - card.clientHeight;
-		// 		if (maxScroll === card.scrollTop) {
-		// 			// reached the end
-		// 			card.timer = -Infinity;
-		// 			setTimeout(() => {
-		// 				card.timer = 0;
-		// 				card.scrollBy(0, -card.scrollHeight);
-		// 			}, 3000)
-		// 		}
-		// 	}
-		// }
 	}
 
 
@@ -239,10 +223,6 @@
 		for (let card of cards) {
 			if (!card.timer) card.timer = 0;
 			card.timer++;
-			// if (!card.onwheel) {
-			// 	card.onwheel = () => { card.scrollStop = true; }
-			// 	card.onclick = () => { card.scrollStop = true; }
-			// }
 		}
 		draw();
 		//requestAnimationFrame(loop);
@@ -332,8 +312,10 @@
 
 	function FindCard(searchText) {
 		searchText = searchText.toLowerCase();
-		let move = ironswornData.moves.
+		let record = [...ironswornData.moves, ...ironswornData.assets].
 			find(a => a.name.toLowerCase().indexOf(searchText) > -1);
+
+		
 		if (move) {
 			AddCard(move);
 		}

@@ -56,6 +56,7 @@ function LoadExternalFunctions() {
 		"DiceRoller.js",
 		"Minigame.js",
 		"MinigameData.js",
+		"IronswornData.js",
 		"PointHandler.js",
 		"SoundboardHandler.js",
 		"Shoutout.js",
@@ -344,7 +345,7 @@ function CreateOverlayWindow() {
 /////////////////////////////////////////////////
 
 function CreateIronswornWindow() {
-	let w = window.open("", "Dice Roller", "width=950,height=700,left=1740");
+	let w = window.open("", "Dice Roller", "width=950,height=600,left=1740");
 
 	let request = new XMLHttpRequest();
 	let url = "https://dobbsworks.github.io/Tools/Streambot/ironsworn.html?q=" + (+(new Date()));
