@@ -1,6 +1,7 @@
 var ironswornData = {
-    moves: {
-        "Face Danger": {
+    moves: [
+        {
+            name: "Face Danger",
             type: "Adventure",
             text: `When you attempt something risky or react to an imminent threat, envision your action and roll. If you act...
             • With speed, agility, or precision: Roll +edge.
@@ -16,7 +17,8 @@ var ironswornData = {
             • You sacrifice resources: Suffer -1 supply.
             On a miss, you fail, or your progress is undermined by a dramatic and costly turn of events. Pay the Price. `
         },
-        "Secure An Advantage": {
+        {
+            name: "Secure An Advantage",
             type: "Adventure",
             text: `When you assess a situation, make preparations, or attempt to gain leverage, envision your action and roll. If you act...
             • With speed, agility, or precision: Roll +edge.
@@ -30,28 +32,32 @@ var ironswornData = {
             On a weak hit, your advantage is short-lived. Take +1 momentum.
             On a miss, you fail or your assumptions betray you. Pay the Price. `
         },
-        "Gather Information": {
+        {
+            name: "Gather Information",
             type: "Adventure",
             text: `When you search an area, ask questions, conduct an investigation, or follow a track, roll +wits. If you act within a community or ask questions of a person with whom you share a bond, add +1. 
             On a strong hit, you discover something helpful and specific. The path you must follow or action you must take to make progress is made clear. Envision what you learn (Ask the Oracle if unsure), and take +2 momentum.
             On a weak hit, the information complicates your quest or introduces a new danger. Envision what you discover (Ask the Oracle if unsure), and take +1 momentum.
             On a miss, your investigation unearths a dire threat or reveals an unwelcome truth that undermines your quest. Pay the Price. `
         },
-        "Heal": {
+        {
+            name: "Heal",
             type: "Adventure",
             text: `When you treat an injury or ailment, roll +wits. If you are mending your own wounds, roll +wits or +iron, whichever is lower.
             On a strong hit, your care is helpful. If you (or the ally under your care) have the wounded condition, you may clear it. Then, take or give up to +2 health.
             On a weak hit, as above, but you must suffer -1 supply or -1 momentum (your choice).
             On a miss, your aid is ineffective. Pay the Price. `
         },
-        "Resupply": {
+        {
+            name: "Resupply",
             type: "Adventure",
             text: `When you hunt, forage, or scavenge, roll +wits.
             On a strong hit, you bolster your resources. Take +2 supply.
             On a weak hit, take up to +2 supply, but suffer -1 momentum for each.
             On a miss, you find nothing helpful. Pay the Price. `
         },
-        "Make Camp": {
+        {
+            name: "Make Camp",
             type: "Adventure",
             text: `When you rest and recover for several hours in the wild, roll +supply. On a strong hit, you and your allies may each choose two. On a weak hit, choose one.
             • Recuperate: Take +1 health for you and any companions.
@@ -61,7 +67,8 @@ var ironswornData = {
             • Prepare: When you break camp, add +1 if you Undertake a Journey.
             On a miss, you take no comfort. Pay the Price. `
         },
-        "Undertake a Journey": {
+        {
+            name: "Undertake a Journey",
             type: "Adventure",
             text: `When you travel across hazardous or unfamiliar lands, set the rank of your journey.
             • Troublesome journey: 3 progress per waypoint.
@@ -76,7 +83,8 @@ var ironswornData = {
             On a weak hit, you reach a waypoint and mark progress, but suffer -1 supply.
             On a miss, you are waylaid by a perilous event. Pay the Price. `
         },
-        "Reach Your Destination": {
+        {
+            name: "Reach Your Destination",
             type: "Adventure",
             text: `Progress Move
             When your journey comes to an end, roll the challenge dice and compare to your progress. Momentum is ignored on this roll.
@@ -86,7 +94,8 @@ var ironswornData = {
             On a weak hit, you arrive but face an unforeseen hazard or complication. Envision what you find (Ask the Oracle if unsure).
             On a miss, you have gone hopelessly astray, your objective is lost to you, or you were misled about your destination. If your journey continues, clear all but one filled progress, and raise the journey’s rank by one (if not already epic). `
         },
-        "Compel": {
+        {
+            name: "Compel",
             type: "Relationship",
             text: `When you attempt to persuade someone to do something, envision your approach and roll. If you...
             • Charm, pacify, barter, or convince: Roll +heart (add +1 if you share a bond).
@@ -96,7 +105,8 @@ var ironswornData = {
             On a weak hit, as above, but they ask something of you in return. Envision what they want (Ask the Oracle if unsure).
             On a miss, they refuse or make a demand which costs you greatly. Pay the Price. `
         },
-        "Sojourn": {
+        {
+            name: "Sojourn",
             type: "Relationship",
             text: `When you spend time in a community seeking assistance, roll +heart. If you share a bond, add +1.
             On strong hit, you and your allies may each choose two from within the categories below. On a weak hit, choose one. If you share a bond, choose one more.
@@ -114,7 +124,8 @@ var ironswornData = {
             • Take a quest: Envision what this community needs, or what trouble it is facing (Ask the Oracle if unsure). If you chose to help, Swear an Iron Vow and add +1.
             On a miss, you find no help here. Pay the Price. `
         },
-        "Draw the Circle": {
+        {
+            name: "Draw the Circle",
             type: "Relationship",
             text: `When you challenge someone to a formal duel, or accept a challenge, roll +heart. If you share a bond with this community, add +1.
             On a strong hit, take +1 momentum. You may also choose up to two boasts and take +1 momentum for each.
@@ -127,7 +138,8 @@ var ironswornData = {
             On a miss, you begin the duel at a disadvantage. Your foe has initiative. Pay the Price.
             Then, make moves to resolve the fight. If you are the victor, you may make a lawful demand, and your opponent must comply or forfeit their honor and standing. If you refuse the challenge, surrender, or are defeated, they make a demand of you. `
         },
-        "Forge a Bond": {
+        {
+            name: "Forge a Bond",
             type: "Relationship",
             text: `When you spend significant time with a person or community, stand together to face hardships, or make sacrifices for their cause, you can attempt to create a bond. When you do, roll +heart. If you make this move after you successfully Fulfill Your Vow to their benefit, you may reroll any dice.
             On a strong hit, make note of the bond, mark a tick on your bond progress track, and choose one.
@@ -136,7 +148,8 @@ var ironswornData = {
             On a weak hit, they ask something more of you first. Envision what it is (Ask the Oracle if unsure), do it (or Swear an Iron Vow), and mark the bond. If you refuse or fail, Pay the Price.
             On a miss, they reject you. Pay the Price. `
         },
-        "Test Your Bond": {
+        {
+            name: "Test Your Bond",
             type: "Relationship",
             text: `When your bond is tested through conflict, betrayal, or circumstance, roll +heart.
             On a strong hit, this test has strengthened your bond. Choose one.
@@ -145,11 +158,13 @@ var ironswornData = {
             On a weak hit, your bond is fragile and you must prove your loyalty. Envision what they ask of you (Ask the Oracle if unsure), and do it (or Swear an Iron Vow). If you refuse or fail, clear the bond and Pay the Price.
             On a miss, or if you have no interest in maintaining this relationship, clear the bond and Pay the Price. `
         },
-        "Aid Your Ally": {
+        {
+            name: "Aid Your Ally",
             type: "Relationship",
             text: `When you Secure an Advantage in direct support of an ally, and score a hit, they (instead of you) can take the benefits of the move. If you are in combat and score a strong hit, you and your ally have initiative. `
         },
-        "Write Your Epilogue": {
+        {
+            name: "Write Your Epilogue",
             type: "Relationship",
             text: `Progress Move
             When you retire from your life as Ironsworn, envision two things: What you hope for, and what you fear. Then, roll the challenge dice and compare to your bonds. Momentum is ignored on this roll.
@@ -157,7 +172,8 @@ var ironswornData = {
             On a weak hit, your life takes an unexpected turn, but not necessarily for the worse. You find yourself spending your days with someone or in a place you did not foresee. Envision it (Ask the Oracle if unsure).
             On a miss, your fears are realized. `
         },
-        "Enter the Fray": {
+        {
+            name: "Enter the Fray",
             type: "Combat",
             text: `When you enter into combat, set the rank of each of your foes.
             • Troublesome foe: 3 progress per harm; inflicts 1 harm.
@@ -175,14 +191,16 @@ var ironswornData = {
             • Prepare to act: Take initiative.
             On a miss, combat begins with you at a disadvantage. Pay the Price. Your foe has initiative.`
         },
-        "Strike": {
+        {
+            name: "Strike",
             type: "Combat",
             text: `When you have initiative and attack in close quarters, roll +iron. When you have initiative and attack at range, roll +edge.
             On a strong hit, inflict +1 harm. You retain initiative.
             On a weak hit, inflict your harm and lose initiative.
             On a miss, your attack fails and you must Pay the Price. Your foe has initiative.`
         },
-        "Clash": {
+        {
+            name: "Clash",
             type: "Combat",
             text: `When your foe has initiative and you fight with them in close quarters, roll +iron. When you exchange a volley at range, or shoot at an advancing foe, roll +edge.
             On a strong hit, inflict your harm and choose one. You have the initiative.
@@ -191,12 +209,14 @@ var ironswornData = {
             On a weak hit, inflict your harm, but then Pay the Price. Your foe has initiative.
             On a miss, you are outmatched and must Pay the Price. Your foe has initiative`
         },
-        "Turn the Tide": {
+        {
+            name: "Turn the Tide",
             type: "Combat",
             text: `Once per fight, when you risk it all, you may steal initiative from your foe to make a move (not a progress move). When you do, add +1 and take +1 momentum on a hit.
             If you fail to score a hit on that move, you must suffer a dire outcome. Pay the Price.`
         },
-        "End the Fight": {
+        {
+            name: "End the Fight",
             type: "Combat",
             text: `Progress Move
             When you make a move to take decisive action, and score a strong hit, you may resolve the outcome of this fight. If you do, roll the challenge dice and compare to your progress. Momentum is ignored on this roll.
@@ -210,7 +230,8 @@ var ironswornData = {
             • Others won’t forget: You are marked for vengeance.
             On a miss, you have lost this fight. Pay the Price.`
         },
-        "Battle": {
+        {
+            name: "Battle",
             type: "Combat",
             text: `When you fight a battle, and it happens in a blur, envision your objective and roll. If you primarily…
             • Fight at range, or using your speed and the terrain to your advantage: Roll +edge.
@@ -222,7 +243,8 @@ var ironswornData = {
             On a weak hit, you achieve your objective, but not without cost. Pay the Price.
             On a miss, you are defeated and the objective is lost to you. Pay the Price.`
         },
-        "Endure Harm": {
+        {
+            name: "Endure Harm",
             type: "Suffer",
             text: `When you face physical damage, suffer -health equal to your foe’s rank or as appropriate to the situation. If your health is 0, suffer -momentum equal to any remaining -health.
             Then, roll +health or +iron, whichever is higher.
@@ -237,7 +259,8 @@ var ironswornData = {
             • 36-50 You are reeling and fighting to stay conscious. If you engage in any vigorous activity (such as running or fighting) before taking a breather for a few minutes, roll on this table again (before resolving the other move).
             • 51-00 You are battered but still standing.`
         },
-        "Face Death": {
+        {
+            name: "Face Death",
             type: "Suffer",
             text: `When you are brought to the brink of death, and glimpse the world beyond, roll +heart.
             On a strong hit, death rejects you. You are cast back into the mortal world.
@@ -246,7 +269,8 @@ var ironswornData = {
             • Death desires something of you in exchange for your life. Envision what it wants (Ask the Oracle if unsure), and Swear an Iron Vow (formidable or extreme) to complete that quest. If you fail to score a hit when you Swear an Iron Vow, or refuse the quest, you are dead. Otherwise, you return to the mortal world and are now cursed. You may only clear the cursed debility by completing the quest.
             On a miss, you are dead.`
         },
-        "Companion Endure Harm": {
+        {
+            name: "Companion Endure Harm",
             type: "Suffer",
             text: `When your companion faces physical damage, they suffer -health equal to the amount of harm inflicted. If your companion’s health is 0, exchange any leftover -health for -momentum.
             Then, roll +heart or +your companion’s health, whichever is higher.
@@ -255,7 +279,8 @@ var ironswornData = {
             On a miss, also suffer -1 momentum. If your companion’s health is 0, they are gravely wounded and out of action. Without aid, they die in an hour or two.
             If you roll a miss with a 1 on your action die, and your companion’s health is 0, they are now dead. Take 1 experience for each marked ability on your companion asset, and remove it.`
         },
-        "Endure Stress": {
+        {
+            name: "Endure Stress",
             type: "Suffer",
             text: `When you face mental shock or despair, suffer -spirit equal to your foe’s rank or as appropriate to the situation. If your spirit is 0, suffer -momentum equal to any remaining -spirit.
             Then, roll +spirit or +heart, whichever is higher.
@@ -269,7 +294,8 @@ var ironswornData = {
             • 26-50 You give in to a fear or compulsion, and act against your better instincts.
             • 51-00 You persevere.`
         },
-        "Face Desolation": {
+        {
+            name: "Face Desolation",
             type: "Suffer",
             text: `When you are brought to the brink of desolation, roll +heart.
             On a strong hit, you resist and press on.
@@ -278,17 +304,20 @@ var ironswornData = {
             • You see a vision of a dreaded event coming to pass. Envision that dark future (Ask the Oracle if unsure), and Swear an Iron Vow (formidable or extreme) to prevent it. If you fail to score a hit when you Swear an Iron Vow, or refuse the quest, you are lost. Otherwise, you return to your senses and are now tormented. You may only clear the tormented debility by completing the quest.
             On a miss, you succumb to despair or horror and are lost.`
         },
-        "Out of Supply": {
+        {
+            name: "Out of Supply",
             type: "Suffer",
             text: `When your supply is exhausted (reduced to 0), mark unprepared. If you suffer additional -supply while unprepared, you must exchange each additional -supply for any combination of -health, -spirit or -momentum as appropriate to the circumstances.`
         },
-        "Face a Setback": {
+        {
+            name: "Face a Setback",
             type: "Suffer",
             text: `When your momentum is at its minimum (-6), and you suffer additional -momentum, choose one.
             • Exchange each additional -momentum for any combination of -health, -spirit, or -supply as appropriate to the circumstances.
             • Envision an event or discovery (Ask the Oracle if unsure) which undermines your progress in a current quest, journey or fight. Then, for each additional -momentum, clear 1 unit of progress on that track per its rank (troublesome=clear 3 progress; dangerous=clear 2 progress; formidable=clear 1 progress; extreme=clear 2 ticks; epic=clear 1 tick).`
         },
-        "Swear an Iron Vow": {
+        {
+            name: "Swear an Iron Vow",
             type: "Quest",
             text: `When you swear upon iron to complete a quest, write your vow and give the quest a rank. Then, roll +heart. If you make this vow to a person or community with whom you share a bond, add +1.
             On a strong hit, you are emboldened and it is clear what you must do next (Ask the Oracle if unsure). Take +2 momentum.
@@ -297,7 +326,8 @@ var ironswornData = {
             • You press on: Suffer -2 momentum, and do what you must to overcome this obstacle.
             • You give up: Forsake Your Vow.`
         },
-        "Reach a Milestone": {
+        {
+            name: "Reach a Milestone",
             type: "Quest",
             text: `When you make significant progress in your quest by overcoming a critical obstacle, completing a perilous journey, solving a complex mystery, defeating a powerful threat, gaining vital support, or acquiring a crucial item, you may mark progress.
             • Troublesome quest: Mark 3 progress.
@@ -306,7 +336,8 @@ var ironswornData = {
             • Extreme quest: Mark 2 ticks.
             • Epic quest: Mark 1 tick.`
         },
-        "Fulfill Your Vow": {
+        {
+            name: "Fulfill Your Vow",
             type: "Quest",
             text: `Progress Move
             When you achieve what you believe to be the fulfillment of your vow, roll the challenge dice and compare to your progress. Momentum is ignored on this roll.
@@ -316,18 +347,21 @@ var ironswornData = {
             • You recommit: Clear all but one filled progress, and raise the quest’s rank by one (if not already epic).
             • You give up: Forsake Your Vow.`
         },
-        "Forsake Your Vow": {
+        {
+            name: "Forsake Your Vow",
             type: "Quest",
             text: `When you renounce your quest, betray your promise, or the goal is lost to you, clear the vow and Endure Stress. You suffer -spirit equal to the rank of your quest (troublesome=1; dangerous=2; formidable=3; extreme=4; epic=5).
             If the vow was made to a person or community with whom you share a bond, Test Your Bond when you next meet.`
         },
-        "Advance": {
+        {
+            name: "Advance",
             type: "Quest",
             text: `When you focus on your skills, receive training, find inspiration, earn
             a reward, or gain a companion, you may spend 3 experience to add a
             new asset, or 2 experience to upgrade an asset.`
         },
-        "Pay the Price": {
+        {
+            name: "Pay the Price",
             type: "Fate",
             text: `When you suffer the outcome of a move, choose one.
             • Make the most obvious negative outcome happen.
@@ -351,7 +385,8 @@ var ironswornData = {
             • 95-98 A friend, companion, or ally is put in harm’s way (or you are, if alone).
             • 99-00 Roll twice more on this table. Both results occur. If they are the same result, make it worse.`
         },
-        "Ask the Oracle": {
+        {
+            name: "Ask the Oracle",
             type: "Fate",
             text: `When you seek to resolve questions, discover details in the world, determine how other characters respond, or trigger encounters or events, you may…
             • Draw a conclusion: Decide the answer based on the most interesting and obvious result.

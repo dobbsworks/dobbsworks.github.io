@@ -29,6 +29,8 @@
 
 		.cardContent {
 			padding: 0 20px 20px 20px;
+			height: 450px;
+			overflow: auto;
 		}
 
 		.header {
@@ -39,8 +41,10 @@
 		}
 
 		.title {
-			padding: 15px 0px 0 20px;
+			padding: 10px 20px;
 			font-size: 18pt;
+			font-weight: bold;
+    		background-color: #CCC;
 		}
 
 		p {
@@ -70,7 +74,7 @@
 
 	</div>
 </body>
-<script src="https://dobbsworks.github.io/Tools/Streambot/javascript/IronswornData.js"></script>
+<script src="https://dobbsworks.github.io/Tools/Streambot/javascript/IronswornData.js?q=1"></script>
 <script type="text/javascript">
 
 	let canvas = document.getElementById("canvas");
@@ -90,8 +94,6 @@
 	let baseY = canvas.height - (tileSize + gapBetweenDice);
 
 	let timeRollEnd = 60;
-
-	let card = null;
 
 	loop();
 	//setInterval(loop, 1000 / 60);
@@ -174,17 +176,19 @@
 			ctx.fillRect(0, y, canvas.width, tileSize);
 		}
 
-		if (card) {
-			ctx.fillStyle = "#555555";
-			ctx.fillRect(card.x, 0, canvas.width, canvas.height);
-			ctx.fillStyle = "#CCCCCC";
-			ctx.textAlign = "left";
-			ctx.font = "12px Arial";
-			let lines = card.text.split("\n");
-			let y = 20;
-			for (let line of lines) {
-				ctx.fillText(line.trim(), card.x, y, canvas.width / 2);
-				y += 20;
+		let cards = document.getElementsByClassName("cardContent");
+		for (let card of cards) {
+			if (card.timer > 180 && !card.scrollStop) {
+				if (card.timer % 3 === 0) card.scrollBy(0, 1);
+				let maxScroll = card.scrollHeight - card.clientHeight;
+				if (maxScroll === card.scrollTop) {
+					// reached the end
+					card.timer = -Infinity;
+					setTimeout( () => {
+						card.timer = 0;
+						card.scrollBy(0, -card.scrollHeight);
+					}, 3000)
+				}
 			}
 		}
 	}
@@ -229,6 +233,15 @@
 			}
 		}
 
+		let cards = document.getElementsByClassName("cardContent");
+		for (let card of cards) {
+			if (!card.timer) card.timer = 0;
+			card.timer++;
+			if (!card.onwheel) {
+				card.onwheel = () => { card.scrollStop = true; }
+				card.onclick = () => { card.scrollStop = true; }
+			}
+		}
 		draw();
 		requestAnimationFrame(loop);
 	}
@@ -313,6 +326,8 @@
 		}
 		return min + Math.floor(Math.random() * (1 + max - min))
 	}
+
+
 
 
 	function TestCard() {
