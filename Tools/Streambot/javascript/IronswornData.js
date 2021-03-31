@@ -394,5 +394,5 @@ var ironswornData = {
             • Pick two: Envision two options. Rate one as ‘likely’, and roll on the table to see if it is true. If not, it is the other.
             • Spark an idea: Brainstorm or use a random prompt.`
         },
-    }
+    ]
 }

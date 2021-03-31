@@ -44,7 +44,7 @@
 			padding: 10px 20px;
 			font-size: 18pt;
 			font-weight: bold;
-    		background-color: #CCC;
+			background-color: #CCC;
 		}
 
 		p {
@@ -70,11 +70,10 @@
 			<image id="d20" src="https://dobbsworks.github.io/Tools/Streambot/images/d20.png"></image>
 		</div>
 	</div>
-	<div id="cards">
+	<div id="cards"></div>
 
-	</div>
 </body>
-<script src="https://dobbsworks.github.io/Tools/Streambot/javascript/IronswornData.js?q=1"></script>
+<script src="https://dobbsworks.github.io/Tools/Streambot/javascript/IronswornData.js?q=3"></script>
 <script type="text/javascript">
 
 	let canvas = document.getElementById("canvas");
@@ -184,7 +183,7 @@
 				if (maxScroll === card.scrollTop) {
 					// reached the end
 					card.timer = -Infinity;
-					setTimeout( () => {
+					setTimeout(() => {
 						card.timer = 0;
 						card.scrollBy(0, -card.scrollHeight);
 					}, 3000)
@@ -328,15 +327,22 @@
 	}
 
 
+	function FindCard(searchText) {
+		searchText = searchText.toLowerCase();
+		let move = ironswornData.moves.
+			find(a => a.name.toLowerCase().indexOf(searchText) > -1);
+		if (move) {
+			AddCard(move);
+		}
+	}
 
-
-	function TestCard() {
+	function AddCard(record) {
 		let cardContainer = document.getElementById("cards")
 		let cardDiv = document.createElement("div");
 		cardDiv.classList.add("card");
-		let text = ironswornData.moves["Face Danger"].text;
-		let title = "Face Danger";
-		let header = ironswornData.moves["Face Danger"].type + " Move";
+		let text = record.text;
+		let title = record.name;
+		let header = record.type + " Move";
 
 		let html = `<div class="header">${header}</div>` +
 			`<div class="title">${title}</div>` +
