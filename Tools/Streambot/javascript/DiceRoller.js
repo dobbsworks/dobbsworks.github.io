@@ -93,8 +93,31 @@ function CommandIronswornMoves(user, args) {
                 CommandIronswornMoves(user, args);
             }, 2000);
         }
-        ironSwornWindow.FindCard(user.username, args.join(' '));
-        return { success: true };
+
+        function onlyUnique(value, index, self) {
+            return self.indexOf(value) === index;
+        }
+
+        let types = ironswornData.moves.map(a => a.type).filter(onlyUnique);
+        if (args.join('').length === 0) {
+            let ret = `Get categories with: !moves type - valid types: ${types.join(' ')}`;
+            return { success: false, message: ret };
+        }
+
+        if (args[0]) {
+            let matchingType = ironswornData.moves.filter(a => a.type.toLowerCase() == args[0].toLowerCase());
+            if (matchingType.length > 0) {
+                let moveNames = matchingType.map(a => a.name);
+                let ret = `Moves of type "${args[0]}": ${moveNames.join(', ')}`;
+                return { success: false, message: ret };
+            }
+        }
+
+        let record = ironSwornWindow.FindCard(user.username, args.join(' '));
+        if (record) {
+            return { success: true, message: `Displaying info for ${record.name}` };
+        }
+        return { success: false, message: `No card found for "${args.join(' ')}"` };
     } else {
         return { success: false };
     }
