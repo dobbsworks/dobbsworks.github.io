@@ -22,13 +22,13 @@ function CommandRoll(user, args) {
                 //breakdowns.push(num);
                 total += rollGroup.startsWith("+") ? num : -num;
             } else {
-                let numDice = +(rollGroup.slice(1,rollGroup.indexOf("d")));
+                let numDice = +(rollGroup.slice(1, rollGroup.indexOf("d")));
                 totalDice += numDice;
                 if (totalDice > 20) return "That's too many dice...";
                 if (rollGroup.indexOf("d") === 1) numDice = 1;
-                let numFaces = +(rollGroup.slice(rollGroup.indexOf("d")+1,rollGroup.length));
+                let numFaces = +(rollGroup.slice(rollGroup.indexOf("d") + 1, rollGroup.length));
                 let rolledNums = RollDice(numDice, numFaces);
-                let sum = rolledNums.reduce((a,b)=>a+b,0);
+                let sum = rolledNums.reduce((a, b) => a + b, 0);
                 breakdowns.push(rolledNums);
                 total += rollGroup.startsWith("+") ? sum : -sum;
             }
@@ -40,13 +40,13 @@ function CommandRoll(user, args) {
 }
 function RollDice(n, d) {
     let ret = [];
-    for (let i=0; i<n; i++) ret.push(Math.ceil(Math.random()*d));
+    for (let i = 0; i < n; i++) ret.push(Math.ceil(Math.random() * d));
     return ret;
 }
 
 
 function IronswornAllowed(user) {
-    let allowedUsers = ["dobbsworks","GameQueued","DaeSnek","LurkingTurtleGamer"].map(a => a.toLowerCase());
+    let allowedUsers = ["dobbsworks", "GameQueued", "DaeSnek", "LurkingTurtleGamer"].map(a => a.toLowerCase());
     let allowed = allowedUsers.indexOf(user.username.toLowerCase()) > -1;
     return allowed;
 }
@@ -58,22 +58,31 @@ function CommandIronswornRoll(user, args) {
                 CommandIronswornRoll(user, args);
             }, 2000);
         }
-        ironSwornWindow.RequestRoll(user.username, 3);
-        return {success: true};
+        let val = parseInt(args.join(''));
+        if (isNaN(val)) {
+            return { success: false, message: "Usage: !ironroll value - example: !ironroll 3" };
+        } else {
+            if (val > 9) {
+                return { success: false, message: "That value is too high!" };
+            } else {
+                ironSwornWindow.RequestRoll(user.username, 3);
+                return { success: true };
+            }
+        }
     } else {
-        return {success: false};
+        return { success: false };
     }
 }
 function CommandIronswornReroll(user, args) {
     if (IronswornAllowed(user)) {
         if (!args || args.join('').length === 0) {
-            return {success: false, message: "Include which dice to reroll with A B and C. Example: !ironReroll AB to reroll dice 1 & 2"};
+            return { success: false, message: "Include which dice to reroll with A B and C. Example: !ironReroll AB to reroll dice 1 & 2" };
         } else {
             ironSwornWindow.RequestReroll(user.username, args.join(''));
-            return {success: true};
+            return { success: true };
         }
     } else {
-        return {success: false};
+        return { success: false };
     }
 }
 function CommandIronswornMoves(user, args) {
@@ -85,9 +94,9 @@ function CommandIronswornMoves(user, args) {
             }, 2000);
         }
         ironSwornWindow.FindCard(user.username, args.join(' '));
-        return {success: true};
+        return { success: true };
     } else {
-        return {success: false};
+        return { success: false };
     }
 }
 function CommandIronswornAssets(user, args) {
@@ -99,8 +108,8 @@ function CommandIronswornAssets(user, args) {
             }, 2000);
         }
         ironSwornWindow.FindCard(user.username, args.join(' '));
-        return {success: true};
+        return { success: true };
     } else {
-        return {success: false};
+        return { success: false };
     }
 }
