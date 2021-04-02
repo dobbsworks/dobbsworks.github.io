@@ -84,7 +84,7 @@ function CommandGetPoints(user, args) {
     let num = pointHandler.getPoints(targetUsername);
     let text = pointHandler.formatValue(num);
     let watchFor = [69, 420, 42069, 69420, 1337];
-    let tag = (watchFor.indexOf(num) > -1) ? " Ha, nice." : "";
+    let tag = (watchFor.indexOf(num) > -1) ? " Nice." : "";
     if (targetUsername === user.username) {
         return { success: true, message: `You currently have ${text}.${tag}` };
     } else {
