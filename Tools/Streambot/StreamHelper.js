@@ -177,6 +177,7 @@ function LoadCommands() {
 		Command("say", "CommandSay", commandPermission.streamer, commandDisplay.hidden, "Broadcast message."),
 		Command("moves", "CommandIronswornMoves", commandPermission.all, commandDisplay.hidden, "Check an Ironsworn move."),
 		Command("assets", "CommandIronswornAssets", commandPermission.all, commandDisplay.hidden, "Check an Ironsworn asset."),
+		Command("oracle", "CommandIronswornOracle", commandPermission.streamer, commandDisplay.hidden, "Roll on an oracle table."),
 	];
 	aliases = [
 		AliasCommand("brb", "afk"),

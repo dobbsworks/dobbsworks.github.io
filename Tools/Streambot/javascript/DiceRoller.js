@@ -1,3 +1,5 @@
+const { match } = require("assert");
+
 function CommandRoll(user, args) {
     let rawRollString = args.join('').replace(/\s/g, '').toLowerCase();
     let hasInvalidChars = rawRollString.replace(/[\d,d,+,-]/g, '').length > 0;
@@ -135,4 +137,72 @@ function CommandIronswornAssets(user, args) {
     } else {
         return { success: false };
     }
+}
+
+function CommandIronswornOracle(user, args) {
+    let specials = [
+        {
+            name: "Prompt", 
+            sources: ["Action", "Theme"],
+            result: (vals) => vals[0] + " " + vals[1]
+        },
+        {
+            name: "Settlement", 
+            sources: ["Prefix", "Suffix"],
+            result: (vals) => vals[0] + vals[1]
+        },
+        {
+            name: "Place", 
+            sources: ["Descriptor", "Location"],
+            result: (vals) => vals[0] + " " + vals[1]
+        },
+        {
+            name: "Character", 
+            sources: ["Names1", "Names2", "Personality", "Role", "Goal"],
+            result: (vals) => (Math.random() > 0.5 ? vals[0] : vals[1]) + ", the " + vals[2] + " " + vals[3] + " wanting to " + vals[4]
+        }
+    ];
+
+    let validOracleNames = ironswornData.oracles.map(a => a.name);
+    let validSpecialNames = specials.map(a => a.name);
+    let invalidRequestMessage = "Valid options: " + [...validOracleNames, ...validSpecialNames].join(", ");
+
+    if (args.join('').trim().length === 0) {
+        return { success: false, message: invalidRequestMessage};
+    }
+
+    function RollOracle(oracle) {
+        let num = Math.ceil(Math.random() * 100);
+        // find first row with val >= rolled number
+        let matchingRow = oracle.values.find(a => a.i >= num)
+        let val = matchingRow.val;
+        return {num: num, val: val};
+    }
+
+    function RollSpecial(special) {
+        let rolls = [];
+        for (let source of special.sources) {
+            let oracle = ironswornData.oracles.find(a => a.name == source);
+            if (oracle) {
+                rolls.push(RollOracle(oracle));
+            }
+        }
+        
+        let result = special.result(rolls.map(a => a.val));
+        return {nums: rolls.map(a => a.num), val: result}
+    }
+
+    for (let arg of args.filter(a => a.length > 0)) {
+        let matchingOracle = ironswornData.oracles.find(s => s.name.toLowerCase().startsWith(arg.toLowerCase()));
+        if (matchingOracle) {
+            let result = RollOracle(matchingOracle);
+            return { success: true, message: `[${result.num}] ${matchingOracle.name}: ${result.val}`};
+        } 
+        let matchingSpecial = specials.find(s => s.name.toLowerCase().startsWith(arg.toLowerCase()));
+        if (matchingSpecial) {
+            let result = RollSpecial(matchingSpecial);
+            return { success: true, message: `[${result.nums.join(',')}] ${matchingSpecial.name}: ${result.val}`};
+        } 
+    }
+    return { success: false, message: invalidRequestMessage};
 }
