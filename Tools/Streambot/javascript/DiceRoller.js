@@ -67,7 +67,7 @@ function CommandIronswornRoll(user, args) {
             if (val > 9) {
                 return { success: false, message: "That value is too high!" };
             } else {
-                ironSwornWindow.RequestRoll(user.username, 3);
+                ironSwornWindow.RequestRoll(user.username, val);
                 return { success: true };
             }
         }
