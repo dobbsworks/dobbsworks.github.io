@@ -172,6 +172,7 @@ function LoadCommands() {
 		Command("setshoutout", "CommandSetShoutout", commandPermission.mod, commandDisplay.hidden, "Usage: !so username Shout-out to $name!"),
 		Command("transfer", "CommandTransfer", commandPermission.mod, commandDisplay.hidden, "Transfers points, wheel color, etc to a new username (for when a user's name changes). Usage: !transfer oldName newName"),
 
+		Command("ironprogress", "CommandIronswornProgressRoll", commandPermission.streamer, commandDisplay.hidden, "Roll an Ironsworn progress check."),
 		Command("ironroll", "CommandIronswornRoll", commandPermission.all, commandDisplay.hidden, "Roll an Ironsworn action."),
 		Command("ironreroll", "CommandIronswornReroll", commandPermission.all, commandDisplay.hidden, "Reroll an Ironsworn action."),
 		Command("say", "CommandSay", commandPermission.streamer, commandDisplay.hidden, "Broadcast message."),

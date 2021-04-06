@@ -75,6 +75,19 @@ function CommandIronswornRoll(user, args) {
         return { success: false };
     }
 }
+function CommandIronswornProgressRoll(user, args) {
+    let val = parseInt(args.join(''));
+    if (isNaN(val)) {
+        return { success: false, message: "Usage: !ironprogress value - example: !ironprogress 9" };
+    } else {
+        if (val > 10) {
+            return { success: false, message: "That value is too high!" };
+        } else {
+            ironSwornWindow.RequestProgressRoll(user.username, val);
+            return { success: true };
+        }
+    }
+}
 function CommandIronswornReroll(user, args) {
     if (IronswornAllowed(user)) {
         if (!args || args.join('').length === 0) {
@@ -142,22 +155,22 @@ function CommandIronswornAssets(user, args) {
 function CommandIronswornOracle(user, args) {
     let specials = [
         {
-            name: "Prompt", 
+            name: "Prompt",
             sources: ["Action", "Theme"],
             result: (vals) => vals[0] + " " + vals[1]
         },
         {
-            name: "Settlement", 
+            name: "Settlement",
             sources: ["Prefix", "Suffix"],
             result: (vals) => vals[0] + vals[1]
         },
         {
-            name: "Place", 
+            name: "Place",
             sources: ["Descriptor", "Location"],
             result: (vals) => vals[0] + " " + vals[1]
         },
         {
-            name: "Character", 
+            name: "Character",
             sources: ["Names1", "Names2", "Personality", "Role", "Goal"],
             result: (vals) => (Math.random() > 0.5 ? vals[0] : vals[1]) + ", the " + vals[2] + " " + vals[3] + " wanting to " + vals[4]
         }
@@ -168,7 +181,7 @@ function CommandIronswornOracle(user, args) {
     let invalidRequestMessage = "Valid options: " + [...validOracleNames, ...validSpecialNames].join(", ");
 
     if (args.join('').trim().length === 0) {
-        return { success: false, message: invalidRequestMessage};
+        return { success: false, message: invalidRequestMessage };
     }
 
     function RollOracle(oracle) {
@@ -176,7 +189,7 @@ function CommandIronswornOracle(user, args) {
         // find first row with val >= rolled number
         let matchingRow = oracle.values.find(a => a.i >= num)
         let val = matchingRow.val;
-        return {num: num, val: val};
+        return { num: num, val: val };
     }
 
     function RollSpecial(special) {
@@ -187,22 +200,22 @@ function CommandIronswornOracle(user, args) {
                 rolls.push(RollOracle(oracle));
             }
         }
-        
+
         let result = special.result(rolls.map(a => a.val));
-        return {nums: rolls.map(a => a.num), val: result}
+        return { nums: rolls.map(a => a.num), val: result }
     }
 
     for (let arg of args.filter(a => a.length > 0)) {
         let matchingOracle = ironswornData.oracles.find(s => s.name.toLowerCase().startsWith(arg.toLowerCase()));
         if (matchingOracle) {
             let result = RollOracle(matchingOracle);
-            return { success: true, message: `[${result.num}] ${matchingOracle.name}: ${result.val}`};
-        } 
+            return { success: true, message: `[${result.num}] ${matchingOracle.name}: ${result.val}` };
+        }
         let matchingSpecial = specials.find(s => s.name.toLowerCase().startsWith(arg.toLowerCase()));
         if (matchingSpecial) {
             let result = RollSpecial(matchingSpecial);
-            return { success: true, message: `[${result.nums.join(',')}] ${matchingSpecial.name}: ${result.val}`};
-        } 
+            return { success: true, message: `[${result.nums.join(',')}] ${matchingSpecial.name}: ${result.val}` };
+        }
     }
-    return { success: false, message: invalidRequestMessage};
+    return { success: false, message: invalidRequestMessage };
 }

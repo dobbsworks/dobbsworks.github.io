@@ -217,7 +217,7 @@
 
 			if (diceSet.action && !diceSet.processed) {
 				// ironsworn action roll
-				let d6 = diceSet.dice.find(a => a.d === 6);
+				let d6 = diceSet.dice[0];
 				let score = d6.value + d6.modifier;
 				let hitCount = 0;
 				for (let d10 of diceSet.dice.filter(a => a.d === 10)) {
@@ -252,6 +252,18 @@
 			action: true,
 			dice: [
 				{ d: 6, modifier: modifier, x: tileSize },
+				{ d: 10, modifier: 0, x: tileSize * 2 },
+				{ d: 10, modifier: 0, x: tileSize * 3 },
+			]
+		});
+	}
+	function RequestProgressRoll(username, progress) {
+		diceSets.push({
+			username: username,
+			y: 0,
+			action: true,
+			dice: [
+				{ d: 12, modifier: 0, x: tileSize, value: progress },
 				{ d: 10, modifier: 0, x: tileSize * 2 },
 				{ d: 10, modifier: 0, x: tileSize * 3 },
 			]
@@ -293,7 +305,7 @@
 			let result = "MISS";
 			if (d10a.result === "hit" || d10b.result === "hit") result = "WEAK HIT";
 			if (d10a.result === "hit" && d10b.result === "hit") result = "STRONG HIT";
-			if (d10a.result === d10b.result) result += " (match)";
+			if (d10a.value === d10b.value) result += " (match)";
 
 			let response = `@${diceSet.username} rolled a [${d6.value}]+${d6.modifier} against [${d10a.value}] and [${d10b.value}] for a ${result}.`;
 
