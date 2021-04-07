@@ -379,6 +379,10 @@
 		let lines = text.split("\n").map(a => a.trim());
 		let isBulleted = false;
 		for (let line of lines) {
+			for (let move of ironswornData.moves) {
+				let myReg = new RegExp(move.name, 'g');
+				line = line.replace(myReg, `<i>${move.name}</i>`);
+			}
 			if (line.startsWith("• ")) {
 				if (!isBulleted) {
 					isBulleted = true;

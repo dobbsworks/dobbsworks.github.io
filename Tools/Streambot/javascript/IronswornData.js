@@ -18,7 +18,7 @@ var ironswornData = {
             On a miss, you fail, or your progress is undermined by a dramatic and costly turn of events. Pay the Price. `
         },
         {
-            name: "Secure An Advantage",
+            name: "Secure an Advantage",
             type: "Adventure",
             text: `When you assess a situation, make preparations, or attempt to gain leverage, envision your action and roll. If you act...
             • With speed, agility, or precision: Roll +edge.
