@@ -1,5 +1,3 @@
-const { match } = require("assert");
-
 function CommandRoll(user, args) {
     let rawRollString = args.join('').replace(/\s/g, '').toLowerCase();
     let hasInvalidChars = rawRollString.replace(/[\d,d,+,-]/g, '').length > 0;

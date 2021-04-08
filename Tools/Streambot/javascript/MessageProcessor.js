@@ -92,7 +92,7 @@ function ProcessCommand(username, commandText, isReward, badges) {
 	if (commandName[0] !== "!") return;
 	let matchingCommands = GetCommandsByName(commandName.replace("!", ""));
 
-	if (matchingCommands.length === 0) {
+	if (matchingCommands.length === 0 && !isReward) {
 		StorageHandler.invalidCommand.push({
 			username: username,
 			text: commandText,

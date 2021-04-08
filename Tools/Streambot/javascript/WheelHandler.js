@@ -172,7 +172,7 @@ function CommandBiggerSlice(user, args) {
 function UpgradeWheelSliceForUser(username) {
     // find all levels for this user that are pending and not priority
     let levels = StorageHandler.queue.values;
-    let userLevels = levels.filter(x => x.username === username && x.status === levelStatus.pending && !x.isPriority);
+    let userLevels = levels.filter(x => x.username.toLowerCase() === username.toLowerCase() && x.status === levelStatus.pending && !x.isPriority);
     if (userLevels.length === 0) return false;
     let levelToPrioritze = userLevels[0];
     levelToPrioritze.weightPriorityPurchases += 1;

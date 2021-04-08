@@ -93,6 +93,12 @@ function LoadCommands() {
 		MessageCommand("position", "Levels are processed in a semi-random order. The longer you're in the queue, the better your chance! Use !slice to check your current chances."),
 		Command("slice", "CommandSlice", commandPermission.all, commandDisplay.chat, "Check your level's chance of being chosen next. Usage: !slice"),
 
+		MessageCommand("splice", "you might mean !slice"),
+		MessageCommand("spliceup", "you might mean !sliceup"),
+		MessageCommand("slicedown", "wow dude. Harsh."),
+		MessageCommand("ban", "mods can use the built-in command: /ban "),
+		MessageCommand("lurk", "cool 🐢"),
+
 		Command("help", "CommandHelp", commandPermission.all, commandDisplay.hidden),
 		Command("list", "CommandList", commandPermission.all, commandDisplay.chat, "Displays the upcoming levels from the queue."),
 		Command("current", "CommandCurrent", commandPermission.all, commandDisplay.chat, "Displays information about the level being played."),
@@ -136,6 +142,7 @@ function LoadCommands() {
 		
 		MessageCommand("wheel", "Instead of taking levels in order, we'll go randomly. Your chances of being chosen are based on how long you've been in the queue."),
 		MessageCommand("discord", "Join the discord here: https://discord.gg/cdPmKUP"),
+		MessageCommand("youtube", "Technically there is a YouTube channel, but it's just VOD exports: https://www.youtube.com/channel/UCV-i_rqdTGBMYzxzrrephSw"),
 		MessageCommand("twitch", "Really? Sure, whatever. Catch me on Twitch here: https://www.twitch.tv/dobbsworks/"),
 		MessageCommand("phasetendo", "PhaseTendo is a MM2 game by LurkingTurtleGaming. In normal endless, you race to complete extra clear conditions to advance, such as collecting no coins or not killing any enemies."),
 		
@@ -152,14 +159,13 @@ function LoadCommands() {
 		Command("addpoints", "CommandAddPoints",commandPermission.streamer, commandDisplay.hidden),
 		Command("give", "CommandGivePoints",commandPermission.all, commandDisplay.chat, "Give !tokens to another user. Usage: !give @user 100"),
 		Command("points", "CommandGetPoints",commandPermission.all, commandDisplay.chat),
-		Command("tokens", "CommandGetPoints",commandPermission.all, commandDisplay.chat),
 
 
 		Command("rewards", "CommandRewards", commandPermission.all, commandDisplay.chat, "Get information about the things you can spend !tokens on."),
 	
 		RewardCommand(100, "wheelcolor", "CommandWheelColor", commandPermission.all, "Sets the color for your slice of the !wheel. Example: !wheelcolor red OR !wheelcolor #AA5D00"),
 		RewardCommand(250, "wheelpattern", "CommandWheelPattern", commandPermission.all, "Sets the background pattern for your slice of the !wheel. Lasts one hour for non-subs. Example: !wheelpattern star"),
-
+		MessageCommand("pattern", "uh, !wheelpattern maybe?"),
 		
 		Command("getalevelidea", "CommandLevelIdea", commandPermission.reward, commandDisplay.hidden, "Generates a random level idea."),
 		RewardCommand(25, "levelidea", "CommandLevelIdea", commandPermission.all, "Generates a random level idea."),
@@ -196,6 +202,13 @@ function LoadCommands() {
 		AliasCommand("sfx", "soundlist"),
 		AliasCommand("givepoints", "give"),
 		AliasCommand("givetokens", "give"),
+		AliasCommand("tokens", "points"),
+		AliasCommand("credits", "points"),
+		AliasCommand("coins", "points"),
+		AliasCommand("answer", "guess"),
+		AliasCommand("move", "moves"),
+		AliasCommand("asset", "assets"),
+		AliasCommand("oracles", "oracle"),
 	];
 }
 
