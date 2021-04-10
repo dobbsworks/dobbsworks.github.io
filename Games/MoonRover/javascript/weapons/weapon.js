@@ -159,7 +159,10 @@ class Weapon {
         if (this.shotsRemaining < this.clipSize) {
             let reloadAmount = 1;
             if (isHolstered) reloadAmount *= this.holsterReloadRatio;
-            if (!isPlayerOnGround) reloadAmount *= this.midAirReloadRatio;
+
+            if (currentCharacter && !currentCharacter.midAirReload) {
+                if (!isPlayerOnGround) reloadAmount *= this.midAirReloadRatio;
+            }
             this.reloadTimer += reloadAmount;
 
             while (this.reloadTimer >= this.reloadTime) {

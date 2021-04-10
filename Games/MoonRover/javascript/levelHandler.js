@@ -85,6 +85,9 @@ class LevelHandler {
                     if (levelHandler.currentLevel === 5) {
                         // VICTORY!
                         achievementHandler.lifetimeRunCompletes++;
+                        if (achievementHandler.completeRunCharacters.indexOf(currentCharacter.name) == -1) {
+                            achievementHandler.completeRunCharacters.push(currentCharacter.name)
+                        }
                         mainMenuHandler.ReturnToMainMenu();
                         mainMenuHandler.OnClickCredits();
                     } else {

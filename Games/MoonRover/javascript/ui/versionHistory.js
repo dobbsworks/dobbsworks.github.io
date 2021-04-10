@@ -1,5 +1,11 @@
 var versionHistoryData = [
     {
+        v: "0.6", d: "2021-04-09", t:
+            `This update has character!
+
+• New characters can now be unlocked by earning achievements. `
+    },
+    {
         v: "0.5", d: "2021-03-28", t:
             `Boss fights!
 

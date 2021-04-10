@@ -1,9 +1,5 @@
 class WeaponHandler {
-    inventory = [
-        new WeaponPeashooter(),
-        new WeaponTest(),
-    ];
-
+    inventory = [];
     oldWeaponIndex = 0;
     selectedWeaponIndex = 0;
 

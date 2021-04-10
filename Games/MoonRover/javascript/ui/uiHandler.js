@@ -186,7 +186,8 @@ class UIHandler {
 
     DrawPortrait(x, y, w, h) {
         let portraitBg = document.getElementById("dog-bg");
-        let portraitImage = document.getElementById("dog-rover");
+        let imageId = currentCharacter.imageId;
+        let portraitImage = document.getElementById(imageId);
 
         ctx.fillStyle = "#170043cc";
         ctx.strokeStyle = "#170043";
@@ -280,13 +281,5 @@ class UIHandler {
             ctx.fillRect(x + blockBorder/2 + blockWidth * i, y + blockBorder, blockBorder, h - blockBorder * 2);
         }
 
-
-        // ctx.fillStyle = "#0208";
-        // ctx.fillRect(x, y, w, h);
-        // for (let i = 0; i < player.maxHp; i++) {
-        //     ctx.fillStyle = i < player.hp ? "#0A0A" : "#3008";
-        //     ctx.fillRect(x + i * (blockWidth + blockBorder) + blockBorder,
-        //         y + blockBorder, blockWidth, h - blockBorder * 2);
-        // }
     }
 }

@@ -16,6 +16,7 @@ var mainMenuHandler;
 var loot = 0;
 var killCount = 0;
 var deathCount = 0;
+var currentCharacter = null;
 
 
 setTimeout(Initialize, 100);

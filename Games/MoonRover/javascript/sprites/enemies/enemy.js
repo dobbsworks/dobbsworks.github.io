@@ -9,15 +9,25 @@ class Enemy extends Sprite {
 
     SharedEnemyUpdate() {
         if (this.hp <= 0) {
+
+            if (currentCharacter && currentCharacter.mustKeepAttacking) {
+                if (player.hp % 1 !== 0) {
+                    player.hp = Math.ceil(player.hp);
+                    if (player.hp < player.maxHp) {
+                        player.hp += 1;
+                    }
+                }
+            }
+
             killCount++;
             this.isActive = false;
             this.Explode();
             if (!(this instanceof EnemyBullet)) {
                 achievementHandler.lifetimeKills += 1;
             }
-            
+
             let lootScale = levelHandler.GetCurrentLootMultiplier()
-            for (let i=0; i<this.loot * lootScale; i++) {
+            for (let i = 0; i < this.loot * lootScale; i++) {
                 sprites.push(new Loot(this.x, this.y));
             }
 

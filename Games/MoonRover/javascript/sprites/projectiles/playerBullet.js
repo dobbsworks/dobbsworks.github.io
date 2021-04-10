@@ -59,6 +59,12 @@ class PlayerBullet extends Sprite {
                 if (touchingSprite.hp >= 0) {
                     audioHandler.PlaySound("ow-01");
                 }
+
+                if (currentCharacter && currentCharacter.mustKeepAttacking) {
+                    if (player.hp % 1 !== 0) {
+                        player.hp = Math.ceil(player.hp);
+                    }
+                }
             }
         }
     }

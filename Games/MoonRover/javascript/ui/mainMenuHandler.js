@@ -206,6 +206,8 @@ class MainMenuHandler {
     }
 
     OnClickChar(char) {
+        currentCharacter = char;
+        weaponHandler.inventory = char.initialWeapons.map(a => new a());
         uiHandler.Shelve();
         let contentWidth = 500;
         let margin = 20;
@@ -345,7 +347,7 @@ class MainMenuHandler {
         let size = 72;
 
         let cols = 5;
-        let rows = 2;
+        let rows = 3;
         let totalWidth = cols * size + (cols - 1) * margin;
 
         let titleObj = new Text(canvas.width / 2 - totalWidth / 2, 350 + 20, "");

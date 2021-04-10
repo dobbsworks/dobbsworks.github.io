@@ -6,6 +6,12 @@ class AchievementHandler {
             [1],
             (vars) => { return this.lifetimeRunCompletes >= vars[0] }
         ),
+        beatGameMulticharacter: new Achievement(
+            "Hopper To It",
+            "Beat the game as %0 different characters",
+            [2],
+            (vars) => { return this.completeRunCharacters.length >= vars[0] }
+        ),
         loot: new Achievement(
             "On A Budget",
             "Have %0 Mooney in your inventory",
@@ -16,7 +22,7 @@ class AchievementHandler {
             "Bargain Hunter",
             "Purchase %0 weapons/upgrades in one shopping trip",
             [5],
-            (vars) => { 
+            (vars) => {
                 return shopHandler.buysThisVisit >= vars[0];
             }
         ),
@@ -24,7 +30,7 @@ class AchievementHandler {
             "Buyer's Remorse",
             "Purchase %0 weapons in one run",
             [9],
-            (vars) => { 
+            (vars) => {
                 return shopHandler.weaponBuysThisRun >= vars[0];
             }
         ),
@@ -32,7 +38,7 @@ class AchievementHandler {
             "This Is My Boomstick",
             "Upgrade a single weapon %0 times in one run",
             [5],
-            (vars) => { 
+            (vars) => {
                 return Math.max(weaponHandler.inventory.map(x => x.level)) - 1 >= vars[0];
             }
         ),
@@ -40,7 +46,7 @@ class AchievementHandler {
             "Ramming Speed",
             "Deal %0 damage with a shield bash",
             [4],
-            (vars) => { 
+            (vars) => {
                 return this.shieldBashDamage >= vars[0];
             }
         ),
@@ -48,19 +54,19 @@ class AchievementHandler {
             "Fried Circuits",
             "Ignite %0 robots in %1 seconds",
             [5, 3],
-            (vars) => { 
+            (vars) => {
                 let now = new Date();
-                let targetTime = vars[1]*1000;
-                return this.ignitionTimes.filter(a => now - a < targetTime).length >= vars[0] 
+                let targetTime = vars[1] * 1000;
+                return this.ignitionTimes.filter(a => now - a < targetTime).length >= vars[0]
             }
         ),
         highspeed: new Achievement(
             "Gotta Go Fast",
             "Maintain a speed of %0 units/second for %1 seconds",
             [20, 3],
-            (vars) => { 
+            (vars) => {
                 let requiredVal = vars[0];
-                let requiredCount = vars[1]*60;
+                let requiredCount = vars[1] * 60;
                 return this.playerSpeeds.length >= requiredCount &&
                     this.playerSpeeds.slice(-requiredCount).every(x => x >= requiredVal);
             }
@@ -69,7 +75,7 @@ class AchievementHandler {
             "Coin Collector",
             "Collect %0 Mooney across all runs",
             [5000],
-            (vars) => { 
+            (vars) => {
                 return this.lifetimeLoot >= vars[0];
             }
         ),
@@ -77,7 +83,7 @@ class AchievementHandler {
             "Beggin' For Scraps",
             "Destroy %0 robots across all runs",
             [500],
-            (vars) => { 
+            (vars) => {
                 return this.lifetimeKills >= vars[0];
             }
         )
@@ -89,6 +95,7 @@ class AchievementHandler {
     lifetimeLoot = 0;
     lifetimeKills = 0;
     lifetimeRunCompletes = 0;
+    completeRunCharacters = [];
 
     displays = [];
     // controls pop-up alert speed
@@ -107,12 +114,28 @@ class AchievementHandler {
         let currentDisplay = this.displays[0];
         if (currentDisplay) {
             currentDisplay.timer++;
+            if (currentDisplay.timer >= this.displayTimes[2]) {
+                this.displays.splice(0, 1);
+            }
         }
         for (let achieve of Object.values(this.achievements)) {
             let achieved = achieve.CheckForUnlock();
             if (!achieved) achieved = achieve.manualUnlock;
             if (achieved) {
                 this.displays.push({ achievement: achieve, timer: 0 })
+                this.CheckForCharacterUnlocks();
+            }
+        }
+    }
+
+    CheckForCharacterUnlocks() {
+        for (let lockedChar of characters.filter(a => !a.unlocked)) {
+            let allRequiredAchievesUnlocked = lockedChar.
+                achievementGate.every(achieveName => this.
+                    achievements[achieveName].unlocked);
+            if (allRequiredAchievesUnlocked) {
+                lockedChar.unlocked = true;
+                this.displays.push({ character: lockedChar, timer: 0 })
             }
         }
     }
@@ -120,7 +143,9 @@ class AchievementHandler {
     Draw() {
         let currentDisplay = this.displays[0];
         if (currentDisplay) {
-            let name = currentDisplay.achievement.name;
+            let name = currentDisplay.achievement ?
+                currentDisplay.achievement.name :
+                currentDisplay.character.name + " unlocked!";
             let timer = currentDisplay.timer;
 
             let ratio = 0;
@@ -138,14 +163,19 @@ class AchievementHandler {
             let width = Math.max(150, textWidth + margin * 2);
             let x = canvas.width - width;
             let y = canvas.height - height * ratio;
-            ctx.fillRect(x-10, y, width + 10, height);
+            ctx.fillRect(x - 10, y, width + 10, height);
             ctx.fillStyle = "white";
             ctx.fillText(name, x + margin, y + margin + fontSize);
 
             let tiles = tileset.achievements.tiles;
             tiles[0].Draw(ctx, x - tiles[0].width, y, 1);
-            let index = currentDisplay.achievement.imageIndex;
-            tiles[index].Draw(ctx, x - tiles[0].width, y, 1);
+            if (currentDisplay.achievement) {
+                let index = currentDisplay.achievement.imageIndex;
+                tiles[index].Draw(ctx, x - tiles[0].width, y, 1);
+            } else {
+                let image = document.getElementById(currentDisplay.character.imageId + "-lit");
+                ctx.drawImage(image, x - tiles[0].width - 5, y, image.width/2, image.height/2);
+            }
         }
     }
 

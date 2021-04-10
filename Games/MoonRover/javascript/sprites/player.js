@@ -4,13 +4,18 @@ class Player extends Sprite {
     hurtTimer = 0;
     bubbleShieldTimer = 0;
     isOnGround = false;
+    playerStarted = false; // player has made some interaction (fired weapon)
 
     shake = 0; // used for ui shake, based on how sprite is jerked around
 
-    Update() {
-        let oldSpeedSquared = this.dx **2 + this.dy **2
+    Initialize() {
 
-        if (oldSpeedSquared > 10**2) {
+    }
+
+    Update() {
+        let oldSpeedSquared = this.dx ** 2 + this.dy ** 2
+
+        if (oldSpeedSquared > 10 ** 2) {
             this.dx *= 0.995;
             this.dy *= 0.995;
         }
@@ -19,8 +24,9 @@ class Player extends Sprite {
 
         let isBounced = false;
         if (isMouseDown) {
-        // if (isMouseDown && !isShielded) {
+            // if (isMouseDown && !isShielded) {
             // weapon fired
+            this.playerStarted = true;
             weaponHandler.GetCurrent().PullTrigger();
         }
         this.ApplyGravity();
@@ -67,18 +73,8 @@ class Player extends Sprite {
                     // no damage
                 } else if (this.hurtTimer === 0) {
                     this.hp -= 1;
-                    if (this.hp <= 0) {
-                        // you are dead, not big surprise
-                        this.isActive = false;
-                        this.Explode();
-                        deathCount++;
-                        setTimeout(() => {
-                            mainMenuHandler.ReturnToMainMenu();
-                        }, 3000)
-                    } else {
-                        this.hurtTimer = 60;
-                        audioHandler.PlaySound("pow-03");
-                    }
+                    this.hurtTimer = 60;
+                    audioHandler.PlaySound("pow-03");
                 }
                 isBounced = true;
             }
@@ -105,8 +101,38 @@ class Player extends Sprite {
         if (this.hurtTimer > 0) {
             this.hurtTimer--;
         }
-        
-        let newSpeedSquared = this.dx **2 + this.dy **2
+
+        if (this.playerStarted) {
+            if (currentCharacter && currentCharacter.damagedOnSolid) {
+                let hpFraction = 0.1;
+                if (touchedBorders.some(x => true)) {
+                    // challenge character touched solid
+                    this.hp -= hpFraction;
+                } else {
+                    if (this.hp % 1 > 0) {
+                        this.hp += hpFraction;
+                        if (this.hp % 1 < hpFraction) this.hp -= this.hp % 1;
+                    }
+                }
+            }
+            
+            if (currentCharacter && currentCharacter.mustKeepAttacking) {
+                player.hp -= 0.004;
+            }
+        }
+
+        if (this.hp <= 0) {
+            // you are dead, not big surprise
+            this.isActive = false;
+            this.Explode();
+            deathCount++;
+            setTimeout(() => {
+                mainMenuHandler.ReturnToMainMenu();
+            }, 3000)
+        }
+
+
+        let newSpeedSquared = this.dx ** 2 + this.dy ** 2
         let jerk = Math.floor(Math.abs(newSpeedSquared - oldSpeedSquared) / 10);
         this.shake += jerk;
         if (isBounced) this.shake += 20;
