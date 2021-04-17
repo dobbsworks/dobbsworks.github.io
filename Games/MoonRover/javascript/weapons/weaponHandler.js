@@ -57,6 +57,7 @@ class WeaponHandler {
         }
 
         let currentWeapon = this.GetCurrent();
+        if (!currentWeapon) return;
         for (let weapon of this.inventory) {
             let isHolstered = (weapon !== currentWeapon);
             weapon.Update(isHolstered);
