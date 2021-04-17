@@ -216,7 +216,7 @@ function ProcessActivityMessage(messageEl) {
 		// Raids
 		if (line2.startsWith("Raided you ")) {
 			let user = line1;
-			let alertText = user + " is raiding" + line2.replace("Raided you", "") + "!";
+			let alertText = user + " is raiding!";
 			marqueeWindow.AddAlert(alertText, "rgb(128,128,255)");
 		}
 		// Subscribe

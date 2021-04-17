@@ -63,9 +63,9 @@ class Weapon {
     }
 
     PullTrigger() {
-        if (this.shotsRemaining > 0 || player.isOnGround) {
+        //if (this.shotsRemaining > 0 || player.isOnGround) {
             this.reloadTimer = 0; // cancel current reload
-        }
+        //}
         if (this.cooldownTimer <= 0 && this.deployTimer <= 0) {
             if (this.shotsRemaining > 0) {
                 this.Fire(player);

@@ -18,6 +18,10 @@ class PlayerMagnetPellet extends PlayerBullet {
             if (touchingSprite instanceof Enemy) {
                 if (touchingSprite instanceof BossShieldProjection) {
                     this.isActive = false;
+                } else if (touchingSprite instanceof EnemyBullet) {
+                    // Do nothing
+                } else if (touchingSprite instanceof BossCoreBase) {
+                    // Do nothing
                 } else if (this.touchedSprites.indexOf(touchingSprite) > -1) {
                     // already affected this sprite, we can skip it
                 } else {

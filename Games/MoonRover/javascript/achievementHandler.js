@@ -1,27 +1,31 @@
 class AchievementHandler {
+    tiers = [
+        "Bronze", "Silver", "Gold"
+    ];
+
     achievements = {
         beatGame: new Achievement(
             "Good Boy!",
-            "Beat the game",
-            [1],
+            "Beat the game %0 time(s)",
+            [[1], [10], [25]],
             (vars) => { return this.lifetimeRunCompletes >= vars[0] }
         ),
         beatGameMulticharacter: new Achievement(
             "Hopper To It",
             "Beat the game as %0 different characters",
-            [2],
+            [[2], [3], [4]], //TODO, need more characters!
             (vars) => { return this.completeRunCharacters.length >= vars[0] }
         ),
         loot: new Achievement(
             "On A Budget",
             "Have %0 Mooney in your inventory",
-            [300],
+            [[300], [400], [500]],
             (vars) => { return loot >= vars[0] }
         ),
         shopAll: new Achievement(
             "Bargain Hunter",
             "Purchase %0 weapons/upgrades in one shopping trip",
-            [5],
+            [[3], [4], [5]],
             (vars) => {
                 return shopHandler.buysThisVisit >= vars[0];
             }
@@ -29,7 +33,7 @@ class AchievementHandler {
         weaponBuys: new Achievement(
             "Buyer's Remorse",
             "Purchase %0 weapons in one run",
-            [9],
+            [[6], [7], [9]],
             (vars) => {
                 return shopHandler.weaponBuysThisRun >= vars[0];
             }
@@ -37,7 +41,7 @@ class AchievementHandler {
         upgradeWeapon: new Achievement(
             "This Is My Boomstick",
             "Upgrade a single weapon %0 times in one run",
-            [5],
+            [[4], [5], [6]],
             (vars) => {
                 return Math.max(weaponHandler.inventory.map(x => x.level)) - 1 >= vars[0];
             }
@@ -45,7 +49,7 @@ class AchievementHandler {
         ramming: new Achievement(
             "Ramming Speed",
             "Deal %0 damage with a shield bash",
-            [4],
+            [[2], [3], [4]],
             (vars) => {
                 return this.shieldBashDamage >= vars[0];
             }
@@ -53,7 +57,7 @@ class AchievementHandler {
         quickfire: new Achievement(
             "Fried Circuits",
             "Ignite %0 robots in %1 seconds",
-            [5, 3],
+            [[3, 5], [4, 4], [5, 3]],
             (vars) => {
                 let now = new Date();
                 let targetTime = vars[1] * 1000;
@@ -63,7 +67,7 @@ class AchievementHandler {
         highspeed: new Achievement(
             "Gotta Go Fast",
             "Maintain a speed of %0 units/second for %1 seconds",
-            [20, 3],
+            [[16, 2], [18, 2.5], [20, 3]],
             (vars) => {
                 let requiredVal = vars[0];
                 let requiredCount = vars[1] * 60;
@@ -74,7 +78,7 @@ class AchievementHandler {
         lifetimeLoot: new Achievement(
             "Coin Collector",
             "Collect %0 Mooney across all runs",
-            [5000],
+            [[5000], [10000], [20000]],
             (vars) => {
                 return this.lifetimeLoot >= vars[0];
             }
@@ -82,7 +86,7 @@ class AchievementHandler {
         lifetimeKills: new Achievement(
             "Beggin' For Scraps",
             "Destroy %0 robots across all runs",
-            [500],
+            [[500], [1500], [3000]],
             (vars) => {
                 return this.lifetimeKills >= vars[0];
             }
@@ -119,11 +123,15 @@ class AchievementHandler {
             }
         }
         for (let achieve of Object.values(this.achievements)) {
-            let achieved = achieve.CheckForUnlock();
-            if (!achieved) achieved = achieve.manualUnlock;
-            if (achieved) {
-                this.displays.push({ achievement: achieve, timer: 0 })
+            let achievedTiers = achieve.CheckForUnlock();
+            for (let achievedTier of achievedTiers) {
+                this.displays.push({
+                    achievement: achieve,
+                    tier: achievedTier,
+                    timer: 0
+                });
                 this.CheckForCharacterUnlocks();
+                saveHandler.SaveGame();
             }
         }
     }
@@ -132,7 +140,7 @@ class AchievementHandler {
         for (let lockedChar of characters.filter(a => !a.unlocked)) {
             let allRequiredAchievesUnlocked = lockedChar.
                 achievementGate.every(achieveName => this.
-                    achievements[achieveName].unlocked);
+                    achievements[achieveName].unlocked[0]);
             if (allRequiredAchievesUnlocked) {
                 lockedChar.unlocked = true;
                 this.displays.push({ character: lockedChar, timer: 0 })
@@ -141,6 +149,7 @@ class AchievementHandler {
     }
 
     Draw() {
+        //TODO tiers
         let currentDisplay = this.displays[0];
         if (currentDisplay) {
             let name = currentDisplay.achievement ?
@@ -174,11 +183,10 @@ class AchievementHandler {
                 tiles[index].Draw(ctx, x - tiles[0].width, y, 1);
             } else {
                 let image = document.getElementById(currentDisplay.character.imageId + "-lit");
-                ctx.drawImage(image, x - tiles[0].width - 5, y, image.width/2, image.height/2);
+                ctx.drawImage(image, x - tiles[0].width - 5, y, image.width / 2, image.height / 2);
             }
         }
     }
-
 }
 
 class Achievement {
@@ -187,25 +195,33 @@ class Achievement {
         this.variables = variables;
         this.unlockFunc = unlockFunc;
 
-        let formattedDescr = descr;
-        for (let i = 0; i < variables.length; i++) {
-            formattedDescr = formattedDescr.replace("%" + i, variables[i]);
+        this.descr = [];
+        for (let tierIndex of [0, 1, 2]) {
+
+            let formattedDescr = descr;
+            for (let i = 0; i < variables.length; i++) {
+                formattedDescr = formattedDescr.replace("%" + i, variables[tierIndex][i]);
+            }
+            this.descr.push(formattedDescr + " ");
         }
-        this.descr = formattedDescr + " ";
     }
     imageIndex = 2;
-    unlocked = false;
-    unlockedTimestamp = null;
+    unlocked = [false, false, false];
+    unlockedTimestamp = [null, null, null];
     manualUnlock = false;
 
     CheckForUnlock() {
-        if (this.unlocked) return false;
-        let achieved = this.unlockFunc(this.variables);
-        if (achieved) {
-            this.unlocked = true;
-            this.unlockedTimestamp = new Date();
-            audioHandler.PlaySound("powerup-04");
+        let unlockedTiers = [];
+        for (let unlockTier of [0]) { // TODO tiers
+            if (this.unlocked[unlockTier]) continue;
+            let achieved = this.unlockFunc(this.variables[unlockTier]);
+            if (achieved) {
+                this.unlocked[unlockTier] = true;
+                this.unlockedTimestamp[unlockTier] = new Date();
+                audioHandler.PlaySound("powerup-04");
+                unlockedTiers.push(unlockTier);
+            }
         }
-        return achieved;
+        return unlockedTiers;
     }
 }

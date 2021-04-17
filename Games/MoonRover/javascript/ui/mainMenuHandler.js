@@ -111,6 +111,7 @@ class MainMenuHandler {
         mainMenuHandler.InitializeMenu();
         mainMenuHandler.StartMainMenu();
         achievementHandler.RunReset();
+        saveHandler.SaveGame();
     }
 
     StartMainMenu() {
@@ -370,18 +371,23 @@ class MainMenuHandler {
                     b.colorPrimary = "#0000";
                     b.onClick = () => {
                         titleObj.text = achieve.name;
-                        if (achieve.unlocked) {
-                            textObj.text = achieve.descr + "\nUnlocked: " + achieve.unlockedTimestamp.toLocaleString();
-                        } else {
-                            textObj.text = achieve.descr + "\nLOCKED"
+                        let achieveText = achieve.descr[0];
+                        for (let tierIndex of [0]) {
+                            let tierName = achievementHandler.tiers[tierIndex];
+                            if (achieve.unlocked[tierIndex]) {
+                                achieveText += "\n" + " unlocked: " + achieve.unlockedTimestamp[tierIndex].toLocaleString();
+                            } else {
+                                achieveText += "\n" + " LOCKED";
+                            }
                         }
+                        textObj.text = achieveText;
                     }
-                    let backdropTileIndex = (achieve.unlocked ? 0 : 1);
+                    let backdropTileIndex = (achieve.unlocked[0] ? 0 : 1);
                     let backdrop = new UiImage(tileset.achievements.tiles[backdropTileIndex], x, y);
                     backdrop.scale = 2;
                     let img = new UiImage(tileset.achievements.tiles[achieve.imageIndex], x, y);
                     img.scale = 2;
-                    img.isSilhoutte = !achieve.unlocked;
+                    img.isSilhoutte = !achieve.unlocked[0];
                     achieveButtons.push(b, backdrop, img);
                 }
             }

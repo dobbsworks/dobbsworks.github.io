@@ -1,5 +1,12 @@
 var versionHistoryData = [
     {
+        v: "0.7", d: "2021-04-16", t:
+            `What a save!
+
+• The game now auto-saves achievement progress and character unlocks. 
+• Enemy bullets and boss cores are now immune to EMPs. `
+    },
+    {
         v: "0.6", d: "2021-04-09", t:
             `This update has character!
 

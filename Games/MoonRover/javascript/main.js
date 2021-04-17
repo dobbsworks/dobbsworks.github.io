@@ -12,6 +12,7 @@ var shopHandler;
 var pauseHandler;
 var audioHandler;
 var mainMenuHandler;
+var saveHandler;
 
 var loot = 0;
 var killCount = 0;
@@ -46,6 +47,7 @@ function Initialize() {
     pauseHandler = new PauseHandler();
     audioHandler = new AudioHandler();
     mainMenuHandler = new MainMenuHandler();
+    saveHandler = new SaveHandler();
 
     audioHandler.Initialize();
     InitMouseHandlers();
@@ -54,6 +56,8 @@ function Initialize() {
     setInterval(MainLoop, 1000 / 60);
     mainMenuHandler.InitializeMenu();
     achievementHandler.Initialize();
+    saveHandler.LoadGame();
+    setInterval(()=> { saveHandler.SaveGame()}, 30 * 1000);
 }
 
 let p = null;

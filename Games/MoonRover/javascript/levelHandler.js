@@ -90,6 +90,7 @@ class LevelHandler {
                         }
                         mainMenuHandler.ReturnToMainMenu();
                         mainMenuHandler.OnClickCredits();
+                        saveHandler.SaveGame();
                     } else {
                         shopHandler.EnterShop();
                     }
@@ -181,7 +182,7 @@ class LevelHandler {
             sprites.push(new bossType(this.room.width / 2, this.room.height / 3));
         }
         renderer.target = player;
-
+        saveHandler.SaveGame();
     }
 
     AreAllEnemiesDefeated() {

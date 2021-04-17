@@ -1,0 +1,18 @@
+body {
+	margin: 0 auto;
+	background: #222;
+	color: white;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+	color: white;
+}
+
+th {
+	text-align: left;
+}
+
+th, td {
+	padding: 10px;
+}
