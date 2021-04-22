@@ -10,7 +10,7 @@ var StorageHandler;
 let commandPermission = {       // TODO VIP?
 	"all": "all",
 	//"follower": "follower",     // doesn't work yet
-	"subscriber": "subscriber", 
+	"subscriber": "subscriber",
 	"mod": "mod",
 	"streamer": "streamer",
 	"reward": "reward",
@@ -18,7 +18,7 @@ let commandPermission = {       // TODO VIP?
 let commandDisplay = {
 	"hidden": "hidden",         // not displayed
 	"chat": "chat",             // displayed with !help
-	"reward": "reward", 
+	"reward": "reward",
 	"panel": "panel",           // only appears on streamer panel
 };
 let levelStatus = {
@@ -33,12 +33,17 @@ function Initialize() {
 	LoadExternalFunctions();
 	setTimeout(() => {
 		LoadCommands();
-		queueWindow = CreateQueueWindow();	
+		queueWindow = CreateQueueWindow();
 		overlayWindow = CreateOverlayWindow();
 		marqueeWindow = CreateMarqueeWindow();
 		let bc = new BroadcastChannel('helper');
 		bc.onmessage = OnBroadcastMessage;
 		setInterval(ProcessMessages, 1000);
+		let now = new Date();
+		let targetEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12 + 9, 28, 0);
+		setTimeout(() => {
+			WriteMessage("BEEP BOOP! Dobbs needs to end stream soon! Everyone bug him about it! GivePLZ GivePLZ GivePLZ")
+		}, targetEnd - now);
 	}, 1000);
 }
 
@@ -119,57 +124,57 @@ function LoadCommands() {
 		RewardCommand(500, "sliceup", "CommandBiggerSlice", commandPermission.all, "Increases the chance of your level being chosen on the wheel. Lasts until your level is chosen."),
 		RewardCommand(2500, "setmakerid", "CommandSetMakerId", commandPermission.all, "Sets your maker id. Once set, you can use !add without an id to queue the saved id. Usage: !setmakerid MYM-AKE-RID"),
 		Command("addcom", "CommandAddCommand", commandPermission.mod, commandDisplay.hidden, "Adds a text command for the duration of the stream. Usage: !addcom myCom This is the response"),
-	
+
 		Command("texttospeech", "CommandTTS", commandPermission.reward, commandDisplay.hidden),
 		Command("tts", "CommandTTS", commandPermission.streamer, "Makes the computer voice say a thing hehe"),
-		
+
 		Command("minigame", "CommandMinigame", commandPermission.mod, commandDisplay.hidden),
 		MessageCommand("minigame", "Compete for bonus tokens! Use !guess YOUR ANSWER to take a stab at solving the puzzle."),
-		Command("guess", "CommandMinigameGuess",commandPermission.all, commandDisplay.hidden),
-		
+		Command("guess", "CommandMinigameGuess", commandPermission.all, commandDisplay.hidden),
+
 		Command("tickeradd", "CommandTickerAdd", commandPermission.mod, commandDisplay.hidden),
 		Command("tickerlist", "CommandTickerList", commandPermission.mod, commandDisplay.hidden),
-		Command("tickerremove", "CommandTickerRemove",commandPermission.mod, commandDisplay.hidden),
-		
+		Command("tickerremove", "CommandTickerRemove", commandPermission.mod, commandDisplay.hidden),
+
 		Command("debugadd", "CommandDebugAdd", commandPermission.streamer, commandDisplay.hidden),
 		Command("as", "CommandAs", commandPermission.streamer, commandDisplay.hidden),
-		Command("exportchat", "CreateChatLogWindow",commandPermission.streamer, commandDisplay.panel),
-		
+		Command("exportchat", "CreateChatLogWindow", commandPermission.streamer, commandDisplay.panel),
+
 		MessageCommand("maker", "My maker id is: S2C-HX7-01G"),
 		MessageCommand("priority", "Your level will cut ahead of any level that isn't in the priority queue. Note that you need to already have your level in the queue before redeeming this reward!"),
 		MessageCommand("bot", "Hello there, I'm the bot! Dobbs wrote me in JavaScript of all things. I handle the level queue and stuff. Sometimes I break for no good reason! Kappa"),
 		MessageCommand("schedule", "all times in Eastern: Mon 8:30PM, Wed 5PM, Sat 2PM. Mario Maker every stream except Monday."),
-		
+
 		MessageCommand("wheel", "Instead of taking levels in order, we'll go randomly. Your chances of being chosen are based on how long you've been in the queue."),
 		MessageCommand("discord", "Join the discord here: https://discord.gg/cdPmKUP"),
 		MessageCommand("youtube", "Technically there is a YouTube channel, but it's just VOD exports: https://www.youtube.com/channel/UCV-i_rqdTGBMYzxzrrephSw"),
 		MessageCommand("twitch", "Really? Sure, whatever. Catch me on Twitch here: https://www.twitch.tv/dobbsworks/"),
 		MessageCommand("phasetendo", "PhaseTendo is a MM2 game by LurkingTurtleGaming. In normal endless, you race to complete extra clear conditions to advance, such as collecting no coins or not killing any enemies."),
-		
+
 		MessageCommand("charity", "I'm setting aside $25 of cash every stream that you can have me spend towards the channel's selected charity. Check the channel points for what we're supporting."),
 		MessageCommand("horse", "honse"),
 		MessageCommand("plunk", "plunk successful, thank you."),
 		MessageCommand("disney", "https://disneydunces.podbean.com/"),
 		MessageCommand("moonrover", "Moon Rover is a vanilla JS game built from chat's suggestions. Play the latest version here: https://dobbsworks.github.io/Games/MoonRover/"),
-	
+
 		Command("gettokens", "CommandGetTokens", commandPermission.reward, commandDisplay.hidden),
 		Command("getlotsoftokens", "CommandGetLotsOfTokens", commandPermission.reward, commandDisplay.hidden),
-		Command("gettoomanytokens", "CommandGetTooManyTokens", commandPermission.reward,commandDisplay.hidden),
-	
-		Command("addpoints", "CommandAddPoints",commandPermission.streamer, commandDisplay.hidden),
-		Command("give", "CommandGivePoints",commandPermission.all, commandDisplay.chat, "Give !tokens to another user. Usage: !give @user 100"),
-		Command("points", "CommandGetPoints",commandPermission.all, commandDisplay.chat),
+		Command("gettoomanytokens", "CommandGetTooManyTokens", commandPermission.reward, commandDisplay.hidden),
+
+		Command("addpoints", "CommandAddPoints", commandPermission.streamer, commandDisplay.hidden),
+		Command("give", "CommandGivePoints", commandPermission.all, commandDisplay.chat, "Give !tokens to another user. Usage: !give @user 100"),
+		Command("points", "CommandGetPoints", commandPermission.all, commandDisplay.chat),
 
 
 		Command("rewards", "CommandRewards", commandPermission.all, commandDisplay.chat, "Get information about the things you can spend !tokens on."),
-	
+
 		RewardCommand(100, "wheelcolor", "CommandWheelColor", commandPermission.all, "Sets the color for your slice of the !wheel. Example: !wheelcolor red OR !wheelcolor #AA5D00"),
 		RewardCommand(250, "wheelpattern", "CommandWheelPattern", commandPermission.all, "Sets the background pattern for your slice of the !wheel. Lasts one hour for non-subs. Example: !wheelpattern star"),
 		MessageCommand("pattern", "uh, !wheelpattern maybe?"),
-		
+
 		Command("getalevelidea", "CommandLevelIdea", commandPermission.reward, commandDisplay.hidden, "Generates a random level idea."),
 		RewardCommand(25, "levelidea", "CommandLevelIdea", commandPermission.all, "Generates a random level idea."),
-		
+
 		RewardCommand(100, "sound", "CommandSoundBoard", commandPermission.all, "Play a sound. Use !sounds for a list of options."),
 		RewardCommand(75, "soundrandom", "CommandSoundBoardRandom", commandPermission.all, "Play a random sound from the soundboard. Use !sound to play a specific sound."),
 		Command("soundlist", "CommandSoundList", commandPermission.all, "Display sounds for !soundboard"),
@@ -213,18 +218,18 @@ function LoadCommands() {
 }
 
 function Command(...args) {
-    let command = {};
-    command.name = args[0];
-    command.func = args[1];
-    command.permissions = args[2];
-    command.display = args[3];
-    command.help = args[4];
-    command.cost = args[5];
-    return command;
+	let command = {};
+	command.name = args[0];
+	command.func = args[1];
+	command.permissions = args[2];
+	command.display = args[3];
+	command.help = args[4];
+	command.cost = args[5];
+	return command;
 }
 
 function MessageCommand(...args) {
-	return Command(args[0], () => {return args[1]}, commandPermission.all, commandDisplay.hidden);
+	return Command(args[0], () => { return args[1] }, commandPermission.all, commandDisplay.hidden);
 }
 
 function RewardCommand(...args) {
@@ -232,7 +237,7 @@ function RewardCommand(...args) {
 }
 
 function AliasCommand(alias, targetCommandName) {
-	return {alias: alias, targetCommandName: targetCommandName};
+	return { alias: alias, targetCommandName: targetCommandName };
 }
 
 function GetCommandsByName(commandName) {
@@ -244,43 +249,43 @@ function GetCommandsByName(commandName) {
 }
 
 function CommandHelp(user, args) {
-    let commName = args[0];
-    if (commName) {
-        let command = GetCommandsByName(commName)[0];
-        if (command && command.help) {
-            return command.help;
-        } else {
-            return "No information found for command " + commName;
-        }
-    } else {
-        let commandsToDisplay = commands.filter(x => x.display === commandDisplay.chat);
-        let commandList = commandsToDisplay.map(x => "!" + x.name).join(" ");
-        return 'Use "!help commandName" for more info about a command. Commands: ' + commandList;
-    }
+	let commName = args[0];
+	if (commName) {
+		let command = GetCommandsByName(commName)[0];
+		if (command && command.help) {
+			return command.help;
+		} else {
+			return "No information found for command " + commName;
+		}
+	} else {
+		let commandsToDisplay = commands.filter(x => x.display === commandDisplay.chat);
+		let commandList = commandsToDisplay.map(x => "!" + x.name).join(" ");
+		return 'Use "!help commandName" for more info about a command. Commands: ' + commandList;
+	}
 }
 
 function CommandRewards(user, args) {
-    let commName = args[0];
-    if (commName) {
-        let command = GetCommandsByName(commName)[0];
-        if (command) {
+	let commName = args[0];
+	if (commName) {
+		let command = GetCommandsByName(commName)[0];
+		if (command) {
 			let text = command.help;
 			if (!text) text = "";
-            return text + " Costs " + pointHandler.formatValue(command.cost);
-        } else {
-            return "No information found for command " + commName;
-        }
-    } else {
-        let commandsToDisplay = commands.filter(x => x.cost);
-        let commandList = commandsToDisplay.map(x => `!${x.name} [${x.cost}]`).join(", ");
-        return 'Use "!rewards commandName" for more info about a command. Commands: ' + commandList;
-    }
+			return text + " Costs " + pointHandler.formatValue(command.cost);
+		} else {
+			return "No information found for command " + commName;
+		}
+	} else {
+		let commandsToDisplay = commands.filter(x => x.cost);
+		let commandList = commandsToDisplay.map(x => `!${x.name} [${x.cost}]`).join(", ");
+		return 'Use "!rewards commandName" for more info about a command. Commands: ' + commandList;
+	}
 }
 
 function CommandAddCommand(user, args) {
 	let newCommandName = args[0];
 	let newCommandResponse = args.slice(1).join(" ");
-	let newCommand = Command(newCommandName, () => {return newCommandResponse}, commandPermission.all, commandDisplay.hidden);
+	let newCommand = Command(newCommandName, () => { return newCommandResponse }, commandPermission.all, commandDisplay.hidden);
 	commands.push(newCommand);
 	return "Command successfully registered!";
 }
@@ -288,7 +293,7 @@ function CommandAddCommand(user, args) {
 
 
 function CommandAs(user, args) {
-	let asUser = args[0].replace("@","");
+	let asUser = args[0].replace("@", "");
 	let asCommandText = args.slice(1).join(" ");
 	ProcessCommand(asUser, asCommandText, true, []);
 }
@@ -307,7 +312,7 @@ function GetUser(username) {
 	let user = users.find(x => x.username.toLowerCase() === username.toLowerCase());
 	if (!user) {
 		user = {
-			username: username, 
+			username: username,
 			queueSlots: 1
 		};
 		users.push(user);
@@ -384,11 +389,11 @@ function CreateChatLogWindow() {
 	let w = window.open("", "Chat Log", "width=872,height=476");
 	let logMessages = StorageHandler.log.values;
 	w.document.writeln("<table>");
-	for (let m of logMessages) 
-		w.document.writeln("<tr><td>" + (new Date(m.timestamp)).toLocaleDateString() + " " + 
-			(new Date(m.timestamp)).toLocaleTimeString() + 
+	for (let m of logMessages)
+		w.document.writeln("<tr><td>" + (new Date(m.timestamp)).toLocaleDateString() + " " +
+			(new Date(m.timestamp)).toLocaleTimeString() +
 			"</td><td>" + m.username + "</td><td>" + m.reward + "</td><td>" + m.text + "</td></tr>");
-			
+
 	// snapshot of point totals		
 	w.document.writeln("<tr><td>" + localStorage.points + "</td></tr>");
 	w.document.writeln("</table>");
@@ -411,11 +416,11 @@ function RandomNumber(min, max) {
 		max = min;
 		min = 1;
 	}
-	return min + Math.floor(Math.random() * (1+max-min))
+	return min + Math.floor(Math.random() * (1 + max - min))
 }
 
 function RandomWeightedFrom(list, weightFunc) {
-	let weightTotal = list.map(weightFunc).reduce((a,b) => a+b, 0);
+	let weightTotal = list.map(weightFunc).reduce((a, b) => a + b, 0);
 	let randomIndex = RandomNumber(1, weightTotal);
 	let cumulativeWeight = 0;
 	for (let item of list) {
