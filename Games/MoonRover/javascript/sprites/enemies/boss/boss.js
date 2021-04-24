@@ -23,7 +23,7 @@ class BossCoreBase extends BossPartBase {
         let radPerChild = Math.PI * 2 / this.childNodes.length;
         for (let i = 0; i < this.childNodes.length; i++) {
             let childClass = this.childNodes[i];
-            let child = new childClass(0,0);
+            let child = new childClass(0, 0);
             if (child instanceof BossShield) {
                 child.shieldTimer = -(this.orbitOffset / (2 * Math.PI) * 300) % 300
             }
@@ -46,10 +46,14 @@ class BossCoreBase extends BossPartBase {
             let child = this.children[i];
             let targetX = this.x + this.orbitRadius * Math.cos(radPerChild * i + radOffset);
             let targetY = this.y + this.orbitRadius * Math.sin(radPerChild * i + radOffset);
+            if (this.timer === 1) {
+                child.x = targetX;
+                child.y = targetY;
+            }
             let targetDx = targetX - child.x;
             let targetDy = targetY - child.y;
-            child.dx += (targetDx - child.dx)/10;
-            child.dy += (targetDy - child.dy)/10;
+            child.dx += (targetDx - child.dx) / 10;
+            child.dy += (targetDy - child.dy) / 10;
             child.dx *= 0.9;
             child.dy *= 0.9;
         }
@@ -229,7 +233,6 @@ class BossBodyPlate extends BossCoreBase {
         BossPlateWaveHolder,
     ];
 }
-
 class BossPlateWaveHolder extends BossCoreBase {
     orbitRadius = 0;
     orbitSpeed = 30;
@@ -239,7 +242,6 @@ class BossPlateWaveHolder extends BossCoreBase {
         BossPlateWave3,
     ];
 }
-
 class BossPlateWave1 extends BossCoreBase {
     orbitRadius = 600;
     orbitSpeed = 0;
@@ -252,15 +254,17 @@ class BossPlateWave1 extends BossCoreBase {
         BossPlateWall,
     ];
 }
-
 class BossPlateWave2 extends BossPlateWave1 {
     orbitRadius = 780;
 }
-
 class BossPlateWave3 extends BossPlateWave1 {
     orbitRadius = 420;
+    childNodes = [
+        BossPlateWall,
+        BossPlateWall,
+        BossPlateWall,
+    ];
 }
-
 class BossPlateWall extends BossCoreBase {
     orbitRadius = 60;
     orbitSpeed = 0;
@@ -292,7 +296,7 @@ class BossFinalWaveHolder extends BossCoreBase {
     childNodes = [
         BossPlateWave2,
     ];
-    
+
 }
 class BossShieldLarge extends BossCoreBase {
     orbitRadius = 180;
@@ -308,7 +312,6 @@ class BossShieldLarge extends BossCoreBase {
         BossShield,
     ];
 }
-
 class BossArmsLaserFinal extends BossCoreBase {
     orbitRadius = 500;
     orbitSpeed = 0;
@@ -329,31 +332,3 @@ class BossHandLaserFinal extends BossCoreBase {
     ];
 }
 
-
-// class BossCore extends BossCoreBase {
-//     orbitRadius = 150;
-//     orbitSpeed = 100;
-//     childNodes = [
-//         BossCore2,
-//         BossCore2,
-//         BossCore2, 
-//         BossCore2, 
-//         BossCore2, 
-//         BossCore2, 
-//         BossCore2, 
-//         BossCore2
-//     ];
-// }
-
-// class BossCore2 extends BossCoreBase {
-//     orbitRadius = 80;
-//     orbitSpeed = 100;
-//     orbitOffset = Math.PI / 2;
-//     childNodes = [
-//         BossPlating,
-//         BossPlating,
-//         BossShield,
-//         BossLaserCannon,
-//         BossMissileLauncher
-//     ];
-// }

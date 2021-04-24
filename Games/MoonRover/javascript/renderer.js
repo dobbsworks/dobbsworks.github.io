@@ -34,6 +34,10 @@ class Renderer {
 
     Tile(tile, x, y, flip) {
         if (!tile) return;
+
+        if (currentCharacter && currentCharacter.isBlind) {
+            return;
+        }
         let scale = 4;
 
         ctx.translate(this.MapX(x), 0);

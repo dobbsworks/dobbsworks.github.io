@@ -4,6 +4,7 @@
     <title>Moon Rover</title>
 </head>
 <link rel="stylesheet" href="content/css/style.css">
+<script src="javascript/randomSeedHandler.js?a=0416"></script>
 <script src="javascript/audioHandler.js?a=0416"></script>
 <script src="javascript/mouse.js?a=0416"></script>
 <script src="javascript/keyboardHandler.js?a=0416"></script>
@@ -11,6 +12,8 @@
 <script src="javascript/tileset/tile.js?a=0416"></script>
 <script src="javascript/tileset/tileNode.js?a=0416"></script>
 <script src="javascript/levelHandler.js?a=0416"></script>
+<script src="javascript/ui/optionsMenu.js?a=0416"></script>
+<script src="javascript/timerHandler.js?a=0416"></script>
 <script src="javascript/renderer.js?a=0416"></script>
 <script src="javascript/border.js?a=0416"></script>
 <script src="javascript/achievementHandler.js?a=0416"></script>
@@ -37,6 +40,9 @@
 <script src="javascript/sprites/enemies/boss/bossShield.js?a=0416"></script>
 <script src="javascript/sprites/enemies/boss/bossBlaster.js?a=0416"></script>
 <script src="javascript/sprites/enemies/boss/bossMissileLauncher.js?a=0416"></script>
+<script src="javascript/sprites/inertCapsule.js?a=0416"></script>
+<script src="javascript/sprites/follower.js?a=0416"></script>
+<script src="javascript/sprites/radarPing.js?a=0416"></script>
 <script src="javascript/sprites/player.js?a=0416"></script>
 <script src="javascript/sprites/loot.js?a=0416"></script>
 <script src="javascript/sprites/damageIndicator.js?a=0416"></script>
@@ -58,7 +64,9 @@
 <script src="javascript/weapons/magnetGrenade.js?a=0416"></script>
 <script src="javascript/weapons/fireGrenadeEffect.js?a=0416"></script>
 <script src="javascript/weapons/fireGrenade.js?a=0416"></script>
+<script src="javascript/weapons/radarPing.js"></script>
 <script src="javascript/weapons/testWeapon.js?a=0416"></script>
+<script src="javascript/weapons/followerGun.js"></script>
 <script src="javascript/weapons/weaponHandler.js?a=0416"></script>
 <script src="javascript/map/map.js?a=0416"></script>
 <script src="javascript/map/roomGen.js?a=0416"></script>
@@ -106,6 +114,15 @@
         <image id="dog-hopper-lit" src="./content/images/dog-hopper-lit.png"></image>
         <image id="dog-beans" src="./content/images/dog-beans.png"></image>
         <image id="dog-beans-lit" src="./content/images/dog-beans-lit.png"></image>
+        <image id="dog-sparky" src="./content/images/dog-sparky.png"></image>
+        <image id="dog-sparky-lit" src="./content/images/dog-sparky-lit.png"></image>
+        <image id="dog-fritz" src="./content/images/dog-fritz.png"></image>
+        <image id="dog-fritz-lit" src="./content/images/dog-fritz-lit.png"></image>
+        <image id="cats" src="./content/images/cats.png"></image>
+        <image id="cats-lit" src="./content/images/cats-lit.png"></image>
+        <image id="dog-mog" src="./content/images/mog.png"></image>
+        <image id="dog-mog-lit" src="./content/images/mog-lit.png"></image>
+        <image id="dog-mog-locked" src="./content/images/mog-locked.png"></image>
 
         <image id="shock" src="./content/images/shock.png"></image>
         <image id="explosion" src="./content/images/explosion.png"></image>
@@ -140,6 +157,7 @@
         <audio id="music-level-4" src="content/audio/music/level-4.mp3"></audio>
         <audio id="music-level-5" src="content/audio/music/level-5.mp3"></audio>
         <audio id="music-boss" src="content/audio/music/boss.mp3"></audio>
+        <audio id="music-alone" src="content/audio/music/alone.mp3"></audio>
     </div>
     <div id="sfx">
         <audio id="beep-01" src="content/audio/sfx/beep-01.mp3"></audio>

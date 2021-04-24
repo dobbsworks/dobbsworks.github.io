@@ -1,9 +1,9 @@
 class Enemy extends Sprite {
-    color = "red";
+    color = "#FF0000";
     loot = 0;
 
     Initialize() {
-        this.loot = 2 + Math.ceil(Math.random() * 4);
+        this.loot = 2 + Math.ceil(seedRandom.random() * 4);
         if (this instanceof BossPartBase) this.loot = 0;
     }
 

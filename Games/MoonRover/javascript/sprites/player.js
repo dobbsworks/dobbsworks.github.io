@@ -1,5 +1,5 @@
 class Player extends Sprite {
-    color = "blue";
+    color = "#0000FF";
     maxHp = 10;
     hurtTimer = 0;
     bubbleShieldTimer = 0;
@@ -9,7 +9,15 @@ class Player extends Sprite {
     shake = 0; // used for ui shake, based on how sprite is jerked around
 
     Initialize() {
-
+        if (currentCharacter && currentCharacter.maxHp) {
+            this.maxHp = currentCharacter.maxHp;
+        }
+        if (currentCharacter && currentCharacter.followers) {
+            for (let i = 0; i < currentCharacter.followers; i++) {
+                let follower = new Follower(this, (i + 1) * 120);
+                sprites.push(follower);
+            }
+        }
     }
 
     Update() {
@@ -37,7 +45,6 @@ class Player extends Sprite {
         let touchingSprites = this.GetTouchingSprites();
         for (let touchingSprite of touchingSprites) {
             if (touchingSprite instanceof Enemy) {
-
                 // calculate difference vector (player - enemy)
                 let bounceDx = player.x - touchingSprite.x;
                 let bounceDy = player.y - touchingSprite.y;
@@ -86,6 +93,15 @@ class Player extends Sprite {
                 loot += touchingSprite.value;
                 achievementHandler.lifetimeLoot += touchingSprite.value;
                 audioHandler.PlaySound("powerup-03");
+
+                if (currentCharacter && currentCharacter.damagedOnLoot) {
+                    if (this.hurtTimer === 0) {
+                        this.hp -= 1;
+                        this.hurtTimer = 60;
+                        audioHandler.PlaySound("pow-03");
+                    }
+                    this.BounceFrom(touchingSprite, 3);
+                }
             }
             if (touchingSprite instanceof LevelExit) {
                 // level complete!
@@ -115,7 +131,7 @@ class Player extends Sprite {
                     }
                 }
             }
-            
+
             if (currentCharacter && currentCharacter.mustKeepAttacking) {
                 player.hp -= 0.004;
             }
@@ -125,6 +141,7 @@ class Player extends Sprite {
             // you are dead, not big surprise
             this.isActive = false;
             this.Explode();
+            sprites.push(new PlayerInertCapsule(this.x, this.y));
             deathCount++;
             setTimeout(() => {
                 mainMenuHandler.ReturnToMainMenu();
@@ -148,8 +165,8 @@ class Player extends Sprite {
     GetFrameData() {
         return {
             tileset: tileset.player,
-            frame: this.AnimateByFrame(tileset.player),
-            xFlip: this.direction > 0,
+            frame: currentCharacter.shipIndex || 0,
+            xFlip: false,
         };
     }
 

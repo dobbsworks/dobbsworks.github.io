@@ -63,6 +63,9 @@ class Button extends UIElement {
         ctx.textAlign = "center"
 
         let lines = this.text.split("\n");
+        if (this.text.length > 1 && this instanceof Toggle) {
+            lines.push(this.state ? "(ON)" : "(OFF)")
+        }
         let y = this.y + 30;
         for (let line of lines) {
             if (line.startsWith("$")) {

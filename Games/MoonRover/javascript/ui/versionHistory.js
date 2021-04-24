@@ -1,5 +1,16 @@
 var versionHistoryData = [
     {
+        v: "0.8", d: "2021-04-23", t:
+            `Gotta go fast!
+
+• Achievements now have multiple unlock tiers for those of you who need more than 100% completion. 
+• Speedrun timer! How fast can you go?
+• The Options page has finally been enabled on the main menu. It's tied in with the pause menu for plenty of shared functionality. 
+• Switched order of bosses around for better balance. 
+• Fixed bug where player was fully healed at the start of every stage. 
+• Fixed bug where clickable sidebar buttons were unclickable after first return to main menu. `
+    },
+    {
         v: "0.7", d: "2021-04-16", t:
             `What a save!
 

@@ -68,7 +68,15 @@ class Weapon {
         //}
         if (this.cooldownTimer <= 0 && this.deployTimer <= 0) {
             if (this.shotsRemaining > 0) {
-                this.Fire(player);
+                if (this.follower) {
+                    let followers = sprites.filter(a => a instanceof Follower);
+                    for (let follower of followers) {
+                        this.Fire(follower);
+                    }
+                    this.Fire(player);
+                } else {
+                    this.Fire(player);
+                }
                 this.shotsRemaining--;
             } else {
                 audioHandler.PlaySound("notify-05", true);
@@ -86,12 +94,20 @@ class Weapon {
     }
 
     Fire(source) {
+        if (this.radarPing) {
+            let ping = new RadarPing(source, this.radarPing, false);
+            ping.color = "#FFFFFF04"
+            ping.speed = 20;
+            sprites.push(ping);
+        } else {
+            sprites.push(new RadarPing(source, 300, false));
+        }
         audioHandler.PlaySound(this.fireSound);
 
         let theta = 0;
-        if (source === player) {
-            let xDif = player.x - GetGameMouseX();
-            let yDif = player.y - GetGameMouseY();
+        if (source === player || source instanceof Follower) {
+            let xDif = source.x - GetGameMouseX();
+            let yDif = source.y - GetGameMouseY();
             theta = Math.atan2(yDif, xDif);
         } else {
             theta = Math.atan2(-source.dy, -source.dx);

@@ -1,5 +1,5 @@
 class Loot extends Sprite {
-    color = "yellow";
+    color = "#FFFF00";
     value = 1;
     radius = 20;
     isFloating = false;
@@ -30,7 +30,6 @@ class Loot extends Sprite {
             if (isOnSemisolids && player.y > this.y) {
                 this.y++;
             }
-            // TODO - maybe max speed on coins
             this.magnetTimer--;
         }
     }

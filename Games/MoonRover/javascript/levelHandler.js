@@ -173,8 +173,8 @@ class LevelHandler {
         sprites = [player, ...enemies];
         if (this.currentZone === 5) {
             let bossType = [
-                BossBodyPlate,
                 BossBodyLaser,
+                BossBodyPlate,
                 BossBodyMissile,
                 BossBodyBlaster,
                 BossBodyFinal,
@@ -196,6 +196,9 @@ class LevelHandler {
                 !sprites.some(x => x instanceof BossCoreBase);
             if (isBossDefeated) {
                 let totalLoot = 10 * levelHandler.currentLevel + 10;
+                if (currentCharacter && currentCharacter.damagedOnLoot) {
+                    totalLoot = 0;
+                }
                 let toDestroy = sprites.filter(x => x instanceof BossPartBase);
                 let avgLootPer = Math.floor(totalLoot / toDestroy.length);
 

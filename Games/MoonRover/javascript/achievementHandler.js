@@ -1,6 +1,6 @@
 class AchievementHandler {
     tiers = [
-        "Bronze", "Silver", "Gold"
+        "Lunar", "Solar", "Galactic"
     ];
 
     achievements = {
@@ -139,17 +139,18 @@ class AchievementHandler {
     CheckForCharacterUnlocks() {
         for (let lockedChar of characters.filter(a => !a.unlocked)) {
             let allRequiredAchievesUnlocked = lockedChar.
-                achievementGate.every(achieveName => this.
-                    achievements[achieveName].unlocked[0]);
+                achievementGate.every(gate => this.
+                    achievements[gate.name].unlocked[gate.tier]);
             if (allRequiredAchievesUnlocked) {
+                console.log("UNLOCK", lockedChar)
+                alert("UNLOCK!!!");
                 lockedChar.unlocked = true;
-                this.displays.push({ character: lockedChar, timer: 0 })
+                this.displays.push({ character: lockedChar, timer: 0, tier: 0 })
             }
         }
     }
 
     Draw() {
-        //TODO tiers
         let currentDisplay = this.displays[0];
         if (currentDisplay) {
             let name = currentDisplay.achievement ?
@@ -177,12 +178,12 @@ class AchievementHandler {
             ctx.fillText(name, x + margin, y + margin + fontSize);
 
             let tiles = tileset.achievements.tiles;
-            tiles[0].Draw(ctx, x - tiles[0].width, y, 1);
+            tiles[currentDisplay.tier + 3].Draw(ctx, x - tiles[0].width, y, 1);
             if (currentDisplay.achievement) {
                 let index = currentDisplay.achievement.imageIndex;
                 tiles[index].Draw(ctx, x - tiles[0].width, y, 1);
             } else {
-                let image = document.getElementById(currentDisplay.character.imageId + "-lit");
+                let image = document.getElementById(currentDisplay.character.imageIdLit);
                 ctx.drawImage(image, x - tiles[0].width - 5, y, image.width / 2, image.height / 2);
             }
         }
@@ -212,7 +213,7 @@ class Achievement {
 
     CheckForUnlock() {
         let unlockedTiers = [];
-        for (let unlockTier of [0]) { // TODO tiers
+        for (let unlockTier of [0, 1, 2]) { 
             if (this.unlocked[unlockTier]) continue;
             let achieved = this.unlockFunc(this.variables[unlockTier]);
             if (achieved) {

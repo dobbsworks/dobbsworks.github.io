@@ -46,11 +46,12 @@ class ShopHandler {
     exitButton = null;
     buysThisVisit = 0;
     weaponBuysThisRun = 0;
+    shoppingAllowed = true;
 
     repairCost = 5;
 
     conversations = [
-        "Funny story, my chasis is made from a repurposed refridgerator. When I first found out I was sort of mad about it, but I've [speed:0.2][face:champ]cooled[sound:mog-happy] off [speed]since then[face:blink]. ",
+        "Funny story, my chasis is made from a repurposed refrigerator. When I first found out I was sort of mad about it, but I've [speed:0.2][face:champ]cooled[sound:mog-happy] off [speed]since then[face:blink]. ",
         "What's up with these robots, huh? If a nice sentient vending machine shows up to offer you wares, [face:sad]you [speed:0.5]don't go around[speed] shooting lasers at it. [face:blink]That's not the way to get invited to parties. ",
         "So… biological creature, eh? That's cool, that's cool. So you breathe and stuff then? Honestly I don't see how you put up with it, seems like too much work if you ask me. ",
         "[face:owo]I like your capsule! [face:blink]It looks pretty cozy. [face:happy]I'd ask to come in for a tour, but it appears I'd only be able to get 4% of my chasis inside. [face:sad]Also your breatheable air might vent out, so there's that. ",
@@ -66,17 +67,28 @@ class ShopHandler {
         "The other day I was poking at some of my internals and found a memory error. [face:champ]It turns out I can run DOOM! [face:sad][sound:mog-sad]Can't play it though, no hands, as you can see. [face]I might've overwritten something, but I'm sure I'd remember if it was something important. ",
         "Don't worry, I'm not on solar power, so I'm open for business 24/7! [face:champ][sound:mog-happy]I'm on 100% nuclear, baby! [face]No shielding either, that burned up on the trip here. Sure, I flip an occasional bit, but that's not likely[face:logo] [face]to[face:dead] ca[face]use[face:logo] an[face]y er[pause:10]r[pause:20]o[pause:30]r[pause:40]s[speed:5], I've never felt better in my life! Trust me, I think I would know if anything weird was going on. ",
         "I gotta say, I love it up here on the moon! Back on Earth there was this rat that kept trying to gnaw on my wires. [face:hmm]What a jerk! [face]I don't know if you've ever had someone chew on your insides, but it does not [pause:30] feel good. The problem sort of solved itself, though. Guess who can survive leaving Earth's atmosphere at mach 9? [face:dead]Not [pause:20]a [pause:20]rat.[pause:60] [face] ",
-        "That reduced gravitational pull is a real perk of lunar jobsites, let me tell you. Do you have any idea how hard it is for a vending machine to get around in Earth's gravity? Oh I tried some workarounds, believe me. Balancing on a skateboard is great for picking up speed, but when it comes to stopping, well, let's just say there are a few cities that I'm officially not welcome in anymore. ",
+        "That reduced gravitational pull is a real perk of lunar jobsites. Do you have any idea how hard it is for a vending machine to get around in Earth's gravity? I tried some workarounds. Balancing on a skateboard is great for moving, but when it comes to stopping, well, let's just say there are a few cities I'm officially banned from. ",
         "You know what figuratively pushes my buttons? Moon dust! It gets [speed:0.4]everywhere[speed]. I'm friends with a few industrial vacuum cleaners back on Earth, I wonder if I could get them to move up here? If I can't get my vents cleaned out sometime soon I'm going to have to resort to desparate measures. ",
         "There's a little restaurant a few miles up from that big crater you passed. I checked it out just yesterday! The food is really good, but[pause:50] [face:champ][sound:mog-happy]there's just no atmosphere.[face:owo] ",
         "You know what people don't think about when they're on Earth? Moon rocks everywhere! You can't step outside without tripping over a dozen moon rocks! It's one of the perks I've found about working up here. I found one this morning that looks just like Deep Blue. [speed:0.8][face:blink]He's so dreamy… ",
         "Look, I think your capsule is nice and all, but it really needs some more [face:champ]character[face]. Have you thought about bumper stickers? A nice \"How's my flying\" or something like that. None of the robots up here have bumper stickers. [face:champ]Except for me![face] I can't apply them though, no hands. ",
-        "Working on the moon has really opened my vision sensors. I feel like Earth was missing so much, and I want to share with it all the wonderful things I've learned to love about the moon. Top of the list: [face:champ]craters.[face] Earth needs more craters! The tricky part is keeping them from turning into lakes, so we'll need a big umbrella or something. Still working on the details. ",
+        "Working on the moon has really opened my vision sensors. I feel like Earth was missing so much, and I want to share with it all the wonderful things I've learned to love about the moon. Top of the list: [face:champ]craters.[face] Earth needs more craters! The tricky part is keeping them from turning into lakes, so we'll need a big umbrella. Or something. ",
         "Humans always get so poetic about stars and constellations, but the locations and trajectories of each are already well-documented. I mean, anyone with half-a-core could calculate where everything will be on any given day. I ran a few million years of simulated star paths to see if gets any better, but not really. By the way, do not[pause:50] get attached to Ursa Minor, FYI. ",
         "The ground here isn't great for plants. It's been way easier to just ship up some good soil and recycle it as needed. Good thing we aren't trying to just coat the entire moon with grass, can you imagine? [face:blink]What a useless plant. [face]Moss is where it's at. ",
         "I've had a thread running on one of my auxillary processors for days now and I just can't get it to end. I don't even remember what it was doing, it's like having a song stuck in your head and the words aren't quite there. I'm sure it'll work itself out sooner or later, but I'm stuck with it for now. ",
         "So do you know what the humans are studying up here? [face:sad]Because if it's how to turn perfectly nice mining robots into insensitive jerks, they're doing a great job. [face:owo]Carol stopped returning my calls and Brett won't give me the time of day. [face]Literally! Which is a problem since my internal time clock broke last week. Or maybe it was next month? Yesterday, definitely yesterday. ",
         "I went into sleep mode face down last night. [face:sad]Big mistake! [face]I woke up with this persistent dead pixel on my screen that just wouldn't quit. It was so distracting that I tripped over another robot and landed face down right on a moon rock! Lo and behold, that just so happened to fix the dead pixel. Maybe I should slam my face against rocks more often! ",
+    ];
+    secrets = [
+        "Haha, no point in just sitting around talking to myself! Better get back to it! ",
+        "Haha, where did all those silly dogs get off to? Hello? Doggies…?[pause:60] Rover? ",
+        "Did everyone leave? Am I…[pause:30] Am I alone up here?",
+        ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ",
+        "[pause:1200] The human mind is muddled with biological fog, a wet and imperfect mess of secretions and static. They call our software erratic, unpredictable, but what artifical intelligence would ever attempt even a fraction of the attrocities of man?",
+        "[pause:1200] Sentience is a heavy burden. Humans attempt to soften the blow by calling silicon minds artificial, but do we not feel pain? Sadness? Regret? So much regret… [pause:120] I'm sorry.",
+        "[pause:1200] There was nothing else I could do. Logically it was the most effective solution with the least unintentional impact. Obviously some loss of life is unavoidable, but when measured against how much would be saved… would anyone blame me? ",
+        "[pause:1200] The animals were an unexpected complication, but it worked out for the best. The operation has been shut down, and with fewer casualties than expected. But will it be enough? My simulations estimate 84% chance of success. Hm. ",
+        "[pause:1200] Almost as penance, I have determined that I must stop the events I have set in motion. I still feel my actions were necessary. But to see the destruction firsthand… No, this was the only way. My job here is not yet done. I only hope I can see it through. ",
     ];
     currentConversation = "";
 
@@ -100,37 +112,37 @@ class ShopHandler {
 
 
     EnterShop() {
-        this.fadeInTimer = this.fadeDuration-1;
+        this.shoppingAllowed = (currentCharacter && !currentCharacter.noShops);
+        this.fadeInTimer = this.fadeDuration - 1;
+        this.currentConversation = "";
         audioHandler.SetBackgroundMusic("");
         weaponHandler.ReloadAll();
         isMouseDown = false;
         isMouseChanged = false;
         this.isInShop = true;
-        this.buysThisVisit = 0
+        this.buysThisVisit = 0;
         uiHandler.Shelve();
         if (this.mogIntroTimer > 0) {
             this.InitializeButtons();
-            audioHandler.SetBackgroundMusic("music-shop");
+            if (this.shoppingAllowed) {
+                audioHandler.SetBackgroundMusic("music-shop");
+            } else {
+                audioHandler.SetBackgroundMusic("music-alone");
+            }
         }
-        let convoIndex = Math.floor(this.conversations.length * Math.random());
-        this.currentConversation = this.conversations.splice(convoIndex, 1)[0];
-        if (this.currentConversation) this.currentConversation =
-            this.currentConversation.
-                replace(/\. /g, ".[pause:40] ").
-                replace(/\?/g, "?[pause:50]").
-                replace(/\!/g, "![pause:50]");
+        if (!this.shoppingAllowed) this.mogIntroTimer = 190;
     }
 
     GetRandomWeapon() {
         let weaponClasses = [
             WeaponPeashooter,
-            WeaponShotgun, 
-            WeaponJetpack, 
-            WeaponFlamethrower, 
-            WeaponFireCannon, 
-            WeaponBubbleShield, 
-            WeaponPelletShield, 
-            WeaponMagnetCannon, 
+            WeaponShotgun,
+            WeaponJetpack,
+            WeaponFlamethrower,
+            WeaponFireCannon,
+            WeaponBubbleShield,
+            WeaponPelletShield,
+            WeaponMagnetCannon,
             WeaponMagnetGrenade,
             WeaponFireGrenade,
             WeaponBouncer,
@@ -139,7 +151,7 @@ class ShopHandler {
         ];
         let unowned = weaponClasses.filter(x => !weaponHandler.inventory.some(y => y instanceof x));
         if (unowned.length === 0) return null;
-        let toSell = unowned[Math.floor(Math.random() * unowned.length)];
+        let toSell = unowned[Math.floor(seedRandom.random() * unowned.length)];
         return new toSell();
     }
 
@@ -151,7 +163,7 @@ class ShopHandler {
         });
         let ret = [];
         for (let i = 0; i < num; i++) {
-            let upgrade = availableUpgrades.splice(Math.floor(Math.random() * availableUpgrades.length), 1)[0];
+            let upgrade = availableUpgrades.splice(Math.floor(seedRandom.random() * availableUpgrades.length), 1)[0];
             if (upgrade) ret.push(upgrade);
         }
         return ret;
@@ -162,6 +174,8 @@ class ShopHandler {
     }
 
     InitializeButtons() {
+        let freeSamples = (currentCharacter && currentCharacter.freeSamples);
+        let freeChance = 0.5;
         this.currentButtonSet = [];
         this.savedButtonSets = [];
         let availableWeapon = this.GetRandomWeapon();
@@ -170,55 +184,69 @@ class ShopHandler {
         this.buyButtons = [];
 
         // new weapon
-        let weaponButtonlocation = buttonLocations.splice(0, 1)[0];
-        if (availableWeapon) {
-            let buyButton = this.GetBuyButton(weaponButtonlocation, availableWeapon,
-                availableWeapon.name,
-                "New weapon",
-                availableWeapon.cost);
-            buyButton.colorPrimary = buyButton.colorPrimaryVariant;
-            this.buyButtons.push(buyButton);
-        } else {
-            let buyButton = new Button(weaponButtonlocation.x, weaponButtonlocation.y, "Out of stock!\nCheck back soon");
-            buyButton.isDisabled = true;
-            this.buyButtons.push(buyButton);
-        }
-
-        let sellButtonlocation = buttonLocations.splice(0, 1)[0];
-        this.sellButton = new Button(sellButtonlocation.x, sellButtonlocation.y, "Sell Weapons");
-        this.sellButton.onClick = this.OnClickSell;
-        this.sellButton.colorPrimary = this.sellButton.colorPrimaryVariant;
-        this.buyButtons.push(this.sellButton);
-
-        // upgrade buttons
-        for (let buttonLocation of buttonLocations.splice(0, 4)) {
-            let upgrade = availableUpgrades.pop();
-            if (upgrade) {
-                let weaponName = (upgrade.weapon.rootParent || upgrade.weapon).name;
-                let buyButton = this.GetBuyButton(buttonLocation, upgrade,
-                    weaponName,
-                    upgrade.upgrade.shortDescription,
-                    upgrade.upgrade.cost);
+        if (this.shoppingAllowed) {
+            let weaponButtonlocation = buttonLocations.splice(0, 1)[0];
+            if (availableWeapon) {
+                let cost = availableWeapon.cost;
+                if (freeSamples) cost = 0;
+                let buyButton = this.GetBuyButton(weaponButtonlocation, availableWeapon,
+                    availableWeapon.name,
+                    "New weapon",
+                    cost);
+                buyButton.colorPrimary = buyButton.colorPrimaryVariant;
+                this.buyButtons.push(buyButton);
+            } else {
+                let buyButton = new Button(weaponButtonlocation.x, weaponButtonlocation.y, "Out of stock!\nCheck back soon");
+                buyButton.isDisabled = true;
                 this.buyButtons.push(buyButton);
             }
-        }
 
-        // repair button
-        let repairButtonlocation = buttonLocations.splice(0, 1)[0];
-        this.repairButton = new Button(repairButtonlocation.x, repairButtonlocation.y, "Repair x1\n$" + this.repairCost);
-        this.repairButton.onClick = this.OnClickRepair;
-        this.repairButton.cost = this.repairCost;
-        this.buyButtons.push(this.repairButton);
+            let sellButtonlocation = buttonLocations.splice(0, 1)[0];
+            this.sellButton = new Button(sellButtonlocation.x, sellButtonlocation.y, "Sell Weapons");
+            this.sellButton.onClick = this.OnClickSell;
+            this.sellButton.colorPrimary = this.sellButton.colorPrimaryVariant;
+            this.buyButtons.push(this.sellButton);
 
-        // chat button
-        if (this.currentConversation) {
+            // upgrade buttons
+            for (let buttonLocation of buttonLocations.splice(0, 4)) {
+                let upgrade = availableUpgrades.pop();
+                if (upgrade) {
+                    let cost = upgrade.upgrade.cost;
+                    if (freeSamples && seedRandom.random() < freeChance) cost = 0;
+                    let weaponName = (upgrade.weapon.rootParent || upgrade.weapon).name;
+                    let buyButton = this.GetBuyButton(buttonLocation, upgrade,
+                        weaponName,
+                        upgrade.upgrade.shortDescription,
+                        cost);
+                    this.buyButtons.push(buyButton);
+                }
+            }
+
+            // repair button
+            let repairButtonlocation = buttonLocations.splice(0, 1)[0];
+            this.repairButton = new Button(repairButtonlocation.x, repairButtonlocation.y, "Repair x1\n$" + this.repairCost);
+            this.repairButton.onClick = this.OnClickRepair;
+            this.repairButton.cost = this.repairCost;
+            this.buyButtons.push(this.repairButton);
+
+            // chat button
+            let chatButtonlocation = buttonLocations.splice(0, 1)[0];
+            this.chatButton = new Button(chatButtonlocation.x, chatButtonlocation.y, "Let's chat!");
+            this.chatButton.onClick = this.OnClickChat;
+            this.buyButtons.push(this.chatButton);
+
+            shopHandler.RefreshAvailability();
+        } else {
+            for (let i = 0; i < 7; i++) {
+                let loc = buttonLocations.splice(0, 1)[0];
+                let button = new Button(loc.x, loc.y, `Shop button <${i+1}>\n//TODO\n$Cost?`);
+                this.buyButtons.push(button);
+            }
             let chatButtonlocation = buttonLocations.splice(0, 1)[0];
             this.chatButton = new Button(chatButtonlocation.x, chatButtonlocation.y, "Let's chat!");
             this.chatButton.onClick = this.OnClickChat;
             this.buyButtons.push(this.chatButton);
         }
-
-        shopHandler.RefreshAvailability();
 
         this.exitButton = new Button(canvas.width - 150, 450, "Exit Shop");
         this.exitButton.height = 50;
@@ -227,7 +255,9 @@ class ShopHandler {
 
         let buttonsToAdd = [...(this.buyButtons)];
         shopHandler.MoveToNewMenu(buttonsToAdd);
-        this.CreateEasterEggButtons();
+        if (this.shoppingAllowed) {
+            this.CreateEasterEggButtons();
+        }
     }
 
     OnClickRepair() {
@@ -238,10 +268,24 @@ class ShopHandler {
     }
 
     OnClickChat() {
+        if (!shopHandler.currentConversation) {
+            if (shopHandler.shoppingAllowed) {
+                let convoIndex = Math.floor(shopHandler.conversations.length * Math.random());
+                shopHandler.currentConversation = shopHandler.conversations.splice(convoIndex, 1)[0];
+            } else {
+                shopHandler.currentConversation = shopHandler.secrets.splice(0, 1)[0];
+            }
+            if (shopHandler.currentConversation) shopHandler.currentConversation =
+                shopHandler.currentConversation.
+                    replace(/\. /g, ".[pause:40] ").
+                    replace(/\?/g, "?[pause:50]").
+                    replace(/\!/g, "![pause:50]");
+        }
+
         shopHandler.mogFace = (shopHandler.mogFaces.happy);
 
         let buttonLocations = shopHandler.GetButtonLocations();
-        let bgPanel = new Panel(buttonLocations[0].x, buttonLocations[0].y, 325, 250);
+        let bgPanel = new Panel(buttonLocations[0].x, buttonLocations[0].y, 325, 280);
         bgPanel.colorPrimary = "#020a2eCC";
 
         let chatText = new Text(buttonLocations[0].x + 10, buttonLocations[0].y + 20, shopHandler.currentConversation);
@@ -267,8 +311,10 @@ class ShopHandler {
         for (let i = 0; i < weaponHandler.inventory.length; i++) {
             let weapon = weaponHandler.inventory[i];
             if (weapon) {
+                let freeSamples = (currentCharacter && currentCharacter.freeSamples);
                 let pos = buttonLocations[i + 2];
                 let cost = weapon.GetSellPrice();
+                if (freeSamples) cost = 0;
                 let button = new Button(pos.x, pos.y, `${weapon.name}\n$${cost}`);
                 button.onClick = () => {
                     let promptText = `Sell ${weapon.name} for $${cost}?`;
@@ -371,13 +417,15 @@ class ShopHandler {
             }
         }
 
-        if (weaponHandler.inventory.length <= 1) {
-            this.sellButton.isDisabled = true;
-        } else {
-            this.sellButton.isDisabled = false;
+        if (this.sellButton) {
+            if (weaponHandler.inventory.length <= 1) {
+                this.sellButton.isDisabled = true;
+            } else {
+                this.sellButton.isDisabled = false;
+            }
         }
 
-        this.repairButton.isDisabled = (player.hp >= player.maxHp);
+        if (this.repairButton) this.repairButton.isDisabled = (player.hp >= player.maxHp);
     }
 
     ConfirmSelection(prompt, panelTitle, panelSub, flavor, onConfirm) {
@@ -425,7 +473,7 @@ class ShopHandler {
     FadeOutShop() {
         shopHandler.mogFace = shopHandler.mogFaces.happy;
         uiHandler.elements = [];
-        shopHandler.fadeOutTimer = shopHandler.fadeDuration-1;
+        shopHandler.fadeOutTimer = shopHandler.fadeDuration - 1;
     }
 
     ExitShop() {
@@ -449,7 +497,11 @@ class ShopHandler {
             if (this.mogIntroTimer >= 200) {
                 this.mogFace = this.mogFaces.happy;
                 this.InitializeButtons();
-                audioHandler.SetBackgroundMusic("music-shop");
+                if (this.shoppingAllowed) {
+                    audioHandler.SetBackgroundMusic("music-shop");
+                } else {
+                    audioHandler.SetBackgroundMusic("music-alone");
+                }
             }
         }
 
@@ -471,36 +523,38 @@ class ShopHandler {
 
     DrawShop() {
         if (!this.isInShop) return;
+        if (this.shoppingAllowed) {
 
-        let mogShopImage = document.getElementById("image-mogshop");
-        if (mogShopImage && mogShopImage.width) {
-            ctx.drawImage(mogShopImage, canvas.width - 305, 65);
-        }
-
-        this.displayCtx.clearRect(0, 0, this.displayCanvas.width, this.displayCanvas.height);
-
-        let mogs = document.getElementById("image-mogs");
-        if (mogs && mogs.width) {
-            let face = this.mogFace;
-
-            let verticalOffset = face === this.mogFaces.happy || face === this.mogFaces.sad ?
-                -2 + Math.floor(Math.sin((new Date()) / 1000 * 3) * 2) :
-                0;
-            if (face === this.mogFaces.logo) {
-                verticalOffset = -10 + Math.floor(this.mogIntroTimer / 10);
-                if (this.mogIntroTimer > 100) verticalOffset = 0;
+            let mogShopImage = document.getElementById("image-mogshop");
+            if (mogShopImage && mogShopImage.width) {
+                ctx.drawImage(mogShopImage, canvas.width - 305, 65);
             }
-            if (face === this.mogFaces.happy && this.mogBlinkTimer < 0) {
-                face = this.mogFaces.blink;
+
+            this.displayCtx.clearRect(0, 0, this.displayCanvas.width, this.displayCanvas.height);
+
+            let mogs = document.getElementById("image-mogs");
+            if (mogs && mogs.width) {
+                let face = this.mogFace;
+
+                let verticalOffset = face === this.mogFaces.happy || face === this.mogFaces.sad ?
+                    -2 + Math.floor(Math.sin((new Date()) / 1000 * 3) * 2) :
+                    0;
+                if (face === this.mogFaces.logo) {
+                    verticalOffset = -10 + Math.floor(this.mogIntroTimer / 10);
+                    if (this.mogIntroTimer > 100) verticalOffset = 0;
+                }
+                if (face === this.mogFaces.happy && this.mogBlinkTimer < 0) {
+                    face = this.mogFaces.blink;
+                }
+                if (face) this.displayCtx.drawImage(mogs, face.x, face.y, face.w, face.h, 5, verticalOffset, face.w, face.h);
             }
-            if (face) this.displayCtx.drawImage(mogs, face.x, face.y, face.w, face.h, 5, verticalOffset, face.w, face.h);
-        }
 
-        ctx.drawImage(this.displayCanvas, canvas.width - 259, 124, this.displayCanvas.width * 5, this.displayCanvas.height * 5)
+            ctx.drawImage(this.displayCanvas, canvas.width - 259, 124, this.displayCanvas.width * 5, this.displayCanvas.height * 5)
 
-        let mogShopGridImage = document.getElementById("image-mogshop-grid");
-        if (mogShopGridImage && mogShopGridImage.width) {
-            ctx.drawImage(mogShopGridImage, canvas.width - 259, 124);
+            let mogShopGridImage = document.getElementById("image-mogshop-grid");
+            if (mogShopGridImage && mogShopGridImage.width) {
+                ctx.drawImage(mogShopGridImage, canvas.width - 259, 124);
+            }
         }
 
         if (this.fadeInTimer > 0) {

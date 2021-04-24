@@ -74,7 +74,7 @@ class RoomGenerator {
         let borders = [];
         let sprites = [];
 
-        let isMirror = Math.random() > 0.5;
+        let isMirror = seedRandom.random() > 0.5;
 
         let minWidth = 200;
         let maxWidth = 1000;
@@ -87,11 +87,11 @@ class RoomGenerator {
         let enemyProbability = 0.40;
         let lootProbability = 0.30;
 
-        if (Math.random() > 0.5) {
-            x += Math.random() * gapRange + minGap;
+        if (seedRandom.random() > 0.5) {
+            x += seedRandom.random() * gapRange + minGap;
         }
         while (x < width - maxGap) {
-            let platformWidth = Math.random() * widthRange + minWidth;
+            let platformWidth = seedRandom.random() * widthRange + minWidth;
             let platform = isMirror ?
                 new Platform(x, x + platformWidth, y) :
                 new Platform(width - (x + platformWidth), width - x, y);
@@ -99,14 +99,14 @@ class RoomGenerator {
             platform.x1 -= (platform.x1 % 32);
             platform.x2 -= (platform.x2 % 32);
             platform.y -= platform.y % 32;
-            platform.y += Math.floor(Math.random() * 4 - 2) * 32;
+            platform.y += Math.floor(seedRandom.random() * 4 - 2) * 32;
 
-            if (Math.random() < platformProbability) {
+            if (seedRandom.random() < platformProbability) {
                 platform.x2 += 32;
                 borders.push(platform);
                 sprites.push(...this.CreateSpritesForPlatform(platform));
             }
-            x += Math.random() * gapRange + minGap;
+            x += seedRandom.random() * gapRange + minGap;
         }
 
         return { borders: borders, sprites: sprites };
@@ -119,7 +119,7 @@ class RoomGenerator {
 
         let platformCenterX = (platform.x1 + platform.x2) / 2;
 
-        if (Math.random() < lootProbability) {
+        if (seedRandom.random() < lootProbability) {
             let coords = this.GetLootCoordinates(platformCenterX, platform.y - 96);
             for (let coord of coords) {
                 let loot = new Loot(coord.x, coord.y);
@@ -128,7 +128,7 @@ class RoomGenerator {
             }
         }
 
-        if (Math.random() < enemyProbability || forceEnemy) {
+        if (seedRandom.random() < enemyProbability || forceEnemy) {
             let enemyType = this.GetRandomEnemyType();
             let enemy = new enemyType(platformCenterX, platform.y - 30);
             sprites.push(enemy);
@@ -161,7 +161,7 @@ class RoomGenerator {
         let availableEnemies = enemySpawnZones.
             filter(a => a.start <= progress && a.end > progress).
             map(a => a.type);
-        let selectedIndex = Math.floor(Math.random() * availableEnemies.length);
+        let selectedIndex = Math.floor(seedRandom.random() * availableEnemies.length);
         return availableEnemies[selectedIndex];
     }
 
@@ -173,7 +173,7 @@ class RoomGenerator {
             [{ x: -1, y: 1 }, { x: 0, y: 0 }, { x: 1, y: 1 }],
             [{ x: -1.5, y: 0 }, { x: -0.5, y: 0 }, { x: 0.5, y: 0 }, { x: 1.5, y: 0 }]
         ];
-        let layout = layouts[Math.floor(Math.random() * layouts.length)];
+        let layout = layouts[Math.floor(seedRandom.random() * layouts.length)];
         return layout.map(a => ({ x: a.x * scale + centerX, y: a.y * scale + centerY }))
     }
 }

@@ -11,6 +11,11 @@ class PlayerBullet extends Sprite {
 
     damagedSprites = [];
 
+    Initialize() {
+        // radar
+        sprites.push(new RadarPing(this, 250, true));
+    }
+
     Update() {
         this.CheckExpiration();
         this.ApplyGravity(this.gravityScale);
@@ -28,6 +33,7 @@ class PlayerBullet extends Sprite {
         }
 
         this.CheckForEnemyHits(false);
+
     }
 
     CheckForEnemyHits(canHitEnemyBullets) {

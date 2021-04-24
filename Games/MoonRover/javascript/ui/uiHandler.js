@@ -70,6 +70,7 @@ class UIHandler {
 
         if (shopHandler.isInShop) {
             this.DrawSideBar();
+            this.DrawTimer();
             shopHandler.DrawShop();
         } else if (pauseHandler.isPaused) {
 
@@ -77,6 +78,7 @@ class UIHandler {
 
         } else {
             this.DrawSideBar();
+            this.DrawTimer();
         }
 
         for (let el of this.elements) {
@@ -201,7 +203,7 @@ class UIHandler {
         ctx.drawImage(portraitImage, wiggleX + 5, wiggleY + 5, w / 2, h / 2, x, y, w, h);
         ctx.strokeRect(x, y, w, h);
 
-        if (player.hurtTimer > 0 || player.hp <= 1) {
+        if ((player.hurtTimer > 0 || player.hp <= 1) && player.maxHp > 1) {
             let opacity = Math.min(0.5, player.hurtTimer / 60);
             if (player.hp <= 1) opacity = Math.max(0.5, Math.min(Math.sin(new Date() / 100), 0.8));
             ctx.fillStyle = `rgba(255,0,0,${opacity.toFixed(2)})`;
@@ -262,6 +264,8 @@ class UIHandler {
     }
 
     DrawHP(x, y, w, h) {
+        let drawnMax = player.maxHp;
+        if (drawnMax === 1) drawnMax = 10;
         let blockBorder = 2;    // dark border around indiviual blocks
         ctx.fillStyle = "#020";
         ctx.fillRect(x, y, w, h);
@@ -271,15 +275,18 @@ class UIHandler {
         ctx.fillRect(x + blockBorder, y + blockBorder, fullWidth, h - blockBorder * 2);
 
         ctx.fillStyle = "#0A0"
-        let filledWidth = player.hp / player.maxHp * fullWidth;
+        let filledWidth = player.hp / drawnMax * fullWidth;
         ctx.fillRect(x + blockBorder, y + blockBorder, filledWidth, h - blockBorder * 2);
 
 
         ctx.fillStyle = "#020";
-        let blockWidth = (fullWidth ) / player.maxHp;
-        for (let i = 1; i <= player.maxHp; i++) {
+        let blockWidth = (fullWidth ) / drawnMax;
+        for (let i = 1; i <= drawnMax; i++) {
             ctx.fillRect(x + blockBorder/2 + blockWidth * i, y + blockBorder, blockBorder, h - blockBorder * 2);
         }
+    }
 
+    DrawTimer() {
+        timerHandler.DrawTimer();
     }
 }

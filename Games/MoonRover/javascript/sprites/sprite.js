@@ -21,6 +21,8 @@ class Sprite {
     burnTimer = 0;
     burnDamageTimer = 0;
 
+    radarTimer = 0; // for blind char
+
     Ignite() {
         // sprite has touched fire, increment values to see if burn begins
         this.ignition++;
@@ -74,6 +76,8 @@ class Sprite {
         } else {
             this.burnDamageTimer = 0;
         }
+
+        if (this.radarTimer > 0) this.radarTimer -= 1;
     }
 
     Magnetize(duration) {
@@ -93,18 +97,15 @@ class Sprite {
         }
 
         if (bouncer && knockback && !this.stationary) {
-            // TODO
-            // vector should be normalized to make grazing shots less forceful
-            let theta = Math.atan2(this.y - bouncer.y, this.x - bouncer.x);
-            this.dx += knockback * Math.cos(theta);
-            this.dy += knockback * Math.sin(theta);
+            this.BounceFrom(bouncer, knockback);
         }
     }
 
     Draw() {
+        let isBlind = (currentCharacter && currentCharacter.isBlind);
         if (this.OnBeforeDraw) this.OnBeforeDraw();
         ctx.strokeStyle = "black";
-        if (this.children) {
+        if (this.children && !isBlind) {
             for (let child of this.children) {
                 if (child.isActive) {
                     renderer.Line(this.x, this.y, child.x, child.y);
@@ -122,6 +123,7 @@ class Sprite {
             }
         } else {
             ctx.fillStyle = this.color;
+            ctx.strokeStyle = this.color;
             renderer.Circle(this.x, this.y, this.radius);
         }
 
@@ -139,10 +141,37 @@ class Sprite {
             ctx.fillStyle = "#FFF0";
             renderer.Circle(this.x, this.y, this.radius);
         }
+
+        if (isBlind) {
+            if (this.radarTimer) {
+                for (let ringTimer = this.radarTimer; ringTimer > 0; ringTimer -= 30) {
+                    if (ringTimer > 60) continue;
+                    let opacity = (ringTimer / 60).toString(16).slice(2, 3);
+                    if (opacity.length == 0) opacity = "F";
+                    let dist = 60 - ringTimer;
+                    if (this.color.length === 4) ctx.strokeStyle = this.color + opacity;
+                    if (this.color.length === 7) ctx.strokeStyle = this.color + opacity + opacity;
+                    if (this.color.length === 9) ctx.strokeStyle = "#FFF0";
+                    ctx.fillStyle = "#FFF0";
+                    renderer.Circle(this.x, this.y, this.radius + dist);
+                    ctx.strokeStyle = this.color
+                    renderer.Circle(this.x, this.y, this.radius);
+                }
+            }
+        }
     }
 
     AnimateByFrame(frameset) {
         return this.frame % frameset.tiles.length;
+    }
+
+    BounceFrom(bouncerSprite, bounceForce) {
+        // TODO
+        // vector should be normalized to make grazing shots less forceful
+        let theta = Math.atan2(this.y - bouncerSprite.y, this.x - bouncerSprite.x);
+        this.dx += bounceForce * Math.cos(theta);
+        this.dy += bounceForce * Math.sin(theta);
+
     }
 
     IsOffScreen() {

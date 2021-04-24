@@ -13,6 +13,8 @@ var pauseHandler;
 var audioHandler;
 var mainMenuHandler;
 var saveHandler;
+var timerHandler;
+var seedRandom;
 
 var loot = 0;
 var killCount = 0;
@@ -48,6 +50,8 @@ function Initialize() {
     audioHandler = new AudioHandler();
     mainMenuHandler = new MainMenuHandler();
     saveHandler = new SaveHandler();
+    timerHandler = new TimerHandler();
+    seedRandom = new RandomSeedHandler();
 
     audioHandler.Initialize();
     InitMouseHandlers();
@@ -76,7 +80,7 @@ function MainLoop() {
                     if (!sprite.initialized) {
                         if (sprite.Initialize) sprite.Initialize();
                         sprite.initialized = true;
-                        sprite.hp = sprite.maxHp;
+                        if (!sprite.hp) sprite.hp = sprite.maxHp;
                     }
                     sprite.oldX = sprite.x;
                     sprite.oldY = sprite.y;

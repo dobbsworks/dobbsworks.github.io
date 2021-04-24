@@ -51,6 +51,7 @@ class WeaponHandler {
     }
 
     Update() {
+        if (!player.isActive) return;
         if (mouseScroll !== 0) {
             let chosenIndex = this.selectedWeaponIndex + mouseScroll;
             this.SelectWeaponByIndex(chosenIndex);

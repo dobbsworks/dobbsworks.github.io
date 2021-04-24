@@ -1,6 +1,11 @@
 class EnemyBullet extends Enemy {
-    color = "#F00";
+    color = "#FF0055";
     radius = 5;
+
+    Initialize() {
+        sprites.push(new RadarPing(this, 200, false));
+    }
+
     Update() {
         //this.ApplyGravity();
         this.UpdatePosition();

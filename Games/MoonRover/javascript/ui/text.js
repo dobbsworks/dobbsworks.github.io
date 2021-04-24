@@ -7,6 +7,8 @@ class Text extends UIElement {
         this.x = x;
         this.y = y;
         this._text = text;
+
+        if (currentCharacter && currentCharacter.isGlitchy) this.isGlitchy = true;
     }
 
     set text(val) {
@@ -104,6 +106,43 @@ class Text extends UIElement {
     pause = 0;
     speed = 1;
     revealIndex = 0;
+
+    glitchedMemory = [];
+    isGlitchy = false;
+
+    Glitch() {
+        if (this.glitchedMemory.length && Math.random() < 0.20) {
+            let glitchIndex = Math.floor(Math.random() * this.glitchedMemory.length);
+            let glitch = this.glitchedMemory[glitchIndex];
+            this.lines[glitch.lineIndex] = this.GetReplaceChar(this.lines[glitch.lineIndex], glitch.charIndex, glitch.oldChar);
+            this.glitchedMemory.splice(glitchIndex, 1);
+        }
+        if (Math.random() < 0.10) {
+            let lineIndex = Math.floor(Math.random() * this.lines.length);
+            let line = this.lines[lineIndex];
+            if (line.length < 2) return;
+            let charIndex = Math.floor(Math.random() * line.length);
+            if (this.glitchedMemory.some(a => a.lineIndex === lineIndex && a.charIndex === charIndex)) {
+                // never re-replace a character
+                // to make unglitching easier
+                return;
+            }
+            let oldChar = line[charIndex];
+            let glitchChars = "!@#$%^&*()[]<>?";
+            let newChar = glitchChars[Math.floor(Math.random()*glitchChars.length)];
+            this.lines[lineIndex] = this.GetReplaceChar(line, charIndex, newChar);
+            this.glitchedMemory.push({
+                lineIndex: lineIndex,
+                charIndex: charIndex,
+                oldChar: oldChar
+            });
+        }
+    }
+
+    GetReplaceChar(string, index, newChar) {
+        return string.substr(0, index) + newChar + string.substr(index + 1);
+    }
+
     Draw() {
         let newCharTime = false;
         if (!this._text) return;
@@ -122,6 +161,8 @@ class Text extends UIElement {
         ctx.textAlign = this.textAlign;
 
         if (!this.isSplit) this.SplitTextIntoLines();
+        if (this.isGlitchy) this.Glitch();
+        
         let y = this.y;
         let completeLineCharCount = 0;
         let isDone = false;
