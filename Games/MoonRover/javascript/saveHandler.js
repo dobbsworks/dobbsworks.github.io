@@ -1,7 +1,7 @@
 class SaveHandler {
     SaveGame() {
         let saveObj = this.GetBlankSaveFile();
-        
+
         saveObj.unlockedChars = characters.filter(a => a.unlocked).map(a => a.name);
 
         // unlocked achievements
@@ -17,6 +17,12 @@ class SaveHandler {
         saveObj.achievementProgress.lifetimeLoot = achievementHandler.lifetimeLoot;
         saveObj.achievementProgress.lifetimeKills = achievementHandler.lifetimeKills;
         saveObj.achievementProgress.lifetimeRunCompletes = achievementHandler.lifetimeRunCompletes;
+        saveObj.achievementProgress.currentStars = achievementHandler.currentStars;
+
+        // options
+        saveObj.options.showTimer = timerHandler.displayed;
+        saveObj.options.musicVolume = audioHandler.GetMusicVolume();
+        saveObj.options.sfxVolume = audioHandler.GetSfxVolume();
 
         localStorage.moonroversave = JSON.stringify(saveObj);
     }
@@ -25,7 +31,8 @@ class SaveHandler {
         return {
             unlockedChars: [],
             achievements: {},
-            achievementProgress: {}
+            achievementProgress: {},
+            options: {}
         }
     }
 
@@ -45,6 +52,7 @@ class SaveHandler {
         achievementHandler.lifetimeLoot = 0;
         achievementHandler.lifetimeKills = 0;
         achievementHandler.lifetimeRunCompletes = 0;
+        achievementHandler.currentStars = 0;
         this.SaveGame();
     }
 
@@ -69,5 +77,13 @@ class SaveHandler {
         achievementHandler.lifetimeLoot = saveFile.achievementProgress.lifetimeLoot;
         achievementHandler.lifetimeKills = saveFile.achievementProgress.lifetimeKills;
         achievementHandler.lifetimeRunCompletes = saveFile.achievementProgress.lifetimeRunCompletes;
+        achievementHandler.currentStars = saveFile.achievementProgress.currentStars || 0;
+
+        // options
+        if (saveFile.options) {
+            timerHandler.displayed = saveFile.options.showTimer;
+            audioHandler.SetMusicVolume(saveFile.options.musicVolume);
+            audioHandler.SetSfxVolume(saveFile.options.sfxVolume);
+        }
     }
 }

@@ -262,6 +262,7 @@ class ShopHandler {
 
     OnClickRepair() {
         player.hp += 1;
+        shopHandler.buysThisVisit++;
         loot -= shopHandler.repairCost;
         shopHandler.RefreshAvailability();
         audioHandler.PlaySound("mog-happy");
@@ -321,6 +322,7 @@ class ShopHandler {
                     let sellAction = () => {
                         loot += cost;
                         achievementHandler.lifetimeLoot += cost;
+                        achievementHandler.lootCollected += cost;
                         let index = weaponHandler.inventory.indexOf(weapon);
                         weaponHandler.inventory.splice(index, 1);
                         shopHandler.ReturnToPreviousMenu();
@@ -425,7 +427,9 @@ class ShopHandler {
             }
         }
 
-        if (this.repairButton) this.repairButton.isDisabled = (player.hp >= player.maxHp);
+        if (this.repairButton) {
+            this.repairButton.isDisabled = (player.hp >= player.maxHp) || loot < this.repairCost;
+        }
     }
 
     ConfirmSelection(prompt, panelTitle, panelSub, flavor, onConfirm) {

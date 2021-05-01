@@ -11,6 +11,8 @@ class UiImage extends UIElement {
 
     isSilhoutte = false;
     scale = 1;
+    index = 0;
+    animationSpeed = 1;
 
     Draw() {
         this.DrawTileOrImage();
@@ -23,7 +25,11 @@ class UiImage extends UIElement {
     }
 
     DrawTileOrImage() {
-        if (this.image instanceof Tile) {
+        if (this.image.length) {
+            this.image[Math.floor(this.index)].Draw(ctx, this.x, this.y, this.scale);
+            this.index += this.animationSpeed;
+            if (this.index >= this.image.length) this.index = 0;
+        } else if (this.image instanceof Tile) {
             this.image.Draw(ctx, this.x, this.y, this.scale);
         } else {
             ctx.drawImage(this.image, this.x, this.y, this.image.width * this.scale, this.image.height * this.scale);

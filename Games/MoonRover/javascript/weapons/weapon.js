@@ -64,7 +64,7 @@ class Weapon {
 
     PullTrigger() {
         //if (this.shotsRemaining > 0 || player.isOnGround) {
-            this.reloadTimer = 0; // cancel current reload
+        this.reloadTimer = 0; // cancel current reload
         //}
         if (this.cooldownTimer <= 0 && this.deployTimer <= 0) {
             if (this.shotsRemaining > 0) {
@@ -133,8 +133,11 @@ class Weapon {
         }
 
         if (source === player) {
-            player.dx += this.kickbackPower * Math.cos(theta);
-            player.dy += this.kickbackPower * Math.sin(theta);
+            let canKickback = (!currentCharacter || !currentCharacter.grappleOnly);
+            if (canKickback) {
+                player.dx += this.kickbackPower * Math.cos(theta);
+                player.dy += this.kickbackPower * Math.sin(theta);
+            }
         }
 
         this.cooldownTimer = this.cooldownTime;

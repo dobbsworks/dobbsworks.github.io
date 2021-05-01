@@ -60,7 +60,7 @@ class Text extends UIElement {
                             let proposedLine = words.slice(0, wordCountTest);
                             textWidth = ctx.measureText(this.RemoveCommands(proposedLine.join(" "))).width;
                             if (textWidth > this.maxWidth) {
-                                wordCountTest--;
+                                if (wordCountTest > 1) wordCountTest--;
                                 break;
                             }
                         }

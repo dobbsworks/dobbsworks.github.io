@@ -5,41 +5,41 @@ class AchievementHandler {
 
     achievements = {
         beatGame: new Achievement(
-            "Good Boy!",
+            ["Good Boy!", "Really Good Boy", "Goodest Boy"],
             "Beat the game %0 time(s)",
             [[1], [10], [25]],
             (vars) => { return this.lifetimeRunCompletes >= vars[0] }
         ),
         beatGameMulticharacter: new Achievement(
-            "Hopper To It",
+            ["Part Of The Pack", "Growing Family", "The Gang's All Here"],
             "Beat the game as %0 different characters",
-            [[2], [3], [4]], //TODO, need more characters!
+            [[3], [5], [7]],
             (vars) => { return this.completeRunCharacters.length >= vars[0] }
         ),
         loot: new Achievement(
-            "On A Budget",
+            ["On A Budget", "Pocket Change", "Ascetic"],
             "Have %0 Mooney in your inventory",
             [[300], [400], [500]],
             (vars) => { return loot >= vars[0] }
         ),
         shopAll: new Achievement(
-            "Bargain Hunter",
-            "Purchase %0 weapons/upgrades in one shopping trip",
-            [[3], [4], [5]],
+            ["Shopping Spree", "Bargain Hunter", "Spendthrift"],
+            "Purchase %0 weapons, upgrades, and repairs in one shopping trip",
+            [[5], [9], [14]],
             (vars) => {
                 return shopHandler.buysThisVisit >= vars[0];
             }
         ),
         weaponBuys: new Achievement(
-            "Buyer's Remorse",
+            ["Buyer's Remorse", "Mooney-Back Guarantee", "Sampler Platter"],
             "Purchase %0 weapons in one run",
-            [[6], [7], [9]],
+            [[5], [7], [9]],
             (vars) => {
                 return shopHandler.weaponBuysThisRun >= vars[0];
             }
         ),
         upgradeWeapon: new Achievement(
-            "This Is My Boomstick",
+            ["This Is My Boomstick", "Ol' Betsy", "Fully Operational"],
             "Upgrade a single weapon %0 times in one run",
             [[4], [5], [6]],
             (vars) => {
@@ -47,17 +47,17 @@ class AchievementHandler {
             }
         ),
         ramming: new Achievement(
-            "Ramming Speed",
+            ["Ramming Speed", "Brace For Impact", "Newton's Cradle"],
             "Deal %0 damage with a shield bash",
-            [[2], [3], [4]],
+            [[2], [4], [6]],
             (vars) => {
                 return this.shieldBashDamage >= vars[0];
             }
         ),
         quickfire: new Achievement(
-            "Fried Circuits",
+            ["Fried Circuits", "Firewall", "BBQueue"],
             "Ignite %0 robots in %1 seconds",
-            [[3, 5], [4, 4], [5, 3]],
+            [[3, 5], [5, 4], [8, 3]],
             (vars) => {
                 let now = new Date();
                 let targetTime = vars[1] * 1000;
@@ -65,7 +65,7 @@ class AchievementHandler {
             }
         ),
         highspeed: new Achievement(
-            "Gotta Go Fast",
+            ["Gotta Go Fast", "Need For Speed", "Mach K9"],
             "Maintain a speed of %0 units/second for %1 seconds",
             [[16, 2], [18, 2.5], [20, 3]],
             (vars) => {
@@ -76,7 +76,7 @@ class AchievementHandler {
             }
         ),
         lifetimeLoot: new Achievement(
-            "Coin Collector",
+            ["Coin Collector", "Cash Grab", "The Love Of Mooney"],
             "Collect %0 Mooney across all runs",
             [[5000], [10000], [20000]],
             (vars) => {
@@ -84,9 +84,9 @@ class AchievementHandler {
             }
         ),
         lifetimeKills: new Achievement(
-            "Beggin' For Scraps",
+            ["Beggin' For Scraps", "Top Dog", "Twisted Metal"],
             "Destroy %0 robots across all runs",
-            [[500], [1500], [3000]],
+            [[500], [2000], [5000]],
             (vars) => {
                 return this.lifetimeKills >= vars[0];
             }
@@ -96,9 +96,12 @@ class AchievementHandler {
     ignitionTimes = [];
     playerSpeeds = [];
     shieldBashDamage = 0;
+    kills = 0;
+    lootCollected = 0;
     lifetimeLoot = 0;
     lifetimeKills = 0;
     lifetimeRunCompletes = 0;
+    currentStars = 0;
     completeRunCharacters = [];
 
     displays = [];
@@ -112,6 +115,8 @@ class AchievementHandler {
         this.ignitionTimes = []
         this.playerSpeeds = []
         this.shieldBashDamage = 0;
+        this.kills = 0;
+        this.lootCollected = 0;
     }
 
     Update() {
@@ -130,31 +135,36 @@ class AchievementHandler {
                     tier: achievedTier,
                     timer: 0
                 });
-                this.CheckForCharacterUnlocks();
+                //this.CheckForCharacterUnlocks();
                 saveHandler.SaveGame();
             }
         }
     }
 
-    CheckForCharacterUnlocks() {
-        for (let lockedChar of characters.filter(a => !a.unlocked)) {
-            let allRequiredAchievesUnlocked = lockedChar.
-                achievementGate.every(gate => this.
-                    achievements[gate.name].unlocked[gate.tier]);
-            if (allRequiredAchievesUnlocked) {
-                console.log("UNLOCK", lockedChar)
-                alert("UNLOCK!!!");
-                lockedChar.unlocked = true;
-                this.displays.push({ character: lockedChar, timer: 0, tier: 0 })
-            }
-        }
-    }
+    /* 
+        Character unlock is now a star-transaction
+        Achievement gates still used to determine if character is available for unlock
+    */
+
+    // CheckForCharacterUnlocks() {
+    //     for (let lockedChar of characters.filter(a => !a.unlocked)) {
+    //         let allRequiredAchievesUnlocked = lockedChar.
+    //             achievementGate.every(gate => this.
+    //                 achievements[gate.name].unlocked[gate.tier]);
+    //         if (allRequiredAchievesUnlocked) {
+    //             console.log("UNLOCK", lockedChar)
+    //             alert("UNLOCK!!!");
+    //             lockedChar.unlocked = true;
+    //             this.displays.push({ character: lockedChar, timer: 0, tier: 0 })
+    //         }
+    //     }
+    // }
 
     Draw() {
         let currentDisplay = this.displays[0];
         if (currentDisplay) {
             let name = currentDisplay.achievement ?
-                currentDisplay.achievement.name :
+                currentDisplay.achievement.name[currentDisplay.tier] :
                 currentDisplay.character.name + " unlocked!";
             let timer = currentDisplay.timer;
 
@@ -213,7 +223,7 @@ class Achievement {
 
     CheckForUnlock() {
         let unlockedTiers = [];
-        for (let unlockTier of [0, 1, 2]) { 
+        for (let unlockTier of [0, 1, 2]) {
             if (this.unlocked[unlockTier]) continue;
             let achieved = this.unlockFunc(this.variables[unlockTier]);
             if (achieved) {

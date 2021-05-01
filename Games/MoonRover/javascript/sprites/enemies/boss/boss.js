@@ -115,6 +115,7 @@ class BossOrbitPlating3 extends BossCoreBase {
 LASER BOSS
 ******************/
 class BossBodyLaser extends BossCoreBase {
+    maxHp = 10;
     orbitRadius = 0;
     orbitSpeed = 0;
     childNodes = [
@@ -147,6 +148,7 @@ class BossHandLaser extends BossCoreBase {
 MISSILE BOSS
 ******************/
 class BossBodyMissile extends BossCoreBase {
+    maxHp = 15;
     orbitRadius = 0;
     orbitSpeed = 0;
     childNodes = [
@@ -188,6 +190,7 @@ class BossShieldSmall extends BossCoreBase {
 BLASTER BOSS
 ******************/
 class BossBodyBlaster extends BossCoreBase {
+    maxHp = 15;
     orbitRadius = 0;
     orbitSpeed = 0;
     childNodes = [
@@ -225,6 +228,7 @@ PLATE BOSS
 ******************/
 
 class BossBodyPlate extends BossCoreBase {
+    maxHp = 20;
     orbitRadius = 0;
     orbitSpeed = 0;
     childNodes = [
@@ -281,6 +285,7 @@ FINAL BOSS
 ******************/
 
 class BossBodyFinal extends BossCoreBase {
+    maxHp = 30;
     orbitRadius = 0;
     orbitSpeed = 0;
     childNodes = [

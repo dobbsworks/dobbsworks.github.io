@@ -10,7 +10,7 @@ class PlayerInertCapsule extends Sprite {
     GetFrameData() {
         return {
             tileset: tileset.player,
-            frame: this.AnimateByFrame(tileset.player),
+            frame: currentCharacter.shipIndex || 0,
             xFlip: this.direction > 0,
         };
     }

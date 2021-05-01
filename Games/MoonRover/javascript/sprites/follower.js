@@ -49,6 +49,7 @@ class Follower extends Sprite {
                 touchingSprite.isActive = false;
                 loot += touchingSprite.value;
                 achievementHandler.lifetimeLoot += touchingSprite.value;
+                achievementHandler.lootCollected += touchingSprite.value;
                 audioHandler.PlaySound("powerup-03");
             }
         }

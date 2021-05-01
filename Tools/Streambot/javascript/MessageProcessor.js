@@ -208,7 +208,7 @@ function ProcessActivityMessage(messageEl) {
 			}
 		}
 		// Bits
-		if (line2.startsWith("Cheered ") && line2.indexOf(" bit") > -1) {
+		if (line2.startsWith("Cheered ") && line2.toLowerCase().indexOf(" bit") > -1) {
 			let user = line1;
 			let alertText = user + " " + line2.toLowerCase() + "!";
 			marqueeWindow.AddAlert(alertText, "rgb(0,128,255)");

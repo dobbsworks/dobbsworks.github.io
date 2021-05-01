@@ -1,5 +1,20 @@
 var versionHistoryData = [
     {
+        v: "0.9", d: "2021-04-30", t:
+            `The End Is Near
+
+• Full release is approaching!
+• The roster has finally been filled up. This pre-release version includes 4 of the 8 playable characters. 
+• Character unlocks are now based on "stars" which you earn by completing levels. Characters become available for purchase based on how many characters have beaten the game. 
+• Completed (and failed) runs now display a results screen along with individual level times. 
+• Tiered achievements now have unique names. 
+• Boss music added to each level's 5th zone. 
+• Achievement values have been tweaked for balance. 
+• Boss health has been tweaked for balance. 
+• Fixed bug where some enemies didn't drop any Mooney. 
+• Added a 1.5 second invulnerability period to the start of every level. `
+    },
+    {
         v: "0.8", d: "2021-04-23", t:
             `Gotta go fast!
 

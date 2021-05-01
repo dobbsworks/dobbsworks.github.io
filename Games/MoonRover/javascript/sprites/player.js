@@ -3,8 +3,10 @@ class Player extends Sprite {
     maxHp = 10;
     hurtTimer = 0;
     bubbleShieldTimer = 0;
+    levelStartShieldTimer = 90; // 0.5 seconds of invulv on level start
     isOnGround = false;
     playerStarted = false; // player has made some interaction (fired weapon)
+    grappleTarget = null; // either enemy or position of form {x: 1, y: 2}
 
     shake = 0; // used for ui shake, based on how sprite is jerked around
 
@@ -12,6 +14,14 @@ class Player extends Sprite {
         if (currentCharacter && currentCharacter.maxHp) {
             this.maxHp = currentCharacter.maxHp;
         }
+
+        // place on ground
+        // let platformsBelow = borders.filter(a => a instanceof Floor || (a instanceof Platform && a.x1 < this.x && a.x2 > this.x && a.y > this.y));
+        // platformsBelow.sort((a1, a2) => a1.y > a2.y);
+        // if (platformsBelow[0]) {
+        //     player.y = platformsBelow[0].y - this.radius;
+        // }
+
         if (currentCharacter && currentCharacter.followers) {
             for (let i = 0; i < currentCharacter.followers; i++) {
                 let follower = new Follower(this, (i + 1) * 120);
@@ -28,18 +38,18 @@ class Player extends Sprite {
             this.dy *= 0.995;
         }
 
-        let isShielded = (this.bubbleShieldTimer > 0);
+        let isShielded = (this.bubbleShieldTimer > 0 || this.levelStartShieldTimer > 0);
+        let bashCharacter = (currentCharacter && currentCharacter.bashDamage);
+        let canBash = isShielded || bashCharacter;
 
         let isBounced = false;
         if (isMouseDown) {
-            // if (isMouseDown && !isShielded) {
-            // weapon fired
             this.playerStarted = true;
             weaponHandler.GetCurrent().PullTrigger();
         }
         this.ApplyGravity();
         this.UpdatePosition();
-        let touchedBorders = this.ReactToBorders();
+        let touchedBorders = this.ReactToBorders(0, this.grappleTarget ? 1 : undefined);
         this.isOnGround = (touchedBorders.some(x => x instanceof Floor || x instanceof Platform));
 
         let touchingSprites = this.GetTouchingSprites();
@@ -53,11 +63,10 @@ class Player extends Sprite {
                     bounceDx ** 2 + bounceDy ** 2
                 );
                 let targetMagnitude = 3;
-                if (isShielded) {
+                if (canBash) {
                     targetMagnitude = Math.sqrt(oldSpeedSquared);
                     let shieldDamage = Math.ceil(targetMagnitude / 4);
                     if (targetMagnitude > 2) {
-                        console.log(targetMagnitude)
                         achievementHandler.shieldBashDamage = shieldDamage;
                         touchingSprite.ApplyDamage(shieldDamage, this, targetMagnitude);
                     }
@@ -92,6 +101,7 @@ class Player extends Sprite {
                 touchingSprite.isActive = false;
                 loot += touchingSprite.value;
                 achievementHandler.lifetimeLoot += touchingSprite.value;
+                achievementHandler.lootCollected += touchingSprite.value;
                 audioHandler.PlaySound("powerup-03");
 
                 if (currentCharacter && currentCharacter.damagedOnLoot) {
@@ -118,9 +128,11 @@ class Player extends Sprite {
             this.hurtTimer--;
         }
 
+        this.GrappleUpdate();
+
         if (this.playerStarted) {
             if (currentCharacter && currentCharacter.damagedOnSolid) {
-                let hpFraction = 0.1;
+                let hpFraction = 0.05;
                 if (touchedBorders.some(x => true)) {
                     // challenge character touched solid
                     this.hp -= hpFraction;
@@ -129,6 +141,9 @@ class Player extends Sprite {
                         this.hp += hpFraction;
                         if (this.hp % 1 < hpFraction) this.hp -= this.hp % 1;
                     }
+                }
+                if (this.hp <= 0) {
+                    audioHandler.PlaySound("pow-03");
                 }
             }
 
@@ -140,11 +155,12 @@ class Player extends Sprite {
         if (this.hp <= 0) {
             // you are dead, not big surprise
             this.isActive = false;
+            timerHandler.MarkSplit();
             this.Explode();
             sprites.push(new PlayerInertCapsule(this.x, this.y));
             deathCount++;
             setTimeout(() => {
-                mainMenuHandler.ReturnToMainMenu();
+                EndOfRunStats(false);
             }, 3000)
         }
 
@@ -156,10 +172,38 @@ class Player extends Sprite {
         if (this.shake > 0) this.shake--;
         if (this.shake > 100) this.shake = 100;
         if (this.bubbleShieldTimer > 0) this.bubbleShieldTimer--;
+        if (this.levelStartShieldTimer > 0) this.levelStartShieldTimer--;
 
         achievementHandler.playerSpeeds.push(Math.sqrt(newSpeedSquared));
         let targetLength = 60 * 10;
         achievementHandler.playerSpeeds = achievementHandler.playerSpeeds.slice(-targetLength);
+    }
+
+    GrappleUpdate() {
+        let target = this.grappleTarget;
+        if (!target) return;
+
+        // accel
+        let dx = target.x - player.x;
+        let dy = target.y - player.y;
+        let theta = Math.atan2(dy, dx);
+        let accel = 0.3;
+        this.dx += accel * Math.cos(theta);
+        this.dy += accel * Math.sin(theta);
+
+        // break
+        let dist = Math.sqrt(dx ** 2 + dy ** 2);
+        if (dist < this.radius) {
+            this.grappleTarget = null;
+        }
+    }
+
+    OnBeforeDraw() {
+        let target = this.grappleTarget;
+        if (!target) return;
+
+        ctx.strokeStyle = `rgba(255,128,50,1)`;
+        renderer.Line(this.x, this.y, target.x, target.y);
     }
 
     GetFrameData() {

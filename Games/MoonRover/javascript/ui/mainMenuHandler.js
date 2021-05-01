@@ -98,7 +98,8 @@ class MainMenuHandler {
         uiHandler.elements.push(...newElements);
     }
 
-    ReturnToMainMenu() {
+    ReturnToMainMenu(keepMusic) {
+        if (!keepMusic) audioHandler.SetBackgroundMusic("music-title");
         currentCharacter = null;
         loot = 0;
         sprites = [];
@@ -172,8 +173,15 @@ class MainMenuHandler {
             uiHandler.Restore();
         }
 
-
         let newElements = [panel, title, backButton];
+
+        if (achievementHandler.currentStars) {
+            let starImage = new UiImage(tileset.star.tiles[0], panel.x + panel.width - 80, panel.y + 20);
+            let starCount = new Text(starImage.x + 28, starImage.y + 20, "x " + achievementHandler.currentStars);
+            starCount.textAlign = "left";
+            newElements.push(starImage, starCount);
+        }
+
         let charList = [...characters];
         for (let row = 0; row < rowCount; row++) {
             for (let col = 0; col < columnCount; col++) {
@@ -193,17 +201,46 @@ class MainMenuHandler {
                         image = document.getElementById(char.imageIdLocked);
                         imageEl = new UiImage(image, charButton.x + 17, charButton.y + 55);
                     }
-                    let charText = new Text(charButton.x + charButton.width / 2, charButton.y + 25, char.name.toUpperCase());
+                    let charNameText = char.name.toUpperCase();
+                    if (achievementHandler.completeRunCharacters.indexOf(char.name) > -1) {
+                        charNameText = "★ " + charNameText + " ★";
+                    }
+                    let charText = new Text(charButton.x + charButton.width / 2, charButton.y + 25, charNameText);
                     charText.isBold = true;
                     charText.maxWidth = buttonWidth - 10;
-                    if (!char.unlocked) {
-                        charText.text = "???";
+                    newElements.push(charButton);
+                    newElements.push(imageEl);
+                    if (char.unlocked) {
+                        newElements.push(charText);
+                    } else {
                         charButton.isDisabled = !char.unlocked;
                         imageEl.isSilhoutte = true;
+
+                        let allRequiredAchievesUnlocked = char.
+                            achievementGate.every(gate => achievementHandler.
+                                achievements[gate.name].unlocked[gate.tier]);
+
+                        if (allRequiredAchievesUnlocked) {
+                            let unlockButton = new Button(charButton.x + 17, charButton.y + 15, " ")
+                            unlockButton.width = 100;
+                            unlockButton.height = 34;
+                            unlockButton.isDisabled = achievementHandler.currentStars < char.starCost;
+                            unlockButton.onClick = () => {
+                                achievementHandler.currentStars -= char.starCost;
+                                char.unlocked = true;
+                                audioHandler.PlaySound("powerup-04");
+                                uiHandler.Restore();
+                                mainMenuHandler.OnClickPlay();
+                                uiHandler.Snap();
+                                saveHandler.SaveGame();
+                            }
+
+                            let unlockImage = new UiImage(tileset.achievements.tiles[8], unlockButton.x + 4, unlockButton.y + 4);
+                            let starCost = new UiImage(tileset.star.tiles[0], unlockButton.x + unlockButton.width - 25, unlockButton.y + 7);
+                            let starCostText = new Text(unlockButton.x + unlockButton.width / 2, unlockButton.y + 24, "for " + char.starCost);
+                            newElements.push(unlockButton, unlockImage, starCost, starCostText);
+                        }
                     }
-                    newElements.push(charButton);
-                    newElements.push(charText);
-                    newElements.push(imageEl);
                 }
             }
         }
@@ -408,7 +445,7 @@ class MainMenuHandler {
             if ((tierIndex == 0 && isSolarTierDiscovered) || (tierIndex == 1 && isGalacticTierDiscovered)) {
                 achieveButtons.push(rightButton, rightButtonImage);
             }
-            
+
 
             let achieves = Object.values(achievementHandler.achievements);
             for (let y = 50, row = 0; row < rows; row++, y += margin + size) {
@@ -424,7 +461,7 @@ class MainMenuHandler {
                         b.height = size;
                         b.colorPrimary = "#0000";
                         b.onClick = () => {
-                            titleObj.text = achieve.name;
+                            titleObj.text = achieve.name[tierIndex];
                             let achieveText = "   " + achievementHandler.tiers[tierIndex] + " tier";
                             achieveText += "\n" + achieve.descr[tierIndex];
                             if (achieve.unlocked[tierIndex]) {

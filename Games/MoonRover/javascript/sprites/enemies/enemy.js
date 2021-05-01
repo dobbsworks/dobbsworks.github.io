@@ -2,14 +2,13 @@ class Enemy extends Sprite {
     color = "#FF0000";
     loot = 0;
 
-    Initialize() {
-        this.loot = 2 + Math.ceil(seedRandom.random() * 4);
-        if (this instanceof BossPartBase) this.loot = 0;
-    }
 
     SharedEnemyUpdate() {
-        if (this.hp <= 0) {
+        if (!this.loot && !(this instanceof BossPartBase)) {
+            this.loot = 2 + Math.ceil(seedRandom.random() * 4);
+        }
 
+        if (this.hp <= 0) {
             if (currentCharacter && currentCharacter.mustKeepAttacking) {
                 if (player.hp % 1 !== 0) {
                     player.hp = Math.ceil(player.hp);
@@ -24,6 +23,7 @@ class Enemy extends Sprite {
             this.Explode();
             if (!(this instanceof EnemyBullet)) {
                 achievementHandler.lifetimeKills += 1;
+                achievementHandler.kills += 1;
             }
 
             let lootScale = levelHandler.GetCurrentLootMultiplier()

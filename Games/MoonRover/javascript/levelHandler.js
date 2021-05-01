@@ -7,7 +7,6 @@ class LevelHandler {
     currentZone = 0;
     isArena = false;
     room = null;
-    //currentMusic = "music-level-1"
     levelIntroTimer = 0;
     levelOutroTimer = 0;
     levelTimer = 0;
@@ -82,15 +81,16 @@ class LevelHandler {
 
             if (this.levelOutroTimer <= 0) {
                 if (levelHandler.currentZone === 2 || levelHandler.currentZone === 5) {
-                    if (levelHandler.currentLevel === 5) {
+                    if (levelHandler.currentLevel === 5 && levelHandler.currentZone === 5) {
                         // VICTORY!
                         achievementHandler.lifetimeRunCompletes++;
                         if (achievementHandler.completeRunCharacters.indexOf(currentCharacter.name) == -1) {
                             achievementHandler.completeRunCharacters.push(currentCharacter.name)
                         }
-                        mainMenuHandler.ReturnToMainMenu();
-                        mainMenuHandler.OnClickCredits();
+                        player.isActive = false;
                         saveHandler.SaveGame();
+                        audioHandler.SetBackgroundMusic("music-credits");
+                        EndOfRunStats(true);
                     } else {
                         shopHandler.EnterShop();
                     }
@@ -102,6 +102,7 @@ class LevelHandler {
     }
 
     ExitLevel() {
+        timerHandler.MarkSplit();
         this.levelOutroTimer = 90;
         //this.levelIntroTimer = 90;
     }
@@ -115,6 +116,7 @@ class LevelHandler {
 
     SetLevelMusic() {
         let musicName = "music-level-" + this.currentLevel;
+        if (this.currentZone === 5) musicName = "music-boss";
         audioHandler.SetBackgroundMusic(musicName);
     }
 
@@ -135,6 +137,10 @@ class LevelHandler {
 
     LoadZone() {
         if (this.currentLevel === 0) {
+            if (currentCharacter && currentCharacter.maxHp) {
+                player.maxHp = currentCharacter.maxHp;
+            }
+            player.hp = player.maxHp;
             this.currentLevel = 1;
         }
         this.EnterLevel();

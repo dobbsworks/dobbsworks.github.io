@@ -60,6 +60,14 @@ class UIHandler {
         }
     }
 
+    // immediately move to target locations
+    Snap() {
+        for (let el of this.elements) {
+            el.x = el.targetX;
+            el.y = el.targetY;
+        }
+    }
+
     Draw() {
         let t0 = performance.now();
 
@@ -77,8 +85,10 @@ class UIHandler {
         } else if (mainMenuHandler.isOnMainMenu) {
 
         } else {
-            this.DrawSideBar();
-            this.DrawTimer();
+            if (player.isActive) {
+                this.DrawSideBar();
+                this.DrawTimer();
+            }
         }
 
         for (let el of this.elements) {
@@ -280,9 +290,9 @@ class UIHandler {
 
 
         ctx.fillStyle = "#020";
-        let blockWidth = (fullWidth ) / drawnMax;
+        let blockWidth = (fullWidth) / drawnMax;
         for (let i = 1; i <= drawnMax; i++) {
-            ctx.fillRect(x + blockBorder/2 + blockWidth * i, y + blockBorder, blockBorder, h - blockBorder * 2);
+            ctx.fillRect(x + blockBorder / 2 + blockWidth * i, y + blockBorder, blockBorder, h - blockBorder * 2);
         }
     }
 
