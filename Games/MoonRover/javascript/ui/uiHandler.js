@@ -160,7 +160,21 @@ class UIHandler {
         ctx.fillStyle = "#3700B3cc";
         ctx.fillRect(0, 0, barWidth, barHeight);
 
-        this.DrawPortrait(margin, margin, contentWidth, portraitHeight)
+        this.DrawPortrait(margin, margin, contentWidth, portraitHeight);
+
+        // speedometer
+        let text = "";
+        let speeds = achievementHandler.playerSpeeds;
+        if (speeds.length) {
+            let speed = speeds[speeds.length - 1];
+            text = speed.toFixed(1);
+            if (text.length === 3) text = "0" + text;
+        }
+        ctx.fillStyle = "#47d59b";
+        let fontSize = 12;
+        ctx.font = fontSize + "px Courier New";
+        ctx.textAlign = "left";
+        ctx.fillText(text, margin + 4, margin + portraitHeight - 5);
 
         let weaponButtonYs = [0, 1, 2, 3].map(i => portraitHeight + margin * 2 + i * (weaponBlockHeight + margin))
         let weaponButtonX = margin;
@@ -297,6 +311,8 @@ class UIHandler {
     }
 
     DrawTimer() {
-        timerHandler.DrawTimer();
+        if (timerHandler.displayed) {
+            timerHandler.DrawTimer();
+        }
     }
 }

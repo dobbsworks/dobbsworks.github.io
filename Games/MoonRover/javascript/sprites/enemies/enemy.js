@@ -27,7 +27,7 @@ class Enemy extends Sprite {
             }
 
             let lootScale = levelHandler.GetCurrentLootMultiplier()
-            for (let i = 0; i < this.loot * lootScale; i++) {
+            for (let i = 0; i < this.loot * lootScale + 1; i++) {
                 sprites.push(new Loot(this.x, this.y));
             }
 

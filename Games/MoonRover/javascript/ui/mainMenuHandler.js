@@ -220,7 +220,9 @@ class MainMenuHandler {
                             achievementGate.every(gate => achievementHandler.
                                 achievements[gate.name].unlocked[gate.tier]);
 
-                        if (allRequiredAchievesUnlocked) {
+                        let hasStars = achievementHandler.currentStars > 0;
+
+                        if (allRequiredAchievesUnlocked && hasStars) {
                             let unlockButton = new Button(charButton.x + 17, charButton.y + 15, " ")
                             unlockButton.width = 100;
                             unlockButton.height = 34;

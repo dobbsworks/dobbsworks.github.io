@@ -444,7 +444,7 @@ class ShopHandler {
         confirmText.isBold = true;
         confirmText.textAlign = "left";
 
-        let bgPanel = new Panel(buttonLocations[2].x, buttonLocations[2].y, 325, 250);
+        let bgPanel = new Panel(buttonLocations[2].x, buttonLocations[2].y, 325, 300);
         bgPanel.colorPrimary = "#020a2eCC";
         let titleBox = new Text(235, 200, panelTitle);
         titleBox.textAlign = "left";

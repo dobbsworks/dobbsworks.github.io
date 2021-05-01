@@ -1,5 +1,13 @@
 var versionHistoryData = [
     {
+        v: "0.9.1", d: "2021-05-01", t:
+            `The End Is Near
+
+• Added speedometer to lower-left of Rover's portrait in the sidebar.
+• Increased enemy loot by 1 (after scaledown is applied).
+• Speedrun timer now respects options toggle. `
+    },
+    {
         v: "0.9", d: "2021-04-30", t:
             `The End Is Near
 
