@@ -5,6 +5,7 @@ var versionHistoryData = [
 
 • Added speedometer to lower-left of Rover's portrait in the sidebar.
 • Increased enemy loot by 1 (after scaledown is applied).
+• Speedrun timer now renders lower down when debug mode is on.
 • Speedrun timer now respects options toggle. `
     },
     {

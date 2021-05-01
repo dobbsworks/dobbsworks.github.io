@@ -22,6 +22,7 @@ class TimerHandler {
     }
 
     DrawTimer() {
+        let offset = uiHandler.debugMode ? 88 : 0;
         this.frames++;
         ctx.lineWidth = 5;
         ctx.font = this.fontSize + "px Courier New";
@@ -29,8 +30,8 @@ class TimerHandler {
         ctx.fillStyle = "white";
         ctx.strokeStyle = "black";
         let text = this.GetTimerText(2);
-        ctx.strokeText(text, canvas.width - 10, this.fontSize + 10);
-        ctx.fillText(text, canvas.width - 10, this.fontSize + 10);
+        ctx.strokeText(text, canvas.width - 10, this.fontSize + 10 + offset);
+        ctx.fillText(text, canvas.width - 10, this.fontSize + 10 + offset);
     }
 
     GetTimerText(precision) {
