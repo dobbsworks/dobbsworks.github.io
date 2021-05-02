@@ -1,8 +1,13 @@
 var versionHistoryData = [
     {
+        v: "0.9.2", d: "2021-05-01", t:
+            `
+• Changed grappling hook to allow grabbing the underside of platforms.
+• Fixed music not changing after failed run. `
+    },
+    {
         v: "0.9.1", d: "2021-05-01", t:
-            `The End Is Near
-
+            `
 • Added speedometer to lower-left of Rover's portrait in the sidebar.
 • Increased enemy loot by 1 (after scaledown is applied).
 • Speedrun timer now renders lower down when debug mode is on.

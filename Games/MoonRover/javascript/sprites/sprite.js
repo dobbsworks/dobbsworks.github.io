@@ -10,6 +10,7 @@ class Sprite {
     radius = 30;
     frame = 0;
     maxHp = 3;
+    arePlatformsSolidFromBelow = false;
 
     // tracks short circuit status
     shortedTimer = 0;
@@ -236,14 +237,22 @@ class Sprite {
                 }
             }
             if (border instanceof Platform) {
-                let isOldSpriteOverPlatform = this.oldY + this.radius <= border.y;
-                let isNewSpriteUnderPlatform = this.y + this.radius > border.y;
-                if (isOldSpriteOverPlatform && isNewSpriteUnderPlatform) {
-                    // let dy = this.y - this.oldY;
-                    // let dx = this.x - this.oldX;
-                    let isOldXInBounds = this.oldX >= border.x1 && this.oldX <= border.x2;
-                    let isNewXInBounds = this.x >= border.x1 && this.x <= border.x2;
-                    if (isOldXInBounds && isNewXInBounds) {
+                let isOldXInBounds = this.oldX >= border.x1 && this.oldX <= border.x2;
+                let isNewXInBounds = this.x >= border.x1 && this.x <= border.x2;
+                if (isOldXInBounds && isNewXInBounds) {
+                    let isOldSpriteOverPlatform = this.oldY + this.radius <= border.y;
+                    let isNewSpriteUnderPlatform = this.y + this.radius > border.y;
+                    let hitPlatform = false;
+                    if (isOldSpriteOverPlatform && isNewSpriteUnderPlatform) {
+                        hitPlatform = true;
+                    } else {
+                        if (this.arePlatformsSolidFromBelow &&
+                            !isOldSpriteOverPlatform &&
+                            !isNewSpriteUnderPlatform) {
+                                hitPlatform = true;
+                        }
+                    }
+                    if (hitPlatform) {
                         this.y = border.y - this.radius;
                         this.dy *= -bounciness;
                         this.dx *= !!bounciness ? 1 : inertia;
@@ -251,6 +260,7 @@ class Sprite {
                     }
                 }
             }
+            //arePlatformsSolidFromBelow
         }
         return touchedBorders;
     }

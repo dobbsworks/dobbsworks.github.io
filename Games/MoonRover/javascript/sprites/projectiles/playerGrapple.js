@@ -1,5 +1,6 @@
 class PlayerGrapplePellet extends PlayerBullet {
     radius = 10;
+    arePlatformsSolidFromBelow = true;
 
     Update() {
         player.grappleTarget = null;
@@ -26,12 +27,17 @@ class PlayerGrapplePellet extends PlayerBullet {
         if (touchedBorders[0]) {
             // grapple!
             this.isActive = false;
-            this.GrapplePosition();
+            this.GrapplePosition(touchedBorders[0]);
         }
     }
 
-    GrapplePosition() {
-        this.GrappleObject({x: this.x, y: this.y});
+    GrapplePosition(border) {
+        let xOffset = 0;
+        let yOffset = this.radius;
+        if (border instanceof LeftWall) xOffset -= this.radius;
+        if (border instanceof RightWall) xOffset += this.radius;
+        if (border instanceof Ceiling) yOffset -= this.radius + 5;
+        this.GrappleObject({x: this.x + xOffset, y: this.y + yOffset});
     }
 
     GrappleObject(target) {

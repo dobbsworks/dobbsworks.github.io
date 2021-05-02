@@ -3,6 +3,7 @@ class Player extends Sprite {
     maxHp = 10;
     hurtTimer = 0;
     bubbleShieldTimer = 0;
+    shieldDamageBonus = 0;
     levelStartShieldTimer = 90; // 0.5 seconds of invulv on level start
     isOnGround = false;
     playerStarted = false; // player has made some interaction (fired weapon)
@@ -63,10 +64,11 @@ class Player extends Sprite {
                     bounceDx ** 2 + bounceDy ** 2
                 );
                 let targetMagnitude = 3;
-                if (canBash) {
+                if (canBash && touchingSprite.bashInvulnTimer <= 0) {
                     targetMagnitude = Math.sqrt(oldSpeedSquared);
-                    let shieldDamage = Math.ceil(targetMagnitude / 4);
+                    let shieldDamage = Math.ceil(targetMagnitude / 4) + this.shieldDamageBonus;
                     if (targetMagnitude > 2) {
+                        touchingSprite.bashInvulnTimer = 60;
                         achievementHandler.shieldBashDamage = shieldDamage;
                         touchingSprite.ApplyDamage(shieldDamage, this, targetMagnitude);
                     }
@@ -193,7 +195,7 @@ class Player extends Sprite {
 
         // break
         let dist = Math.sqrt(dx ** 2 + dy ** 2);
-        if (dist < this.radius) {
+        if (dist < this.radius * 1.5) {
             this.grappleTarget = null;
         }
     }

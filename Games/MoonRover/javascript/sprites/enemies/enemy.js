@@ -1,12 +1,14 @@
 class Enemy extends Sprite {
     color = "#FF0000";
     loot = 0;
-
+    bashInvulnTimer = 0;
 
     SharedEnemyUpdate() {
         if (!this.loot && !(this instanceof BossPartBase)) {
             this.loot = 2 + Math.ceil(seedRandom.random() * 4);
         }
+
+        if (this.bashInvulnTimer > 0) this.bashInvulnTimer--;
 
         if (this.hp <= 0) {
             if (currentCharacter && currentCharacter.mustKeepAttacking) {

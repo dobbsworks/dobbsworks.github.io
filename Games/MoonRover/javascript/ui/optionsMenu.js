@@ -153,7 +153,7 @@ function EndOfRunStats(isVictory) {
 
     let doneButton = new Button(buttonX + 400 + margin, bgPanel.y + bgPanel.height - buttonHeight - margin, "Done");
     doneButton.onClick = () => {
-        mainMenuHandler.ReturnToMainMenu(true);
+        mainMenuHandler.ReturnToMainMenu(isVictory);
         if (isVictory) mainMenuHandler.OnClickCredits();
     };
     doneButton.width = smallWidth;
