@@ -1,5 +1,11 @@
 var versionHistoryData = [
     {
+        v: "0.9.3", d: "2021-05-01", t:
+            `
+• Grappling hook can now attach to level end star. 
+• Bug fix: Swarm Shield now destroys enemy projectiles (in addition to damaging and deflecting enemies). `
+    },
+    {
         v: "0.9.2", d: "2021-05-01", t:
             `
 • Changed grappling hook to allow grabbing the underside of platforms.

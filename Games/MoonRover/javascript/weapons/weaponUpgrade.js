@@ -105,7 +105,7 @@ class Upgrade {
         pelletDuration: {
             goodDirection: +1,
             shortDescription: "Projectile range",
-            statDescription: "longer projectile range",
+            statDescription: "longer lasting shots",
         },
         shieldDuration: {
             goodDirection: +1,
@@ -224,12 +224,45 @@ class Upgrade {
         return upgrade;
     }
 
+    static PelletsScale(cost, pelletsScale) {
+        let upgrade = new Upgrade(cost, [
+            {
+                prop: "pelletCount",
+                delta: pelletsScale,
+                type: Upgrade.Type.scale
+            }
+        ]);
+        return upgrade;
+    }
+
+    static PelletSpeedScale(cost, pelletSpeedScale) {
+        let upgrade = new Upgrade(cost, [
+            {
+                prop: "pelletSpeed",
+                delta: pelletSpeedScale,
+                type: Upgrade.Type.scale
+            }
+        ]);
+        return upgrade;
+    }
+
     static ShieldDurationScale(cost, shieldDurationScale) {
         let upgrade = new Upgrade(cost, [
             {
                 prop: "shieldDuration",
                 delta: shieldDurationScale,
                 type: Upgrade.Type.scale
+            }
+        ]);
+        return upgrade;
+    }
+
+    static ShieldDamageChange(cost, shieldDamageChange) {
+        let upgrade = new Upgrade(cost, [
+            {
+                prop: "shieldDamageBonus",
+                delta: shieldDamageChange,
+                type: Upgrade.Type.add
             }
         ]);
         return upgrade;
