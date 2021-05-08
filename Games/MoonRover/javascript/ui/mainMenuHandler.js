@@ -41,6 +41,10 @@ class MainMenuHandler {
             "skizoo___",
             "hover_cat13",
         ],
+        "Testing and QA",
+        [
+            "MarioMakerFanGPB"
+        ],
         "Tools",
         [
             "Music and sounds created with:",
@@ -139,14 +143,13 @@ class MainMenuHandler {
 
         let optionsButton = new Button(x1, y1, "Options");
         optionsButton.onClick = mainMenuHandler.OnClickOptions;
-        let helpButton = new Button(x1, y2, "Help");
-        helpButton.onClick = null;
+        let helpButton = new Button(x1, y2, "How To Play");
+        helpButton.onClick = mainMenuHandler.OnClickHelp;
         let achievementsButton = new Button(x2, y1, "Achievements");
         achievementsButton.onClick = mainMenuHandler.OnClickAchievements;
         let creditsButton = new Button(x2, y2, "Credits");
         creditsButton.onClick = mainMenuHandler.OnClickCredits;
         [creditsButton, optionsButton, helpButton, achievementsButton].forEach(a => a.height = smallButtonHeight);
-        [helpButton].forEach(a => a.isDisabled = true);
 
 
         uiHandler.elements.push(playButton, creditsButton, optionsButton, helpButton, achievementsButton);
@@ -498,6 +501,39 @@ class MainMenuHandler {
         uiHandler.elements.push(...newElements);
     }
 
+    OnClickHelp() {
+        uiHandler.Shelve();
+
+        let elements = [];
+
+        let backButton = new Button(100, 400, "Back to main menu");
+        backButton.height = 50;
+        backButton.width = 200;
+        backButton.onClick = () => {
+            uiHandler.Restore();
+        }
+        elements.push(backButton);
+
+        let tutImage = new UiImage(tileset.tutorial1.tiles, 450, 50);
+        tutImage.animationSpeed = 1 / 30;
+        elements.push(tutImage);
+
+        let tutText = "Rover lives on the moon! His humans haven't come back from work. It's up to him to save the day! " + "\n\n" +
+            "Click or tap the screen to make Rover fire the current weapon. This will send Rover flying in the opposite direction! Use your weapons to attack and move towards the star at the end of each level." + "\n\n" +
+            "Collect Mooney to purchase new \nweapons and upgrades every \nfew levels.";
+        let text = new Text(100, 100, tutText);
+        text.textAlign = "left";
+        text.maxWidth = 300;
+        elements.push(text);
+
+        let mooney = new UiImage(tileset.coin.tiles, 340, 285);
+        mooney.animationSpeed = 0.25;
+        mooney.scale = 4;
+        elements.push(mooney);
+
+        elements.forEach(a => a.y += canvas.height);
+        uiHandler.elements = elements;
+    }
 
 
     DrawMenuBg() {

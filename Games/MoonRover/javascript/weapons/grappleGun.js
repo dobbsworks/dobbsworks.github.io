@@ -19,5 +19,8 @@ class WeaponGrapplingHook extends Weapon {
     pelletDuration = 60 * 1;
     
     upgrades = [
+        Upgrade.ReloadSpeedScale(40, 0.1),
+        Upgrade.ReloadSpeedScale(60, 0.1),
+        Upgrade.ReloadSpeedScale(80, 0.1),
     ]
 }

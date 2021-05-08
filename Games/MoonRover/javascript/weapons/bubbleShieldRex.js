@@ -19,5 +19,13 @@ class WeaponBubbleShieldRex extends Weapon {
     midAirReloadRatio = 1;
     
     upgrades = [
+        Upgrade.ShieldDurationScale(20, 0.1),
+        Upgrade.ReloadSpeedScale(40, 0.1),
+        Upgrade.ShieldDamageChange(60, 1),
+        Upgrade.ShieldDurationScale(60, 0.1),
+        Upgrade.ReloadSpeedScale(80, 0.1),
+        Upgrade.ShieldDamageChange(100, 1),
+        Upgrade.ShieldDurationScale(120, 0.1),
+        Upgrade.ReloadSpeedScale(150, 0.1),
     ]
 }

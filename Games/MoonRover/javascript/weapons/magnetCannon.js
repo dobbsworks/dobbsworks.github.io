@@ -23,7 +23,13 @@ class WeaponMagnetCannon extends Weapon {
     pelletGravityScale = 0;
     
     upgrades = [
-        Upgrade.ReloadSpeedScale(20, 0.3),
-        Upgrade.EffectDurationScale(30, 0.5),
+        Upgrade.ReloadSpeedScale(40, 0.2),
+        Upgrade.PelletSpeedScale(50, 0.2),
+        Upgrade.PelletsScale(60, 0.5),
+        Upgrade.EffectDurationScale(70, 0.5),
+        Upgrade.PelletSpeedScale(80, 0.2),
+        Upgrade.ReloadSpeedScale(90, 0.2),
+        Upgrade.EffectDurationScale(100, 0.5),
+        Upgrade.ReloadSpeedScale(160, 0.2),
     ]
 }

@@ -57,6 +57,8 @@ var soundboardHandler = {
         { volume: 0.3, key: "space-space", file: "space-space.mp3" },
         { volume: 0.1, key: "diggy-hole", file: "diggy-hole.mp3" },
         { volume: 1.0, key: "maybe", file: "maybe.mp3" },
+        { volume: 1.0, key: "smw-end", file: "smw-end.mp3" },
+        { volume: 1.0, key: "smw-keyhole", file: "smw-keyhole.mp3" },
     ],
     findSound: (arg) => {
         let sound = soundboardHandler.sounds.find(x => x.id === +(arg));

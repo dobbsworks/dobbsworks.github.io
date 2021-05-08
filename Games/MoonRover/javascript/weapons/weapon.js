@@ -18,6 +18,7 @@ class Weapon {
 
     pierce = 0; // number of extra enemy hits // TODO
     shieldDuration = 0;
+    shieldDamageBonus = 0;
     get cooldownTime() {
         return 60 / this.fireRate;
     }
@@ -85,7 +86,8 @@ class Weapon {
     }
 
     GetBreakdownText() {
-        return this.initialUpgrades.flatMap(x => x.GetBreakdownText()).join("\n");
+        let upgrades = [...this.initialUpgrades, ...this.upgrades.filter(a => a.isActive)];
+        return upgrades.flatMap(x => x.GetBreakdownText()).join("\n");
     }
 
     GetSellPrice() {
@@ -145,7 +147,10 @@ class Weapon {
 
 
     FireBullet(angle, source) {
-        if (this.shieldDuration) player.bubbleShieldTimer = this.shieldDuration;
+        if (this.shieldDuration) {
+            player.bubbleShieldTimer = this.shieldDuration;
+            player.shieldDamageBonus = this.shieldDamageBonus;
+        }
         if (!this.pelletType) return;
         let x = source.x - this.initialPelletDistance * Math.cos(angle);
         let y = source.y - this.initialPelletDistance * Math.sin(angle);

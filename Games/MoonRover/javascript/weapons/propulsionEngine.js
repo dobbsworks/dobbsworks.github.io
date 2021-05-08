@@ -11,8 +11,13 @@ class WeaponPropulsionEngine extends Weapon {
     ];
 
     upgrades = [
-        Upgrade.FireRateScale(15, 0.3),
-        Upgrade.ReloadSpeedScale(20, 0.1),
-        Upgrade.ShotsChange(35, 1),
+        Upgrade.FireRateScale(40, 0.2),
+        Upgrade.KickbackScale(50, 0.3),
+        Upgrade.ReloadSpeedScale(40, 0.1),
+        Upgrade.ShotsChange(50, 1),
+        Upgrade.DamageScale(60, 1),
+        Upgrade.FireRateScale(60, 0.2),
+        Upgrade.ReloadSpeedScale(70, 0.1),
+        Upgrade.KickbackScale(90, 0.3),
     ]
 }

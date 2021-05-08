@@ -150,6 +150,9 @@ function EndOfRunStats(isVictory) {
     title.fontSize = 48;
     title.isBold = true;
 
+    if (isVictory) {
+        achievementHandler.completionTimeInFrames = timerHandler.frames;
+    }
 
     let doneButton = new Button(buttonX + 400 + margin, bgPanel.y + bgPanel.height - buttonHeight - margin, "Done");
     doneButton.onClick = () => {

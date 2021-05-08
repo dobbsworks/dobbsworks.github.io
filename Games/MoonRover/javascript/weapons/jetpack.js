@@ -16,7 +16,13 @@ class WeaponJetpack extends Weapon {
     initialPelletDistance = 30;
     
     upgrades = [
-        Upgrade.KickbackScale(3, .4),
-        Upgrade.ShotsScale(3, .5),
+        Upgrade.KickbackScale(30, .2),
+        Upgrade.ShotsScale(40, .3),
+        Upgrade.KickbackScale(60, .2),
+        Upgrade.ShotsScale(80, .3),
+        Upgrade.KickbackScale(100, .2),
+        Upgrade.ShotsScale(120, .3),
+        Upgrade.KickbackScale(150, .2),
+        Upgrade.ShotsScale(160, .3),
     ]
 }

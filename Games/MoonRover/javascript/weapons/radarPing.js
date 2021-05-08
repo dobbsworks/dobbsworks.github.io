@@ -13,7 +13,14 @@ class WeaponRadarPing extends Weapon {
     kickbackPower = 0;
 
     upgrades = [
-        Upgrade.ReloadSpeedScale(20, 0.1),
-        Upgrade.ReloadSpeedScale(20, 0.1),
+        Upgrade.ReloadSpeedScale(30, 0.1),
+        Upgrade.ShotsChange(40, 1),
+        Upgrade.ReloadSpeedScale(50, 0.1),
+        Upgrade.ShotsChange(70, 1),
+        Upgrade.ReloadSpeedScale(90, 0.1),
+        Upgrade.ShotsChange(100, 1),
+        Upgrade.ReloadSpeedScale(120, 0.1),
+        Upgrade.ShotsChange(140, 1),
+        Upgrade.ReloadSpeedScale(150, 0.1),
     ]
 }

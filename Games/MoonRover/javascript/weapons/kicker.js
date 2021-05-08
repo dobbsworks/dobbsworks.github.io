@@ -10,8 +10,13 @@ class WeaponKicker extends Weapon {
     ];
 
     upgrades = [
-        Upgrade.FireRateScale(15, 0.3),
-        Upgrade.ReloadSpeedScale(20, 0.1),
-        Upgrade.ShotsChange(35, 1),
+        Upgrade.FireRateScale(30, 0.3),
+        Upgrade.ReloadSpeedScale(50, 0.1),
+        Upgrade.ShotsChange(60, 1),
+        Upgrade.KnockbackScale(60, 0.5),
+        Upgrade.ReloadSpeedScale(70, 0.1),
+        Upgrade.FireRateScale(90, 0.3),
+        Upgrade.ReloadSpeedScale(120, 0.1),
+        Upgrade.ShotsChange(150, 1),
     ]
 }

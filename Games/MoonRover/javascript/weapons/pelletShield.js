@@ -19,9 +19,13 @@ class WeaponPelletShield extends Weapon {
     pelletDuration = 60 * 15;
 
     upgrades = [
-        Upgrade.PelletsChange(20, 1),
-        Upgrade.ReloadSpeedScale(20, 0.3),
-        Upgrade.PelletDurationScale(25, 0.2),
-        Upgrade.PelletsChange(30, 1),
+        Upgrade.PelletsChange(40, 1),
+        Upgrade.ReloadSpeedScale(50, 0.3),
+        Upgrade.PelletDurationScale(60, 0.2),
+        Upgrade.PelletsChange(70, 1),
+        Upgrade.ReloadSpeedScale(80, 0.3),
+        Upgrade.PelletDurationScale(90, 0.2),
+        Upgrade.PelletsChange(100, 2),
+        Upgrade.PelletsChange(120, 3),
     ]
 }

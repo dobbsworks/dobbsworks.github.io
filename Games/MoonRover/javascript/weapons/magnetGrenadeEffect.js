@@ -20,8 +20,13 @@ class WeaponMagnetPulse extends Weapon {
     pelletGravityScale = 0;
     
     upgrades = [
-        Upgrade.PelletDurationScale(20, 0.3),
-        Upgrade.EffectDurationScale(30, 0.5),
-        Upgrade.PelletDurationScale(20, 0.3),
+        Upgrade.PelletSpeedScale(50, 0.2),
+        Upgrade.PelletsScale(60, 0.3),
+        Upgrade.EffectDurationScale(60, 0.3),
+        Upgrade.PelletDurationScale(80, 0.3),
+        Upgrade.PelletsScale(80, 0.3),
+        Upgrade.EffectDurationScale(90, 0.3),
+        Upgrade.PelletDurationScale(100, 0.3),
+        Upgrade.PelletSpeedScale(120, 0.2),
     ]
 }

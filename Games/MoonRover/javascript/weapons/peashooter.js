@@ -7,10 +7,16 @@ class WeaponPeashooter extends Weapon {
     clipSize = 4;
 
     upgrades = [
-        Upgrade.FireRateScale(10, 0.5),
-        Upgrade.ShotsChange(10, 2),
-        Upgrade.DamageScale(20, 1),
-        Upgrade.ReloadSpeedScale(20, 0.1),
-        Upgrade.ShotsChange(30, 2),
+        Upgrade.FireRateScale(25, 0.3),
+        Upgrade.ShotsChange(30, 1),
+        Upgrade.ReloadSpeedScale(30, 0.2),
+        Upgrade.ShotsChange(30, 1),
+        Upgrade.DamageScale(50, 1),
+        Upgrade.KnockbackScale(50, 0.25),
+        Upgrade.ReloadSpeedScale(60, 0.1),
+        Upgrade.ShotsChange(80, 1),
+        Upgrade.FireRateScale(100, 0.3),
+        Upgrade.ShotsChange(100, 1),
+        Upgrade.DamageScale(150, 1),
     ]
 }

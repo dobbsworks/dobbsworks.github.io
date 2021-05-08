@@ -6,11 +6,13 @@ class WeaponBouncer extends Weapon {
     ];
 
     upgrades = [
-        Upgrade.FireRateScale(15, 0.3),
-        Upgrade.RicochetsChange(20, 1),
-        Upgrade.ShotsChange(10, 1),
-        Upgrade.DamageScale(20, 1),
-        Upgrade.ReloadSpeedScale(20, 0.1),
+        Upgrade.FireRateScale(30, 0.3),
+        Upgrade.RicochetsChange(40, 1),
         Upgrade.ShotsChange(30, 1),
+        Upgrade.DamageScale(60, 1),
+        Upgrade.ReloadSpeedScale(40, 0.2),
+        Upgrade.ShotsChange(70, 1),
+        Upgrade.RicochetsChange(80, 1),
+        Upgrade.DamageScale(150, 1),
     ]
 }

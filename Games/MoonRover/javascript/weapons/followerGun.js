@@ -12,7 +12,11 @@ class WeaponFollowerGun extends Weapon {
 
     upgrades = [
         Upgrade.ReloadSpeedScale(20, 0.1),
-        Upgrade.ReloadSpeedScale(20, 0.1),
-        Upgrade.ReloadSpeedScale(20, 0.1),
+        Upgrade.ReloadSpeedScale(40, 0.1),
+        Upgrade.ShotsChange(60, 1),
+        Upgrade.ReloadSpeedScale(80, 0.1),
+        Upgrade.ShotsChange(100, 1),
+        Upgrade.ReloadSpeedScale(120, 0.1),
+        Upgrade.ShotsChange(140, 1),
     ]
 }

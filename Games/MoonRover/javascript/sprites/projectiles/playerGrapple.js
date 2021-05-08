@@ -16,17 +16,16 @@ class PlayerGrapplePellet extends PlayerBullet {
                 } else if (touchingSprite instanceof EnemyBullet) {
                     // Do nothing
                 } else {
-                    // grapple!
-                    this.isActive = false;
                     this.GrappleObject(touchingSprite);
                 }
+            }
+            if (touchingSprite instanceof LevelExit) {
+                this.GrappleObject(touchingSprite);
             }
         }
         
         let touchedBorders = this.ReactToBorders(this.bounciness);
         if (touchedBorders[0]) {
-            // grapple!
-            this.isActive = false;
             this.GrapplePosition(touchedBorders[0]);
         }
     }
@@ -41,6 +40,7 @@ class PlayerGrapplePellet extends PlayerBullet {
     }
 
     GrappleObject(target) {
+        this.isActive = false;
         if (player) {
             player.grappleTarget = target;
         }

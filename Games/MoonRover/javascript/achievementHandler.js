@@ -10,6 +10,12 @@ class AchievementHandler {
             [[1], [10], [25]],
             (vars) => { return this.lifetimeRunCompletes >= vars[0] }
         ),
+        speedrun: new Achievement(
+            ["Dog-Gone Fast", "The Fast And The Furrious", "Space Race"],
+            "Beat the game in under %0 minutes",
+            [[30], [20], [15]],
+            (vars) => { return this.completionTimeInFrames && this.completionTimeInFrames / 60 / 60 < vars[0] }
+        ),
         beatGameMulticharacter: new Achievement(
             ["Part Of The Pack", "Growing Family", "The Gang's All Here"],
             "Beat the game as %0 different characters",
@@ -41,7 +47,7 @@ class AchievementHandler {
         upgradeWeapon: new Achievement(
             ["This Is My Boomstick", "Ol' Betsy", "Fully Operational"],
             "Upgrade a single weapon %0 times in one run",
-            [[4], [5], [6]],
+            [[4], [6], [9]],
             (vars) => {
                 return Math.max(weaponHandler.inventory.map(x => x.level)) - 1 >= vars[0];
             }
@@ -103,6 +109,7 @@ class AchievementHandler {
     lifetimeRunCompletes = 0;
     currentStars = 0;
     completeRunCharacters = [];
+    completionTimeInFrames = null;
 
     displays = [];
     // controls pop-up alert speed

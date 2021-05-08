@@ -1,5 +1,10 @@
 var versionHistoryData = [
     {
+        v: "1.0.0", d: "2021-05-08", t:
+            `
+• Finally added instructions page. `
+    },
+    {
         v: "0.9.3", d: "2021-05-01", t:
             `
 • Grappling hook can now attach to level end star. 

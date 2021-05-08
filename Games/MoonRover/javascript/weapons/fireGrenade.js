@@ -11,6 +11,7 @@ class WeaponFireGrenade extends WeaponBaseGrenade {
     explodeOnExpire = true;
 
     upgrades = [
-        Upgrade.ReloadSpeedScale(20, 0.2),
+        Upgrade.ReloadSpeedScale(40, 0.2),
+        Upgrade.ReloadSpeedScale(70, 0.2),
     ]
 }

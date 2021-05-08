@@ -18,5 +18,13 @@ class WeaponFireCannon extends Weapon {
     pelletGravityScale = 0;
     
     upgrades = [
+        Upgrade.FireRateScale(30, 0.10),
+        Upgrade.ShotsChange(50, 1),
+        Upgrade.PelletsScale(60, 1),
+        Upgrade.SpreadScale(40, 0.8),
+        Upgrade.FireRateScale(70, 0.10),
+        Upgrade.PelletsScale(60, 0.5),
+        Upgrade.SpreadScale(130, 0.5),
+        Upgrade.ShotsChange(150, 1),
     ]
 }
