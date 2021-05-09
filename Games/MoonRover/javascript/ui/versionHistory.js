@@ -1,7 +1,18 @@
 var versionHistoryData = [
     {
+        v: "1.0.1", d: "2021-05-09", t:
+            `
+• Changed orbiter enemy (cyan bot) behavior. Will no longer lose interest after lunging, regardless of player distance. 
+• Grappling hook now releases when trying to fire even if it's out of ammo. 
+• Balance tweak: all weapons now get fully reloaded after every stage (previously only happened at shop visits). 
+• Fixed a bug for Firefox users where mouse position didn't line up with the game view properly. 
+• Fixed a bug where the speedrun timer wouldn't run behind the scenes if the speedrun timer display was turned off. 
+• Fixed a bug where some upgrades caused the shop to stop responding. Resulted in awkward staring contests with MoG. `
+    },
+    {
         v: "1.0.0", d: "2021-05-08", t:
             `
+• Released remaining unlockable characters into the game. 
 • Finally added instructions page. `
     },
     {

@@ -67,6 +67,7 @@ class Weapon {
         //if (this.shotsRemaining > 0 || player.isOnGround) {
         this.reloadTimer = 0; // cancel current reload
         //}
+        this.OnFire();
         if (this.cooldownTimer <= 0 && this.deployTimer <= 0) {
             if (this.shotsRemaining > 0) {
                 if (this.follower) {
@@ -144,6 +145,8 @@ class Weapon {
 
         this.cooldownTimer = this.cooldownTime;
     }
+
+    OnNoAmmoFire() { } //override
 
 
     FireBullet(angle, source) {

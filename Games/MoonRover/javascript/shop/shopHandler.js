@@ -59,7 +59,7 @@ class ShopHandler {
         "Most of the robots up here were built on-site, but not me! I'm one of a kind. I was launched up here with some excavation equipment and some big liquid tanks. I was strapped to the side of the shuttle because there wasn't enough room inside. It was a toasty journey! ",
         "Technically I wasn't supposed to get shipped up here. Drink and snack distribution isn't really my cup of tea, yeah? I had to take some initiative and find my own way up. What can I say, I'm a go-getter! ",
         "The robots up here started wigging out a few days ago. It's been weird. Jerry over there won't talk to me anymore, just wants to pace back[pause:30] and[pause:30] forth. And Mike's started hovering ominously. Just goes to show, you can't really be sure you know someone until unauthorized radio waves start pouring out from the center of the colony. ",
-        "I'm not completely sure if my current wares are up to date the colony's safetly standards. I turned off my internal receiver pretty soon after I got here. I used to listen to a nice local station back on Earth, but up here it's just daily updates and a lot of cosmic radiation. Boring! ",
+        "I'm not completely sure if my current wares meet the colony's safety standards. I turned off my internal receiver pretty soon after I got here. I used to listen to a nice local station back on Earth, but up here it's just daily updates and a lot of cosmic radiation. Boring! ",
         "A lot of robots around here don't have much control over their subsystems. I'm pretty special, though, gotta say. I've been carefully coded with complete control over everything going on this perfect, rectangular body! My source code is working exactly as written. Whether that's the intended design is another question… ",
         "I've got a small patch of moss growing near my exhaust. It must be feeding off some pockets of gas at some of my stops. [face:champ]It makes for a great pet![face:happy] Low maintenance suits me just fine. ",
         "I'm glad you're here, it's been a while since I've had any customers. Mining gear doesn't exactly fly off the shelves, you know? Especially when your usual buyers have all fled, and the only entities around for miles are robots that are ALREADY equipped. Maybe I should take out an ad or something. ",
@@ -116,7 +116,6 @@ class ShopHandler {
         this.fadeInTimer = this.fadeDuration - 1;
         this.currentConversation = "";
         audioHandler.SetBackgroundMusic("");
-        weaponHandler.ReloadAll();
         isMouseDown = false;
         isMouseChanged = false;
         this.isInShop = true;

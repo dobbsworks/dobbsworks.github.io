@@ -41,8 +41,8 @@ function OnMouseUp(e) {
 }
 
 function OnMouseMove(e) {
-    mouseX = e.layerX;
-    mouseY = e.layerY;
+    mouseX = e.offsetX;
+    mouseY = e.offsetY;
 }
 
 function OnMouseOut(e) {

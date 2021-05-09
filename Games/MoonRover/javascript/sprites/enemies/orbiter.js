@@ -60,7 +60,7 @@ class EnemyOrbiter extends Enemy {
         } else if (this.state === this.states.lunging) {
             this.timer++;
             if (this.timer > 60 * 2) {
-                this.state = this.states.idle;
+                this.state = this.states.orbiting;
             }
         }
     }

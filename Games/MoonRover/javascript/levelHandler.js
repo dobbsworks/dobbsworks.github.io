@@ -188,6 +188,8 @@ class LevelHandler {
             sprites.push(new bossType(this.room.width / 2, this.room.height / 3));
         }
         renderer.target = player;
+        weaponHandler.SelectWeaponByIndex(0);
+        weaponHandler.ReloadAll();
         saveHandler.SaveGame();
     }
 

@@ -29,8 +29,14 @@ class Upgrade {
                 continue;
             }
             let propInfo = Upgrade.PropMap[change.prop];
-            let isGoodChange = (change.delta * propInfo.goodDirection > 0);
-            let isBadChange = (change.delta * propInfo.goodDirection < 0);
+            let isGoodChange = true;
+            let isBadChange = false;
+            if (propInfo) {
+                isGoodChange = (change.delta * propInfo.goodDirection > 0);
+                isBadChange = (change.delta * propInfo.goodDirection < 0);
+            } else {
+                console.error("MISSING PROP INFO FOR: " + change.prop);
+            }
             let colorPrefix = isGoodChange ? "[good]" : (isBadChange ? "[bad]" : "");
 
             let changeValue = change.delta;
@@ -43,13 +49,16 @@ class Upgrade {
             if (change.type === Upgrade.Type.scale &&
                 change.delta % 1 === 0 &&
                 change.delta > 0) {
-                    changeNumber = "x" + change.delta;
+                changeNumber = "x" + change.delta;
             }
 
-            let propText = propInfo.statDescription;
-            if (!propText) {
-                if (isGoodChange) propText = propInfo.statDescriptionGood;
-                else propText = propInfo.statDescriptionBad;
+            let propText = "";
+            if (propInfo) {
+                propInfo.statDescription;
+                if (!propText) {
+                    if (isGoodChange) propText = propInfo.statDescriptionGood;
+                    else propText = propInfo.statDescriptionBad;
+                }
             }
 
             lines.push(colorPrefix + changeNumber + " " + propText);
@@ -122,6 +131,16 @@ class Upgrade {
             goodDirection: +1,
             shortDescription: "More ricochets",
             statDescription: "more ricochets"
+        },
+        shieldDamageBonus: {
+            goodDirection: +1,
+            shortDescription: "Stronger bash",
+            statDescription: "stronger shield bash"
+        },
+        pelletSpeed: {
+            goodDirection: +1,
+            shortDescription: "Pellet speed",
+            statDescription: "faster pellet speed"
         }
     }
 

@@ -58,6 +58,11 @@ class UIHandler {
             el.x += (el.targetX - el.x) / 10;
             el.y += (el.targetY - el.y) / 10;
         }
+
+        
+        if (!pauseHandler.isPaused && !mainMenuHandler.isOnMainMenu) {
+            timerHandler.Update();
+        }
     }
 
     // immediately move to target locations

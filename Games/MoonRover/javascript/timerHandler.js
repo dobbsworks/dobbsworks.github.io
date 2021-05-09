@@ -21,9 +21,12 @@ class TimerHandler {
         });
     }
 
+    Update() {
+        this.frames++;
+    }
+
     DrawTimer() {
         let offset = uiHandler.debugMode ? 88 : 0;
-        this.frames++;
         ctx.lineWidth = 5;
         ctx.font = this.fontSize + "px Courier New";
         ctx.textAlign = "right";

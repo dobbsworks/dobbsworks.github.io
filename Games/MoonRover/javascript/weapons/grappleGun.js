@@ -23,4 +23,8 @@ class WeaponGrapplingHook extends Weapon {
         Upgrade.ReloadSpeedScale(60, 0.1),
         Upgrade.ReloadSpeedScale(80, 0.1),
     ]
+
+    OnFire() {
+        player.grappleTarget = null;
+    }
 }
