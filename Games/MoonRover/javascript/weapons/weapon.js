@@ -63,6 +63,10 @@ class Weapon {
         if (!this.holsterReloadRatio) this.reloadTimer = 0;
     }
 
+    OnFire() {
+        
+    }
+
     PullTrigger() {
         //if (this.shotsRemaining > 0 || player.isOnGround) {
         this.reloadTimer = 0; // cancel current reload
