@@ -1,5 +1,10 @@
 var versionHistoryData = [
     {
+        v: "1.0.2", d: "2021-05-10", t:
+            `
+• Fixed issue with weapons not firing <_<  `
+    },
+    {
         v: "1.0.1", d: "2021-05-09", t:
             `
 • Changed orbiter enemy (cyan bot) behavior. Will no longer lose interest after lunging, regardless of player distance. 
