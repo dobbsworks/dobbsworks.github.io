@@ -201,7 +201,7 @@ function ProcessActivityMessage(messageEl) {
 		// Follows
 		if (line2 === "Followed you") {
 			let user = line1;
-			let userIsBanned = Kryptonite(username);
+			let userIsBanned = Kryptonite(user);
 			if (!userIsBanned) {
 				let alertText = user + " is now following!";
 				marqueeWindow.AddAlert(alertText, "rgb(0,255,128)");
