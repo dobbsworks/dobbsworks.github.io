@@ -197,7 +197,7 @@ function ProcessActivityMessage(messageEl) {
 	let line2 = messageEl.querySelector(".activity-base-list-item__subtitle span").textContent;
 	let time = messageEl.querySelector(".activity-base-list-item__subtitle > span:last-child").textContent;
 
-	if (true || (time.indexOf("day") === -1 && time.indexOf("month") === -1 && time.indexOf("hour") === -1)) {
+	if (time.indexOf("day") === -1 && time.indexOf("month") === -1 && time.indexOf("hour") === -1) {
 		// Follows
 		if (line2 === "Followed you") {
 			let user = line1;
