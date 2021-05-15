@@ -14,12 +14,28 @@ class Button extends UIElement {
 
     isMousedOver = false; //flag to watch for mouseover change
     isDisabled = false;
+    ignoreGamepad = false; // false to allow gamepad to move to button
 
     isMouseOver() {
+        if (Math.abs(this.targetX - this.x) > 10 || Math.abs(this.targetY - this.y) > 10) return false;
         return mouseX >= this.x &&
             mouseX <= this.x + this.width &&
             mouseY >= this.y &&
             mouseY <= this.y + this.height;
+    }
+
+    isSteadyOnScreen() {
+        if (this.x > canvas.width) return false;
+        if (this.targetX > canvas.width) return false;
+        if (this.y > canvas.height) return false;
+        if (this.targetY > canvas.height) return false;
+
+        if (this.x + this.width < 0) return false;
+        if (this.targetX + this.width < 0) return false;
+        if (this.y + this.height < 0) return false;
+        if (this.targetY + this.height < 0) return false;
+
+        return true;
     }
 
     onClick() {

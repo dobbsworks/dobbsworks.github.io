@@ -185,12 +185,12 @@ function EndOfRunStats(isVictory) {
 
 
     let charImage = document.getElementById(currentCharacter.imageIdLit);
-    let charImageEl = new UiImage(charImage, leftX - 15, 100);
+    let charImageEl = new UiImage(charImage, leftX - 15, 60);
     charImageEl.scale = 2;
 
     let charMessages = isVictory ? currentCharacter.victory : currentCharacter.failure;
     let charMessage = charMessages ? charMessages[Math.floor(Math.random() * charMessages.length)] : "";
-    let charText = new Text(leftX, 275, charMessage);
+    let charText = new Text(leftX, 235, charMessage);
     charText.textAlign = "left";
     charText.maxWidth = smallWidth;
 
@@ -200,15 +200,21 @@ function EndOfRunStats(isVictory) {
     
     let starMessage = [];
     let stars = (levelHandler.currentLevel - 1) * 5 + levelHandler.currentZone - 1 + (isVictory ? 1 : 0);
-    starMessage.push("New Stars Collected: " + stars);
+    starMessage.push("Levels beaten: " + stars);
+    let achieveStars = achievementHandler.CreditAchieves();
     if (isVictory) {
         stars += 5;
         starMessage.push("Completion Bonus: " + "+5");
     }
+    if (achieveStars > 0) {
+        stars += achieveStars;
+        starMessage.push("Achievement Bonus: " + "+" + achieveStars.toString());
+    }
     achievementHandler.currentStars += stars;
     starMessage.push("==================");
+    starMessage.push("Stars gained: " + stars);
     starMessage.push("Total Stars: " + achievementHandler.currentStars);
-    let starText = new Text(bgPanel.x + bgPanel.width - margin, 275, starMessage.join('\n'));
+    let starText = new Text(bgPanel.x + bgPanel.width - margin, 235, starMessage.join('\n'));
     starText.textAlign = "right";
     starText.maxWidth = smallWidth;
 

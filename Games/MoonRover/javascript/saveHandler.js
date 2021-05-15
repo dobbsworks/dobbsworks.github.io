@@ -10,6 +10,7 @@ class SaveHandler {
             saveObj.achievements[achievementName] = {
                 unlocked: currentData.unlocked,
                 unlockedTimestamp: currentData.unlockedTimestamp,
+                credited: currentData.credited
             }
         }
 
@@ -18,6 +19,8 @@ class SaveHandler {
         saveObj.achievementProgress.lifetimeKills = achievementHandler.lifetimeKills;
         saveObj.achievementProgress.lifetimeRunCompletes = achievementHandler.lifetimeRunCompletes;
         saveObj.achievementProgress.currentStars = achievementHandler.currentStars;
+        saveObj.achievementProgress.unclaimedStars = achievementHandler.unclaimedStars;
+        saveObj.achievementProgress.completeRunCharacters = achievementHandler.completeRunCharacters;
 
         // options
         saveObj.options.showTimer = timerHandler.displayed;
@@ -44,8 +47,10 @@ class SaveHandler {
         Object.values(achievementHandler.achievements).forEach(a => {
             let newUnlockArray = achievementHandler.tiers.map(x => false);
             let newUnlockTimeArray = achievementHandler.tiers.map(x => null);
+            let newCreditedArray = achievementHandler.tiers.map(x => false);
             a.unlocked = newUnlockArray;
             a.unlockedTimestamp = newUnlockTimeArray;
+            a.credited = newCreditedArray;
         });
 
         // Lock achievement progress
@@ -53,6 +58,8 @@ class SaveHandler {
         achievementHandler.lifetimeKills = 0;
         achievementHandler.lifetimeRunCompletes = 0;
         achievementHandler.currentStars = 0;
+        achievementHandler.unclaimedStars = 0;
+        achievementHandler.completeRunCharacters = 0;
         this.SaveGame();
     }
 
@@ -71,6 +78,7 @@ class SaveHandler {
             let achieve = achievementHandler.achievements[achievementName];
             achieve.unlocked = saveFile.achievements[achievementName].unlocked;
             achieve.unlockedTimestamp = saveFile.achievements[achievementName].unlockedTimestamp;
+            achieve.credited = saveFile.achievements[achievementName].credited || [false,false,false];
         }
 
         // achieve progress
@@ -78,12 +86,26 @@ class SaveHandler {
         achievementHandler.lifetimeKills = saveFile.achievementProgress.lifetimeKills;
         achievementHandler.lifetimeRunCompletes = saveFile.achievementProgress.lifetimeRunCompletes;
         achievementHandler.currentStars = saveFile.achievementProgress.currentStars || 0;
+        achievementHandler.unclaimedStars = saveFile.achievementProgress.unclaimedStars || 0;
+        achievementHandler.completeRunCharacters = saveFile.achievementProgress.completeRunCharacters || [];
 
         // options
         if (saveFile.options) {
             timerHandler.displayed = saveFile.options.showTimer;
             audioHandler.SetMusicVolume(saveFile.options.musicVolume);
             audioHandler.SetSfxVolume(saveFile.options.sfxVolume);
+        }
+
+        // star credits (backwards compatibility)
+        let newStars = achievementHandler.CreditAchieves();
+        if (newStars > 0) {
+            achievementHandler.currentStars += newStars;
+            this.SaveGame();
+        }
+        if (achievementHandler.unclaimedStars > 0) {
+            achievementHandler.currentStars += achievementHandler.unclaimedStars;
+            achievementHandler.unclaimedStars = 0;
+            this.SaveGame();
         }
     }
 }

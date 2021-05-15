@@ -71,26 +71,26 @@ class Renderer {
             ctx.fillRect(0, mappedY, canvas.width, canvas.height);
         }
         let image = document.getElementById("tileset-01");
-        let tileSize = renderer.MapR(32);
+        let tileSize = +(renderer.MapR(32).toFixed(0));
         for (let x = -32; x < levelHandler.room.width; x += 32) {
             let mappedX = renderer.MapX(x);
             let mappedY = renderer.MapY(y);
             if (mappedX < -tileSize || mappedX > canvas.width) continue;
             if (mappedY < -tileSize || mappedY > canvas.height) continue;
-            ctx.drawImage(image, 0, 0, 8, 8, mappedX, mappedY, tileSize, tileSize);
+            ctx.drawImage(image, 16, 8, 9, 8, mappedX, mappedY, tileSize + 2, tileSize);
         }
     }
 
     VerticalLine(x) {
         if (player.x > x) x -= 32;
         let image = document.getElementById("tileset-01");
-        let tileSize = renderer.MapR(32);
+        let tileSize = +(renderer.MapR(32).toFixed(0));
         for (let y = 0; y < levelHandler.room.height; y += 32) {
             let mappedX = renderer.MapX(x);
             let mappedY = renderer.MapY(y);
             if (mappedX < -tileSize || mappedX > canvas.width) continue;
             if (mappedY < -tileSize || mappedY > canvas.height) continue;
-            ctx.drawImage(image, 0, 0, 8, 8, mappedX, mappedY, tileSize, tileSize);
+            ctx.drawImage(image, 16, 8, 8, 9, mappedX, mappedY, tileSize, tileSize + 2);
         }
     }
 

@@ -2,7 +2,7 @@
 class BossShield extends BossPartBase {
     color = "#060";
     maxHp = 3;
-    shieldTimer = 0;
+    shieldTimer = 200;
     projection = null;
 
     Update() {

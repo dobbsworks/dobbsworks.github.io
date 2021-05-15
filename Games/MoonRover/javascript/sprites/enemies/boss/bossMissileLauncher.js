@@ -36,6 +36,7 @@ class BossMissile extends Enemy {
     speed = 4;
     maxSpeed = 4;
     minSpeed = 1;
+    loot = 0;
 
     Initialize() {
         this.direction = Math.atan2(player.y - this.y, player.x - this.x);

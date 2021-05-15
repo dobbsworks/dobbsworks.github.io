@@ -49,12 +49,12 @@ class Upgrade {
             if (change.type === Upgrade.Type.scale &&
                 change.delta % 1 === 0 &&
                 change.delta > 0) {
-                changeNumber = "x" + change.delta;
+                changeNumber = "x" + (change.delta + 1);
             }
 
             let propText = "";
             if (propInfo) {
-                propInfo.statDescription;
+                propText = propInfo.statDescription;
                 if (!propText) {
                     if (isGoodChange) propText = propInfo.statDescriptionGood;
                     else propText = propInfo.statDescriptionBad;

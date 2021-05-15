@@ -140,22 +140,23 @@ class RoomGenerator {
     GetRandomEnemyType() {
         let level = levelHandler.currentLevel;
         let zone = levelHandler.currentZone;
+        // EnemyGrounder EnemyOrbiter EnemyHopper EnemyFloater
         /*
             [----1----][----2----][----3----][----4----][----5----]
             [---EnemyGoombud---------------------]
-                    [------EnemyFloater----------------]
-                        [------EnemyBlooper-----------------------]
+                    [------EnemyBlooper----------------]
+                        [------EnemyFloater-----------------------]
                             [------------EnemyOrbiter-------------]
                                     [---------EnemyHopper---------]
                                                 [--EnemyGrounder--]
         */
         let enemySpawnZones = [
             { type: EnemyGoombud, start: 1.0, end: 4.5 },
-            { type: EnemyFloater, start: 1.5, end: 5 },
-            { type: EnemyBlooper, start: 2.0, end: 6 },
+            { type: EnemyBlooper, start: 1.5, end: 5 },
+            { type: EnemyGrounder, start: 2.0, end: 6 },
             { type: EnemyOrbiter, start: 2.5, end: 6 },
             { type: EnemyHopper, start: 3.0, end: 6 },
-            { type: EnemyGrounder, start: 4.0, end: 6 },
+            { type: EnemyFloater, start: 4.0, end: 6 },
         ];
         let progress = level + zone / 5;
         let availableEnemies = enemySpawnZones.

@@ -290,6 +290,8 @@ class BossBodyFinal extends BossCoreBase {
     orbitSpeed = 0;
     childNodes = [
         BossArmsLaserFinal,
+        BossOrbitPlating1,
+        BossOrbitPlating2,
         BossHandBlaster,
         BossShieldLarge,
         BossFinalWaveHolder,

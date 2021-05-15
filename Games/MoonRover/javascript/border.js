@@ -25,7 +25,7 @@ class Platform extends Border {
 
     Draw() {
         let image = document.getElementById("tileset-01");
-        let tileSize = renderer.MapR(32);
+        let tileSize = +(renderer.MapR(32).toFixed(0));
 
         let roomHeight = levelHandler.room.height;
         for (let y = this.y; y < roomHeight; y += 32) {
@@ -34,10 +34,10 @@ class Platform extends Border {
             let mappedY = renderer.MapY(y);
             if (mappedY < -tileSize || mappedY > canvas.height) continue;
             if (mappedX1 > -tileSize && mappedX1 < canvas.width) {
-                ctx.drawImage(image, 8,8,8,8, mappedX1, mappedY, tileSize, tileSize);
+                ctx.drawImage(image, 8,8,8,9, mappedX1, mappedY, tileSize, tileSize+2);
             }
             if (mappedX2 > -tileSize && mappedX2 < canvas.width) {
-                ctx.drawImage(image, 8,8,8,8, mappedX2, mappedY, tileSize, tileSize);
+                ctx.drawImage(image, 8,8,8,9, mappedX2, mappedY, tileSize, tileSize+2);
             }
         }
 

@@ -46,7 +46,9 @@ class WeaponHandler {
 
     ReloadAll() {
         for (let weapon of this.inventory) {
-            weapon.shotsRemaining = weapon.clipSize;
+            if (weapon.canReload) {
+                weapon.shotsRemaining = weapon.clipSize;
+            }
         }
     }
 

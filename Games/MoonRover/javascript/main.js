@@ -17,6 +17,7 @@ var timerHandler;
 var seedRandom;
 
 var loot = 0;
+var bonusStartHp = 0;
 var killCount = 0;
 var deathCount = 0;
 var currentCharacter = null;
@@ -61,47 +62,51 @@ function Initialize() {
     mainMenuHandler.InitializeMenu();
     achievementHandler.Initialize();
     saveHandler.LoadGame();
-    setInterval(()=> { saveHandler.SaveGame()}, 30 * 1000);
+    setInterval(() => { saveHandler.SaveGame() }, 30 * 1000);
 }
 
 let p = null;
 var performanceData = [];
 function MainLoop() {
-    let t0 = performance.now();
-    uiHandler.Update();
-    if (shopHandler.isInShop) {
-        shopHandler.Update();
-    } else if (!pauseHandler.isPaused) {
-        weaponHandler.Update();
-        levelHandler.Update();
-        if (levelHandler.levelOutroTimer <= 0) {
-            for (let sprite of sprites) {
-                if (sprite.isActive) {
-                    if (!sprite.initialized) {
-                        if (sprite.Initialize) sprite.Initialize();
-                        sprite.initialized = true;
-                        if (!sprite.hp) sprite.hp = sprite.maxHp;
+    try {
+        let t0 = performance.now();
+        uiHandler.Update();
+        if (shopHandler.isInShop) {
+            shopHandler.Update();
+        } else if (!pauseHandler.isPaused) {
+            weaponHandler.Update();
+            levelHandler.Update();
+            if (levelHandler.levelOutroTimer <= 0) {
+                for (let sprite of sprites) {
+                    if (sprite.isActive) {
+                        if (!sprite.initialized) {
+                            if (sprite.Initialize) sprite.Initialize();
+                            sprite.initialized = true;
+                            if (!sprite.hp) sprite.hp = sprite.maxHp;
+                        }
+                        sprite.oldX = sprite.x;
+                        sprite.oldY = sprite.y;
+                        sprite.frame++;
+                        sprite.SharedSpriteUpdate();
+                        if (sprite.shortedTimer <= 0) sprite.Update();
+                        if (sprite instanceof Enemy) sprite.SharedEnemyUpdate();
                     }
-                    sprite.oldX = sprite.x;
-                    sprite.oldY = sprite.y;
-                    sprite.frame++;
-                    sprite.SharedSpriteUpdate();
-                    if (sprite.shortedTimer <= 0) sprite.Update();
-                    if (sprite instanceof Enemy) sprite.SharedEnemyUpdate();
                 }
             }
+            sprites = sprites.filter(x => x.isActive);
         }
-        sprites = sprites.filter(x => x.isActive);
+        achievementHandler.Update();
+        let t1 = performance.now();
+        Draw();
+        let t2 = performance.now();
+        UpdateMouseChanged();
+        GamepadMouse();
+        let perf = ({ update: t1 - t0, draw: t2 - t1, total: t2 - t0 });
+        performanceData.push(perf);
+        if (performanceData.length > 60) performanceData.splice(0, 1);
+    } catch (e) {
+        HandleError(e);
     }
-    achievementHandler.Update();
-    let t1 = performance.now();
-
-    Draw();
-    let t2 = performance.now();
-    UpdateMouseChanged();
-    let perf = ({ update: t1 - t0, draw: t2 - t1, total: t2 - t0 });
-    performanceData.push(perf);
-    if (performanceData.length > 60) performanceData.splice(0, 1);
 }
 
 function Draw() {

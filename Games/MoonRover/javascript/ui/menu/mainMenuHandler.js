@@ -36,7 +36,7 @@ class MainMenuHandler {
             "Ehnu",
             "SirBroozer_",
             "hudson_smm",
-            "Pixel_Yosh_Gamer",
+            "Pixl_Yosh_Gamer",
             "McRiot",
             "skizoo___",
             "hover_cat13",
@@ -106,6 +106,7 @@ class MainMenuHandler {
         if (!keepMusic) audioHandler.SetBackgroundMusic("music-title");
         currentCharacter = null;
         loot = 0;
+        bonusStartHp = 0;
         sprites = [];
         borders = [];
         uiHandler.elements = [];
@@ -139,171 +140,20 @@ class MainMenuHandler {
         let playButton = new Button(xMid, y1, "Play");
         playButton.height = contentHeight;
         playButton.width = bigButtonWidth;
-        playButton.onClick = mainMenuHandler.OnClickPlay;
+        playButton.onClick = OnClickPlay;
 
         let optionsButton = new Button(x1, y1, "Options");
         optionsButton.onClick = mainMenuHandler.OnClickOptions;
         let helpButton = new Button(x1, y2, "How To Play");
         helpButton.onClick = mainMenuHandler.OnClickHelp;
         let achievementsButton = new Button(x2, y1, "Achievements");
-        achievementsButton.onClick = mainMenuHandler.OnClickAchievements;
+        achievementsButton.onClick = OnClickAchievements;
         let creditsButton = new Button(x2, y2, "Credits");
         creditsButton.onClick = mainMenuHandler.OnClickCredits;
         [creditsButton, optionsButton, helpButton, achievementsButton].forEach(a => a.height = smallButtonHeight);
 
 
         uiHandler.elements.push(playButton, creditsButton, optionsButton, helpButton, achievementsButton);
-    }
-
-    OnClickPlay() {
-        uiHandler.Shelve();
-
-        let contentWidth = canvas.width - 300;
-        let margin = 20;
-        let columnCount = 4;
-        let rowCount = 2;
-        let buttonWidth = (contentWidth + margin) / columnCount - margin;
-        let panel = new Panel(canvas.width / 2 - contentWidth / 2, 20, contentWidth, 60);
-        let title = new Text(canvas.width / 2, 60, "Who's a good boy?");
-        title.fontSize = 20;
-        title.isBold = true;
-        panel.colorPrimary = "#020a2eCC";
-
-        let backButton = new Button(panel.x, rowCount * (buttonWidth + margin) + panel.y + panel.height + margin, "Back to main menu");
-        backButton.width = panel.width;
-        backButton.height = panel.height;
-        backButton.onClick = () => {
-            uiHandler.Restore();
-        }
-
-        let newElements = [panel, title, backButton];
-
-        if (achievementHandler.currentStars) {
-            let starImage = new UiImage(tileset.star.tiles[0], panel.x + panel.width - 80, panel.y + 20);
-            let starCount = new Text(starImage.x + 28, starImage.y + 20, "x " + achievementHandler.currentStars);
-            starCount.textAlign = "left";
-            newElements.push(starImage, starCount);
-        }
-
-        let charList = [...characters];
-        for (let row = 0; row < rowCount; row++) {
-            for (let col = 0; col < columnCount; col++) {
-                let char = charList.splice(0, 1)[0];
-                let x = col * (buttonWidth + margin) + panel.x;
-                let y = row * (buttonWidth + margin) + panel.y + panel.height + margin;
-                let charButton = new Button(x, y, " ");
-                charButton.width = buttonWidth;
-                charButton.height = buttonWidth;
-                charButton.onClick = () => {
-                    mainMenuHandler.OnClickChar(char);
-                }
-                if (char) {
-                    let image = document.getElementById(char.imageIdLit);
-                    let imageEl = new UiImage(image, charButton.x + 17, charButton.y + 55);
-                    if (!char.unlocked && char.imageIdLocked) {
-                        image = document.getElementById(char.imageIdLocked);
-                        imageEl = new UiImage(image, charButton.x + 17, charButton.y + 55);
-                    }
-                    let charNameText = char.name.toUpperCase();
-                    if (achievementHandler.completeRunCharacters.indexOf(char.name) > -1) {
-                        charNameText = "★ " + charNameText + " ★";
-                    }
-                    let charText = new Text(charButton.x + charButton.width / 2, charButton.y + 25, charNameText);
-                    charText.isBold = true;
-                    charText.maxWidth = buttonWidth - 10;
-                    newElements.push(charButton);
-                    newElements.push(imageEl);
-                    if (char.unlocked) {
-                        newElements.push(charText);
-                    } else {
-                        charButton.isDisabled = !char.unlocked;
-                        imageEl.isSilhoutte = true;
-
-                        let allRequiredAchievesUnlocked = char.
-                            achievementGate.every(gate => achievementHandler.
-                                achievements[gate.name].unlocked[gate.tier]);
-
-                        let hasStars = achievementHandler.currentStars > 0;
-
-                        if (allRequiredAchievesUnlocked && hasStars) {
-                            let unlockButton = new Button(charButton.x + 17, charButton.y + 15, " ")
-                            unlockButton.width = 100;
-                            unlockButton.height = 34;
-                            unlockButton.isDisabled = achievementHandler.currentStars < char.starCost;
-                            unlockButton.onClick = () => {
-                                achievementHandler.currentStars -= char.starCost;
-                                char.unlocked = true;
-                                audioHandler.PlaySound("powerup-04");
-                                uiHandler.Restore();
-                                mainMenuHandler.OnClickPlay();
-                                uiHandler.Snap();
-                                saveHandler.SaveGame();
-                            }
-
-                            let unlockImage = new UiImage(tileset.achievements.tiles[8], unlockButton.x + 4, unlockButton.y + 4);
-                            let starCost = new UiImage(tileset.star.tiles[0], unlockButton.x + unlockButton.width - 25, unlockButton.y + 7);
-                            let starCostText = new Text(unlockButton.x + unlockButton.width / 2, unlockButton.y + 24, "for " + char.starCost);
-                            newElements.push(unlockButton, unlockImage, starCost, starCostText);
-                        }
-                    }
-                }
-            }
-        }
-
-        newElements.forEach(a => a.y += canvas.height);
-        uiHandler.elements.push(...newElements);
-    }
-
-    OnClickChar(char) {
-        currentCharacter = char;
-        weaponHandler.inventory = char.initialWeapons.map(a => new a());
-        uiHandler.Shelve();
-        let contentWidth = 500;
-        let margin = 20;
-
-        let panel = new Panel(canvas.width / 2 - contentWidth / 2, 20, contentWidth, 60);
-        let title = new Text(canvas.width / 2, 60, "Pilot overview");
-        title.fontSize = 20;
-        title.isBold = true;
-        panel.colorPrimary = "#020a2eCC";
-
-        let portraitSize = (contentWidth + margin) / 2 - margin;
-        let portraitBg = new Panel(panel.x, panel.y + panel.height + margin, portraitSize, portraitSize);
-        portraitBg.colorPrimary = "#020a2eCC";
-
-        let image = document.getElementById(char.imageIdLit);
-        let imageEl = new UiImage(image, portraitBg.x - 30, portraitBg.y + 25);
-        imageEl.scale = 3;
-
-        let textPanel = new Panel(panel.x + margin + portraitSize, panel.y + panel.height + margin, portraitSize, portraitSize);
-        textPanel.colorPrimary = "#020a2eCC";
-
-        let nameTag = char.selectName || char.name;
-        let name = new Text(portraitBg.x + portraitBg.width / 2, portraitBg.y + 30, nameTag);
-        name.fontSize = 20;
-        name.maxWidth = portraitBg.width - 20;
-        name.isBold = true;
-        let text = new Text(textPanel.x + 10, textPanel.y + 30, char.bio);
-        text.maxWidth = textPanel.width - 20;
-        text.textAlign = "left";
-
-        let backButton = new Button(portraitBg.x, portraitBg.y + portraitBg.height + margin, "Back");
-        backButton.width = portraitBg.width;
-        backButton.height = 60;
-        backButton.onClick = () => {
-            currentCharacter = null;
-            uiHandler.Restore();
-        }
-        let playButton = new Button(textPanel.x, textPanel.y + textPanel.height + margin, "Let's go!");
-        playButton.width = portraitBg.width;
-        playButton.height = 60;
-        playButton.onClick = () => {
-            mainMenuHandler.StartGame();
-        }
-
-        let newElements = [portraitBg, imageEl, textPanel, name, text, backButton, playButton];
-        newElements.forEach(a => a.y += canvas.height);
-        uiHandler.elements.push(...newElements);
     }
 
     OnClickCredits() {
@@ -387,109 +237,6 @@ class MainMenuHandler {
         backButton.onClick = () => { uiHandler.Restore() };
 
         let newElements = [backButton, textObj, nextButton, prevButton];
-        uiHandler.elements.push(...newElements);
-    }
-
-    OnClickAchievements() {
-        uiHandler.Shelve();
-
-        let margin = 25;
-        let size = 72;
-
-        let cols = 5;
-        let rows = 3;
-        let totalWidth = cols * size + (cols - 1) * margin;
-
-        let titleObj = new Text(canvas.width / 2 - totalWidth / 2, 350 + 20, "");
-        titleObj.fontSize = 20;
-        titleObj.isBold = true;
-        titleObj.textAlign = "left";
-
-        let textObj = new Text(titleObj.x, titleObj.y + 20, "Click or tap for details");
-        textObj.maxWidth = size * 3 + margin * 2;
-        textObj.textAlign = "left";
-
-        let backButton = new Button(canvas.width / 2 + totalWidth / 2 + margin - (margin + size) * 2, 350, "Main Menu");
-        backButton.height = size;
-        backButton.width = size * 2 + margin;
-        backButton.onClick = () => { uiHandler.Restore() };
-
-        let achieveButtons = [];
-        let isSolarTierDiscovered = Object.values(achievementHandler.achievements).some(a => a.unlocked[1]);
-        let isGalacticTierDiscovered = Object.values(achievementHandler.achievements).some(a => a.unlocked[2]);
-
-        for (let tierIndex of [0, 1, 2]) {
-            let pageOffset = tierIndex * 2000;
-
-            let pageOver = (deltaX) => {
-                let shift = uiHandler.elements.filter(a => (a instanceof Button || a instanceof UiImage) && a != backButton);
-                shift.forEach(a => a.targetX += deltaX);
-                titleObj.text = "";
-                textObj.text = "Click or tap for details";
-            }
-
-            let leftButton = new Button(73 + pageOffset, 147, " ");
-            leftButton.width = size;
-            leftButton.height = size;
-            leftButton.colorPrimary = "#0000";
-            leftButton.onClick = () => { pageOver(2000) }
-            let rightButton = new Button(755 + pageOffset, 147, " ");
-            rightButton.width = size;
-            rightButton.height = size;
-            rightButton.colorPrimary = "#0000";
-            rightButton.onClick = () => { pageOver(-2000) }
-
-            let leftButtonImage = new UiImage(tileset.achievements.tiles[7], leftButton.x, leftButton.y);
-            leftButtonImage.scale = 2;
-            let rightButtonImage = new UiImage(tileset.achievements.tiles[6], rightButton.x, rightButton.y);
-            rightButtonImage.scale = 2;
-
-            if (tierIndex > 0) {
-                achieveButtons.push(leftButton, leftButtonImage);
-            }
-            if ((tierIndex == 0 && isSolarTierDiscovered) || (tierIndex == 1 && isGalacticTierDiscovered)) {
-                achieveButtons.push(rightButton, rightButtonImage);
-            }
-
-
-            let achieves = Object.values(achievementHandler.achievements);
-            for (let y = 50, row = 0; row < rows; row++, y += margin + size) {
-                for (let x = pageOffset + canvas.width / 2 - totalWidth / 2, col = 0; col < cols; col++, x += margin + size) {
-                    let achieve = achieves.splice(0, 1)[0];
-                    if (achieve) {
-                        if (tierIndex > 0) {
-                            let isPreviousTierUnlocked = achieve.unlocked[tierIndex - 1];
-                            if (!isPreviousTierUnlocked) continue;
-                        }
-                        let b = new Button(x, y, " ");
-                        b.width = size;
-                        b.height = size;
-                        b.colorPrimary = "#0000";
-                        b.onClick = () => {
-                            titleObj.text = achieve.name[tierIndex];
-                            let achieveText = "   " + achievementHandler.tiers[tierIndex] + " tier";
-                            achieveText += "\n" + achieve.descr[tierIndex];
-                            if (achieve.unlocked[tierIndex]) {
-                                achieveText += "\nUnlocked: " + (new Date(achieve.unlockedTimestamp[tierIndex])).toLocaleString();
-                            } else {
-                                achieveText += "\nLOCKED";
-                            }
-                            textObj.text = achieveText;
-                        }
-                        let backdropTileIndex = 1;
-                        if (achieve.unlocked[tierIndex]) backdropTileIndex = tierIndex + 3;
-                        let backdrop = new UiImage(tileset.achievements.tiles[backdropTileIndex], x, y);
-                        backdrop.scale = 2;
-                        let img = new UiImage(tileset.achievements.tiles[achieve.imageIndex], x, y);
-                        img.scale = 2;
-                        img.isSilhoutte = !achieve.unlocked[tierIndex];
-                        achieveButtons.push(b, backdrop, img);
-                    }
-                }
-            }
-        }
-
-        let newElements = [titleObj, textObj, backButton, ...achieveButtons];
         uiHandler.elements.push(...newElements);
     }
 

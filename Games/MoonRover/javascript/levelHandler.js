@@ -27,8 +27,14 @@ class LevelHandler {
             let exit = sprites.find(x => x instanceof LevelExit);
             if (!exit && this.AreAllEnemiesDefeated()) {
                 let offset = levelHandler.room.width / 2;
-                exit = new LevelExit(offset, levelHandler.room.height + offset);
+                exit = new LevelExit(offset, -levelHandler.room.height);
                 sprites.push(exit);
+                let lootDamage = (currentCharacter && currentCharacter.damagedOnLoot);
+                if (!lootDamage) {
+                    for (let loot of sprites.filter(a => a instanceof Loot)) {
+                        loot.magnetTimer += 60 * 30;
+                    }
+                }
             }
         }
     }
@@ -140,6 +146,7 @@ class LevelHandler {
             if (currentCharacter && currentCharacter.maxHp) {
                 player.maxHp = currentCharacter.maxHp;
             }
+            player.maxHp += bonusStartHp;
             player.hp = player.maxHp;
             this.currentLevel = 1;
         }
@@ -163,13 +170,13 @@ class LevelHandler {
             this.room = this.GetCorridor();
         } else if (this.currentZone === 2 || this.currentZone === 4) {
             this.room = this.GetArena();
-            player.x = this.room.width/2;
+            player.x = this.room.width / 2;
             player.y = 125;
         } else if (this.currentZone === 3) {
             this.room = this.GetChasm();
         } else if (this.currentZone === 5) {
             this.room = this.GetLair();
-            player.x = this.room.width/2;
+            player.x = this.room.width / 2;
             player.y = this.room.height;
         }
 
@@ -184,7 +191,7 @@ class LevelHandler {
                 BossBodyMissile,
                 BossBodyBlaster,
                 BossBodyFinal,
-            ][this.currentLevel-1]
+            ][this.currentLevel - 1]
             sprites.push(new bossType(this.room.width / 2, this.room.height / 3));
         }
         renderer.target = player;

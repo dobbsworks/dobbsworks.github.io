@@ -15,6 +15,7 @@ class Player extends Sprite {
         if (currentCharacter && currentCharacter.maxHp) {
             this.maxHp = currentCharacter.maxHp;
         }
+        this.maxHp += bonusStartHp;
 
         // place on ground
         // let platformsBelow = borders.filter(a => a instanceof Floor || (a instanceof Platform && a.x1 < this.x && a.x2 > this.x && a.y > this.y));
@@ -107,7 +108,7 @@ class Player extends Sprite {
                 audioHandler.PlaySound("powerup-03");
 
                 if (currentCharacter && currentCharacter.damagedOnLoot) {
-                    if (this.hurtTimer === 0) {
+                    if (this.hurtTimer === 0 && !isShielded) {
                         this.hp -= 1;
                         this.hurtTimer = 60;
                         audioHandler.PlaySound("pow-03");
@@ -117,9 +118,12 @@ class Player extends Sprite {
             }
             if (touchingSprite instanceof LevelExit) {
                 // level complete!
+                weaponHandler.ReloadAll();
                 touchingSprite.isActive = false;
                 this.shake = 0;
                 levelHandler.ExitLevel();
+                achievementHandler.unclaimedStars++;
+                saveHandler.SaveGame();
                 return;
             }
             if (touchingSprite.OnTouchPlayer) {
@@ -133,7 +137,7 @@ class Player extends Sprite {
         this.GrappleUpdate();
 
         if (this.playerStarted) {
-            if (currentCharacter && currentCharacter.damagedOnSolid) {
+            if (currentCharacter && currentCharacter.damagedOnSolid && this.hurtTimer <= 0) {
                 let hpFraction = 0.05;
                 if (touchedBorders.some(x => true)) {
                     // challenge character touched solid
@@ -150,7 +154,7 @@ class Player extends Sprite {
             }
 
             if (currentCharacter && currentCharacter.mustKeepAttacking) {
-                player.hp -= 0.004;
+                player.hp -= 0.003;
             }
         }
 
@@ -202,10 +206,26 @@ class Player extends Sprite {
 
     OnBeforeDraw() {
         let target = this.grappleTarget;
-        if (!target) return;
+        if (target) {
+            ctx.strokeStyle = `rgba(255,128,50,1)`;
+            renderer.Line(this.x, this.y, target.x, target.y);
+        }
 
-        ctx.strokeStyle = `rgba(255,128,50,1)`;
-        renderer.Line(this.x, this.y, target.x, target.y);
+        let deltaX = GetGameMouseX() - this.x;
+        let deltaY = GetGameMouseY() - this.y;
+        if (deltaX !== 0 || deltaY || 0) {
+            let theta = Math.atan2(deltaY, deltaX);
+            let aimerOffsetRatio = (this.frame % 30)/30;
+            let aimerOffset = 30 * aimerOffsetRatio;
+            for (let i = 0; i < 4; i++) {
+                let r1 = Math.max(40, i * 30 + aimerOffset);
+                let r2 = Math.max(40, Math.min(i * 30 + 20 + aimerOffset, 120));
+                let opacity = ((9 - (i + aimerOffsetRatio) * 2) / 10).toFixed(2);
+                ctx.strokeStyle = `rgba(255,255,255,${opacity})`;
+                renderer.Line(this.x + r1 * Math.cos(theta), this.y + r1 * Math.sin(theta),
+                    this.x + r2 * Math.cos(theta), this.y + r2 * Math.sin(theta));
+            }
+        }
     }
 
     GetFrameData() {

@@ -4,7 +4,7 @@ class Enemy extends Sprite {
     bashInvulnTimer = 0;
 
     SharedEnemyUpdate() {
-        if (!this.loot && !(this instanceof BossPartBase)) {
+        if (!this.loot && !(this instanceof BossPartBase) && !(this instanceof BossMissile)) {
             this.loot = 2 + Math.ceil(seedRandom.random() * 4);
         }
 
@@ -28,9 +28,14 @@ class Enemy extends Sprite {
                 achievementHandler.kills += 1;
             }
 
-            let lootScale = levelHandler.GetCurrentLootMultiplier()
-            for (let i = 0; i < this.loot * lootScale + 1; i++) {
-                sprites.push(new Loot(this.x, this.y));
+            let lootScale = levelHandler.GetCurrentLootMultiplier();
+            let lootDamage = (currentCharacter && currentCharacter.damagedOnLoot);
+            let isBossPart = (this instanceof BossPartBase);
+            let canDropLoot = !(lootDamage && isBossPart && !(this instanceof BossMissile));
+            if (canDropLoot) {
+                for (let i = 0; i < this.loot * lootScale + 1; i++) {
+                    sprites.push(new Loot(this.x, this.y));
+                }
             }
 
             if (this.OnDeath) {

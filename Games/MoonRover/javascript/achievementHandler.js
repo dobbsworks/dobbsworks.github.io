@@ -108,6 +108,7 @@ class AchievementHandler {
     lifetimeKills = 0;
     lifetimeRunCompletes = 0;
     currentStars = 0;
+    unclaimedStars = 0;
     completeRunCharacters = [];
     completionTimeInFrames = null;
 
@@ -148,25 +149,6 @@ class AchievementHandler {
         }
     }
 
-    /* 
-        Character unlock is now a star-transaction
-        Achievement gates still used to determine if character is available for unlock
-    */
-
-    // CheckForCharacterUnlocks() {
-    //     for (let lockedChar of characters.filter(a => !a.unlocked)) {
-    //         let allRequiredAchievesUnlocked = lockedChar.
-    //             achievementGate.every(gate => this.
-    //                 achievements[gate.name].unlocked[gate.tier]);
-    //         if (allRequiredAchievesUnlocked) {
-    //             console.log("UNLOCK", lockedChar)
-    //             alert("UNLOCK!!!");
-    //             lockedChar.unlocked = true;
-    //             this.displays.push({ character: lockedChar, timer: 0, tier: 0 })
-    //         }
-    //     }
-    // }
-
     Draw() {
         let currentDisplay = this.displays[0];
         if (currentDisplay) {
@@ -205,6 +187,23 @@ class AchievementHandler {
             }
         }
     }
+
+    CreditAchieves() {
+        // marks complete,uncredited as credited, returns number
+        // calling function needs to actually add in star count and then save
+        
+        let newStars = 0;
+        for (let achievementName of Object.keys(this.achievements)) {
+            let achieve = achievementHandler.achievements[achievementName];
+            for (let tierIndex of [0,1,2]) {
+                if (achieve.unlocked[tierIndex] && !achieve.credited[tierIndex]) {
+                    newStars++;
+                    achieve.credited[tierIndex] = true;
+                }
+            }
+        }
+        return newStars;
+    }
 }
 
 class Achievement {
@@ -226,6 +225,7 @@ class Achievement {
     imageIndex = 2;
     unlocked = [false, false, false];
     unlockedTimestamp = [null, null, null];
+    credited = [false, false, false];
     manualUnlock = false;
 
     CheckForUnlock() {

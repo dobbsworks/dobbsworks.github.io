@@ -112,6 +112,9 @@ class ShopHandler {
 
 
     EnterShop() {
+        if (currentCharacter && currentCharacter.damagedOnLoot) {
+            this.repairCost = 2;
+        }
         this.shoppingAllowed = (currentCharacter && !currentCharacter.noShops);
         this.fadeInTimer = this.fadeDuration - 1;
         this.currentConversation = "";
@@ -132,11 +135,10 @@ class ShopHandler {
         if (!this.shoppingAllowed) this.mogIntroTimer = 190;
     }
 
-    GetRandomWeapon() {
+    GetAvailableWeapons() {
         let weaponClasses = [
             WeaponPeashooter,
             WeaponShotgun,
-            WeaponJetpack,
             WeaponFlamethrower,
             WeaponFireCannon,
             WeaponBubbleShield,
@@ -145,11 +147,18 @@ class ShopHandler {
             WeaponMagnetGrenade,
             WeaponFireGrenade,
             WeaponBouncer,
-            WeaponPropulsionEngine,
             WeaponKicker,
         ];
+        if (currentCharacter && !currentCharacter.grappleOnly) {
+            weaponClasses.push(WeaponJetpack, WeaponPropulsionEngine)
+        }
         let unowned = weaponClasses.filter(x => !weaponHandler.inventory.some(y => y instanceof x));
-        if (unowned.length === 0) return null;
+        if (unowned.length === 0) return [];
+        return unowned;
+    }
+
+    GetRandomWeapon() {
+        let unowned = shopHandler.GetAvailableWeapons();
         let toSell = unowned[Math.floor(seedRandom.random() * unowned.length)];
         return new toSell();
     }
@@ -353,6 +362,9 @@ class ShopHandler {
             if (upgrade) {
                 upgradeOrWeapon.weapon.ApplyUpgradeByIndex(upgradeOrWeapon.upgradeIndex);
                 upgradeOrWeapon.weapon.level++;
+                if (upgradeOrWeapon.weapon.DoesWeaponHaveAllUpgradesApplied()) {
+                    upgradeOrWeapon.weapon.isGold = true;
+                }
             }
             if (weapon) {
                 this.weaponBuysThisRun++;
@@ -398,6 +410,7 @@ class ShopHandler {
             x.width = 30;
             x.height = 30;
             x.colorPrimary = "#F003";
+            x.ignoreGamepad = true;
             x.onClick = () => {
                 shopHandler.SetTempFace(this.mogFaces[faceList[Math.floor(Math.random() * faceList.length)]]);
                 audioHandler.PlaySound("mog-happy");

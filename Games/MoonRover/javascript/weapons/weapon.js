@@ -4,6 +4,7 @@ class Weapon {
     name = "Base Weapon";
     fireSound = "pew-01";
     level = 1;
+    isGold = false;
     kickbackPower = 4;
     knockbackPower = 4;
     pelletType = PlayerBullet;
@@ -27,6 +28,8 @@ class Weapon {
     get reloadTime() {
         return 60 / this.reloadSpeed;
     }
+    canReload = true; // some weapons are limited use
+
     reloadSpeed = 4;
     holsterReloadRatio = 0;
     midAirReloadRatio = 0.15;
@@ -35,7 +38,6 @@ class Weapon {
 
     clipSize = 3;
     shotsRemaining = 0;
-
     maxBounces = 0;
 
     // grenade/bomb weapons
@@ -63,27 +65,32 @@ class Weapon {
         if (!this.holsterReloadRatio) this.reloadTimer = 0;
     }
 
-    OnFire() {
-        
-    }
+    OnFire() { return true; }
+    OnPullTrigger() {  }
 
     PullTrigger() {
         //if (this.shotsRemaining > 0 || player.isOnGround) {
         this.reloadTimer = 0; // cancel current reload
         //}
-        this.OnFire();
+        this.OnPullTrigger();
         if (this.cooldownTimer <= 0 && this.deployTimer <= 0) {
             if (this.shotsRemaining > 0) {
-                if (this.follower) {
-                    let followers = sprites.filter(a => a instanceof Follower);
-                    for (let follower of followers) {
-                        this.Fire(follower);
+                let onFireSuccess = this.OnFire();
+                if (onFireSuccess) {
+                    if (this.follower) {
+                        let followers = sprites.filter(a => a instanceof Follower);
+                        for (let follower of followers) {
+                            this.Fire(follower);
+                        }
+                        this.Fire(player);
+                    } else {
+                        this.Fire(player);
                     }
-                    this.Fire(player);
+                    this.shotsRemaining--;
                 } else {
-                    this.Fire(player);
+                    // onFire failed (extra conditions for firing not met)
+                    audioHandler.PlaySound("notify-05", true);
                 }
-                this.shotsRemaining--;
             } else {
                 audioHandler.PlaySound("notify-05", true);
             }
@@ -115,6 +122,7 @@ class Weapon {
         if (source === player || source instanceof Follower) {
             let xDif = source.x - GetGameMouseX();
             let yDif = source.y - GetGameMouseY();
+
             theta = Math.atan2(yDif, xDif);
         } else {
             theta = Math.atan2(-source.dy, -source.dx);
@@ -194,7 +202,7 @@ class Weapon {
             if (currentCharacter && !currentCharacter.midAirReload) {
                 if (!isPlayerOnGround) reloadAmount *= this.midAirReloadRatio;
             }
-            this.reloadTimer += reloadAmount;
+            if (this.canReload) this.reloadTimer += reloadAmount;
 
             while (this.reloadTimer >= this.reloadTime) {
                 this.reloadTimer -= this.reloadTime;
@@ -241,5 +249,15 @@ class Weapon {
     ApplyUpgradeByIndex(upgradeIndex) {
         let upgrade = this.upgrades[upgradeIndex];
         this.ApplyUpgrade(upgrade);
+    }
+
+    DoesWeaponHaveAllUpgradesApplied() {
+        if (!this.canReload) return false;
+        if (this.upgrades.some(a => !a.isActive)) return false;
+        if (this.triggeredWeapon) {
+            return this.triggeredWeapon.DoesWeaponHaveAllUpgradesApplied();
+        } else {
+            return true;
+        }
     }
 }

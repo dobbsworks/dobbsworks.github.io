@@ -12,7 +12,7 @@
 <script src="javascript/tileset/tile.js?a=0510"></script>
 <script src="javascript/tileset/tileNode.js?a=0510"></script>
 <script src="javascript/levelHandler.js?a=0510"></script>
-<script src="javascript/ui/optionsMenu.js?a=0510"></script>
+<script src="javascript/ui/menu/optionsMenu.js?a=0510"></script>
 <script src="javascript/timerHandler.js?a=0510"></script>
 <script src="javascript/renderer.js?a=0510"></script>
 <script src="javascript/border.js?a=0510"></script>
@@ -49,7 +49,11 @@
 <script src="javascript/sprites/damageIndicator.js?a=0510"></script>
 <script src="javascript/weapons/weaponUpgrade.js?a=0510"></script>
 <script src="javascript/weapons/weapon.js?a=0510"></script>
-<script src="javascript/weapons/baseGrenade.js?a=0510"></script>
+<script src="javascript/weapons/grenades/baseGrenade.js?a=0510"></script>
+<script src="javascript/weapons/consumables/baseConsumable.js?a=0510"></script>
+<script src="javascript/weapons/consumables/repairKit.js?a=0510"></script>
+<script src="javascript/weapons/consumables/resupplyKit.js?a=0510"></script>
+<script src="javascript/weapons/consumables/bomb.js?a=0510"></script>
 <script src="javascript/weapons/shotgun.js?a=0510"></script>
 <script src="javascript/weapons/jetpack.js?a=0510"></script>
 <script src="javascript/weapons/grappleGun.js?a=0510"></script>
@@ -63,10 +67,10 @@
 <script src="javascript/weapons/bubbleShield.js?a=0510"></script>
 <script src="javascript/weapons/pelletShield.js?a=0510"></script>
 <script src="javascript/weapons/magnetCannon.js?a=0510"></script>
-<script src="javascript/weapons/magnetGrenadeEffect.js?a=0510"></script>
-<script src="javascript/weapons/magnetGrenade.js?a=0510"></script>
-<script src="javascript/weapons/fireGrenadeEffect.js?a=0510"></script>
-<script src="javascript/weapons/fireGrenade.js?a=0510"></script>
+<script src="javascript/weapons/grenades/magnetGrenadeEffect.js?a=0510"></script>
+<script src="javascript/weapons/grenades/magnetGrenade.js?a=0510"></script>
+<script src="javascript/weapons/grenades/fireGrenadeEffect.js?a=0510"></script>
+<script src="javascript/weapons/grenades/fireGrenade.js?a=0510"></script>
 <script src="javascript/weapons/radarPing.js"></script>
 <script src="javascript/weapons/testWeapon.js?a=0510"></script>
 <script src="javascript/weapons/followerGun.js"></script>
@@ -74,6 +78,7 @@
 <script src="javascript/map/map.js?a=0510"></script>
 <script src="javascript/map/roomGen.js?a=0510"></script>
 <script src="javascript/characters.js?a=0510"></script>
+<script src="javascript/ui/sidebarHandler.js?a=0510"></script>
 <script src="javascript/ui/uiHandler.js?a=0510"></script>
 <script src="javascript/ui/uiElement.js?a=0510"></script>
 <script src="javascript/ui/panel.js?a=0510"></script>
@@ -84,15 +89,20 @@
 <script src="javascript/shop/shopHandler.js?a=0510"></script>
 <script src="javascript/ui/pauseHandler.js?a=0510"></script>
 <script src="javascript/ui/versionHistory.js?a=0510"></script>
-<script src="javascript/ui/mainMenuHandler.js?a=0510"></script>
+<script src="javascript/ui/menu/mainMenuHandler.js?a=0510"></script>
+<script src="javascript/ui/menu/achievementMenu.js?a=0510"></script>
+<script src="javascript/ui/menu/characterMenu.js?a=0510"></script>
 <script src="javascript/recorder.js?a=0510"></script>
 <script src="javascript/saveHandler.js?a=0510"></script>
 <script src="javascript/main.js?a=0510"></script>
+<script src="javascript/errorHandler.js"></script>
 
 <body>
     <div id="gameContainer">
         <canvas id="canvas" width="900" height="500"></canvas>
-        <div id="weaponContainer"></div>
+        <div id="errorContainer">
+            <textarea id="errorReport"></textarea>
+        </div>
     </div>
     <div id="imageContainer">
         <image id="tutorial1" src="./content/images/tutorial1.png"></image>

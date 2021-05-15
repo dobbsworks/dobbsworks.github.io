@@ -1,5 +1,35 @@
 var versionHistoryData = [
     {
+        v: "1.1.0", d: "2021-05-14", t:
+            `
+•   Added controller support! 
+•   Stars are now also earned from achievements, in addition to the stars earned from beating levels. Old achievements already have been credited to you already. 
+•   Stars can now be traded for one-run boosts. A Mog Kiosk has been set up on the screen after you choose your character. 
+
+QUALITY OF LIFE
+•   If you close the game (or it crashes) in the middle of a run, earned stars will be awarded when the game is next loaded. 
+•   Battle levels' exit stars now spawn in from the top instead of the bottom, making it easier to gather up the loot.
+•   After defeating all enemies in a battle level, all dropped loot gains the magnetic effect.
+•   Added a small aiming hint to indicate your current firing direction (especially helpful for controller users)
+•   Added an error handler below the game window to help with error reports.
+•   Upgraded weapons show a star and upgrade count by their name in the sidebar.
+•   Fully upgraded weapons now get a little visual flair in the sidebar.
+
+BALANCE CHANGES
+•   Changed spawn zones for Floaters (yellow shooty bots), they've been moved to later zones.
+•   Blunderbuss cost increased from 25 to 35.
+•   Swarm sheild cost decreased from 35 to 30.
+•   The "lose health over time" gimmick health loss rate reduced by 33%. 
+•   The "always airborne" gimmick modified to only tick while I-frames are not active. 
+•   The "mooney allergy" gimmick modified to allow for cheaper in-store repairs. 
+
+BUG FIXES
+•   Fixed visual glitch where seams would occasionally appear between tiles in the level
+•   Fixed bug where cleared characters didn't save properly
+•   Fixed bug where upgrade text didn't pull descriptions correctly ("+10% undefined")
+•   Fixed bug where homing missiles dropped loot`
+    },
+    {
         v: "1.0.2", d: "2021-05-10", t:
             `
 • Fixed issue with weapons not firing <_<  `

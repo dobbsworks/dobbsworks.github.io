@@ -96,7 +96,7 @@ var characters = [
         bio: "Sparky once ate an entire lasagna in one sitting. She considers this one of her crowning achievements. \n\n[good]Free samples in store\n[bad]Allergic to Mooney",
         damagedOnLoot: true,
         freeSamples: true,
-        initialWeapons: [WeaponPeashooter],
+        initialWeapons: [WeaponFireCannon, WeaponFireGrenade],
     },
     {
         name: "Fritz", 
@@ -122,7 +122,7 @@ var characters = [
         imageId: "cats",
         imageIdLit: "cats-lit",  
         unlocked: false, 
-        starCost: 40,
+        starCost: 50,
         victory: [
             "Of course, it's a great leader that makes a great team. Thank me at your leisure.",
         ],
@@ -142,7 +142,7 @@ var characters = [
         imageIdLit: "dog-mog-lit",  
         imageIdLocked: "dog-mog-locked",
         unlocked: false, 
-        starCost: 0,
+        starCost: 100,
         isGlitchy: true,
         maxHp: 1,
         shipIndex: 7,
