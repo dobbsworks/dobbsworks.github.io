@@ -209,6 +209,8 @@ function LoadCommands() {
 		AliasCommand("givetokens", "give"),
 		AliasCommand("tokens", "points"),
 		AliasCommand("credits", "points"),
+		AliasCommand("tickets", "points"),
+		AliasCommand("rover", "moonrover"),
 		AliasCommand("coins", "points"),
 		AliasCommand("answer", "guess"),
 		AliasCommand("move", "moves"),
