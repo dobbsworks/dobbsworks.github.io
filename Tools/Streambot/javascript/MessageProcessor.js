@@ -205,6 +205,7 @@ function ProcessActivityMessage(messageEl) {
 			if (!userIsBanned) {
 				let alertText = user + " is now following!";
 				marqueeWindow.AddAlert(alertText, "rgb(0,255,128)");
+				console.log(messageEl.outerHTML);
 			}
 		}
 		// Bits
