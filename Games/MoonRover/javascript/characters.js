@@ -114,7 +114,7 @@ var characters = [
         achievementGate: [{name: "beatGameMulticharacter", tier: 0}],
         bio: "Fritz laughs at jokes even if they aren't funny. He just wants everyone to feel good about themselves. \n\n[bad]Poor eyesight, can't see\n[bad]enemies or coins\n[good]All weapons temporarily reveal\n[good]enemy positions\n[good](Radar Blast reveals a larger\n[good]area)",
         isBlind: true,
-        maxHp: 1,
+        maxHp: 10,
         initialWeapons: [WeaponPeashooter, WeaponRadarPing],
     },
     {
