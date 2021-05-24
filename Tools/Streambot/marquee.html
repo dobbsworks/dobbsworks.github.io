@@ -27,6 +27,7 @@ let scrollItems = [];
 let margin = 60;
 
 let pendingAlerts = [];
+let pastAlerts = [];
 
 function init() {
 	SetScrollItems([]);
@@ -49,6 +50,18 @@ function SetScrollItems(texts) {
 }
 
 function AddAlert(text, backgroundColor, textColor) {
+	let prevMatches = pastAlerts.filter(a => a.text === text);
+	if (prevMatches.length > 0) {
+		let latestMatch = prevMatches[prevMatches.length - 1];
+		let now = new Date();
+		let msSinceMatch = latestMatch.timestamp - now;
+		let second = 1000;
+		if (msSinceMatch < 10 * second) {
+			// don't add alert if exact message was displayed recently
+			return;
+		}
+	}
+
 	let textWidth = ctx.measureText(text).width;
 	pendingAlerts.push({
 		text: text,
@@ -60,6 +73,7 @@ function AddAlert(text, backgroundColor, textColor) {
 		backgroundColor: backgroundColor,
 		textColor: textColor
 	});
+	pastAlerts.push({text: text, timestamp: new Date()});
 }
 
 let scrollX = 0;
