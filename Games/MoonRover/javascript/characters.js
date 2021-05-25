@@ -14,6 +14,7 @@ var characters = [
             "Don't worry, I'll do better next time!",
             "I think next time might be the one, can we try one more time?",
         ],
+        maxHp: 10,
         initialWeapons: [WeaponPeashooter],
     },
     {
@@ -34,6 +35,7 @@ var characters = [
         achievementGate: [],
         bashDamage: true,
         grappleOnly: true,
+        maxHp: 10,
         initialWeapons: [WeaponGrapplingHook, WeaponBubbleShieldRex],
     },
     {
@@ -54,6 +56,7 @@ var characters = [
         achievementGate: [],
         bio: "Beans is a retired pageant dog who spent years competing to be the best. Old, but still ready for more adventures. \n\n[good]Heals when dealing damage\n[bad]Takes damage over time",
         mustKeepAttacking: true,
+        maxHp: 10,
         initialWeapons: [WeaponShotgun],
     },
     {
@@ -96,6 +99,7 @@ var characters = [
         bio: "Sparky once ate an entire lasagna in one sitting. She considers this one of her crowning achievements. \n\n[good]Free samples in store\n[bad]Allergic to Mooney",
         damagedOnLoot: true,
         freeSamples: true,
+        maxHp: 10,
         initialWeapons: [WeaponFireCannon, WeaponFireGrenade],
     },
     {
@@ -133,6 +137,7 @@ var characters = [
         achievementGate: [{name: "beatGameMulticharacter", tier: 0}],
         bio: "Never send a dog to do a cat's job. Or three cats' jobs. Whatever. \n\n[good]Attack as a team \n[good]for massive damage!\n[bad]Friendly capsules share \n[bad]damage\n",
         followers: 2,
+        maxHp: 10,
         initialWeapons: [WeaponPeashooter, WeaponFollowerGun],
     },
     {

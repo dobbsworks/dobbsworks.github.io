@@ -158,8 +158,8 @@ function GamepadMouse() {
             let xOrigin = 550;
             let yOrigin = 250;
 
-            mouseX = xOrigin + dx;
-            mouseY = yOrigin + dy;
+            mouseX = xOrigin + dx * 100;
+            mouseY = yOrigin + dy * 100;
         }
     }
 }

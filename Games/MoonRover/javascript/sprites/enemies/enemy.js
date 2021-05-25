@@ -31,8 +31,10 @@ class Enemy extends Sprite {
             let lootScale = levelHandler.GetCurrentLootMultiplier();
             let lootDamage = (currentCharacter && currentCharacter.damagedOnLoot);
             let isBossPart = (this instanceof BossPartBase);
-            let canDropLoot = !(lootDamage && isBossPart && !(this instanceof BossMissile));
+            let canDropLoot = !(lootDamage && isBossPart);
+            if (this instanceof BossMissile || this instanceof EnemyBullet) canDropLoot = false;
             if (canDropLoot) {
+                console.log(this)
                 for (let i = 0; i < this.loot * lootScale + 1; i++) {
                     sprites.push(new Loot(this.x, this.y));
                 }

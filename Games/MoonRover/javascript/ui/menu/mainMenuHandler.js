@@ -20,7 +20,7 @@ class MainMenuHandler {
             "germdove",
             "daesnek",
             "ShinerMax",
-            "gamequeued",
+            "GameQueued",
             "LurkingTurtleGamer",
             "Kirbska",
             "mastertank56",
@@ -82,7 +82,6 @@ class MainMenuHandler {
 
         let versionNum = new Button(canvas.width - 60, canvas.height - 40, "v" + versionNumber);
         versionNum.colorPrimary = "#0007";
-        versionNum.colorSecondary = "#0000";
         versionNum.colorHighlight = "#000B";
         versionNum.width = 60;
         versionNum.height = 40;
@@ -366,5 +365,6 @@ class MainMenuHandler {
         mainMenuHandler.isOnMainMenu = false;
         timerHandler.ResetTimer();
         levelHandler.LoadZone();
+        isMouseDown = false;
     }
 }

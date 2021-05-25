@@ -220,7 +220,15 @@ class Weapon {
     }
 
     GetAvailableUpgrades() {
-        return this.upgrades.filter(x => !x.isActive).slice(0, 2);
+        let upgradesAndSubUpgrades = this.GetAllUpgradesAndSubWeaponUpgrades();
+        let activeUpgrades = upgradesAndSubUpgrades.filter(x => !x.isActive);
+        return activeUpgrades.slice(0, 2);
+    }
+
+    GetAllUpgradesAndSubWeaponUpgrades() {
+        let ret = this.upgrades;
+        if (this.triggeredWeapon) ret.push(...this.triggeredWeapon.GetAllUpgradesAndSubWeaponUpgrades());
+        return ret;
     }
 
     ApplyInitialUpgrades() {

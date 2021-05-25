@@ -49,24 +49,26 @@ function GetOptionsMenu(isMainMenu) {
     speedrunToggle.width = smallWidth;
     speedrunToggle.height = buttonHeight;
 
+    let cursorToggle = new Toggle(leftX, musicPanel.y, "Toggle Drawn Cursor");
+    cursorToggle.onClick = () => { uiHandler.extraCursor = !uiHandler.extraCursor };
+    cursorToggle.IsOn = () => { return uiHandler.extraCursor }
+    cursorToggle.width = smallWidth;
+    cursorToggle.height = buttonHeight;
 
 
-    let newElements = [bgPanel, title, musicPanel, ...musicControl, sfxPanel, ...sfxControl, resumeButton, speedrunToggle];
+
+    let newElements = [bgPanel, title, musicPanel, ...musicControl, sfxPanel, ...sfxControl, resumeButton, speedrunToggle, cursorToggle];
 
     if (isMainMenu) {
-        let deleteSaveButton = new Button(resumeButton.x + resumeButton.width + margin, sfxPanel.y, "Delete Save");
-        deleteSaveButton.onClick = () => {
-            ConfirmAction("Yes, Delete Save\n(Can't be undone!)", () => {
-                saveHandler.DeleteSave();
-                audioHandler.PlaySound("mog-sad");
-                mainMenuHandler.ReturnToMainMenu();
-            });
+        let saveOptions = new Button(resumeButton.x + resumeButton.width + margin, sfxPanel.y, "Save File Options");
+        saveOptions.onClick = () => {
+            uiHandler.Shelve();
+            uiHandler.elements = GetSaveFileOptionMenu();
         };
-        deleteSaveButton.width = smallWidth;
-        deleteSaveButton.height = buttonHeight;
+        saveOptions.width = smallWidth;
+        saveOptions.height = buttonHeight;
 
-        newElements.push(deleteSaveButton);
-
+        newElements.push(saveOptions);
     } else {
         let debugButton = new Toggle(leftX, resumeButton.y, "Toggle Debug Mode");
         debugButton.onClick = () => { uiHandler.debugMode = !uiHandler.debugMode };
@@ -92,6 +94,70 @@ function GetOptionsMenu(isMainMenu) {
 
     newElements.forEach(x => x.y -= canvas.height);
     return newElements;
+}
+
+function GetSaveFileOptionMenu() {
+    let bgPanel = new Panel(25, 25, canvas.width - 50, canvas.height - 50);
+    bgPanel.colorPrimary = "#020a2eCC";
+    bgPanel.border = 4;
+
+    let title = new Text(canvas.width / 2, 100, "SAVE OPTIONS");
+    title.fontSize = 48;
+    title.isBold = true;
+    title.maxWidth = 900;
+
+    let margin = 25;
+    let yMin = 120;
+    let yMax = canvas.height - 100 - margin;
+    let totalSpace = yMax - yMin;
+    let numberOfButtons = 3;
+    let buttonHeight = (totalSpace + margin) / numberOfButtons;
+    let buttonWidth = (bgPanel.width - margin) / 3 - margin;
+    let leftX = bgPanel.x + margin;
+    let midX = bgPanel.x + margin + buttonWidth + margin;
+    let rightX = bgPanel.x + margin + buttonWidth + margin + buttonWidth + margin;
+    let midY = yMin + 1 * (buttonHeight + margin);
+
+    let backButton = new Button(leftX, yMin + 2 * (buttonHeight + margin), "Back");
+    backButton.onClick = () => { uiHandler.Restore() };
+    backButton.width = buttonWidth;
+    backButton.height = buttonHeight;
+
+    let exportButton = new Button(leftX, yMin, "Export Save");
+    exportButton.onClick = () => { 
+        uiHandler.elements = uiHandler.elements.filter(a => !a.temp);
+        saveHandler.ExportSave(); 
+        let successText = new Text(canvas.width/2, midY, "Save file copied to clipboard!\nKeep it safe.");
+        uiHandler.elements.push(successText);
+        successText.temp = true;
+    };
+    exportButton.width = buttonWidth;
+    exportButton.height = buttonHeight;
+
+    let importButton = new Button(midX, yMin, "Import Save");
+    importButton.onClick = () => { 
+        uiHandler.elements = uiHandler.elements.filter(a => !a.temp);
+        let goodImport = saveHandler.ImportSave(); 
+        let text = goodImport ? "Save file imported!" : "Import failed :(\nConsider getting help from the discord: https://discord.gg/cdPmKUP"
+        let successText = new Text(canvas.width/2, midY, text);
+        successText.temp = true;
+        uiHandler.elements.push(successText);
+    };
+    importButton.width = buttonWidth;
+    importButton.height = buttonHeight;
+
+    let deleteButton = new Button(rightX, yMin, "Delete Save");
+    deleteButton.onClick = () => {
+        ConfirmAction("Yes, Delete Save\n(Can't be undone!)", () => {
+            saveHandler.DeleteSave();
+            audioHandler.PlaySound("mog-sad");
+            mainMenuHandler.ReturnToMainMenu();
+        });
+    };
+    deleteButton.width = buttonWidth;
+    deleteButton.height = buttonHeight;
+
+    return [bgPanel, title, backButton, exportButton, importButton, deleteButton]
 }
 
 function CreateVolumeControl(container, text, volumeGetter, volumeSetter) {
@@ -197,7 +263,7 @@ function EndOfRunStats(isVictory) {
 
     let starImage = new UiImage(tileset.star.tiles[0], doneButton.x + 15, charImageEl.y + 10);
     starImage.scale = 6;
-    
+
     let starMessage = [];
     let stars = (levelHandler.currentLevel - 1) * 5 + levelHandler.currentZone - 1 + (isVictory ? 1 : 0);
     starMessage.push("Levels beaten: " + stars);
@@ -268,12 +334,13 @@ function EndOfRunSplits() {
     backButton.height = buttonHeight;
 
     let splitTable = [];
-    let columnCount = Math.max(...timerHandler.splits.map(a => a.zone)) + 1;
+    let columnCount = timerHandler.splits.filter(a => a.level === 1).length + 1;
     let columnWidth = (bgPanel.width - margin * 2) / columnCount;
     let rowCount = Math.max(...timerHandler.splits.map(a => a.level));
 
-    for (let i = 1; i < columnCount; i++) {
-        let text = "Zone " + i;
+    let zoneNames = ["", "Zone 1", "Zone 2", "Shop", "Zone 3", "Zone 4", "Boss", "Shop"];
+    for (let i = 0; i < columnCount; i++) {
+        let text = zoneNames[i];
         let x = leftX + columnWidth * i;
         let colHeader = new Text(x, yMin + 40, text);
         colHeader.textAlign = "left";
@@ -289,7 +356,8 @@ function EndOfRunSplits() {
     }
 
     for (let split of timerHandler.splits) {
-        let x = leftX + columnWidth * split.zone;
+        let colId = timerHandler.splits.filter(a => a.level === split.level).indexOf(split) + 1;
+        let x = leftX + columnWidth * colId;
         let y = yMin + 40 + 20 * split.level;
         let splitText = new Text(x, y, timerHandler.FramesToText(split.segment, 3));
         splitText.textAlign = "left";

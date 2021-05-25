@@ -52,6 +52,14 @@ class WeaponHandler {
         }
     }
 
+    SwapWeapons(index1, index2) {
+        if (this.inventory[index1] && this.inventory[index2]) {
+            let tmp = this.inventory[index1];
+            this.inventory[index1] = this.inventory[index2];
+            this.inventory[index2] = tmp;
+        }
+    }
+
     Update() {
         if (!player.isActive) return;
         if (mouseScroll !== 0) {

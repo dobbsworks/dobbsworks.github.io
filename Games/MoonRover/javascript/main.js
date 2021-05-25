@@ -14,6 +14,7 @@ var audioHandler;
 var mainMenuHandler;
 var saveHandler;
 var timerHandler;
+var sidebarHandler;
 var seedRandom;
 
 var loot = 0;
@@ -52,6 +53,7 @@ function Initialize() {
     mainMenuHandler = new MainMenuHandler();
     saveHandler = new SaveHandler();
     timerHandler = new TimerHandler();
+    sidebarHandler = new SidebarHandler();
     seedRandom = new RandomSeedHandler();
 
     audioHandler.Initialize();
@@ -131,4 +133,10 @@ function Draw() {
     uiHandler.Draw();
     levelHandler.DrawLevelTransition();
     achievementHandler.Draw();
+
+    if (uiHandler.extraCursor) {
+        let cursor = document.getElementById("cursor");
+        let cursorScale = 2;
+        ctx.drawImage(cursor, mouseX - (cursorScale * cursor.width) / 2, mouseY - (cursorScale * cursor.width) / 2, cursorScale * cursor.width, cursorScale * cursor.height)
+    }
 }

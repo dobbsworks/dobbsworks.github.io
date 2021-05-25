@@ -3,6 +3,7 @@ class UIHandler {
     elements = [];
     history = [];
     debugMode = false;
+    extraCursor = false;
     initialized = false;
     timer = 0;
 
@@ -34,6 +35,12 @@ class UIHandler {
                         audioHandler.PlaySound("beep-03");
                     }
                 } else {
+                    if (isMouseDown) {
+                        button.holdTimer += 1;
+                        if (button.holdTimer > 60) {
+                            if (button.onHold) button.onHold();
+                        }
+                    }
                     mouseOverAnyButton = true;
                     let canClick = (this.timer - this.buttonLastClicked > 5);
                     if (isMouseClicked() && canClick) {
@@ -44,11 +51,16 @@ class UIHandler {
                             if (button.onClick) button.onClick();
                             audioHandler.PlaySound("beep-02");
                         }
-                        isMouseDown = false;
-                        isMouseChanged = false;
+                        // isMouseDown = false;
+                        // isMouseChanged = false;
                     }
                 }
+            } else {
+                button.holdTimer = 0;
             }
+        }
+        if (isMouseClicked()) {
+            sidebarHandler.toMoveIndex = -1;
         }
 
         for (let toggle of this.elements.filter(x => x instanceof Toggle)) {
@@ -85,7 +97,7 @@ class UIHandler {
         //let fps = Math.floor(1000 / msPerFrame) * 1;
 
         if (shopHandler.isInShop) {
-            new SidebarHandler().DrawSideBar();
+            sidebarHandler.DrawSideBar();
             this.DrawTimer();
             shopHandler.DrawShop();
         } else if (pauseHandler.isPaused) {
@@ -94,7 +106,7 @@ class UIHandler {
 
         } else {
             if (player.isActive) {
-                new SidebarHandler().DrawSideBar();
+                sidebarHandler.DrawSideBar();
                 this.DrawTimer();
             }
         }

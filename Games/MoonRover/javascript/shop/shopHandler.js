@@ -112,6 +112,7 @@ class ShopHandler {
 
 
     EnterShop() {
+        sidebarHandler.toMoveIndex = -1;
         if (currentCharacter && currentCharacter.damagedOnLoot) {
             this.repairCost = 2;
         }
@@ -164,7 +165,7 @@ class ShopHandler {
     }
 
     GetRandomUpgrades(num) {
-        let availableUpgrades = weaponHandler.GetWeaponsAndSubweapons().flatMap(w => {
+        let availableUpgrades = weaponHandler.inventory.flatMap(w => {
             let weaponUpgrades = w.GetAvailableUpgrades();
             let indexes = weaponUpgrades.map(u => w.upgrades.indexOf(u));
             return indexes.map(i => ({ weapon: w, upgradeIndex: i, upgrade: w.upgrades[i] }));
@@ -495,6 +496,7 @@ class ShopHandler {
     ExitShop() {
         shopHandler.isInShop = false;
         uiHandler.Restore();
+        timerHandler.MarkSplit();
         levelHandler.LoadZone();
     }
 

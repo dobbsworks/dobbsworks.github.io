@@ -1,5 +1,16 @@
 var versionHistoryData = [
     {
+        v: "1.2.0", d: "2021-05-25", t:
+            `
+• Added the ability swap weapon order. Click and hold (or tap and hold) a weapon in the sidebar, then click/tap the weapon to swap with.
+• Added the ability to export/import a save file from the main menu options. This will let players move saves between devices or back-up their progress.
+• Pausing while in the shop is now enabled (pauses the run timer)
+• Shops now have distinct splits in the end-of-run time breakdown
+• Fixed a bug where grenade weapons could have more than 2 available upgrades in the shop pool
+• Fixed a bug where some characters could start with the wrong initial HP
+• Fixed a bug where homing missiles dropped loot...`
+    },
+    {
         v: "1.1.0", d: "2021-05-14", t:
             `
 •   Added controller support! 

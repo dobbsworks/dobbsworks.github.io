@@ -15,6 +15,7 @@ class Button extends UIElement {
     isMousedOver = false; //flag to watch for mouseover change
     isDisabled = false;
     ignoreGamepad = false; // false to allow gamepad to move to button
+    holdTimer = 0; // how long has this button been held (for detecting long holds)
 
     isMouseOver() {
         if (Math.abs(this.targetX - this.x) > 10 || Math.abs(this.targetY - this.y) > 10) return false;
@@ -39,6 +40,9 @@ class Button extends UIElement {
     }
 
     onClick() {
+    }
+    onHold() {
+        console.log("TEST")
     }
     onMouseOver() {
     }

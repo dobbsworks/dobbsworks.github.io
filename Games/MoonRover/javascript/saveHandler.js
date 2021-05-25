@@ -59,7 +59,7 @@ class SaveHandler {
         achievementHandler.lifetimeRunCompletes = 0;
         achievementHandler.currentStars = 0;
         achievementHandler.unclaimedStars = 0;
-        achievementHandler.completeRunCharacters = 0;
+        achievementHandler.completeRunCharacters = [];
         this.SaveGame();
     }
 
@@ -78,7 +78,7 @@ class SaveHandler {
             let achieve = achievementHandler.achievements[achievementName];
             achieve.unlocked = saveFile.achievements[achievementName].unlocked;
             achieve.unlockedTimestamp = saveFile.achievements[achievementName].unlockedTimestamp;
-            achieve.credited = saveFile.achievements[achievementName].credited || [false,false,false];
+            achieve.credited = saveFile.achievements[achievementName].credited || [false, false, false];
         }
 
         // achieve progress
@@ -107,5 +107,46 @@ class SaveHandler {
             achievementHandler.unclaimedStars = 0;
             this.SaveGame();
         }
+    }
+
+    ExportSave() {
+        let exportedData = this.Encrypt(localStorage.moonroversave, 3);
+        let copyTextInput = document.getElementById("saveFileInput");
+        setTimeout(() => {
+            copyTextInput.value = exportedData;
+            copyTextInput.select();
+            copyTextInput.setSelectionRange(0, 99999); /* For mobile devices */
+            document.execCommand("copy");
+        },100)
+    }
+
+    ImportSave() {
+        let inputSave = prompt("Paste your save file and press OK:");
+        try {
+            let decrypted = this.Encrypt(inputSave, -3);
+            let parsed = JSON.parse(decrypted); // parsing to make sure file is ok
+            localStorage.moonroversave = decrypted;
+            this.LoadGame();
+            return true;
+        } catch(e) {
+            console.error(e);
+            return false;
+        }
+    }
+
+    Encrypt(text, magnitude) {
+        let ret = "";
+        let chars = `!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?1234567890-=qwertyuiop[]asdfghjkl;'zxcvbnm,./`;
+        for (let c of text.split('')) {
+            let index = chars.indexOf(c);
+            if (index === -1) {
+                ret += c;
+            } else {
+                let newIndex = (index + magnitude) % (chars.length);
+                if (newIndex < 0) newIndex += chars.length;
+                ret += chars[newIndex];
+            }
+        }
+        return ret;
     }
 }

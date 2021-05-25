@@ -2,6 +2,7 @@ class SidebarHandler {
 
     initialized = false;
     goldenGradient = null;
+    toMoveIndex = -1;
 
     Initialize() {
         this.initialized = true;
@@ -53,7 +54,9 @@ class SidebarHandler {
 
         for (let i = 0; i < weaponButtonYs.length; i++) {
             let weapon = weaponHandler.inventory[i];
-            this.DrawWeaponButton(weaponButtonX, weaponButtonYs[i], weaponButtonWidth, weaponButtonHeight, weapon);
+            let xOffset = 0;
+            let isMoving = (this.toMoveIndex === i);
+            this.DrawWeaponButton(weaponButtonX + xOffset, weaponButtonYs[i], weaponButtonWidth, weaponButtonHeight, weapon, isMoving);
         }
 
         this.DrawExtraData(margin, barHeight - hpHeight - extraDataHeight - margin * 2, contentWidth, extraDataHeight);
@@ -106,9 +109,12 @@ class SidebarHandler {
         }
     }
 
-    
 
-    DrawWeaponButton(x, y, w, h, weapon) {
+
+    DrawWeaponButton(x, y, w, h, weapon, isMoving) {
+        if (isMoving) {
+            x += Math.sin(uiHandler.timer / 20) * 4 + 4;
+        }
         if (!weapon) return;
         let padding = 5;
 
@@ -136,7 +142,7 @@ class SidebarHandler {
         if (weapon.isGold) ctx.fillStyle = "#000";
         let name = weapon.name;
         if (weapon.level >= 2) name += " ★";
-        if (weapon.level >= 3) name += "x" + (weapon.level-1);
+        if (weapon.level >= 3) name += "x" + (weapon.level - 1);
         ctx.fillText(name, x + padding, y + 15 + padding);
 
         // AMMO
@@ -158,14 +164,23 @@ class SidebarHandler {
                         ctx.fillRect(x + padding + ammoBoxWidth * i, ammoBoxY + ammoBoxHeight, ammoBoxWidth - 1, -ammoBoxHeight * reloadRatio);
                     } else {
                         ctx.fillRect(x + padding + ammoBoxWidth * i, ammoBoxY + ammoBoxHeight, ammoBoxWidth * reloadRatio - 1, -ammoBoxHeight);
-    
+
                     }
                 }
             } else {
                 ctx.beginPath()
-                ctx.arc(x + padding + 25 * i + 10, ammoBoxY + 10, 10, 0, 2*Math.PI);
+                ctx.arc(x + padding + 25 * i + 10, ammoBoxY + 10, 10, 0, 2 * Math.PI);
                 ctx.fill();
             }
+        }
+
+        if (isMoving) {
+            ctx.fillStyle = "#00000088";
+            ctx.fillRect(x, y, w, h);
+            ctx.fillStyle = "#FFFFFF";
+            ctx.font = "700 12px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("Click a weapon to swap slots", x + w / 2, y + h * 0.6, w);
         }
     }
 
@@ -201,7 +216,17 @@ class SidebarHandler {
             button.width = w;
             button.height = h;
             button.ignoreGamepad = true;
-            button.onClick = weaponHandler.GetWeaponSelectHandler(i);
+            button.sidebarWeapon = i;
+            button.onClick = () => {
+                if (sidebarHandler.toMoveIndex === -1) {
+                    weaponHandler.SelectWeaponByIndex(i);
+                } else {
+                    weaponHandler.SwapWeapons(i, sidebarHandler.toMoveIndex);
+                }
+            }
+            button.onHold = () => {
+                sidebarHandler.toMoveIndex = i;
+            }
             uiHandler.elements.push(button);
         }
 

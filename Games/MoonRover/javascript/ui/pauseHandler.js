@@ -2,7 +2,7 @@ class PauseHandler {
     isPaused = false;
 
     onPauseButtonPressed() {
-        if (!shopHandler.isInShop && !mainMenuHandler.isOnMainMenu) {
+        if (!mainMenuHandler.isOnMainMenu) {
             pauseHandler.isPaused = !pauseHandler.isPaused;
             if (pauseHandler.isPaused) {
                 pauseHandler.EnterPauseMenu()
@@ -26,5 +26,6 @@ class PauseHandler {
 
     ExitPauseMenu() {
         uiHandler.Restore();
+        isMouseDown = false;
     }
 }
