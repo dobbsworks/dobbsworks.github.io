@@ -1,5 +1,5 @@
 let users = [];
-let isQueueOpen = true;
+let isQueueOpen = (new Date()).getDay() === 3;
 let queueWindow = null;
 let overlayWindow = null;
 let marqueeWindow = null;
