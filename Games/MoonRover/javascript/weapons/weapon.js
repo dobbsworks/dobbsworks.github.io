@@ -268,4 +268,11 @@ class Weapon {
             return true;
         }
     }
+
+    GetDisplayName() {
+        let name = this.name;
+        if (this.level >= 2) name += " ★";
+        if (this.level >= 3) name += "x" + (this.level - 1);
+        return name;
+    }
 }

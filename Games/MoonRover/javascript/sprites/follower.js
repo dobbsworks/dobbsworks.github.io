@@ -61,9 +61,10 @@ class Follower extends Sprite {
 
 
     GetFrameData() {
+        let followerIndex = sprites.filter(a => a instanceof Follower).indexOf(this);
         return {
             tileset: tileset.player,
-            frame: 0,
+            frame: followerIndex === 0 ? 8 : 9,
             xFlip: false,
         };
     }

@@ -34,7 +34,6 @@ class Enemy extends Sprite {
             let canDropLoot = !(lootDamage && isBossPart);
             if (this instanceof BossMissile || this instanceof EnemyBullet) canDropLoot = false;
             if (canDropLoot) {
-                console.log(this)
                 for (let i = 0; i < this.loot * lootScale + 1; i++) {
                     sprites.push(new Loot(this.x, this.y));
                 }

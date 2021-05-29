@@ -140,9 +140,7 @@ class SidebarHandler {
         ctx.textAlign = "left";
         ctx.fillStyle = "#EEE";
         if (weapon.isGold) ctx.fillStyle = "#000";
-        let name = weapon.name;
-        if (weapon.level >= 2) name += " ★";
-        if (weapon.level >= 3) name += "x" + (weapon.level - 1);
+        let name = weapon.GetDisplayName();
         ctx.fillText(name, x + padding, y + 15 + padding);
 
         // AMMO

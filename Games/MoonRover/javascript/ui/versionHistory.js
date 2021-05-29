@@ -1,5 +1,12 @@
 var versionHistoryData = [
     {
+        v: "1.2.1", d: "2021-05-29", t:
+            `
+• Added distinct color patterns to each character's capsule
+• Added hp and current loadout to the results screen
+• Added better (and very expensive) pre-run items if you have at least 150 stars`
+    },
+    {
         v: "1.2.0", d: "2021-05-25", t:
             `
 • Added the ability swap weapon order. Click and hold (or tap and hold) a weapon in the sidebar, then click/tap the weapon to swap with.

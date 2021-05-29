@@ -231,6 +231,25 @@ function GetRandomBonuses(num) {
         }
     ];
 
+    if (achievementHandler.currentStars >= 150) {
+        bonusSetups.push(
+            {
+                cost: 50, text: "Start with +full random weapons", action: () => {
+                    while (weaponHandler.inventory.length < 4) {
+                        let weaponList = shopHandler.GetAvailableWeapons();
+                        let weapon = weaponList[Math.floor(Math.random() * weaponList.length)];
+                        weaponHandler.inventory.push(new weapon());
+                    }
+                }
+            },
+            {
+                cost: 50, text: "Start with +5 max HP", action: () => {
+                    bonusStartHp = 5;
+                }
+            }
+        )
+    }
+
     let ret = [];
     for (let i = 0; i < num; i++) {
         let index = Math.floor(Math.random() * bonusSetups.length);

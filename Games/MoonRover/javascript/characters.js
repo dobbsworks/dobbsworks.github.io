@@ -15,6 +15,7 @@ var characters = [
             "I think next time might be the one, can we try one more time?",
         ],
         maxHp: 10,
+        shipIndex: 0,
         initialWeapons: [WeaponPeashooter],
     },
     {
@@ -36,6 +37,7 @@ var characters = [
         bashDamage: true,
         grappleOnly: true,
         maxHp: 10,
+        shipIndex: 1,
         initialWeapons: [WeaponGrapplingHook, WeaponBubbleShieldRex],
     },
     {
@@ -57,6 +59,7 @@ var characters = [
         bio: "Beans is a retired pageant dog who spent years competing to be the best. Old, but still ready for more adventures. \n\n[good]Heals when dealing damage\n[bad]Takes damage over time",
         mustKeepAttacking: true,
         maxHp: 10,
+        shipIndex: 2,
         initialWeapons: [WeaponShotgun],
     },
     {
@@ -79,6 +82,7 @@ var characters = [
         midAirReload: true,
         damagedOnSolid: true,
         maxHp: 15,
+        shipIndex: 3,
         initialWeapons: [WeaponPeashooter, WeaponJetpack],
     },
     {
@@ -100,6 +104,7 @@ var characters = [
         damagedOnLoot: true,
         freeSamples: true,
         maxHp: 10,
+        shipIndex: 4,
         initialWeapons: [WeaponFireCannon, WeaponFireGrenade],
     },
     {
@@ -119,6 +124,7 @@ var characters = [
         bio: "Fritz laughs at jokes even if they aren't funny. He just wants everyone to feel good about themselves. \n\n[bad]Poor eyesight, can't see\n[bad]enemies or coins\n[good]All weapons temporarily reveal\n[good]enemy positions\n[good](Radar Blast reveals a larger\n[good]area)",
         isBlind: true,
         maxHp: 10,
+        shipIndex: 5,
         initialWeapons: [WeaponPeashooter, WeaponRadarPing],
     },
     {
@@ -138,6 +144,7 @@ var characters = [
         bio: "Never send a dog to do a cat's job. Or three cats' jobs. Whatever. \n\n[good]Attack as a team \n[good]for massive damage!\n[bad]Friendly capsules share \n[bad]damage\n",
         followers: 2,
         maxHp: 10,
+        shipIndex: 6,
         initialWeapons: [WeaponPeashooter, WeaponFollowerGun],
     },
     {

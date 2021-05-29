@@ -42,7 +42,6 @@ class Button extends UIElement {
     onClick() {
     }
     onHold() {
-        console.log("TEST")
     }
     onMouseOver() {
     }

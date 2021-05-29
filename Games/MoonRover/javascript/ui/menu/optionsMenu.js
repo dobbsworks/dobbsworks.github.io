@@ -234,7 +234,13 @@ function EndOfRunStats(isVictory) {
         { key: "Mooney Collected", value: achievementHandler.lootCollected.toString() },
         { key: "Remaining Mooney", value: loot.toString() },
         { key: "Robots Destroyed", value: achievementHandler.kills.toString() },
+        { key: "HP", value: player.hp + "/" + player.maxHp },
+        { key: " ", value: " " },
+        { key: "Loadout", value: " " },
     ];
+    for (let w of weaponHandler.inventory) {
+        stats.push({key: w.GetDisplayName(), value: " "})
+    }
     let y = yMin + 40;
     let texts = [];
     for (let stat of stats) {
