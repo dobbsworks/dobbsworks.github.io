@@ -8,6 +8,9 @@ var characters = [
         bio: "Rover is as loyal as they come. Likes playing fetch, long naps in sunbeams, and walks in the park. \n\n[good]All-around average dog\n[good]Great at accessorizing\n[bad]Goggles do nothing",
         victory: [
             "I did it! I knew I could!",
+            "Hooray! The power of positive thinking!",
+            "Yay! We did it together!",
+            "Yeah! Goooo team!",
         ],
         failure: [
             "That's ok, I can try again!",
@@ -31,6 +34,7 @@ var characters = [
         ],
         failure: [
             "We lose? We try again after nap. Come back refreshed. Yes?",
+            "All this swinging, getting very dizzy. Maybe short rest, then we try again.",
             "Did not get enough sleep last night. Need five more hours, then all good."
         ],
         achievementGate: [],
@@ -49,6 +53,7 @@ var characters = [
         victory: [
             "Capital show! Gave those robots what for, eh?",
             "Heavens, to think those robots thought they stood a chance!",
+            "Haha, an excellent display, chap! Hardly broken a sweat.",
         ],
         failure: [
             "Chin up, chin up, there's always next time.", 
@@ -94,6 +99,7 @@ var characters = [
         victory: [
             "I'd say that's deserving of a celebratory dinner! Who's up for pasta?",
             "A job well done! Speaking of, I'll take my reward medium rare if you don't mind.",
+            "Pretty fast, eh? Reminds me, there's this takeout place a few miles up from that big crater..."
         ],
         failure: [
             "No sense in trying again on an empty stomach, let's break for lunch.",

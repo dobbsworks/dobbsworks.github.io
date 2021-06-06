@@ -1,33 +1,24 @@
 var MinigameHandler = {
-    gameTypes: ["scramble","hangman"],
-    gameType: null,
-    gameState: "inactive",
+    gameTypes: [MinigameScramble, MinigameHangman],
+    handlerState: "inactive",
     repeatMode: false,
-    answer: "",
-    display: "",
     winner: null,
-    timer: 0,
-    guesses: [],
-    revealIndex: 0,
-    timeBeforeStart: 15,
-    timeBetweenHints: 30,
-    revealPerHint: 1,
-    timeBetweenGuesses: 10,
-    hideCharacter: "+",
 
+    currentGame: null,
     interval: null,
     Init: () => {
-        MinigameHandler.interval = setInterval(MinigameHandler.ProcessGame, 1000);
+        MinigameHandler.interval = setInterval(MinigameHandler.ProcessGame, 1000/60);
     },
-    
+
     GetPuzzle: () => {
+        // TODO, track recent puzzles to prevent repeats
         var categories = Object.keys(minigameAnswers);
         var categoryIndex = Math.floor(Math.random() * categories.length);
         var category = categories[categoryIndex];
         var puzzles = minigameAnswers[category];
         var puzzleIndex = Math.floor(Math.random() * puzzles.length);
         var puzzle = puzzles[puzzleIndex];
-        return {answer: puzzle, category: category};
+        return { answer: puzzle, category: category };
     },
 
     StartGame: () => {
@@ -35,197 +26,22 @@ var MinigameHandler = {
             MinigameHandler.WriteMessage("There's already a minigame in progress.");
             return;
         }
-        MinigameHandler.gameType = MinigameHandler.gameTypes[Math.floor(Math.random() * MinigameHandler.gameTypes.length)];
-        let puzzle = MinigameHandler.GetPuzzle();
-        MinigameHandler.answer = puzzle.answer;
-
-        let openingMessage = `${MinigameHandler.gameType.toUpperCase()} minigame starting in ${MinigameHandler.timeBeforeStart} seconds! The category is ${puzzle.category}. `;
-        if (MinigameHandler.gameType === "scramble") {
-            MinigameHandler.revealPerHint = Math.ceil(puzzle.answer.length / 10);
-            MinigameHandler.display = MinigameHandler.ScrambleWord(MinigameHandler.answer);
-            openingMessage += `When the puzzle appears, guess the answer with !guess MY ANSWER`;
-        } else if (MinigameHandler.gameType === "hangman") {
-            MinigameHandler.revealPerHint = 0;
-            MinigameHandler.display = MinigameHandler.HideWord(MinigameHandler.answer);
-            openingMessage += `Guess letters with !guess X, or guess the full answer with !guess MY ANSWER`;
-        }
-
+        let gameType = MinigameHandler.gameTypes[Math.floor(Math.random() * MinigameHandler.gameTypes.length)];
+        MinigameHandler.currentGame = new gameType(MinigameHandler.OnGameOver);
         MinigameHandler.gameState = "starting";
-        MinigameHandler.timer = -MinigameHandler.timeBeforeStart;
-        MinigameHandler.revealIndex = 0;
-        MinigameHandler.guesses = [];
-        MinigameHandler.WriteMessage(openingMessage);
-    },
-    
-    ProcessGuess: (user, guess) => {
-        if (MinigameHandler.gameState !== "active") return;
-        let userGuesses = MinigameHandler.guesses.filter(x => x.username.toUpperCase() === user.username.toUpperCase());
-        if (userGuesses.length > 0) {
-            let latestGuess = userGuesses[userGuesses.length-1];
-            let secondsSinceLastGuess = (new Date() - latestGuess.timestamp) / 1000;
-            if (secondsSinceLastGuess < MinigameHandler.timeBetweenGuesses) {
-                // guessing too soon
-                MinigameHandler.WriteMessage(`${user.username}, you can only guess every ${MinigameHandler.timeBetweenGuesses} seconds.`);
-                return;
-            }
-        }
-        MinigameHandler.guesses.push({username: user.username, guess: guess, timestamp: new Date()});
-        
-        // allow missing special characters
-        let trimmedAnswer = MinigameHandler.answer.split('').filter(MinigameHandler.IsAlphanumeric).join('').toUpperCase();
-        let trimmedGuess = guess.split('').filter(MinigameHandler.IsAlphanumeric).join('').toUpperCase();
-
-        // guess single letter
-        if (MinigameHandler.gameType === "hangman" && guess.length === 1 && MinigameHandler.IsAlphanumeric(guess[0])) {
-            let revealedCount = MinigameHandler.UnhideCharacter(guess);
-            if (revealedCount > 0) {
-                MinigameHandler.timer = MinigameHandler.timeBetweenHints;
-                
-                if (MinigameHandler.answer.toUpperCase() === MinigameHandler.display.toUpperCase()) {
-                    MinigameHandler.GameWin(user);
-                } else {
-                    pointHandler.addPoints(user.username, 10);
-                    MinigameHandler.WriteMessage(`${revealedCount} ${guess.toUpperCase()}${revealedCount===1?"":"'s"}, ${user.username} has received ${pointHandler.formatValue(10)}.`);
-                }
-            } else {
-                MinigameHandler.WriteMessage(`There are no ${guess.toUpperCase()}'s.`);
-            }
-            return;
-        }
-
-        let isGuessCorrect = trimmedAnswer === trimmedGuess;
-        if (isGuessCorrect) {
-            MinigameHandler.GameWin(user);
-        } else {
-            MinigameHandler.WriteMessage(`${user.username}, "${guess}" is incorrect.`);
-        }
     },
 
-    // Run on a loop
     ProcessGame: () => {
-        MinigameHandler.timer++;
-        if (MinigameHandler.gameState == "starting" && MinigameHandler.timer > 0) {
-            MinigameHandler.WriteMessage(MinigameHandler.display);
-            MinigameHandler.gameState = "active"
-        }
-        if (MinigameHandler.gameState == "active" && MinigameHandler.timer > MinigameHandler.timeBetweenHints) {
-            MinigameHandler.timer -= MinigameHandler.timeBetweenHints;
-            for (let i=0; i<MinigameHandler.revealPerHint; i++) {
-                MinigameHandler.IncreaseReveal();
-            }
-            if (MinigameHandler.answer.toUpperCase() === MinigameHandler.display.toUpperCase()) {
-                MinigameHandler.GameLoss();
-            } else {
-                MinigameHandler.WriteMessage(MinigameHandler.display);
-            }
-        }
+        let currentGame = MinigameHandler.currentGame;
+        if (currentGame) currentGame.Tick();
     },
 
-    IncreaseReveal: () => {        
-        // increase reveal index until a non-ordered alphanumeric char is found
-        while (true) {
-            let answerLetter = MinigameHandler.answer[MinigameHandler.revealIndex].toUpperCase();
-            let scrambleLetter = MinigameHandler.display[MinigameHandler.revealIndex].toUpperCase();
-            if (MinigameHandler.IsAlphanumeric(answerLetter) && scrambleLetter !== answerLetter) {
-                // descramble this letter
-                let replacementLetterIndex = MinigameHandler.display.lastIndexOf(answerLetter);
-                MinigameHandler.display = MinigameHandler.SetChar(MinigameHandler.display, answerLetter, MinigameHandler.revealIndex);
-                MinigameHandler.display = MinigameHandler.SetChar(MinigameHandler.display, scrambleLetter, replacementLetterIndex);
-                return;
-            }
-            MinigameHandler.revealIndex++;
-            if (MinigameHandler.revealIndex >= MinigameHandler.answer.length) {
-                MinigameHandler.GameLoss();
-                return;
-            }
-        }
-    },
-
-    UnhideCharacter: (char) => {
-        char = char.toUpperCase();
-        let newDisplay = "";
-        let revealCount = 0;
-        for (let i=0; i<MinigameHandler.display.length; i++) {
-            if (MinigameHandler.answer[i].toUpperCase() === char && MinigameHandler.display[i] === MinigameHandler.hideCharacter) {
-                newDisplay += MinigameHandler.answer[i];
-                revealCount++;
-            } else {
-                newDisplay += MinigameHandler.display[i];
-            }
-        }
-        MinigameHandler.display = newDisplay;
-        return revealCount;
-    },
-
-    SetChar: (text, char, index) => {
-        let letters = text.split("");
-        letters[index] = char;
-        return letters.join("");
-    },
-    
-    GameWin: (user) => {
-        MinigameHandler.WriteMessage(`${user.username} correctly guessed the answer! ${MinigameHandler.answer}`);
-        MinigameHandler.gameState = "inactive"
-        MinigameHandler.winner = user;
-        let winningPoints = (MinigameHandler.gameType === "hangman") ? 50 : 100;
-        setTimeout( ()=>{MinigameHandler.AwardPrize(user.username, winningPoints); },1000);
-    },
-
-    GameLoss: () => {
-        MinigameHandler.WriteMessage("Too bad! The answer was... " + MinigameHandler.answer);
-        MinigameHandler.gameState = "inactive"
-    },
-
-    AwardPrize: (username, pointPrizeTotal) => {
-        pointHandler.addPoints(username, pointPrizeTotal);
-        MinigameHandler.WriteMessage(`${username} has received ${pointHandler.formatValue(pointPrizeTotal)}!`);
-
+    OnGameOver: () => {
+        MinigameHandler.gameState = "inactive";
         if (MinigameHandler.repeatMode) {
-            setTimeout( ()=>{MinigameHandler.StartGame(); },1000);
+            setTimeout(() => { MinigameHandler.StartGame(); }, 1000);
         }
     },
-
-    IsAlphanumeric: (letter) => {
-        let alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        return alpha.indexOf(letter) > -1 || alpha.toLowerCase().indexOf(letter) > -1;
-    },
-
-    // Scramble letters/numbers
-    // e.g. "Final Fantasy: Crystal Chronicles" 
-    // into "NYTNE RCSAAOA: FHTSICY CLRLANLFSI"
-    ScrambleWord: (word) => {
-        word = word.toUpperCase();
-        let letters = word.split("");
-        let scrambledLetters = [];
-        while (letters.length) {
-            let randomIndex = Math.floor(Math.random() * letters.length);
-            let letter = letters.splice(randomIndex, 1)[0];
-            if (MinigameHandler.IsAlphanumeric(letter)) {
-                scrambledLetters.push(letter);
-            }
-        }
-        // only scramble alphanumeric characters
-        let ret = "";
-        for (let i=0; i<word.length; i++) {
-            if (MinigameHandler.IsAlphanumeric(word[i])) {
-                ret += scrambledLetters.pop();
-            } else {
-                ret += word[i];
-            }
-        }
-        return ret;
-    },
-
-    // Blank out letters/numbers, leave spaces and special characters in place
-    // e.g. "Final Fantasy: Crystal Chronicles" 
-    // into "+++++ +++++++: +++++++ ++++++++++"
-    HideWord: (word) => {
-        return word.split("").map(c => MinigameHandler.IsAlphanumeric(c) ? MinigameHandler.hideCharacter : c).join("");
-    },
-
-    WriteMessage(message) {
-        WriteMessageRaw(" PurpleStar " + message);
-    }
 };
 MinigameHandler.Init();
 
@@ -250,4 +66,299 @@ function CommandMinigame(user, args) {
 function CommandMinigameGuess(user, args) {
     let guess = args.join(' ');
     MinigameHandler.ProcessGuess(user, guess);
+}
+
+
+
+class MinigameBase {
+    timeBeforeStart = 15;
+    lastUpdateTimestamp = null;
+    initialized = false;
+    OnGameComplete = () => {}
+    
+    constructor(onGameComplete) {
+        this.OnGameComplete = onGameComplete;
+    }
+
+    // try to call often (60 ticks per second?)
+    Tick() {
+        if (!this.initialized) {
+            this.initialized = true;
+            if (this.Initialize) this.Initialize();
+            this.lastUpdateTimestamp = new Date();
+        }
+        let prevTimestamp = this.lastUpdateTimestamp;
+        this.lastUpdateTimestamp = new Date();
+        if (this.GameLoop) {
+            this.GameLoop(this.lastUpdateTimestamp - prevTimestamp);
+        } else {
+            console.error("Minigame has no GameLoop")
+        }
+    }
+
+    WriteMessage(message) {
+        WriteMessageRaw(" PurpleStar " + message);
+    }
+
+    AwardPoints(username, amount, pretext) {
+        pointHandler.addPoints(username, amount);
+        let message = `${user.username} has received ${pointHandler.formatValue(10)}.`;
+        if (pretext) message = pretext + " " + message;
+        this.WriteMessage(message);
+    }
+}
+
+class MinigameWordGameBase extends MinigameBase {
+    state = "starting";
+    winningPoints = 100;
+    timeBeforeStart = 15;
+    category = "???";
+    correctAnswer = "";
+    displayedClue = "";
+    drawnClue = [];
+
+    msIntroTimer = 0;
+    msIntroWaitTime = this.timeBeforeStart * 1000;
+    msSinceLastReveal = 0;
+    msBetweenHints = 30 * 1000;
+
+    msTimeBetweenGuesses = 10 * 1000;
+    guesses = [];
+    lastUpdateTimestamp = null;
+    initialized = false;
+
+    IsAlphanumeric(char) {
+        let alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        return alpha.indexOf(char) > -1 || alpha.toLowerCase().indexOf(char) > -1;
+    }
+
+    GetPuzzle() {
+        return MinigameHandler.GetPuzzle();
+    }
+
+    GameLoop(msTick) {
+        if (this.state === "starting") {
+            this.msIntroTimer += msTick;
+            if (this.msIntroTimer > this.msIntroWaitTime) {
+                this.state = "active";
+                this.WriteMessage(this.displayedClue);
+            }
+        } else {
+            this.msSinceLastReveal += msTick;
+            if (this.msSinceLastReveal > this.msBetweenHints) {
+                this.msSinceLastReveal = 0;
+                if (this.Hint) this.Hint();
+                if (this.correctAnswer.toUpperCase() === this.displayedClue.toUpperCase()) {
+                    // gameover
+                } else {
+                    this.WriteMessage(this.displayedClue);
+                }
+            }
+        }
+    }
+
+    ProcessGuess(user, guess) {
+        let userGuesses = this.guesses.filter(x => x.username.toUpperCase() === user.username.toUpperCase());
+        if (userGuesses.length > 0) {
+            let latestGuess = userGuesses[userGuesses.length - 1];
+            let msSinceLastGuess = (new Date() - latestGuess.timestamp);
+            if (msSinceLastGuess < this.msTimeBetweenGuesses) {
+                // guessing too soon
+                let secondsBetweenGuesses = (this.msTimeBetweenGuesses / 1000).toFixed(0);
+                this.WriteMessage(`${user.username}, you can only guess every ${secondsBetweenGuesses} seconds.`);
+                return;
+            }
+        }
+        this.guesses.push({ username: user.username, guess: guess, timestamp: new Date() });
+
+        // allow missing special characters
+        let trimmedAnswer = MinigameHandler.answer.split('').filter(MinigameHandler.IsAlphanumeric).join('').toUpperCase();
+        let trimmedGuess = guess.split('').filter(MinigameHandler.IsAlphanumeric).join('').toUpperCase();
+
+
+        if (!this.OnGuess || this.OnGuess(user, guess)) {
+            // run this block only if there's no special handling, or if special handling returns true
+            let isGuessCorrect = trimmedAnswer === trimmedGuess;
+            if (isGuessCorrect) {
+                this.GameWin(user);
+            } else {
+                this.WriteMessage(`${user.username}, "${guess}" is incorrect.`);
+            }
+        }
+    }
+
+    Draw(ctx) {
+        for (let clue of this.drawnClue) {
+            if (Math.abs(clue.x - clue.targetX) < 0.05) {
+                clue.x = clue.targetX;
+            } else {
+                clue.x += (clue.targetX - clue.x) * 0.02;
+            }
+
+            if (Math.abs(clue.y - clue.targetY) < 0.05) {
+                clue.y = clue.targetY;
+                if (clue.targetY !== 0) clue.targetY = 0;
+            } else {
+                clue.y += (clue.targetY - clue.y) * 0.02;
+            }
+        }
+
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        let pixelsPerChar = ctx.canvas.width / this.drawnClue.length;
+        let fontSize = 16;
+        ctx.font = `${fontSize}px Arial`;
+        ctx.fillStyle = "white";
+        ctx.textAlign = "left";
+        for (let clue of this.drawnClue) {
+            let x = pixelsPerChar * clue.x;
+            let y = fontSize + clue.y * fontSize;
+            ctx.fillText(clue.char, x, y);
+        }
+    }
+
+    GameWin(user) {
+        this.WriteMessage(`${user.username} correctly guessed the answer! ${this.correctAnswer}`);
+        this.OnGameComplete();
+        setTimeout(() => { this.AwardPoints(user.username, this.winningPoints); }, 1000);
+    }
+}
+
+class MinigameScramble extends MinigameWordGameBase {
+
+    Initialize() {
+        let puzzle = this.GetPuzzle();
+        this.correctAnswer = puzzle.answer;
+        this.category = puzzle.category;
+        this.displayedClue = this.ScrambleWord(this.correctAnswer);
+        this.drawnClue = this.displayedClue.map((char, index) => ({ char: char, x: index, targetX: index, y: 0, targetY: 0 }))
+    }
+
+
+    // Scramble letters/numbers
+    // e.g. "Final Fantasy: Crystal Chronicles" 
+    // into "NYTNE RCSAAOA: FHTSICY CLRLANLFSI"
+    ScrambleWord(word) {
+        word = word.toUpperCase();
+        let letters = word.split("");
+        let scrambledLetters = [];
+        while (letters.length) {
+            let randomIndex = Math.floor(Math.random() * letters.length);
+            let letter = letters.splice(randomIndex, 1)[0];
+            if (this.IsAlphanumeric(letter)) {
+                scrambledLetters.push(letter);
+            }
+        }
+        // only scramble alphanumeric characters
+        let ret = "";
+        for (let i = 0; i < word.length; i++) {
+            if (this.IsAlphanumeric(word[i])) {
+                ret += scrambledLetters.pop();
+            } else {
+                ret += word[i];
+            }
+        }
+        return ret;
+    }
+
+    Hint() {
+        // swaps two incorrectly placed letters
+        // the swap will move at least one of the letters to the right place, maybe both
+        let targetAnswer = this.correctAnswer.toUpperCase();
+        let targetMap = this.displayedClue.split("").map((char, index) => {
+            if (char === targetAnswer[index]) {
+                return index;
+            } else {
+                let correctIndex = targetAnswer.indexOf(char, index + 1);
+                if (correctIndex === -1) correctIndex = targetAnswer.indexOf(char);
+                if (correctIndex === -1) {
+                    console.error("Uh oh, correctIndex -1", targetAnswer, char);
+                }
+                return correctIndex;
+            }
+        });
+        let outOfPlaceIndexes = targetMap.map((target, i) => ({ target: target, current: i })).filter(a => a.target !== a.current);
+        let randomIndextoCorrect = outOfPlaceIndexes[Math.floor(outOfPlaceIndexes.length * Math.random())];
+        SwapLetters(randomIndextoCorrect.target, randomIndextoCorrect.current);
+    }
+
+    SwapLetters(indexA, indexB) {
+        let chars = this.displayedClue.split("");
+        let temp = chars[indexA];
+        chars[indexA] = chars[indexB];
+        chars[indexB] = temp;
+        this.displayedClue = chars.join("");
+
+        let charA = this.drawnClue.find(a => a.targetX === indexA);
+        let charB = this.drawnClue.find(a => a.targetX === indexB);
+        if (charA !== undefined && charB !== undefined) {
+            charA.targetX = indexB;
+            charB.targetX = indexA;
+            charA.targetY = Math.random() > 0.5 ? -1 : 1;
+            charB.targetY = -charA.targetY;
+        } else {
+            console.error("Uh oh, undefined char", this.drawnClue, indexA, indexB);
+        }
+    }
+}
+
+
+class MinigameHangman extends MinigameWordGameBase {
+    hideCharacter = "+";
+    winningPoints = 50;
+
+    Initialize() {
+        let puzzle = this.GetPuzzle();
+        this.correctAnswer = puzzle.answer;
+        this.category = puzzle.category;
+        this.displayedClue = this.HideWord(this.correctAnswer);
+        this.drawnClue = this.correctAnswer.map((char, index) => ({ char: char, x: index, targetX: index, y: 0, targetY: 0, hidden: this.IsAlphanumeric(char) }))
+    }
+
+    OnGuess(user, guess) {
+        if (guess.length === 1) {
+            let revealedCount = this.UnhideCharacter(guess[0]);
+
+            if (revealedCount > 0) {
+                this.msSinceLastReveal = 0;
+
+                if (this.correctAnswer.toUpperCase() === this.displayedClue.toUpperCase()) {
+                    this.GameWin(user);
+                } else {
+                    let pretext = `${revealedCount} ${guess.toUpperCase()}${revealedCount === 1 ? "" : "'s"},`;
+                    this.AwardPoints(user.username, 10, pretext);
+                }
+            } else {
+                this.WriteMessage(`There are no ${guess.toUpperCase()}'s.`);
+            }
+            return false;
+        }
+        return true;
+    }
+
+    // Blank out letters/numbers, leave spaces and special characters in place
+    // e.g. "Final Fantasy: Crystal Chronicles" 
+    // into "+++++ +++++++: +++++++ ++++++++++"
+    HideWord(word) {
+        return word.split("").map(c => this.IsAlphanumeric(c) ? this.hideCharacter : c).join("");
+    }
+
+    UnhideCharacter(char) {
+        // returns number revealed
+        char = char.toUpperCase();
+        let newDisplay = "";
+        let revealCount = 0;
+        for (let i = 0; i < this.displayedClue.length; i++) {
+            if (this.correctAnswer[i].toUpperCase() === char && this.displayedClue[i] === this.hideCharacter) {
+                newDisplay += this.correctAnswer[i];
+                revealCount++;
+            } else {
+                newDisplay += this.displayedClue[i];
+            }
+        }
+        this.displayedClue = newDisplay;
+        this.drawnClue.filter(a => a.char.toLowerCase() === char.toLowerCase()).forEach(a => a.hidden = false);
+        return revealCount;
+    }
 }
