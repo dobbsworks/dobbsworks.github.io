@@ -39,6 +39,7 @@ class MinigameBase {
         let message = `${username} has received ${pointHandler.formatValue(amount)}.`;
         if (pretext) message = pretext + " " + message;
         this.WriteMessage(message);
+        MinigameHandler.LogPoints(username, amount);
     }
 }
 
@@ -304,8 +305,7 @@ class MinigameHangman extends MinigameWordGameBase {
         let hiddenIndexes = this.displayedClue.split("").map((c, i) => c === this.hideCharacter ? i : -1).filter(a => a > -1);
         let indexToReveal = hiddenIndexes[Math.floor(hiddenIndexes.length * Math.random())];
         if (indexToReveal) {
-            this.displayedClue = this.displayedClue.substr(0, indexToReveal) + this.correctAnswer[indexToReveal] + this.displayedClue.substr(indexToReveal + 1);
-            this.drawnClue[indexToReveal].hidden = false;
+            this.UnhideCharacter(this.correctAnswer[indexToReveal]);
         }
     }
 
@@ -337,8 +337,19 @@ var MinigameHandler = {
 
     currentGame: null,
     interval: null,
+    points: [],
+
     Init: () => {
         MinigameHandler.interval = setInterval(MinigameHandler.ProcessGame, 1000 / 60);
+    },
+
+    LogPoints: (username, amount) => {
+        let record = MinigameHandler.points.find(a => a.username === username);
+        if (!record) {
+            record = {username: username, points: 0};
+            MinigameHandler.points.push(record);
+        }
+        record.points += amount;
     },
 
     GetPuzzle: () => {
