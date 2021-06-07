@@ -146,27 +146,29 @@ class MinigameWordGameBase extends MinigameBase {
         ctx.fillStyle = "#18181b";
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-        
+
         ctx.textAlign = "center";
         ctx.font = `${20}px Arial`;
         ctx.fillStyle = "white";
         ctx.fillText(`${this.gameMode} Minigame`, ctx.canvas.width / 2, 20);
         ctx.fillText(`Category: ${this.category}`, ctx.canvas.width / 2, 40);
 
-        let margin = 10;
-        let pixelsPerChar = (ctx.canvas.width - margin * 2) / this.drawnClue.length;
-        let fontSize = pixelsPerChar; //16;
-        ctx.font = `${fontSize}px Arial`;
-        for (let clue of this.drawnClue) {
-            let x = pixelsPerChar * clue.x + margin + pixelsPerChar / 2;
-            let y = fontSize + clue.y * fontSize + 80;
-            if (this.IsAlphanumeric(clue.char)) {
-                ctx.fillStyle = "black";
-                ctx.fillRect(x - pixelsPerChar / 2, y - pixelsPerChar, pixelsPerChar - 1, pixelsPerChar + 6);
-            }
-            if (!clue.hidden) {
-                ctx.fillStyle = "white";
-                ctx.fillText(clue.char, x, y);
+        if (this.state === "active") {
+            let margin = 10;
+            let pixelsPerChar = (ctx.canvas.width - margin * 2) / this.drawnClue.length;
+            let fontSize = pixelsPerChar; //16;
+            ctx.font = `${fontSize}px Arial`;
+            for (let clue of this.drawnClue) {
+                let x = pixelsPerChar * clue.x + margin + pixelsPerChar / 2;
+                let y = fontSize + clue.y * fontSize + 80;
+                if (this.IsAlphanumeric(clue.char)) {
+                    ctx.fillStyle = "black";
+                    ctx.fillRect(x - pixelsPerChar / 2, y - pixelsPerChar, pixelsPerChar - 1, pixelsPerChar + 6);
+                }
+                if (!clue.hidden) {
+                    ctx.fillStyle = "white";
+                    ctx.fillText(clue.char, x, y);
+                }
             }
         }
     }
@@ -401,9 +403,32 @@ var MinigameHandler = {
             if (currentGame.Draw) {
                 currentGame.Draw(MinigameHandler.ctx);
             }
+            MinigameHandler.DrawScores(MinigameHandler.ctx);
         } else {
             let ctx = MinigameHandler.ctx;
             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        }
+    },
+
+    DrawScores: (ctx) => {
+        MinigameHandler.points.sort((a,b) => b.points - a.points);
+        let y = MinigameHandler.ctx.canvas.height / 2;
+        let x = 30;
+        
+        ctx.font = `${20}px Arial`;
+        ctx.fillStyle = "#EEE";
+        ctx.textAlign = "center";
+        ctx.fillText("Today's winnings", MinigameHandler.ctx.canvas.width / 2, y);
+        y += 25;
+
+        for (let record of MinigameHandler.points) {
+            ctx.font = `${16}px Arial`;
+            ctx.fillStyle = "#EEE";
+            ctx.textAlign = "left";
+            ctx.fillText(record.username, x, y);
+            ctx.textAlign = "right";
+            ctx.fillText(record.points.toFixed(0), x, MinigameHandler.ctx.canvas.width - 30);
+            y += 20;
         }
     },
 
