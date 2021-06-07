@@ -160,7 +160,7 @@ class MinigameScramble extends MinigameWordGameBase {
         this.correctAnswer = puzzle.answer;
         this.category = puzzle.category;
         this.displayedClue = this.ScrambleWord(this.correctAnswer);
-        this.drawnClue = this.displayedClue.map((char, index) => ({ char: char, x: index, targetX: index, y: 0, targetY: 0 }))
+        this.drawnClue = this.displayedClue.split("").map((char, index) => ({ char: char, x: index, targetX: index, y: 0, targetY: 0 }))
     }
 
 
@@ -241,7 +241,7 @@ class MinigameHangman extends MinigameWordGameBase {
         this.correctAnswer = puzzle.answer;
         this.category = puzzle.category;
         this.displayedClue = this.HideWord(this.correctAnswer);
-        this.drawnClue = this.correctAnswer.map((char, index) => ({ char: char, x: index, targetX: index, y: 0, targetY: 0, hidden: this.IsAlphanumeric(char) }))
+        this.drawnClue = this.correctAnswer.split("").map((char, index) => ({ char: char, x: index, targetX: index, y: 0, targetY: 0, hidden: this.IsAlphanumeric(char) }))
     }
 
     OnGuess(user, guess) {
