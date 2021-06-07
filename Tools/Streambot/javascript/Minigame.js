@@ -146,11 +146,17 @@ class MinigameWordGameBase extends MinigameBase {
         ctx.fillStyle = "#18181b";
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
+        
+        ctx.textAlign = "center";
+        ctx.font = `${20}px Arial`;
+        ctx.fillStyle = "white";
+        ctx.fillText(`${this.gameMode} Minigame`, ctx.canvas.width / 2, 20);
+        ctx.fillText(`Category: ${this.category}`, ctx.canvas.width / 2, 40);
+
         let margin = 10;
         let pixelsPerChar = (ctx.canvas.width - margin * 2) / this.drawnClue.length;
         let fontSize = pixelsPerChar; //16;
         ctx.font = `${fontSize}px Arial`;
-        ctx.textAlign = "center";
         for (let clue of this.drawnClue) {
             let x = pixelsPerChar * clue.x + margin + pixelsPerChar / 2;
             let y = fontSize + clue.y * fontSize + margin * 2;
