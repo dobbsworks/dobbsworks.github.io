@@ -147,15 +147,19 @@ class MinigameWordGameBase extends MinigameBase {
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
         let margin = 10;
-        let pixelsPerChar = (ctx.canvas.width - margin*2) / this.drawnClue.length;
+        let pixelsPerChar = (ctx.canvas.width - margin * 2) / this.drawnClue.length;
         let fontSize = pixelsPerChar; //16;
         ctx.font = `${fontSize}px Arial`;
-        ctx.fillStyle = "white";
         ctx.textAlign = "center";
         for (let clue of this.drawnClue) {
             let x = pixelsPerChar * clue.x + margin;
-            let y = fontSize + clue.y * fontSize + margin*2;
-            ctx.fillText(clue.char, x, y);
+            let y = fontSize + clue.y * fontSize + margin * 2;
+            ctx.fillStyle = "black";
+            ctx.fillRect(x, y, pixelsPerChar, pixelsPerChar + 6);
+            if (!clue.hidden) {
+                ctx.fillStyle = "white";
+                ctx.fillText(clue.char, x, y);
+            }
         }
     }
 
@@ -219,7 +223,7 @@ class MinigameScramble extends MinigameWordGameBase {
                 if (char === targetAnswer[index]) {
                     return index;
                 } else {
-                    let availableAnswer = targetAnswer.split("").map((c,i) => this.displayedClue[i] === targetAnswer[i] ? " " : c);
+                    let availableAnswer = targetAnswer.split("").map((c, i) => this.displayedClue[i] === targetAnswer[i] ? " " : c);
                     let correctIndex = availableAnswer.indexOf(char, index + 1);
                     if (correctIndex === -1) correctIndex = availableAnswer.indexOf(char);
                     if (correctIndex === -1) {
@@ -350,7 +354,7 @@ var MinigameHandler = {
     LogPoints: (username, amount) => {
         let record = MinigameHandler.points.find(a => a.username === username);
         if (!record) {
-            record = {username: username, points: 0};
+            record = { username: username, points: 0 };
             MinigameHandler.points.push(record);
         }
         record.points += amount;
