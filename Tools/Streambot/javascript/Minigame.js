@@ -143,7 +143,7 @@ class MinigameWordGameBase extends MinigameBase {
             }
         }
 
-        ctx.fillStyle = "black";
+        ctx.fillStyle = "#18181b";
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
         let pixelsPerChar = ctx.canvas.width / this.drawnClue.length;
@@ -407,6 +407,7 @@ var MinigameHandler = {
     CreateWindow: () => {
         MinigameHandler.window = window.open("", "Minigame", "width=400,height=800");
         MinigameHandler.window.document.writeln(`<canvas width="400" height="800" id="canvas" style="background-color: #18181b; position:fixed; left:0; top:0;"></canvas>`);
+        MinigameHandler.window.document.title = "Minigame";
         setTimeout(() => {
             let canvas = MinigameHandler.window.document.getElementById("canvas");
             MinigameHandler.ctx = canvas.getContext("2d");
