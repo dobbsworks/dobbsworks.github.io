@@ -217,7 +217,7 @@ class MinigameScramble extends MinigameWordGameBase {
                 if (char === targetAnswer[index]) {
                     return index;
                 } else {
-                    let availableAnswer = targetAnswer.split("").map((c,i) => targetMap === i ? " " : c);
+                    let availableAnswer = targetAnswer.split("").map((c,i) => this.displayedClue[i] === targetAnswer[i] ? " " : c);
                     let correctIndex = availableAnswer.indexOf(char, index + 1);
                     if (correctIndex === -1) correctIndex = availableAnswer.indexOf(char);
                     if (correctIndex === -1) {
