@@ -110,8 +110,8 @@ class MinigameWordGameBase extends MinigameBase {
         this.guesses.push({ username: user.username, guess: guess, timestamp: new Date() });
 
         // allow missing special characters
-        let trimmedAnswer = MinigameHandler.answer.split('').filter(MinigameHandler.IsAlphanumeric).join('').toUpperCase();
-        let trimmedGuess = guess.split('').filter(MinigameHandler.IsAlphanumeric).join('').toUpperCase();
+        let trimmedAnswer = this.correctAnswer.split('').filter(this.IsAlphanumeric).join('').toUpperCase();
+        let trimmedGuess = guess.split('').filter(this.IsAlphanumeric).join('').toUpperCase();
 
 
         if (!this.OnGuess || this.OnGuess(user, guess)) {
@@ -286,6 +286,15 @@ class MinigameHangman extends MinigameWordGameBase {
     // into "+++++ +++++++: +++++++ ++++++++++"
     HideWord(word) {
         return word.split("").map(c => this.IsAlphanumeric(c) ? this.hideCharacter : c).join("");
+    }
+
+    Hint() {
+        let hiddenIndexes = this.displayedClue.split("").map((c,i) => c === this.hideCharacter ? i : -1).filter(a => a > -1);
+        let indexToReveal = hiddenIndexes[Math.floor(hiddenIndexes.length * Math.random())];
+        if (indexToReveal) {
+            this.displayedClue = this.displayedClue.substr(0, indexToReveal) + this.correctAnswer[indexToReveal] + this.displayedClue.substr(indexToReveal + 1);
+            this.drawnClue[indexToReveal].hidden = false;
+        }
     }
 
     UnhideCharacter(char) {
