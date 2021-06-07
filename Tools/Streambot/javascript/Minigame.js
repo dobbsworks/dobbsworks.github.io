@@ -411,7 +411,7 @@ var MinigameHandler = {
         setTimeout(() => {
             let canvas = MinigameHandler.window.document.getElementById("canvas");
             MinigameHandler.ctx = canvas.getRenderingContext("2d");
-        },10);
+        },1000);
     },
 };
 MinigameHandler.Init();
