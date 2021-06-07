@@ -62,7 +62,7 @@ class MinigameWordGameBase extends MinigameBase {
     initialized = false;
 
     GetInstructions() {
-        return `The category is ${category}. ` + this.instructions;
+        return `The category is ${this.category}. ` + this.instructions;
     }
 
     IsAlphanumeric(char) {
@@ -347,6 +347,11 @@ var MinigameHandler = {
     ProcessGame: () => {
         let currentGame = MinigameHandler.currentGame;
         if (currentGame) currentGame.Tick();
+    },
+
+    ProcessGuess: (user, guess) => {
+        let currentGame = MinigameHandler.currentGame;
+        if (currentGame) currentGame.ProcessGuess(user, guess);
     },
 
     OnGameOver: () => {
