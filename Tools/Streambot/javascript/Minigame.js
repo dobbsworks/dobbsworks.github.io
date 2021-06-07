@@ -30,6 +30,11 @@ var MinigameHandler = {
         MinigameHandler.currentGame = new gameType(MinigameHandler.OnGameOver);
         MinigameHandler.gameState = "starting";
     },
+    
+
+    WriteMessage: (message) => {
+        WriteMessageRaw(" PurpleStar " + message);
+    },
 
     ProcessGame: () => {
         let currentGame = MinigameHandler.currentGame;
@@ -97,7 +102,7 @@ class MinigameBase {
     }
 
     WriteMessage(message) {
-        WriteMessageRaw(" PurpleStar " + message);
+        MinigameHandler.WriteMessage(message);
     }
 
     AwardPoints(username, amount, pretext) {
