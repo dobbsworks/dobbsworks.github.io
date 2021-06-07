@@ -36,7 +36,7 @@ class MinigameBase {
 
     AwardPoints(username, amount, pretext) {
         pointHandler.addPoints(username, amount);
-        let message = `${username} has received ${pointHandler.formatValue(10)}.`;
+        let message = `${username} has received ${pointHandler.formatValue(amount)}.`;
         if (pretext) message = pretext + " " + message;
         this.WriteMessage(message);
     }
@@ -204,25 +204,35 @@ class MinigameScramble extends MinigameWordGameBase {
     }
 
     Hint() {
-        // swaps two incorrectly placed letters
-        // the swap will move at least one of the letters to the right place, maybe both
-        let targetAnswer = this.correctAnswer.toUpperCase();
-        let targetMap = this.displayedClue.split("").map((char, index) => {
-            if (char === targetAnswer[index]) {
-                return index;
-            } else {
-                let correctIndex = targetAnswer.indexOf(char, index + 1);
-                if (correctIndex === -1) correctIndex = targetAnswer.indexOf(char);
-                if (correctIndex === -1) {
-                    console.error("Uh oh, correctIndex -1", targetAnswer, char);
+        let hintNum = Math.ceil(this.correctAnswer.length / 10);
+        this.Unscramble(hintNum);
+    }
+
+    Unscramble(num) {
+        for (let i = 0; i < num; i++) {
+            // swaps two incorrectly placed letters
+            // the swap will move at least one of the letters to the right place, maybe both
+            let targetAnswer = this.correctAnswer.toUpperCase();
+            let targetMap = this.displayedClue.split("").map((char, index) => {
+                if (char === targetAnswer[index]) {
+                    return index;
+                } else {
+                    let availableAnswer = targetAnswer.split("").map((c,i) => targetMap === i ? " " : c);
+                    let correctIndex = availableAnswer.indexOf(char, index + 1);
+                    if (correctIndex === -1) correctIndex = availableAnswer.indexOf(char);
+                    if (correctIndex === -1) {
+                        console.error("Uh oh, correctIndex -1", availableAnswer, targetAnswer, char);
+                    }
+                    return correctIndex;
                 }
-                return correctIndex;
+            });
+            let outOfPlaceIndexes = targetMap.map((target, i) => ({ target: target, current: i })).filter(a => a.target !== a.current);
+            let randomIndextoCorrect = outOfPlaceIndexes[Math.floor(outOfPlaceIndexes.length * Math.random())];
+            if (randomIndextoCorrect) {
+                this.SwapLetters(randomIndextoCorrect.target, randomIndextoCorrect.current);
+            } else {
+                // could not unscramble
             }
-        });
-        let outOfPlaceIndexes = targetMap.map((target, i) => ({ target: target, current: i })).filter(a => a.target !== a.current);
-        let randomIndextoCorrect = outOfPlaceIndexes[Math.floor(outOfPlaceIndexes.length * Math.random())];
-        if (randomIndextoCorrect) {
-            this.SwapLetters(randomIndextoCorrect.target, randomIndextoCorrect.current);
         }
     }
 
@@ -273,6 +283,7 @@ class MinigameHangman extends MinigameWordGameBase {
                 } else {
                     let pretext = `${revealedCount} ${guess.toUpperCase()}${revealedCount === 1 ? "" : "'s"},`;
                     this.AwardPoints(user.username, 10, pretext);
+                    this.WriteMessage(this.displayedClue);
                 }
             } else {
                 this.WriteMessage(`There are no ${guess.toUpperCase()}'s.`);
@@ -290,7 +301,7 @@ class MinigameHangman extends MinigameWordGameBase {
     }
 
     Hint() {
-        let hiddenIndexes = this.displayedClue.split("").map((c,i) => c === this.hideCharacter ? i : -1).filter(a => a > -1);
+        let hiddenIndexes = this.displayedClue.split("").map((c, i) => c === this.hideCharacter ? i : -1).filter(a => a > -1);
         let indexToReveal = hiddenIndexes[Math.floor(hiddenIndexes.length * Math.random())];
         if (indexToReveal) {
             this.displayedClue = this.displayedClue.substr(0, indexToReveal) + this.correctAnswer[indexToReveal] + this.displayedClue.substr(indexToReveal + 1);
