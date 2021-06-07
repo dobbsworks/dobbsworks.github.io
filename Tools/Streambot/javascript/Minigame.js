@@ -62,7 +62,7 @@ class MinigameWordGameBase extends MinigameBase {
     initialized = false;
 
     GetInstructions() {
-        return `The category is ${puzzle.category}. ` + this.instructions;
+        return `The category is ${category}. ` + this.instructions;
     }
 
     IsAlphanumeric(char) {
