@@ -334,6 +334,8 @@ var MinigameHandler = {
     handlerState: "inactive",
     repeatMode: false,
     winner: null,
+    window: null,
+    ctx: null,
 
     currentGame: null,
     interval: null,
@@ -341,6 +343,7 @@ var MinigameHandler = {
 
     Init: () => {
         MinigameHandler.interval = setInterval(MinigameHandler.ProcessGame, 1000 / 60);
+        MinigameHandler.window = MinigameHandler.CreateWindow();
     },
 
     LogPoints: (username, amount) => {
@@ -380,7 +383,12 @@ var MinigameHandler = {
 
     ProcessGame: () => {
         let currentGame = MinigameHandler.currentGame;
-        if (currentGame) currentGame.Tick();
+        if (currentGame) {
+            currentGame.Tick();
+            if (currentGame.Draw) {
+                currentGame.Draw(MinigameHandler.ctx);
+            }
+        }
     },
 
     ProcessGuess: (user, guess) => {
@@ -394,6 +402,13 @@ var MinigameHandler = {
         if (MinigameHandler.repeatMode) {
             setTimeout(() => { MinigameHandler.StartGame(); }, 1000);
         }
+    },
+
+    CreateWindow: () => {
+        let w = window.open("", "Minigame", "width=400,height=800");
+        w.document.writeln(`<canvas id="canvas" style="background-color: #18181b; position:fixed;"></canvas>`);
+        let canvas = w.document.getElementById("canvas");
+        MinigameHandler.ctx = canvas.getRenderingContext("2d");
     },
 };
 MinigameHandler.Init();
