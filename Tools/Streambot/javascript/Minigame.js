@@ -406,9 +406,12 @@ var MinigameHandler = {
 
     CreateWindow: () => {
         let w = window.open("", "Minigame", "width=400,height=800");
-        w.document.writeln(`<canvas id="canvas" style="background-color: #18181b; position:fixed;"></canvas>`);
-        let canvas = w.document.getElementById("canvas");
-        MinigameHandler.ctx = canvas.getRenderingContext("2d");
+        MinigameHandler.window = w;
+        w.document.writeln(`<canvas width="400" height="800" id="canvas" style="background-color: #18181b; position:fixed; left:0; top:0;"></canvas>`);
+        setTimeout(() => {
+            let canvas = MinigameHandler.window.document.getElementById("canvas");
+            MinigameHandler.ctx = canvas.getRenderingContext("2d");
+        },10);
     },
 };
 MinigameHandler.Init();
