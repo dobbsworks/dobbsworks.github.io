@@ -408,10 +408,8 @@ var MinigameHandler = {
         MinigameHandler.window = window.open("", "Minigame", "width=400,height=800");
         MinigameHandler.window.document.writeln(`<canvas width="400" height="800" id="canvas" style="background-color: #18181b; position:fixed; left:0; top:0;"></canvas>`);
         MinigameHandler.window.document.title = "Minigame";
-        setTimeout(() => {
-            let canvas = MinigameHandler.window.document.getElementById("canvas");
-            MinigameHandler.ctx = canvas.getContext("2d");
-        },1000);
+        let canvas = MinigameHandler.window.document.getElementById("canvas");
+        MinigameHandler.ctx = canvas.getContext("2d");
     },
 };
 MinigameHandler.Init();
@@ -424,6 +422,7 @@ function CommandMinigame(user, args) {
     } else if (args[0].toLowerCase() === "stop") {
         MinigameHandler.repeatMode = false;
         MinigameHandler.handlerState = "inactive";
+        MinigameHandler.currentGame = null;
     } else if (args[0].toLowerCase() === "repeat") {
         MinigameHandler.repeatMode = true;
         MinigameHandler.StartGame();
