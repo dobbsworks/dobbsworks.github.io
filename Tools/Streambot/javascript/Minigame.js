@@ -1,80 +1,3 @@
-var MinigameHandler = {
-    gameTypes: ["MinigameScramble", "MinigameHangman"],
-    handlerState: "inactive",
-    repeatMode: false,
-    winner: null,
-
-    currentGame: null,
-    interval: null,
-    Init: () => {
-        MinigameHandler.interval = setInterval(MinigameHandler.ProcessGame, 1000/60);
-    },
-
-    GetPuzzle: () => {
-        // TODO, track recent puzzles to prevent repeats
-        var categories = Object.keys(minigameAnswers);
-        var categoryIndex = Math.floor(Math.random() * categories.length);
-        var category = categories[categoryIndex];
-        var puzzles = minigameAnswers[category];
-        var puzzleIndex = Math.floor(Math.random() * puzzles.length);
-        var puzzle = puzzles[puzzleIndex];
-        return { answer: puzzle, category: category };
-    },
-
-    StartGame: () => {
-        if (MinigameHandler.handlerState !== "inactive") {
-            MinigameHandler.WriteMessage("There's already a minigame in progress.");
-            return;
-        }
-        let gameType = window[MinigameHandler.gameTypes[Math.floor(Math.random() * MinigameHandler.gameTypes.length)]];
-        MinigameHandler.currentGame = new gameType(MinigameHandler.OnGameOver);
-        MinigameHandler.handlerState = "starting";
-    },
-    
-
-    WriteMessage: (message) => {
-        WriteMessageRaw(" PurpleStar " + message);
-    },
-
-    ProcessGame: () => {
-        let currentGame = MinigameHandler.currentGame;
-        if (currentGame) currentGame.Tick();
-    },
-
-    OnGameOver: () => {
-        MinigameHandler.handlerState = "inactive";
-        if (MinigameHandler.repeatMode) {
-            setTimeout(() => { MinigameHandler.StartGame(); }, 1000);
-        }
-    },
-};
-MinigameHandler.Init();
-
-
-function CommandMinigame(user, args) {
-    if (!args[0]) return "Usage: !minigame {start|stop|repeat|last}";
-    if (args[0].toLowerCase() === "start") {
-        MinigameHandler.StartGame();
-    } else if (args[0].toLowerCase() === "stop") {
-        MinigameHandler.repeatMode = false;
-        MinigameHandler.handlerState = "inactive";
-    } else if (args[0].toLowerCase() === "repeat") {
-        MinigameHandler.repeatMode = true;
-        MinigameHandler.StartGame();
-    } else if (args[0].toLowerCase() === "last") {
-        MinigameHandler.repeatMode = false;
-    } else {
-        return "Usage: !minigame {start|stop|repeat|last}";
-    }
-}
-
-function CommandMinigameGuess(user, args) {
-    let guess = args.join(' ');
-    MinigameHandler.ProcessGuess(user, guess);
-}
-
-
-
 class MinigameBase {
     timeBeforeStart = 15;
     lastUpdateTimestamp = null;
@@ -366,4 +289,80 @@ class MinigameHangman extends MinigameWordGameBase {
         this.drawnClue.filter(a => a.char.toLowerCase() === char.toLowerCase()).forEach(a => a.hidden = false);
         return revealCount;
     }
+}
+
+
+var MinigameHandler = {
+    gameTypes: [MinigameScramble, MinigameHangman],
+    handlerState: "inactive",
+    repeatMode: false,
+    winner: null,
+
+    currentGame: null,
+    interval: null,
+    Init: () => {
+        MinigameHandler.interval = setInterval(MinigameHandler.ProcessGame, 1000/60);
+    },
+
+    GetPuzzle: () => {
+        // TODO, track recent puzzles to prevent repeats
+        var categories = Object.keys(minigameAnswers);
+        var categoryIndex = Math.floor(Math.random() * categories.length);
+        var category = categories[categoryIndex];
+        var puzzles = minigameAnswers[category];
+        var puzzleIndex = Math.floor(Math.random() * puzzles.length);
+        var puzzle = puzzles[puzzleIndex];
+        return { answer: puzzle, category: category };
+    },
+
+    StartGame: () => {
+        if (MinigameHandler.handlerState !== "inactive") {
+            MinigameHandler.WriteMessage("There's already a minigame in progress.");
+            return;
+        }
+        let gameType = MinigameHandler.gameTypes[Math.floor(Math.random() * MinigameHandler.gameTypes.length)];
+        MinigameHandler.currentGame = new gameType(MinigameHandler.OnGameOver);
+        MinigameHandler.handlerState = "starting";
+    },
+    
+
+    WriteMessage: (message) => {
+        WriteMessageRaw(" PurpleStar " + message);
+    },
+
+    ProcessGame: () => {
+        let currentGame = MinigameHandler.currentGame;
+        if (currentGame) currentGame.Tick();
+    },
+
+    OnGameOver: () => {
+        MinigameHandler.handlerState = "inactive";
+        if (MinigameHandler.repeatMode) {
+            setTimeout(() => { MinigameHandler.StartGame(); }, 1000);
+        }
+    },
+};
+MinigameHandler.Init();
+
+
+function CommandMinigame(user, args) {
+    if (!args[0]) return "Usage: !minigame {start|stop|repeat|last}";
+    if (args[0].toLowerCase() === "start") {
+        MinigameHandler.StartGame();
+    } else if (args[0].toLowerCase() === "stop") {
+        MinigameHandler.repeatMode = false;
+        MinigameHandler.handlerState = "inactive";
+    } else if (args[0].toLowerCase() === "repeat") {
+        MinigameHandler.repeatMode = true;
+        MinigameHandler.StartGame();
+    } else if (args[0].toLowerCase() === "last") {
+        MinigameHandler.repeatMode = false;
+    } else {
+        return "Usage: !minigame {start|stop|repeat|last}";
+    }
+}
+
+function CommandMinigameGuess(user, args) {
+    let guess = args.join(' ');
+    MinigameHandler.ProcessGuess(user, guess);
 }
