@@ -1,5 +1,5 @@
 var MinigameHandler = {
-    gameTypes: [MinigameScramble, MinigameHangman],
+    gameTypes: ["MinigameScramble", "MinigameHangman"],
     handlerState: "inactive",
     repeatMode: false,
     winner: null,
@@ -26,7 +26,7 @@ var MinigameHandler = {
             MinigameHandler.WriteMessage("There's already a minigame in progress.");
             return;
         }
-        let gameType = MinigameHandler.gameTypes[Math.floor(Math.random() * MinigameHandler.gameTypes.length)];
+        let gameType = window[MinigameHandler.gameTypes[Math.floor(Math.random() * MinigameHandler.gameTypes.length)]];
         MinigameHandler.currentGame = new gameType(MinigameHandler.OnGameOver);
         MinigameHandler.gameState = "starting";
     },
