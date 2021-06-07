@@ -4,8 +4,8 @@ class MinigameBase {
     initialized = false;
     instructions = "";
     gameMode = "UNKNOWN";
-    OnGameComplete = () => {}
-    
+    OnGameComplete = () => { }
+
     constructor(onGameComplete) {
         this.OnGameComplete = onGameComplete;
     }
@@ -220,7 +220,9 @@ class MinigameScramble extends MinigameWordGameBase {
         });
         let outOfPlaceIndexes = targetMap.map((target, i) => ({ target: target, current: i })).filter(a => a.target !== a.current);
         let randomIndextoCorrect = outOfPlaceIndexes[Math.floor(outOfPlaceIndexes.length * Math.random())];
-        this.SwapLetters(randomIndextoCorrect.target, randomIndextoCorrect.current);
+        if (randomIndextoCorrect) {
+            this.SwapLetters(randomIndextoCorrect.target, randomIndextoCorrect.current);
+        }
     }
 
     SwapLetters(indexA, indexB) {
@@ -315,7 +317,7 @@ var MinigameHandler = {
     currentGame: null,
     interval: null,
     Init: () => {
-        MinigameHandler.interval = setInterval(MinigameHandler.ProcessGame, 1000/60);
+        MinigameHandler.interval = setInterval(MinigameHandler.ProcessGame, 1000 / 60);
     },
 
     GetPuzzle: () => {
@@ -338,7 +340,7 @@ var MinigameHandler = {
         MinigameHandler.currentGame = new gameType(MinigameHandler.OnGameOver);
         MinigameHandler.handlerState = "starting";
     },
-    
+
 
     WriteMessage: (message) => {
         WriteMessageRaw(" PurpleStar " + message);
