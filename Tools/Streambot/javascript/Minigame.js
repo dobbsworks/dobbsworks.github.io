@@ -167,7 +167,7 @@ class MinigameWordGameBase extends MinigameBase {
                 }
                 if (!clue.hidden) {
                     ctx.fillStyle = "white";
-                    ctx.fillText(clue.char, x, y);
+                    ctx.fillText(clue.char.toUpperCase(), x, y);
                 }
             }
         }
@@ -411,24 +411,26 @@ var MinigameHandler = {
     },
 
     DrawScores: (ctx) => {
-        MinigameHandler.points.sort((a,b) => b.points - a.points);
-        let y = MinigameHandler.ctx.canvas.height / 2;
-        let x = 30;
-        
-        ctx.font = `${20}px Arial`;
-        ctx.fillStyle = "#EEE";
-        ctx.textAlign = "center";
-        ctx.fillText("Today's winnings", MinigameHandler.ctx.canvas.width / 2, y);
-        y += 25;
+        if (MinigameHandler.points.length !== 0) {
+            MinigameHandler.points.sort((a, b) => b.points - a.points);
+            let y = MinigameHandler.ctx.canvas.height / 2;
+            let x = 30;
 
-        for (let record of MinigameHandler.points) {
-            ctx.font = `${16}px Arial`;
+            ctx.font = `${20}px Arial`;
             ctx.fillStyle = "#EEE";
-            ctx.textAlign = "left";
-            ctx.fillText(record.username, x, y);
-            ctx.textAlign = "right";
-            ctx.fillText(record.points.toFixed(0), x, MinigameHandler.ctx.canvas.width - 30);
-            y += 20;
+            ctx.textAlign = "center";
+            ctx.fillText("Today's winnings", MinigameHandler.ctx.canvas.width / 2, y);
+            y += 25;
+
+            for (let record of MinigameHandler.points) {
+                ctx.font = `${16}px Arial`;
+                ctx.fillStyle = "#EEE";
+                ctx.textAlign = "left";
+                ctx.fillText(record.username, x, y);
+                ctx.textAlign = "right";
+                ctx.fillText(record.points.toFixed(0), MinigameHandler.ctx.canvas.width - 30, y);
+                y += 20;
+            }
         }
     },
 
