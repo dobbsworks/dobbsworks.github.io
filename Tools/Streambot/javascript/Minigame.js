@@ -146,14 +146,15 @@ class MinigameWordGameBase extends MinigameBase {
         ctx.fillStyle = "#18181b";
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-        let pixelsPerChar = ctx.canvas.width / this.drawnClue.length;
-        let fontSize = 16;
+        let margin = 10;
+        let pixelsPerChar = (ctx.canvas.width - margin*2) / this.drawnClue.length;
+        let fontSize = pixelsPerChar; //16;
         ctx.font = `${fontSize}px Arial`;
         ctx.fillStyle = "white";
-        ctx.textAlign = "left";
+        ctx.textAlign = "center";
         for (let clue of this.drawnClue) {
-            let x = pixelsPerChar * clue.x;
-            let y = fontSize + clue.y * fontSize;
+            let x = pixelsPerChar * clue.x + margin;
+            let y = fontSize + clue.y * fontSize + margin*2;
             ctx.fillText(clue.char, x, y);
         }
     }
@@ -388,6 +389,9 @@ var MinigameHandler = {
             if (currentGame.Draw) {
                 currentGame.Draw(MinigameHandler.ctx);
             }
+        } else {
+            let ctx = MinigameHandler.ctx;
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         }
     },
 
