@@ -22,13 +22,13 @@ var MinigameHandler = {
     },
 
     StartGame: () => {
-        if (MinigameHandler.gameState !== "inactive") {
+        if (MinigameHandler.handlerState !== "inactive") {
             MinigameHandler.WriteMessage("There's already a minigame in progress.");
             return;
         }
         let gameType = window[MinigameHandler.gameTypes[Math.floor(Math.random() * MinigameHandler.gameTypes.length)]];
         MinigameHandler.currentGame = new gameType(MinigameHandler.OnGameOver);
-        MinigameHandler.gameState = "starting";
+        MinigameHandler.handlerState = "starting";
     },
     
 
@@ -42,7 +42,7 @@ var MinigameHandler = {
     },
 
     OnGameOver: () => {
-        MinigameHandler.gameState = "inactive";
+        MinigameHandler.handlerState = "inactive";
         if (MinigameHandler.repeatMode) {
             setTimeout(() => { MinigameHandler.StartGame(); }, 1000);
         }
@@ -57,7 +57,7 @@ function CommandMinigame(user, args) {
         MinigameHandler.StartGame();
     } else if (args[0].toLowerCase() === "stop") {
         MinigameHandler.repeatMode = false;
-        MinigameHandler.gameState = "inactive";
+        MinigameHandler.handlerState = "inactive";
     } else if (args[0].toLowerCase() === "repeat") {
         MinigameHandler.repeatMode = true;
         MinigameHandler.StartGame();
