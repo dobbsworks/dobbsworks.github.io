@@ -14,11 +14,11 @@ class MinigameBase {
     Tick() {
         if (!this.initialized) {
             this.initialized = true;
+            if (this.Initialize) this.Initialize();
             let instructions = this.GetInstructions() || this.instructions;
             let openingMessage = `${this.gameMode} minigame starting in ${this.timeBeforeStart} seconds! ` + instructions;
             this.WriteMessage(openingMessage);
 
-            if (this.Initialize) this.Initialize();
             this.lastUpdateTimestamp = new Date();
         }
         let prevTimestamp = this.lastUpdateTimestamp;
