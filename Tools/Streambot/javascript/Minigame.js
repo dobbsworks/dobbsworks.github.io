@@ -159,7 +159,7 @@ class MinigameWordGameBase extends MinigameBase {
         ctx.font = `${fontSize}px Arial`;
         for (let clue of this.drawnClue) {
             let x = pixelsPerChar * clue.x + margin + pixelsPerChar / 2;
-            let y = fontSize + clue.y * fontSize + margin * 2;
+            let y = fontSize + clue.y * fontSize + 80;
             if (this.IsAlphanumeric(clue.char)) {
                 ctx.fillStyle = "black";
                 ctx.fillRect(x - pixelsPerChar / 2, y - pixelsPerChar, pixelsPerChar - 1, pixelsPerChar + 6);
