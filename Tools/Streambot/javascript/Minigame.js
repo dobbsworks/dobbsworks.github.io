@@ -2,6 +2,8 @@ class MinigameBase {
     timeBeforeStart = 15;
     lastUpdateTimestamp = null;
     initialized = false;
+    instructions = "";
+    gameMode = "UNKNOWN";
     OnGameComplete = () => {}
     
     constructor(onGameComplete) {
@@ -12,6 +14,10 @@ class MinigameBase {
     Tick() {
         if (!this.initialized) {
             this.initialized = true;
+            let instructions = this.GetInstructions() || this.instructions;
+            let openingMessage = `${this.gameMode} minigame starting in ${this.timeBeforeStart} seconds! ` + instructions;
+            this.WriteMessage(openingMessage);
+
             if (this.Initialize) this.Initialize();
             this.lastUpdateTimestamp = new Date();
         }
@@ -54,6 +60,10 @@ class MinigameWordGameBase extends MinigameBase {
     guesses = [];
     lastUpdateTimestamp = null;
     initialized = false;
+
+    GetInstructions() {
+        return `The category is ${puzzle.category}. ` + this.instructions;
+    }
 
     IsAlphanumeric(char) {
         let alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -154,6 +164,8 @@ class MinigameWordGameBase extends MinigameBase {
 }
 
 class MinigameScramble extends MinigameWordGameBase {
+    gameMode = "SCRAMBLE";
+    instructions = "When the puzzle appears, guess the answer with !guess MY ANSWER";
 
     Initialize() {
         let puzzle = this.GetPuzzle();
@@ -208,7 +220,7 @@ class MinigameScramble extends MinigameWordGameBase {
         });
         let outOfPlaceIndexes = targetMap.map((target, i) => ({ target: target, current: i })).filter(a => a.target !== a.current);
         let randomIndextoCorrect = outOfPlaceIndexes[Math.floor(outOfPlaceIndexes.length * Math.random())];
-        SwapLetters(randomIndextoCorrect.target, randomIndextoCorrect.current);
+        this.SwapLetters(randomIndextoCorrect.target, randomIndextoCorrect.current);
     }
 
     SwapLetters(indexA, indexB) {
@@ -233,6 +245,8 @@ class MinigameScramble extends MinigameWordGameBase {
 
 
 class MinigameHangman extends MinigameWordGameBase {
+    gameMode = "HANGMAN";
+    instructions = "Guess letters with !guess X, or guess the full answer with !guess MY ANSWER";
     hideCharacter = "+";
     winningPoints = 50;
 
