@@ -36,7 +36,7 @@ class MinigameBase {
 
     AwardPoints(username, amount, pretext) {
         pointHandler.addPoints(username, amount);
-        let message = `${user.username} has received ${pointHandler.formatValue(10)}.`;
+        let message = `${username} has received ${pointHandler.formatValue(10)}.`;
         if (pretext) message = pretext + " " + message;
         this.WriteMessage(message);
     }
@@ -87,7 +87,8 @@ class MinigameWordGameBase extends MinigameBase {
                 this.msSinceLastReveal = 0;
                 if (this.Hint) this.Hint();
                 if (this.correctAnswer.toUpperCase() === this.displayedClue.toUpperCase()) {
-                    // gameover
+                    this.WriteMessage("Too bad! The correct answer was: " + this.correctAnswer);
+                    this.OnGameComplete();
                 } else {
                     this.WriteMessage(this.displayedClue);
                 }
@@ -367,6 +368,7 @@ var MinigameHandler = {
 
     OnGameOver: () => {
         MinigameHandler.handlerState = "inactive";
+        MinigameHandler.currentGame = null;
         if (MinigameHandler.repeatMode) {
             setTimeout(() => { MinigameHandler.StartGame(); }, 1000);
         }
