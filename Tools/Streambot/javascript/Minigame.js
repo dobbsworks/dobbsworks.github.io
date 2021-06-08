@@ -137,7 +137,6 @@ class MinigameWordGameBase extends MinigameBase {
 
             if (Math.abs(clue.y - clue.targetY) < 0.05) {
                 clue.y = clue.targetY;
-                if (clue.targetY !== 0) clue.targetY = 0;
             } else {
                 clue.y += (clue.targetY - clue.y) * 0.02;
             }
@@ -155,8 +154,8 @@ class MinigameWordGameBase extends MinigameBase {
 
         if (this.state === "active") {
             let margin = 10;
-            let pixelsPerChar = (ctx.canvas.width - margin * 2) / this.drawnClue.length;
-            let fontSize = pixelsPerChar; //16;
+            let pixelsPerChar = 25;
+            let fontSize = pixelsPerChar; 
             ctx.font = `${fontSize}px Arial`;
             for (let clue of this.drawnClue) {
                 let x = pixelsPerChar * clue.x + margin + pixelsPerChar / 2;
@@ -178,6 +177,39 @@ class MinigameWordGameBase extends MinigameBase {
         this.OnGameComplete();
         setTimeout(() => { this.AwardPoints(user.username, this.winningPoints); }, 1000);
     }
+
+    TileOutText(text) {
+        let words = text.split(" ");
+        let lines = [];
+        while (words.length > 0) {
+            let word = words.splice(0, 1)[0];
+            if (lines.length === 0) {
+                lines.push(word);
+            } else {
+                let currentLineLength = lines[lines.length-1].length;
+                if (currentLineLength + word.length >= 14) {
+                    lines.push(word);
+                } else {
+                    lines[lines.length-1] += " " + word;
+                }
+            }
+        }
+
+        let ret = [];
+        for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+            let line = lines[lineIndex];
+            let chars = line.split("");
+            let mid = line.length / 2;
+            chars.map((char, index) => ({
+                char: char, 
+                x: 8 - (index - mid), 
+                targetX: mid - index, 
+                y: -2, 
+                targetY: lineIndex 
+            }))
+        }
+        return ret;
+    }
 }
 
 class MinigameScramble extends MinigameWordGameBase {
@@ -189,7 +221,7 @@ class MinigameScramble extends MinigameWordGameBase {
         this.correctAnswer = puzzle.answer;
         this.category = puzzle.category;
         this.displayedClue = this.ScrambleWord(this.correctAnswer);
-        this.drawnClue = this.displayedClue.split("").map((char, index) => ({ char: char, x: index, targetX: index, y: 0, targetY: 0 }))
+        this.drawnClue = this.TileOutText(this.displayedClue);
     }
 
 
@@ -264,8 +296,9 @@ class MinigameScramble extends MinigameWordGameBase {
         if (charA !== undefined && charB !== undefined) {
             charA.targetX = indexB;
             charB.targetX = indexA;
-            charA.targetY = Math.random() > 0.5 ? -1 : 1;
-            charB.targetY = -charA.targetY;
+            let y = charA.targetY;
+            charA.targetY = charB.targetY;
+            charB.targetY = y;
         } else {
             console.error("Uh oh, undefined char", this.drawnClue, indexA, indexB);
         }
@@ -283,8 +316,11 @@ class MinigameHangman extends MinigameWordGameBase {
         let puzzle = this.GetPuzzle();
         this.correctAnswer = puzzle.answer;
         this.category = puzzle.category;
-        this.displayedClue = this.HideWord(this.correctAnswer);
-        this.drawnClue = this.correctAnswer.split("").map((char, index) => ({ char: char, x: index, targetX: index, y: 0, targetY: 0, hidden: this.IsAlphanumeric(char) }))
+        this.displayedClue = this.HideWord(this.correctAnswer);        
+        this.drawnClue = this.TileOutText(this.displayedClue);
+        this.drawnClue.forEach(t => {
+            if (this.IsAlphanumeric(t.char)) t.hidden = true;
+        })
     }
 
     OnGuess(user, guess) {
@@ -397,24 +433,23 @@ var MinigameHandler = {
     },
 
     ProcessGame: () => {
+        let ctx = MinigameHandler.ctx;
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         let currentGame = MinigameHandler.currentGame;
         if (currentGame) {
             currentGame.Tick();
             if (currentGame.Draw) {
-                currentGame.Draw(MinigameHandler.ctx);
+                currentGame.Draw(ctx);
             }
-            MinigameHandler.DrawScores(MinigameHandler.ctx);
-        } else {
-            let ctx = MinigameHandler.ctx;
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         }
+        MinigameHandler.DrawScores(ctx);
     },
 
     DrawScores: (ctx) => {
         if (MinigameHandler.points.length !== 0) {
             MinigameHandler.points.sort((a, b) => b.points - a.points);
             let y = MinigameHandler.ctx.canvas.height / 2;
-            let x = 30;
+            let x = 60;
 
             ctx.font = `${20}px Arial`;
             ctx.fillStyle = "#EEE";
@@ -428,7 +463,7 @@ var MinigameHandler = {
                 ctx.textAlign = "left";
                 ctx.fillText(record.username, x, y);
                 ctx.textAlign = "right";
-                ctx.fillText(record.points.toFixed(0), MinigameHandler.ctx.canvas.width - 30, y);
+                ctx.fillText(record.points.toFixed(0), MinigameHandler.ctx.canvas.width - x, y);
                 y += 20;
             }
         }
@@ -444,6 +479,8 @@ var MinigameHandler = {
         MinigameHandler.currentGame = null;
         if (MinigameHandler.repeatMode) {
             setTimeout(() => { MinigameHandler.StartGame(); }, 1000);
+        } else {
+            if (MinigameHandler.window) MinigameHandler.window.close();
         }
     },
 
