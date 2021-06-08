@@ -451,7 +451,7 @@ class MinigameMatch extends MinigameBase {
         { chatText: "cloud", chatCode: "☁", xIndex: 3, yIndex: 2 },
     ];
     cards = [];
-    cardImage = MinigameHandler.window.document.getElementById("card");
+    cardImage = MinigameHandler.cardImage;
 
     Initialize() {
         let pairsNeeded = this.numCols * this.numRows / 2;
@@ -544,6 +544,7 @@ var MinigameHandler = {
     winner: null,
     window: null,
     ctx: null,
+    cardImage: null,
 
     currentGame: null,
     interval: null,
@@ -648,7 +649,9 @@ var MinigameHandler = {
         MinigameHandler.window.document.writeln(`<image id="card" style="display: none;" src="https://dobbsworks.github.io/Tools/Streambot/images/cards.png"></image>`);
         MinigameHandler.window.document.title = "Minigame";
         let canvas = MinigameHandler.window.document.getElementById("canvas");
+        let cardImage = MinigameHandler.window.document.getElementById("card");
         MinigameHandler.ctx = canvas.getContext("2d");
+        MinigameHandler.cardImage = cardImage;
     },
 };
 MinigameHandler.Init();
