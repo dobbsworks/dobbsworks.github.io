@@ -467,7 +467,7 @@ class MinigameMatch extends MinigameBase {
             deck.push(cardType, cardType);
         }
         deck = this.GetShuffledArray(deck);
-        this.cards = deck.map((a,i) => ({
+        this.cards = deck.map((a, i) => ({
             cardType: a,
             index: i,
             x: i % this.numCols,
@@ -502,6 +502,7 @@ class MinigameMatch extends MinigameBase {
         let message = `Flipped ${this.CardText(card1)} and ${this.CardText(card2)}. `
         if (card1.state !== "up" && card2.state !== "up" && card1.cardType === card2.cardType) {
             // MATCH!
+            message += " It's a match!"
             card1.state = "up";
             card2.state = "up";
             this.AwardPoints(user.username, 25, message);
@@ -522,22 +523,23 @@ class MinigameMatch extends MinigameBase {
         if (card.state === "down" || card.state === "hint") {
             card.state = "hint";
         }
-        card.hintTimer = 240;
+        card.hintTimer = 180;
         return card;
     }
 
     GameLoop(msTick) {
         // handle cards flipping
-        let rotationSpeed = Math.PI/120 * msTick / 8;
         for (let card of this.cards) {
-            if (card.state === "down") {
-                card.rotation -= rotationSpeed;
-                if (card.rotation < 0.001) card.rotation = 0;
-            }
+            let targetRotation = 0;
             if (card.state !== "down") {
-                card.rotation += rotationSpeed;
-                if (card.rotation > Math.PI) card.rotation = Math.PI;
+                targetRotation = Math.PI;
             }
+            
+            card.rotation += (targetRotation - card.rotation) * 0.05;
+            if (Math.abs(card.rotation - targetRotation) < 0.01) {
+                card.rotation = targetRotation;
+            }
+
             if (card.hintTimer) {
                 card.hintTimer--;
             }
@@ -566,23 +568,24 @@ class MinigameMatch extends MinigameBase {
             let cardScale = 1 - Math.sin(card.rotation);
             let dx = baseX + colWidth * card.x;
             let dy = baseY + rowHeight * card.y;
-            ctx.drawImage(this.cardImage, sx, sy, this.cardWidth, this.cardHeight, 
-                dx + xOffset, dy, this.cardWidth * cardScale, this.cardHeight);
-
             if (card.state === "up") {
                 ctx.fillStyle = "#FF0";
-                ctx.fillRect(dx + xOffset, dy, this.cardWidth * cardScale, this.cardHeight);
+                ctx.fillRect(dx + xOffset - 1, dy - 1, this.cardWidth * cardScale + 2, this.cardHeight + 2);
             }
-                
-            ctx.fillStyle = "#333";
-            ctx.beginPath();
-            ctx.arc(dx, dy, 10, 0, 2 * Math.PI);
-            ctx.fill();
+            ctx.drawImage(this.cardImage, sx, sy, this.cardWidth, this.cardHeight,
+                dx + xOffset, dy, this.cardWidth * cardScale, this.cardHeight);
 
-            ctx.font = `${16}px Arial`;
-            ctx.fillStyle = "#EEE";
-            ctx.textAlign = "center";
-            ctx.fillText(card.key, dx, dy + 5);
+            if (card.state !== "up") {
+                ctx.fillStyle = "#333";
+                ctx.beginPath();
+                ctx.arc(dx, dy, 10, 0, 2 * Math.PI);
+                ctx.fill();
+
+                ctx.font = `${16}px Arial`;
+                ctx.fillStyle = "#EEE";
+                ctx.textAlign = "center";
+                ctx.fillText(card.key, dx, dy + 6);
+            }
         }
     }
 }
