@@ -75,14 +75,13 @@ class MinigameWordGameBase extends MinigameBase {
     guesses = [];
     lastUpdateTimestamp = null;
     initialized = false;
-    alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     GetInstructions() {
         return `The category is ${this.category}. ` + this.instructions;
     }
 
     IsAlphanumeric(char) {
-        let alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let alpha = MinigameHandler.alpha;
         return alpha.indexOf(char) > -1 || alpha.toLowerCase().indexOf(char) > -1;
     }
 
@@ -357,7 +356,7 @@ class MinigameHangman extends MinigameWordGameBase {
         ctx.font = `${18}px Arial`;
         ctx.fillStyle = "white";
 
-        let chars = this.alpha;
+        let chars = MinigameHandler.alpha;
         let x = 37;
         let y = 320;
         for (let char of chars) {
@@ -466,7 +465,7 @@ class MinigameMatch extends MinigameBase {
             index: i,
             x: i % this.numCols,
             y: Math.floor(i / this.numCols),
-            key: this.alpha[i],
+            key: MinigameHandler.alpha[i],
             state: "down", // down, up, hint
             hintTimer: 0,
             rotation: 0, // [0,PI] = [face down, face up]
@@ -539,6 +538,7 @@ class MinigameMatch extends MinigameBase {
 
 var MinigameHandler = {
     gameTypes: [MinigameScramble, MinigameHangman, MinigameMatch],
+    alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
     handlerState: "inactive",
     repeatMode: false,
     winner: null,
