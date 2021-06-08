@@ -218,7 +218,7 @@ class MinigameWordGameBase extends MinigameBase {
             }));
             ret.push(...lineTiles);
         }
-        ret.forEach((a,i) => a.originalIndex = i);
+        ret.forEach((a,i) => a.tileIndex = i);
         return ret;
     }
 }
@@ -302,8 +302,8 @@ class MinigameScramble extends MinigameWordGameBase {
         chars[indexB] = temp;
         this.displayedClue = chars.join("");
 
-        let charA = this.drawnClue.find(a => a.originalIndex === indexA);
-        let charB = this.drawnClue.find(a => a.originalIndex === indexB);
+        let charA = this.drawnClue.find(a => a.tileIndex === indexA);
+        let charB = this.drawnClue.find(a => a.tileIndex === indexB);
         if (charA !== undefined && charB !== undefined) {
             let x = charA.targetX;
             charA.targetX = charB.targetX;
@@ -314,6 +314,9 @@ class MinigameScramble extends MinigameWordGameBase {
         } else {
             console.error("Uh oh, undefined char", this.drawnClue, indexA, indexB);
         }
+        this.displayedClue.forEach((tile,index) => {
+            tile.tileIndex = index;
+        })
     }
 }
 
@@ -342,7 +345,7 @@ class MinigameHangman extends MinigameWordGameBase {
         ctx.fillStyle = "white";
 
         let chars = this.alpha;
-        let x = 25;
+        let x = 37;
         let y = 320;
         for (let char of chars) {
             ctx.fillStyle = "white";
@@ -350,7 +353,7 @@ class MinigameHangman extends MinigameWordGameBase {
                 ctx.fillStyle = "#555";
             }
             ctx.fillText(char, x, y);
-            x += 25;
+            x += 37;
             if (x >= ctx.canvas.width - 15) {
                 x = 25;
                 y += 25;
