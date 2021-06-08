@@ -569,7 +569,7 @@ class MinigameMatch extends MinigameBase {
                 sy = 0;
             }
             let xOffset = Math.sin(card.rotation) * this.cardWidth / 2;
-            let cardScale = 1 - Math.sin(card.rotation);
+            let cardScale = 1 - Math.abs(Math.sin(card.rotation));
             let dx = baseX + colWidth * card.x;
             let dy = baseY + rowHeight * card.y;
             if (card.state === "up") {
