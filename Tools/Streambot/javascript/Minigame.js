@@ -311,12 +311,12 @@ class MinigameScramble extends MinigameWordGameBase {
             let y = charA.targetY;
             charA.targetY = charB.targetY;
             charB.targetY = y;
+            let i = charA.tileIndex;
+            charA.tileIndex = charB.tileIndex;
+            charB.tileIndex = i;
         } else {
             console.error("Uh oh, undefined char", this.drawnClue, indexA, indexB);
         }
-        this.displayedClue.forEach((tile,index) => {
-            tile.tileIndex = index;
-        })
     }
 }
 
