@@ -563,7 +563,7 @@ class MinigameMatch extends MinigameBase {
         for (let card of this.cards) {
             let sx = card.cardType.xIndex * this.cardWidth;
             let sy = card.cardType.yIndex * this.cardHeight;
-            if ((card.rotation % (2*Math.PI)) < Math.PI / 2) {
+            if (Math.cos(card.rotation) > 0) {
                 // is face down
                 sx = 0;
                 sy = 0;
