@@ -149,8 +149,8 @@ class MinigameWordGameBase extends MinigameBase {
         ctx.textAlign = "center";
         ctx.font = `${20}px Arial`;
         ctx.fillStyle = "white";
-        ctx.fillText(`${this.gameMode} Minigame`, ctx.canvas.width / 2, 20);
-        ctx.fillText(`Category: ${this.category}`, ctx.canvas.width / 2, 40);
+        ctx.fillText(`${this.gameMode} Minigame`, ctx.canvas.width / 2, 60);
+        ctx.fillText(`Category: ${this.category}`, ctx.canvas.width / 2, 80);
 
         if (this.state === "active") {
             let margin = 10;
@@ -159,7 +159,7 @@ class MinigameWordGameBase extends MinigameBase {
             ctx.font = `${fontSize}px Arial`;
             for (let clue of this.drawnClue) {
                 let x = pixelsPerChar * clue.x + margin + pixelsPerChar / 2;
-                let y = fontSize + clue.y * fontSize + 80;
+                let y = fontSize + clue.y * fontSize + 120;
                 if (this.IsAlphanumeric(clue.char)) {
                     ctx.fillStyle = "black";
                     ctx.fillRect(x - pixelsPerChar / 2, y - pixelsPerChar, pixelsPerChar - 1, pixelsPerChar + 6);
