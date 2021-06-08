@@ -200,13 +200,14 @@ class MinigameWordGameBase extends MinigameBase {
             let line = lines[lineIndex];
             let chars = line.split("");
             let mid = line.length / 2;
-            chars.map((char, index) => ({
+            let lineTiles = chars.map((char, index) => ({
                 char: char, 
                 x: 8 - (index - mid), 
                 targetX: mid - index, 
                 y: -2, 
                 targetY: lineIndex 
-            }))
+            }));
+            ret.push(...lineTiles);
         }
         return ret;
     }
