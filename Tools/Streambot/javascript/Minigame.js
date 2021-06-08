@@ -159,13 +159,13 @@ class MinigameWordGameBase extends MinigameBase {
             ctx.font = `${fontSize}px Arial`;
             for (let clue of this.drawnClue) {
                 let x = pixelsPerChar * clue.x + margin + pixelsPerChar / 2;
-                let y = fontSize + clue.y * fontSize + 120;
+                let y = fontSize + clue.y * (fontSize + 20) + 120;
                 if (this.IsAlphanumeric(clue.char)) {
                     ctx.fillStyle = "black";
-                    ctx.fillRect(x - pixelsPerChar / 2, y - pixelsPerChar, pixelsPerChar - 1, pixelsPerChar + 6);
+                    ctx.fillRect(x - pixelsPerChar / 2, y - pixelsPerChar, pixelsPerChar, pixelsPerChar + 6);
                     ctx.lineWidth = 1;
                     ctx.strokeStyle = "#CCC";
-                    ctx.strokeRect(x - pixelsPerChar / 2, y - pixelsPerChar, pixelsPerChar - 1, pixelsPerChar + 6);
+                    ctx.strokeRect(x - pixelsPerChar / 2, y - pixelsPerChar, pixelsPerChar, pixelsPerChar + 6);
                 }
                 if (!clue.hidden) {
                     ctx.fillStyle = "white";
@@ -191,6 +191,7 @@ class MinigameWordGameBase extends MinigameBase {
             } else {
                 let currentLineLength = lines[lines.length-1].length;
                 if (currentLineLength + word.length >= 14) {
+                    lines[lines.length-1] += " ";
                     lines.push(word);
                 } else {
                     lines[lines.length-1] += " " + word;
