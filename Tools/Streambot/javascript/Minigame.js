@@ -486,6 +486,10 @@ class MinigameMatch extends MinigameBase {
 
     ProcessGuess(user, guess) {
         if (!guess) return;
+
+        let tooSoon = this.IsUserTooSoon(user, guess);
+        if (tooSoon) return;
+
         let keys = guess.toUpperCase().split(" ");
         let card1 = this.FlipCard(keys[0]);
         let card2 = this.FlipCard(keys[1]);
@@ -495,11 +499,8 @@ class MinigameMatch extends MinigameBase {
             return;
         }
 
-        let tooSoon = this.IsUserTooSoon(user, guess);
-        if (tooSoon) return;
-
         let message = `Flipped ${this.CardText(card1)} and ${this.CardText(card2)}. `
-        if (card1.state !== "up" && card2.state !== "up") {
+        if (card1.state !== "up" && card2.state !== "up" && card1.cardType === card2.cardType) {
             // MATCH!
             card1.state = "up";
             card2.state = "up";
@@ -511,7 +512,7 @@ class MinigameMatch extends MinigameBase {
 
     CardText(card) {
         let isUp = card.state === "up";
-        return `[${card1.key}] ${card1.print}` + (isUp ? ` (already matched)` : "");
+        return `[${card.key}] ${card.print}` + (isUp ? ` (already matched)` : "");
     }
 
     FlipCard(key) {
@@ -567,6 +568,11 @@ class MinigameMatch extends MinigameBase {
             let dy = baseY + rowHeight * card.y;
             ctx.drawImage(this.cardImage, sx, sy, this.cardWidth, this.cardHeight, 
                 dx + xOffset, dy, this.cardWidth * cardScale, this.cardHeight);
+
+            if (card.state === "up") {
+                ctx.fillStyle = "#FF0";
+                ctx.fillRect(dx + xOffset, dy, this.cardWidth * cardScale, this.cardHeight);
+            }
                 
             ctx.fillStyle = "#333";
             ctx.beginPath();
@@ -576,7 +582,7 @@ class MinigameMatch extends MinigameBase {
             ctx.font = `${16}px Arial`;
             ctx.fillStyle = "#EEE";
             ctx.textAlign = "center";
-            ctx.fillText(card.key, dx, dy + 10);
+            ctx.fillText(card.key, dx, dy + 5);
         }
     }
 }
