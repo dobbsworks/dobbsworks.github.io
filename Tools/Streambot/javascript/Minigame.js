@@ -127,7 +127,7 @@ class MinigameWordGameBase extends MinigameBase {
     ProcessGuess(user, guess) {
         if (this.state === "starting") return;
 
-        let tooSoon = IsUserTooSoon(user, guess);
+        let tooSoon = this.IsUserTooSoon(user, guess);
         if (tooSoon) return;
 
         // allow missing special characters
@@ -495,7 +495,7 @@ class MinigameMatch extends MinigameBase {
             return;
         }
 
-        let tooSoon = IsUserTooSoon(user, guess);
+        let tooSoon = this.IsUserTooSoon(user, guess);
         if (tooSoon) return;
 
         let message = `Flipped ${this.CardText(card1)} and ${this.CardText(card2)}. `
@@ -511,7 +511,7 @@ class MinigameMatch extends MinigameBase {
 
     CardText(card) {
         let isUp = card.state === "up";
-        return `${card1.key} ${card1.print}` + (isUp ? ` (already matched)` : "");
+        return `[${card1.key}] ${card1.print}` + (isUp ? ` (already matched)` : "");
     }
 
     FlipCard(key) {
@@ -521,13 +521,13 @@ class MinigameMatch extends MinigameBase {
         if (card.state === "down" || card.state === "hint") {
             card.state = "hint";
         }
-        card.hintTimer = 120;
+        card.hintTimer = 240;
         return card;
     }
 
     GameLoop(msTick) {
         // handle cards flipping
-        let rotationSpeed = Math.PI/120 * msTick / 16;
+        let rotationSpeed = Math.PI/120 * msTick / 8;
         for (let card of this.cards) {
             if (card.state === "down") {
                 card.rotation -= rotationSpeed;
@@ -548,7 +548,7 @@ class MinigameMatch extends MinigameBase {
 
     Draw(ctx) {
         let margin = 20;
-        let baseX = 40;
+        let baseX = 30;
         let rowHeight = this.cardHeight + margin;
         let colWidth = this.cardWidth + margin;
         let baseY = 30;
@@ -563,17 +563,17 @@ class MinigameMatch extends MinigameBase {
             }
             let xOffset = Math.sin(card.rotation) * this.cardWidth / 2;
             let cardScale = 1 - Math.sin(card.rotation);
-            let dx = baseX + colWidth * card.x + xOffset;
+            let dx = baseX + colWidth * card.x;
             let dy = baseY + rowHeight * card.y;
             ctx.drawImage(this.cardImage, sx, sy, this.cardWidth, this.cardHeight, 
-                dx, dy, this.cardWidth * cardScale, this.cardHeight);
+                dx + xOffset, dy, this.cardWidth * cardScale, this.cardHeight);
                 
             ctx.fillStyle = "#333";
             ctx.beginPath();
             ctx.arc(dx, dy, 10, 0, 2 * Math.PI);
             ctx.fill();
 
-            ctx.font = `${20}px Arial`;
+            ctx.font = `${16}px Arial`;
             ctx.fillStyle = "#EEE";
             ctx.textAlign = "center";
             ctx.fillText(card.key, dx, dy + 10);
