@@ -16,7 +16,11 @@ class MinigameBase {
             this.initialized = true;
             if (this.Initialize) this.Initialize();
             let instructions = this.GetInstructions() || this.instructions;
-            let openingMessage = `${this.gameMode} minigame starting in ${this.timeBeforeStart} seconds! ` + instructions;
+            let timeMessage = `${this.gameMode} minigame starting in ${this.timeBeforeStart} seconds! `;
+            if (!this.timeBeforeStart) {
+                timeMessage = `${this.gameMode} minigame starting now! `;
+            }
+            let openingMessage = timeMessage + instructions;
             this.WriteMessage(openingMessage);
 
             this.lastUpdateTimestamp = new Date();
@@ -41,12 +45,22 @@ class MinigameBase {
         this.WriteMessage(message);
         MinigameHandler.LogPoints(username, amount);
     }
+
+    GetShuffledArray(array) {
+        let scrambled = [];
+        let startArray = [...array]; // copy to avoid editing original array
+        while (startArray.length) {
+            let randomIndex = Math.floor(Math.random() * startArray.length);
+            let item = startArray.splice(randomIndex, 1)[0];
+            scrambled.push(item);
+        }
+        return scrambled;
+    }
 }
 
 class MinigameWordGameBase extends MinigameBase {
     state = "starting";
     winningPoints = 100;
-    timeBeforeStart = 15;
     category = "???";
     correctAnswer = "";
     displayedClue = "";
@@ -157,7 +171,7 @@ class MinigameWordGameBase extends MinigameBase {
         if (this.state === "active") {
             let margin = 10;
             let pixelsPerChar = 25;
-            let fontSize = pixelsPerChar; 
+            let fontSize = pixelsPerChar;
             ctx.font = `${fontSize}px Arial`;
             for (let clue of this.drawnClue) {
                 let x = pixelsPerChar * clue.x + margin + pixelsPerChar / 2;
@@ -193,12 +207,12 @@ class MinigameWordGameBase extends MinigameBase {
             if (lines.length === 0) {
                 lines.push(word);
             } else {
-                let currentLineLength = lines[lines.length-1].length;
+                let currentLineLength = lines[lines.length - 1].length;
                 if (currentLineLength + word.length >= 14) {
-                    lines[lines.length-1] += " ";
+                    lines[lines.length - 1] += " ";
                     lines.push(word);
                 } else {
-                    lines[lines.length-1] += " " + word;
+                    lines[lines.length - 1] += " " + word;
                 }
             }
         }
@@ -207,18 +221,18 @@ class MinigameWordGameBase extends MinigameBase {
         for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
             let line = lines[lineIndex];
             let chars = line.split("");
-            let mid = (line.length-1) / 2;
+            let mid = (line.length - 1) / 2;
             let shiftRight = line.endsWith(" ");
             let lineTiles = chars.map((char, index) => ({
-                char: char, 
-                x: 7, 
-                targetX: 7 + (index - mid) + (shiftRight ? 0.5 : 0), 
-                y: -2, 
-                targetY: lineIndex 
+                char: char,
+                x: 7,
+                targetX: 7 + (index - mid) + (shiftRight ? 0.5 : 0),
+                y: -2,
+                targetY: lineIndex
             }));
             ret.push(...lineTiles);
         }
-        ret.forEach((a,i) => a.tileIndex = i);
+        ret.forEach((a, i) => a.tileIndex = i);
         return ret;
     }
 }
@@ -320,7 +334,6 @@ class MinigameScramble extends MinigameWordGameBase {
     }
 }
 
-
 class MinigameHangman extends MinigameWordGameBase {
     gameMode = "HANGMAN";
     instructions = "Guess letters with !guess X, or guess the full answer with !guess MY ANSWER";
@@ -332,7 +345,7 @@ class MinigameHangman extends MinigameWordGameBase {
         let puzzle = this.GetPuzzle();
         this.correctAnswer = puzzle.answer;
         this.category = puzzle.category;
-        this.displayedClue = this.HideWord(this.correctAnswer);        
+        this.displayedClue = this.HideWord(this.correctAnswer);
         this.drawnClue = this.TileOutText(this.correctAnswer);
         this.drawnClue.forEach(t => {
             if (this.IsAlphanumeric(t.char)) t.hidden = true;
@@ -418,9 +431,114 @@ class MinigameHangman extends MinigameWordGameBase {
     }
 }
 
+class MinigameMatch extends MinigameBase {
+    timeBeforeStart = 0;
+    cardHeight = 60;
+    cardWidth = 40;
+    numRows = 3;
+    numCols = 6;
+    cardTypes = [
+        { chatText: "mushroom", chatCode: "🍄", xIndex: 1, yIndex: 0 },
+        { chatText: "flower", chatCode: "🌼", xIndex: 2, yIndex: 0 },
+        { chatText: "star", chatCode: "⭐", xIndex: 3, yIndex: 0 },
+        { chatText: "leaf", chatCode: "🍁", xIndex: 0, yIndex: 1 },
+        { chatText: "hammer", chatCode: "🔨", xIndex: 1, yIndex: 1 },
+        { chatText: "coin", chatCode: "💰", xIndex: 2, yIndex: 1 },
+        { chatText: "anchor", chatCode: "⚓", xIndex: 3, yIndex: 1 },
+        { chatText: "frog", chatCode: "🐸", xIndex: 0, yIndex: 2 },
+        { chatText: "tanooki", chatCode: "🐻", xIndex: 1, yIndex: 2 },
+        { chatText: "shoe", chatCode: "👞", xIndex: 2, yIndex: 2 },
+        { chatText: "cloud", chatCode: "☁", xIndex: 3, yIndex: 2 },
+    ];
+    cards = [];
+    cardImage = MinigameHandler.window.document.getElementById("card");
+
+    Initialize() {
+        let pairsNeeded = this.numCols * this.numRows / 2;
+        let deck = [];
+        for (let i = 0; i < pairsNeeded; i++) {
+            let cardType = this.cardTypes[Math.floor(Math.random() * this.cardTypes.length)];
+            deck.push(cardType, cardType);
+        }
+        deck = this.GetShuffledArray(deck);
+        this.cards = deck.map((a,i) => ({
+            cardType: a,
+            index: i,
+            x: i % this.numCols,
+            y: Math.floor(i / this.numCols),
+            key: this.alpha[i],
+            state: "down", // down, up, hint
+            hintTimer: 0,
+            rotation: 0, // [0,PI] = [face down, face up]
+        }));
+    }
+
+    GetInstructions() {
+        return "Guess matching pairs with !guess A B";
+    }
+
+    ProcessGuess(user, guess) {
+        // TODO
+    }
+
+    GameLoop(msTick) {
+        // handle cards flipping
+        if (this.state === "starting") {
+            this.msIntroTimer += msTick;
+            if (this.msIntroTimer > this.msIntroWaitTime) {
+                this.state = "active";
+                this.WriteMessage(this.displayedClue);
+            }
+        } else {
+            this.msSinceLastReveal += msTick;
+            if (this.msSinceLastReveal > this.msBetweenHints) {
+                this.msSinceLastReveal = 0;
+                if (this.Hint) this.Hint();
+                if (this.correctAnswer.toUpperCase() === this.displayedClue.toUpperCase()) {
+                    this.WriteMessage("Too bad! The correct answer was: " + this.correctAnswer);
+                    this.OnGameComplete();
+                } else {
+                    this.WriteMessage(this.displayedClue);
+                }
+            }
+        }
+    }
+
+    Draw(ctx) {
+        let margin = 20;
+        let baseX = 40;
+        let rowHeight = this.cardHeight + margin;
+        let colWidth = this.cardWidth + margin;
+        let baseY = 30;
+
+        for (let card of this.cards) {
+            let sx = card.cardType.xIndex * this.cardWidth;
+            let sy = card.cardType.yIndex * this.cardHeight;
+            if (card.rotation < Math.PI / 2) {
+                // is face down
+                sx = 0;
+                sy = 0;
+            }
+            let dx = baseX + colWidth * card.x;
+            let dy = baseY + rowHeight * card.y;
+            ctx.drawImage(this.cardImage, sx, sy, this.cardWidth, this.cardHeight, 
+                dx, dy, this.cardWidth, this.cardHeight);
+                
+            ctx.fillStyle = "#333";
+            ctx.beginPath();
+            ctx.arc(dx, dy, 15, 0, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.font = `${20}px Arial`;
+            ctx.fillStyle = "#EEE";
+            ctx.textAlign = "center";
+            ctx.fillText(card.key, dx, dy);
+        }
+    }
+}
 
 var MinigameHandler = {
-    gameTypes: [MinigameScramble, MinigameHangman],
+    gameTypes: [MinigameScramble, MinigameHangman, MinigameMatch],
     handlerState: "inactive",
     repeatMode: false,
     winner: null,
@@ -462,6 +580,7 @@ var MinigameHandler = {
             return;
         }
         let gameType = MinigameHandler.gameTypes[Math.floor(Math.random() * MinigameHandler.gameTypes.length)];
+        gameType = MinigameMatch;
         MinigameHandler.currentGame = new gameType(MinigameHandler.OnGameOver);
         MinigameHandler.handlerState = "starting";
     },
@@ -526,6 +645,7 @@ var MinigameHandler = {
     CreateWindow: () => {
         MinigameHandler.window = window.open("", "Minigame", "width=400,height=800");
         MinigameHandler.window.document.writeln(`<canvas width="400" height="800" id="canvas" style="background-color: #18181b; position:fixed; left:0; top:0;"></canvas>`);
+        MinigameHandler.window.document.writeln(`<image id="card" style="display: none;" src="https://dobbsworks.github.io/Tools/Streambot/images/cards.png"></image>`);
         MinigameHandler.window.document.title = "Minigame";
         let canvas = MinigameHandler.window.document.getElementById("canvas");
         MinigameHandler.ctx = canvas.getContext("2d");
