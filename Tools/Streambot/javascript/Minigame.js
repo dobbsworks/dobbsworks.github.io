@@ -98,7 +98,7 @@ class MinigameWordGameBase extends MinigameBase {
     }
 
     ProcessGuess(user, guess) {
-        if (state === "starting") return;
+        if (this.state === "starting") return;
         let userGuesses = this.guesses.filter(x => x.username.toUpperCase() === user.username.toUpperCase());
         if (userGuesses.length > 0) {
             let latestGuess = userGuesses[userGuesses.length - 1];
