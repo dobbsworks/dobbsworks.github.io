@@ -538,7 +538,7 @@ class MinigameMatch extends MinigameBase {
 
 var MinigameHandler = {
     gameTypes: [MinigameScramble, MinigameHangman, MinigameMatch],
-    alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+    alpha: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
     handlerState: "inactive",
     repeatMode: false,
     winner: null,
