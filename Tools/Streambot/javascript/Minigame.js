@@ -68,7 +68,8 @@ class MinigameWordGameBase extends MinigameBase {
     }
 
     IsAlphanumeric(char) {
-        return this.alpha.indexOf(char) > -1 || this.alpha.toLowerCase().indexOf(char) > -1;
+        let alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        return alpha.indexOf(char) > -1 || alpha.toLowerCase().indexOf(char) > -1;
     }
 
     GetPuzzle() {
