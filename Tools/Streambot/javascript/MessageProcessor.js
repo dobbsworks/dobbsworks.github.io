@@ -168,9 +168,10 @@ function WriteMessageRaw(message) {
 	let chatInput = document.getElementsByTagName('textarea')[0];
 	let chatButton = [...document.getElementsByTagName('button')].find(x => x.innerText === "Chat");
 
+	let oldValue = chatInput.value;
 	SetInputValue(chatInput, message);
-
 	chatButton.click();
+	SetInputValue(chatInput, oldValue);
 }
 
 function SetInputValue(inputEl, value) {

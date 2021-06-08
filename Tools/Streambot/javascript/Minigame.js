@@ -342,17 +342,17 @@ class MinigameHangman extends MinigameWordGameBase {
         ctx.fillStyle = "white";
 
         let chars = this.alpha;
-        let x = 20;
-        let y = 140;
+        let x = 25;
+        let y = 320;
         for (let char of chars) {
             ctx.fillStyle = "white";
             if (this.guessedChars.indexOf(char) > -1) {
                 ctx.fillStyle = "#555";
             }
             ctx.fillText(char, x, y);
-            x += 20;
-            if (x >= ctx.canvas.width - 20) {
-                x = 20;
+            x += 25;
+            if (x >= ctx.canvas.width - 15) {
+                x = 25;
                 y += 25;
             }
         }
