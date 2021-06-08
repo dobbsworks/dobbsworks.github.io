@@ -147,7 +147,7 @@ class MinigameWordGameBase extends MinigameBase {
 
 
         ctx.textAlign = "center";
-        ctx.font = `${20}px Arial`;
+        ctx.font = `${18}px Arial`;
         ctx.fillStyle = "white";
         ctx.fillText(`${this.gameMode} Minigame`, ctx.canvas.width / 2, 60);
         ctx.fillText(`Category: ${this.category}`, ctx.canvas.width / 2, 80);
