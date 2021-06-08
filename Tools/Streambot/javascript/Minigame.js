@@ -61,14 +61,14 @@ class MinigameWordGameBase extends MinigameBase {
     guesses = [];
     lastUpdateTimestamp = null;
     initialized = false;
+    alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     GetInstructions() {
         return `The category is ${this.category}. ` + this.instructions;
     }
 
     IsAlphanumeric(char) {
-        let alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        return alpha.indexOf(char) > -1 || alpha.toLowerCase().indexOf(char) > -1;
+        return this.alpha.indexOf(char) > -1 || this.alpha.toLowerCase().indexOf(char) > -1;
     }
 
     GetPuzzle() {
@@ -98,6 +98,7 @@ class MinigameWordGameBase extends MinigameBase {
     }
 
     ProcessGuess(user, guess) {
+        if (state === "starting") return;
         let userGuesses = this.guesses.filter(x => x.username.toUpperCase() === user.username.toUpperCase());
         if (userGuesses.length > 0) {
             let latestGuess = userGuesses[userGuesses.length - 1];
@@ -173,6 +174,8 @@ class MinigameWordGameBase extends MinigameBase {
                 }
             }
         }
+
+        if (this.DrawGuessSection) this.DrawGuessSection(ctx);
     }
 
     GameWin(user) {
@@ -204,10 +207,11 @@ class MinigameWordGameBase extends MinigameBase {
             let line = lines[lineIndex];
             let chars = line.split("");
             let mid = (line.length-1) / 2;
+            let shiftRight = line.endsWith(" ");
             let lineTiles = chars.map((char, index) => ({
                 char: char, 
                 x: 7, 
-                targetX: 7 + (index - mid), 
+                targetX: 7 + (index - mid) + (shiftRight ? 0.5 : 0), 
                 y: -2, 
                 targetY: lineIndex 
             }));
@@ -318,6 +322,7 @@ class MinigameHangman extends MinigameWordGameBase {
     instructions = "Guess letters with !guess X, or guess the full answer with !guess MY ANSWER";
     hideCharacter = "+";
     winningPoints = 50;
+    guessedChars = [];
 
     Initialize() {
         let puzzle = this.GetPuzzle();
@@ -328,6 +333,28 @@ class MinigameHangman extends MinigameWordGameBase {
         this.drawnClue.forEach(t => {
             if (this.IsAlphanumeric(t.char)) t.hidden = true;
         })
+    }
+
+    DrawGuessSection(ctx) {
+        ctx.textAlign = "center";
+        ctx.font = `${18}px Arial`;
+        ctx.fillStyle = "white";
+
+        let chars = this.alpha;
+        let x = 20;
+        let y = 140;
+        for (let char of chars) {
+            ctx.fillStyle = "white";
+            if (this.guessedChars.indexOf(char) > -1) {
+                ctx.fillStyle = "#555";
+            }
+            ctx.fillText(char, x, y);
+            x += 20;
+            if (x >= ctx.canvas.width - 20) {
+                x = 20;
+                y += 25;
+            }
+        }
     }
 
     OnGuess(user, guess) {
@@ -370,6 +397,7 @@ class MinigameHangman extends MinigameWordGameBase {
     UnhideCharacter(char) {
         // returns number revealed
         char = char.toUpperCase();
+        this.guessedChars.push(char);
         let newDisplay = "";
         let revealCount = 0;
         for (let i = 0; i < this.displayedClue.length; i++) {
