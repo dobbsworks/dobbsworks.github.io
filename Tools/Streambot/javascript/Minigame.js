@@ -206,7 +206,7 @@ class MinigameWordGameBase extends MinigameBase {
             let lineTiles = chars.map((char, index) => ({
                 char: char, 
                 x: 8, 
-                targetX: 8 - (index - mid), 
+                targetX: 8 + (index - mid), 
                 y: -2, 
                 targetY: lineIndex 
             }));
@@ -299,8 +299,9 @@ class MinigameScramble extends MinigameWordGameBase {
         let charA = this.drawnClue.find(a => a.originalIndex === indexA);
         let charB = this.drawnClue.find(a => a.originalIndex === indexB);
         if (charA !== undefined && charB !== undefined) {
-            charA.targetX = indexB;
-            charB.targetX = indexA;
+            let x = charA.targetX;
+            charA.targetX = charB.targetX;
+            charB.targetX = x;
             let y = charA.targetY;
             charA.targetY = charB.targetY;
             charB.targetY = y;
