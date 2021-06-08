@@ -4,6 +4,8 @@ class MinigameBase {
     initialized = false;
     instructions = "";
     gameMode = "UNKNOWN";
+    msTimeBetweenGuesses = 10 * 1000;
+    guesses = [];
     OnGameComplete = () => { }
 
     constructor(onGameComplete) {
@@ -56,6 +58,22 @@ class MinigameBase {
         }
         return scrambled;
     }
+
+    IsUserTooSoon(user, guess) {
+        let userGuesses = this.guesses.filter(x => x.username.toUpperCase() === user.username.toUpperCase());
+        if (userGuesses.length > 0) {
+            let latestGuess = userGuesses[userGuesses.length - 1];
+            let msSinceLastGuess = (new Date() - latestGuess.timestamp);
+            if (msSinceLastGuess < this.msTimeBetweenGuesses) {
+                // guessing too soon
+                let secondsBetweenGuesses = (this.msTimeBetweenGuesses / 1000).toFixed(0);
+                this.WriteMessage(`${user.username}, you can only guess every ${secondsBetweenGuesses} seconds.`);
+                return true;
+            }
+        }
+        this.guesses.push({ username: user.username, guess: guess, timestamp: new Date() });
+        return false;
+    }
 }
 
 class MinigameWordGameBase extends MinigameBase {
@@ -70,11 +88,6 @@ class MinigameWordGameBase extends MinigameBase {
     msIntroWaitTime = this.timeBeforeStart * 1000;
     msSinceLastReveal = 0;
     msBetweenHints = 30 * 1000;
-
-    msTimeBetweenGuesses = 10 * 1000;
-    guesses = [];
-    lastUpdateTimestamp = null;
-    initialized = false;
 
     GetInstructions() {
         return `The category is ${this.category}. ` + this.instructions;
@@ -113,18 +126,9 @@ class MinigameWordGameBase extends MinigameBase {
 
     ProcessGuess(user, guess) {
         if (this.state === "starting") return;
-        let userGuesses = this.guesses.filter(x => x.username.toUpperCase() === user.username.toUpperCase());
-        if (userGuesses.length > 0) {
-            let latestGuess = userGuesses[userGuesses.length - 1];
-            let msSinceLastGuess = (new Date() - latestGuess.timestamp);
-            if (msSinceLastGuess < this.msTimeBetweenGuesses) {
-                // guessing too soon
-                let secondsBetweenGuesses = (this.msTimeBetweenGuesses / 1000).toFixed(0);
-                this.WriteMessage(`${user.username}, you can only guess every ${secondsBetweenGuesses} seconds.`);
-                return;
-            }
-        }
-        this.guesses.push({ username: user.username, guess: guess, timestamp: new Date() });
+
+        let tooSoon = IsUserTooSoon(user, guess);
+        if (tooSoon) return;
 
         // allow missing special characters
         let trimmedAnswer = this.correctAnswer.split('').filter(this.IsAlphanumeric).join('').toUpperCase();
@@ -431,6 +435,7 @@ class MinigameHangman extends MinigameWordGameBase {
 }
 
 class MinigameMatch extends MinigameBase {
+    gameMode = "MATCHING";
     timeBeforeStart = 0;
     cardHeight = 60;
     cardWidth = 40;
@@ -451,6 +456,8 @@ class MinigameMatch extends MinigameBase {
     ];
     cards = [];
     cardImage = MinigameHandler.cardImage;
+    msTimeBetweenGuesses = 10 * 1000;
+    guesses = [];
 
     Initialize() {
         let pairsNeeded = this.numCols * this.numRows / 2;
@@ -469,6 +476,7 @@ class MinigameMatch extends MinigameBase {
             state: "down", // down, up, hint
             hintTimer: 0,
             rotation: 0, // [0,PI] = [face down, face up]
+            print: a.chatCode + " " + a.chatText,
         }));
     }
 
@@ -477,28 +485,63 @@ class MinigameMatch extends MinigameBase {
     }
 
     ProcessGuess(user, guess) {
-        // TODO
+        if (!guess) return;
+        let keys = guess.toUpperCase().split(" ");
+        let card1 = this.FlipCard(keys[0]);
+        let card2 = this.FlipCard(keys[1]);
+        if (!card1 || !card2 || keys[0] === keys[1]) {
+            // invalid guess!
+            this.WriteMessage(`${user.username}, make sure to include 2 different card letters like this: !guess A B`);
+            return;
+        }
+
+        let tooSoon = IsUserTooSoon(user, guess);
+        if (tooSoon) return;
+
+        let message = `Flipped ${this.CardText(card1)} and ${this.CardText(card2)}. `
+        if (card1.state !== "up" && card2.state !== "up") {
+            // MATCH!
+            card1.state = "up";
+            card2.state = "up";
+            this.AwardPoints(user.username, 25, message);
+        } else {
+            this.WriteMessage(message);
+        }
+    }
+
+    CardText(card) {
+        let isUp = card.state === "up";
+        return `${card1.key} ${card1.print}` + (isUp ? ` (already matched)` : "");
+    }
+
+    FlipCard(key) {
+        if (!key) return null;
+        if (!key.toUpperCase) return null;
+        let card = this.cards.find(a => a.key === key.toUpperCase());
+        if (card.state === "down" || card.state === "hint") {
+            card.state = "hint";
+        }
+        card.hintTimer = 120;
+        return card;
     }
 
     GameLoop(msTick) {
         // handle cards flipping
-        if (this.state === "starting") {
-            this.msIntroTimer += msTick;
-            if (this.msIntroTimer > this.msIntroWaitTime) {
-                this.state = "active";
-                this.WriteMessage(this.displayedClue);
+        let rotationSpeed = Math.PI/120 * msTick / 16;
+        for (let card of this.cards) {
+            if (card.state === "down") {
+                card.rotation -= rotationSpeed;
+                if (card.rotation < 0.001) card.rotation = 0;
             }
-        } else {
-            this.msSinceLastReveal += msTick;
-            if (this.msSinceLastReveal > this.msBetweenHints) {
-                this.msSinceLastReveal = 0;
-                if (this.Hint) this.Hint();
-                if (this.correctAnswer.toUpperCase() === this.displayedClue.toUpperCase()) {
-                    this.WriteMessage("Too bad! The correct answer was: " + this.correctAnswer);
-                    this.OnGameComplete();
-                } else {
-                    this.WriteMessage(this.displayedClue);
-                }
+            if (card.state !== "down") {
+                card.rotation += rotationSpeed;
+                if (card.rotation > Math.PI) card.rotation = Math.PI;
+            }
+            if (card.hintTimer) {
+                card.hintTimer--;
+            }
+            if (card.hintTimer <= 0 && card.state === "hint") {
+                card.state = "down";
             }
         }
     }
@@ -518,20 +561,22 @@ class MinigameMatch extends MinigameBase {
                 sx = 0;
                 sy = 0;
             }
-            let dx = baseX + colWidth * card.x;
+            let xOffset = Math.sin(card.rotation) * this.cardWidth / 2;
+            let cardScale = 1 - Math.sin(card.rotation);
+            let dx = baseX + colWidth * card.x + xOffset;
             let dy = baseY + rowHeight * card.y;
             ctx.drawImage(this.cardImage, sx, sy, this.cardWidth, this.cardHeight, 
-                dx, dy, this.cardWidth, this.cardHeight);
+                dx, dy, this.cardWidth * cardScale, this.cardHeight);
                 
             ctx.fillStyle = "#333";
             ctx.beginPath();
-            ctx.arc(dx, dy, 15, 0, 2 * Math.PI);
+            ctx.arc(dx, dy, 10, 0, 2 * Math.PI);
             ctx.fill();
 
             ctx.font = `${20}px Arial`;
             ctx.fillStyle = "#EEE";
             ctx.textAlign = "center";
-            ctx.fillText(card.key, dx, dy);
+            ctx.fillText(card.key, dx, dy + 10);
         }
     }
 }
