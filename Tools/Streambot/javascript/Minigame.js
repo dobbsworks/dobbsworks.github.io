@@ -132,13 +132,13 @@ class MinigameWordGameBase extends MinigameBase {
             if (Math.abs(clue.x - clue.targetX) < 0.05) {
                 clue.x = clue.targetX;
             } else {
-                clue.x += (clue.targetX - clue.x) * 0.02;
+                clue.x += (clue.targetX - clue.x) * 0.05;
             }
 
             if (Math.abs(clue.y - clue.targetY) < 0.05) {
                 clue.y = clue.targetY;
             } else {
-                clue.y += (clue.targetY - clue.y) * 0.02;
+                clue.y += (clue.targetY - clue.y) * 0.05;
             }
         }
 
@@ -205,8 +205,8 @@ class MinigameWordGameBase extends MinigameBase {
             let mid = (line.length-1) / 2;
             let lineTiles = chars.map((char, index) => ({
                 char: char, 
-                x: 8, 
-                targetX: 8 + (index - mid), 
+                x: 7, 
+                targetX: 7 + (index - mid), 
                 y: -2, 
                 targetY: lineIndex 
             }));
@@ -323,7 +323,7 @@ class MinigameHangman extends MinigameWordGameBase {
         this.correctAnswer = puzzle.answer;
         this.category = puzzle.category;
         this.displayedClue = this.HideWord(this.correctAnswer);        
-        this.drawnClue = this.TileOutText(this.displayedClue);
+        this.drawnClue = this.TileOutText(this.correctAnswer);
         this.drawnClue.forEach(t => {
             if (this.IsAlphanumeric(t.char)) t.hidden = true;
         })
