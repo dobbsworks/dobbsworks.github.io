@@ -506,6 +506,10 @@ class MinigameMatch extends MinigameBase {
             card1.state = "up";
             card2.state = "up";
             this.AwardPoints(user.username, 25, message);
+
+            if (this.cards.every(a => a.state === "up")) {
+                this.OnGameComplete();
+            }
         } else {
             this.WriteMessage(message);
         }
@@ -532,7 +536,7 @@ class MinigameMatch extends MinigameBase {
         for (let card of this.cards) {
             let targetRotation = 0;
             if (card.state !== "down") {
-                targetRotation = Math.PI;
+                targetRotation = 3 * Math.PI;
             }
             
             card.rotation += (targetRotation - card.rotation) * 0.05;
@@ -559,7 +563,7 @@ class MinigameMatch extends MinigameBase {
         for (let card of this.cards) {
             let sx = card.cardType.xIndex * this.cardWidth;
             let sy = card.cardType.yIndex * this.cardHeight;
-            if (card.rotation < Math.PI / 2) {
+            if ((card.rotation % (2*Math.PI)) < Math.PI / 2) {
                 // is face down
                 sx = 0;
                 sy = 0;
