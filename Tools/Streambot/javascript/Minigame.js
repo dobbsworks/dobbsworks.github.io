@@ -527,6 +527,7 @@ class MinigameMatch extends MinigameBase {
         if (!key) return null;
         if (!key.toUpperCase) return null;
         let card = this.cards.find(a => a.key === key.toUpperCase());
+        if (!card) return null;
         if (card.state === "down" || card.state === "hint") {
             card.state = "hint";
         }
