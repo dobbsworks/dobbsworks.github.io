@@ -563,7 +563,7 @@ class MinigameMatch extends MinigameBase {
         let baseX = 30;
         let rowHeight = this.cardHeight + margin;
         let colWidth = this.cardWidth + margin;
-        let baseY = 30;
+        let baseY = 80;
 
         for (let card of this.cards) {
             let sx = card.cardType.xIndex * this.cardWidth;
