@@ -492,7 +492,7 @@ class MinigameMatch extends MinigameBase {
 
         let keys = guess.toUpperCase().split(" ");
         if (keys.length !== 2) {
-            keys = guess.toUpperCase().split(" ");
+            keys = guess.toUpperCase().split("");
         }
         let card1 = this.FlipCard(keys[0]);
         let card2 = this.FlipCard(keys[1]);
