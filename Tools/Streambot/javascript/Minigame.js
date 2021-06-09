@@ -243,6 +243,7 @@ class MinigameWordGameBase extends MinigameBase {
 class MinigameScramble extends MinigameWordGameBase {
     gameMode = "SCRAMBLE";
     instructions = "When the puzzle appears, guess the answer with !guess MY ANSWER";
+    msBetweenHints = 20 * 1000;
 
     Initialize() {
         let puzzle = this.GetPuzzle();
