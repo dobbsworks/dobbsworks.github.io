@@ -491,6 +491,9 @@ class MinigameMatch extends MinigameBase {
         if (tooSoon) return;
 
         let keys = guess.toUpperCase().split(" ");
+        if (keys.length !== 2) {
+            keys = guess.toUpperCase().split(" ");
+        }
         let card1 = this.FlipCard(keys[0]);
         let card2 = this.FlipCard(keys[1]);
         if (!card1 || !card2 || keys[0] === keys[1]) {
@@ -505,7 +508,7 @@ class MinigameMatch extends MinigameBase {
             message += " It's a match!"
             card1.state = "up";
             card2.state = "up";
-            this.AwardPoints(user.username, 25, message);
+            this.AwardPoints(user.username, 20, message);
 
             if (this.cards.every(a => a.state === "up")) {
                 this.OnGameComplete();
@@ -639,7 +642,6 @@ var MinigameHandler = {
             return;
         }
         let gameType = MinigameHandler.gameTypes[Math.floor(Math.random() * MinigameHandler.gameTypes.length)];
-        gameType = MinigameMatch;
         MinigameHandler.currentGame = new gameType(MinigameHandler.OnGameOver);
         MinigameHandler.handlerState = "starting";
     },
