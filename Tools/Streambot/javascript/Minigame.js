@@ -369,9 +369,9 @@ class MinigameHangman extends MinigameWordGameBase {
                 ctx.fillStyle = "#555";
             }
             ctx.fillText(char, x, y);
-            x += 37;
+            x += 25;
             if (x >= ctx.canvas.width - 15) {
-                x = 25;
+                x = 37;
                 y += 25;
             }
         }
