@@ -362,7 +362,7 @@ class MinigameHangman extends MinigameWordGameBase {
 
         let chars = MinigameHandler.alpha;
         let x = 37;
-        let y = 320;
+        let y = 300;
         for (let char of chars) {
             ctx.fillStyle = "white";
             if (this.guessedChars.indexOf(char) > -1) {
