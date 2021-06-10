@@ -39,6 +39,7 @@ class MinigameBase {
             while (phasePropMap[newPhaseIndex].time <= 0) {
                 newPhaseIndex++;
             }
+            console.log("newPhaseIndex", newPhaseIndex)
             this.currentPhase = phasePropMap[newPhaseIndex].phase;
             this.currentPhaseTimestamp = now;
             let textFunc = phasePropMap[newPhaseIndex].text;
