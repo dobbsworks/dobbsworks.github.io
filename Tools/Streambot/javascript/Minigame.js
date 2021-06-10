@@ -6,7 +6,7 @@ class MinigameBase {
     currentPhaseTimestamp = null;
     timePhaseJoin = 0;
     timePhaseReady = 15;
-    timePhaseResults = 0;
+    timePhaseResults = 3;
     forceNextPhase = false;
 
     lastUpdateTimestamp = null;
