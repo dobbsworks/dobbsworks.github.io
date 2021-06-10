@@ -68,7 +68,6 @@ class MinigameBase {
         }
         this.ProcessPhaseMove();
 
-        this.lastUpdateTimestamp = new Date();
         let prevTimestamp = this.lastUpdateTimestamp;
         this.lastUpdateTimestamp = new Date();
 
@@ -711,7 +710,8 @@ var MinigameHandler = {
             MinigameHandler.WriteMessage("There's already a minigame in progress.");
             return;
         }
-        if (!MinigameHandler.window) MinigameHandler.window = MinigameHandler.CreateWindow();
+        if (MinigameHandler.window) MinigameHandler.window.close();
+        MinigameHandler.window = MinigameHandler.CreateWindow();
         let gameType = MinigameHandler.gameTypes[Math.floor(Math.random() * MinigameHandler.gameTypes.length)];
         MinigameHandler.currentGame = new gameType();
         MinigameHandler.handlerState = "starting";
@@ -723,15 +723,15 @@ var MinigameHandler = {
 
     ProcessGame: () => {
         let ctx = MinigameHandler.ctx;
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        if (ctx) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         let currentGame = MinigameHandler.currentGame;
         if (currentGame) {
             currentGame.Tick();
             if (currentGame.Draw) {
-                currentGame.Draw(ctx);
+                if (ctx) currentGame.Draw(ctx);
             }
         }
-        MinigameHandler.DrawScores(ctx);
+        if (ctx) MinigameHandler.DrawScores(ctx);
     },
 
     DrawScores: (ctx) => {
@@ -757,19 +757,21 @@ var MinigameHandler = {
                 if (MinigameHandler.currentGame) {
                     let timeSinceLast = MinigameHandler.currentGame.GetMsSinceUserLastGuess(record.username);
                     let totalTime = MinigameHandler.currentGame.msTimeBetweenGuesses;
-                    if (totalTime && timeSinceLast != Infinity && timeSinceLast > (new Date() - totalTime)) {
+                    if (totalTime && timeSinceLast != Infinity) {
                         let ratio = 1 - (timeSinceLast / totalTime);
-                        ctx.fillStyle = "#EEE";
-                        ctx.strokeStyle = "#EEE";
-                        ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.arc(x - 20, y - 10, 10, 0, 2 * Math.PI * ratio);
-                        ctx.lineTo(x - 20, y - 10);
-                        ctx.fill();
-                        ctx.stroke();
+                        if (ratio > 0) {
+                            ctx.fillStyle = "#EEE";
+                            ctx.strokeStyle = "#EEE";
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.arc(x - 20, y - 10, 10, 0, 2 * Math.PI * ratio);
+                            ctx.lineTo(x - 20, y - 10);
+                            ctx.fill();
+                            ctx.stroke();
+                        }
                     }
                 }
-                
+
                 y += 20;
             }
         }
