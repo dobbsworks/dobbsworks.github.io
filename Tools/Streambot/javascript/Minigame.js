@@ -408,7 +408,7 @@ class MinigameHangman extends MinigameWordGameBase {
         ctx.fillStyle = "white";
 
         let chars = MinigameHandler.alpha;
-        let x = 37;
+        let x = 50;
         let y = 300;
         for (let char of chars) {
             ctx.fillStyle = "white";
@@ -418,7 +418,7 @@ class MinigameHangman extends MinigameWordGameBase {
             ctx.fillText(char, x, y);
             x += 25;
             if (x >= ctx.canvas.width - 15) {
-                x = 37;
+                x = 50;
                 y += 25;
             }
         }
@@ -711,7 +711,7 @@ var MinigameHandler = {
             return;
         }
         if (MinigameHandler.window) MinigameHandler.window.close();
-        MinigameHandler.window = MinigameHandler.CreateWindow();
+        MinigameHandler.CreateWindow();
         let gameType = MinigameHandler.gameTypes[Math.floor(Math.random() * MinigameHandler.gameTypes.length)];
         MinigameHandler.currentGame = new gameType();
         MinigameHandler.handlerState = "starting";
@@ -764,7 +764,7 @@ var MinigameHandler = {
                             ctx.strokeStyle = "#EEE";
                             ctx.lineWidth = 1;
                             ctx.beginPath();
-                            ctx.arc(x - 20, y - 10, 10, 0, 2 * Math.PI * ratio);
+                            ctx.arc(x - 20, y - 10, 10, 0 + Math.PI/2, 2 * Math.PI * ratio + Math.PI/2);
                             ctx.lineTo(x - 20, y - 10);
                             ctx.fill();
                             ctx.stroke();
