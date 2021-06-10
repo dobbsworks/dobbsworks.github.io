@@ -683,7 +683,7 @@ var MinigameHandler = {
 
     Init: () => {
         MinigameHandler.interval = setInterval(MinigameHandler.ProcessGame, 1000 / 60);
-        MinigameHandler.window = MinigameHandler.CreateWindow();
+        //MinigameHandler.window = MinigameHandler.CreateWindow();
     },
 
     LogPoints: (username, amount) => {
@@ -757,12 +757,16 @@ var MinigameHandler = {
                 if (MinigameHandler.currentGame) {
                     let timeSinceLast = MinigameHandler.currentGame.GetMsSinceUserLastGuess(record.username);
                     let totalTime = MinigameHandler.currentGame.msTimeBetweenGuesses;
-                    if (totalTime && timeSinceLast != Infinity) {
+                    if (totalTime && timeSinceLast != Infinity && timeSinceLast > (new Date() - totalTime)) {
                         let ratio = 1 - (timeSinceLast / totalTime);
                         ctx.fillStyle = "#EEE";
+                        ctx.strokeStyle = "#EEE";
+                        ctx.lineWidth = 1;
                         ctx.beginPath();
-                        ctx.arc(x - 20, y + 10, 10, 0, 2 * Math.PI * ratio);
+                        ctx.arc(x - 20, y - 10, 10, 0, 2 * Math.PI * ratio);
+                        ctx.lineTo(x - 20, y - 10);
                         ctx.fill();
+                        ctx.stroke();
                     }
                 }
                 
