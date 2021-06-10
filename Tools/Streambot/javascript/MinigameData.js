@@ -557,7 +557,8 @@ var minigameAnswers = {
         "Yellow Carpet",
         "Yellow Concrete",
         "Yellow Wool",
-        "Zombie Head"
+        "Zombie Head",
+        "Waxed Oxidized Cut Copper Stairs",
     ],
     "Team Fortress 2 Weapons": [
         "Air Strike",

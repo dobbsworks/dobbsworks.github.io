@@ -1,36 +1,81 @@
 class MinigameBase {
-    timeBeforeStart = 15;
+    // PHASES
+    //  INIT -> JOIN -> READY -> ACTIVE -> RESULTS -> END
+
+    currentPhase = "init";
+    currentPhaseTimestamp = null;
+    timePhaseJoin = 0;
+    timePhaseReady = 15;
+    timePhaseResults = 0;
+    forceNextPhase = false;
+
     lastUpdateTimestamp = null;
-    initialized = false;
-    instructions = "";
     gameMode = "UNKNOWN";
     msTimeBetweenGuesses = 10 * 1000;
     guesses = [];
-    OnGameComplete = () => { }
 
-    constructor(onGameComplete) {
-        this.OnGameComplete = onGameComplete;
+    OnGameComplete() {
+        this.forceNextPhase = true;
+    }
+
+    ProcessPhaseMove() {
+        let phasePropMap = [
+            {phase: "init", time: 0},
+            {phase: "join", time: this.timePhaseJoin, text: this.GetOnJoinText, hook: this.OnJoinPhase},
+            {phase: "ready", time: this.timePhaseReady, text: this.GetOnReadyText, hook: this.OnReadyPhase},
+            {phase: "active", time: Infinity},
+            {phase: "results", time: this.timePhaseResults, text: this.GetOnResultsText, hook: this.OnResultsPhase},
+            {phase: "end", time: Infinity},
+        ];
+        
+        let now = new Date();
+        let currentPhaseIndex = phasePropMap.findIndex(a => a.phase === this.currentPhase);
+        let timeOnCurrentPhase = now - this.currentPhaseTimestamp;
+        let timeAllottedForPhase = phasePropMap[currentPhaseIndex].time * 1000;
+        if (timeOnCurrentPhase > timeAllottedForPhase || timeAllottedForPhase <= 0 || this.forceNextPhase) {
+            // find next phase with any time available
+            this.forceNextPhase = false;
+            let newPhaseIndex = currentPhaseIndex++;
+            while (phasePropMap[newPhaseIndex].time <= 0) {
+                newPhaseIndex++;
+            }
+            this.currentPhase = phasePropMap[newPhaseIndex].phase;
+            this.currentPhaseTimestamp = now;
+            let textFunc = phasePropMap[newPhaseIndex].text;
+            if (textFunc) {
+                let message = textFunc();
+                let isThisFirstMessage = (this.currentPhase === "join" || (this.currentPhase === "ready" && this.timePhaseJoin <= 0));
+                if (isThisFirstMessage) {
+                    let timeToStart = phasePropMap[newPhaseIndex].time;
+                    let intro = `${this.gameMode} minigame starting in ${timeToStart} seconds! `
+                    if (timeToStart === 0) intro = `${this.gameMode} minigame starting now! `;
+                    message = intro + message;
+                }
+                this.WriteMessage(message);
+                let hookFunc = phasePropMap[newPhaseIndex].hook;
+                if (hookFunc) this.hookFunc();
+            }
+            if (this.currentPhase === "end") {
+                MinigameHandler.OnGameOver();
+            }
+        }
     }
 
     // try to call often (60 ticks per second?)
     Tick() {
-        if (!this.initialized) {
-            this.initialized = true;
+        if (this.currentPhase === "init") {
             if (this.Initialize) this.Initialize();
-            let instructions = this.GetInstructions() || this.instructions;
-            let timeMessage = `${this.gameMode} minigame starting in ${this.timeBeforeStart} seconds! `;
-            if (!this.timeBeforeStart) {
-                timeMessage = `${this.gameMode} minigame starting now! `;
-            }
-            let openingMessage = timeMessage + instructions;
-            this.WriteMessage(openingMessage);
+        } 
+        this.ProcessPhaseMove();
 
-            this.lastUpdateTimestamp = new Date();
-        }
+        this.lastUpdateTimestamp = new Date();
         let prevTimestamp = this.lastUpdateTimestamp;
         this.lastUpdateTimestamp = new Date();
+
         if (this.GameLoop) {
-            this.GameLoop(this.lastUpdateTimestamp - prevTimestamp);
+            if (this.currentPhase === "active") {
+                this.GameLoop(this.lastUpdateTimestamp - prevTimestamp);
+            }
         } else {
             console.error("Minigame has no GameLoop")
         }
@@ -84,12 +129,10 @@ class MinigameWordGameBase extends MinigameBase {
     displayedClue = "";
     drawnClue = [];
 
-    msIntroTimer = 0;
-    msIntroWaitTime = this.timeBeforeStart * 1000;
     msSinceLastReveal = 0;
     msBetweenHints = 30 * 1000;
 
-    GetInstructions() {
+    GetOnReadyText() {
         return `The category is ${this.category}. ` + this.instructions;
     }
 
@@ -104,11 +147,8 @@ class MinigameWordGameBase extends MinigameBase {
 
     GameLoop(msTick) {
         if (this.state === "starting") {
-            this.msIntroTimer += msTick;
-            if (this.msIntroTimer > this.msIntroWaitTime) {
-                this.state = "active";
-                this.WriteMessage(this.displayedClue);
-            }
+            this.state = "active";
+            this.WriteMessage(this.displayedClue);
         } else {
             this.msSinceLastReveal += msTick;
             if (this.msSinceLastReveal > this.msBetweenHints) {
@@ -437,7 +477,7 @@ class MinigameHangman extends MinigameWordGameBase {
 
 class MinigameMatch extends MinigameBase {
     gameMode = "MATCHING";
-    timeBeforeStart = 0;
+    timePhaseReady = 10;
     cardHeight = 60;
     cardWidth = 40;
     numRows = 3;
@@ -481,7 +521,7 @@ class MinigameMatch extends MinigameBase {
         }));
     }
 
-    GetInstructions() {
+    GetOnReadyText() {
         return "Guess matching pairs with !guess A B";
     }
 
@@ -543,7 +583,7 @@ class MinigameMatch extends MinigameBase {
             if (card.state !== "down") {
                 targetRotation = 3 * Math.PI;
             }
-            
+
             card.rotation += (targetRotation - card.rotation) * 0.05;
             if (Math.abs(card.rotation - targetRotation) < 0.01) {
                 card.rotation = targetRotation;
@@ -599,6 +639,28 @@ class MinigameMatch extends MinigameBase {
     }
 }
 
+
+
+class MinigameSample extends MinigameBase {
+    gameMode = "SAMPLE";
+    timePhaseJoin = 0;
+    timePhaseReady = 15;
+    timePhaseResults = 0;
+
+    Initialize() {
+    }
+
+    GetOnReadyText() { return ""; }
+    GetOnReadyText() { return "" }
+    GetOnResultsText() { return "" }
+
+    GameLoop(msTick) {
+    }
+
+    Draw(ctx) {
+    }
+}
+
 var MinigameHandler = {
     gameTypes: [MinigameScramble, MinigameHangman, MinigameMatch],
     alpha: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
@@ -643,11 +705,11 @@ var MinigameHandler = {
             MinigameHandler.WriteMessage("There's already a minigame in progress.");
             return;
         }
+        if (!MinigameHandler.window) MinigameHandler.window = MinigameHandler.CreateWindow();
         let gameType = MinigameHandler.gameTypes[Math.floor(Math.random() * MinigameHandler.gameTypes.length)];
-        MinigameHandler.currentGame = new gameType(MinigameHandler.OnGameOver);
+        MinigameHandler.currentGame = new gameType();
         MinigameHandler.handlerState = "starting";
     },
-
 
     WriteMessage: (message) => {
         WriteMessageRaw(" PurpleStar " + message);
@@ -692,7 +754,21 @@ var MinigameHandler = {
 
     ProcessGuess: (user, guess) => {
         let currentGame = MinigameHandler.currentGame;
-        if (currentGame) currentGame.ProcessGuess(user, guess);
+        if (currentGame) {
+            if (currentGame.currentPhase === "active") {
+                currentGame.ProcessGuess(user, guess);
+            }
+        }
+    },
+
+    ProcessJoin: (user, args) => {
+        let currentGame = MinigameHandler.currentGame;
+        if (currentGame && currentGame.ProcessJoin) {
+            if (currentGame.currentPhase === "join") {
+                // TODO phase
+                currentGame.ProcessJoin(user, args);
+            }
+        }
     },
 
     OnGameOver: () => {
@@ -740,4 +816,9 @@ function CommandMinigame(user, args) {
 function CommandMinigameGuess(user, args) {
     let guess = args.join(' ');
     MinigameHandler.ProcessGuess(user, guess);
+}
+
+function CommandMinigameJoin(user, args) {
+    let joinCom = args.join(' ');
+    MinigameHandler.ProcessJoin(user, joinCom);
 }
