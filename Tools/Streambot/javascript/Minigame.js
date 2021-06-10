@@ -35,16 +35,15 @@ class MinigameBase {
         if (timeOnCurrentPhase > timeAllottedForPhase || timeAllottedForPhase <= 0 || this.forceNextPhase) {
             // find next phase with any time available
             this.forceNextPhase = false;
-            let newPhaseIndex = currentPhaseIndex++;
+            let newPhaseIndex = currentPhaseIndex + 1;
             while (phasePropMap[newPhaseIndex].time <= 0) {
                 newPhaseIndex++;
             }
-            console.log("newPhaseIndex", newPhaseIndex)
             this.currentPhase = phasePropMap[newPhaseIndex].phase;
             this.currentPhaseTimestamp = now;
             let textFunc = phasePropMap[newPhaseIndex].text;
             if (textFunc) {
-                let message = textFunc();
+                let message = textFunc.bind(this)();
                 let isThisFirstMessage = (this.currentPhase === "join" || (this.currentPhase === "ready" && this.timePhaseJoin <= 0));
                 if (isThisFirstMessage) {
                     let timeToStart = phasePropMap[newPhaseIndex].time;
@@ -54,7 +53,7 @@ class MinigameBase {
                 }
                 this.WriteMessage(message);
                 let hookFunc = phasePropMap[newPhaseIndex].hook;
-                if (hookFunc) this.hookFunc();
+                if (hookFunc) hookFunc.bind(this)();
             }
             if (this.currentPhase === "end") {
                 MinigameHandler.OnGameOver();
@@ -134,6 +133,7 @@ class MinigameWordGameBase extends MinigameBase {
     msBetweenHints = 30 * 1000;
 
     GetOnReadyText() {
+        console.log(this)
         return `The category is ${this.category}. ` + this.instructions;
     }
 
