@@ -20,14 +20,14 @@ class MinigameBase {
 
     ProcessPhaseMove() {
         let phasePropMap = [
-            {phase: "init", time: 0},
-            {phase: "join", time: this.timePhaseJoin, text: this.GetOnJoinText, hook: this.OnJoinPhase},
-            {phase: "ready", time: this.timePhaseReady, text: this.GetOnReadyText, hook: this.OnReadyPhase},
-            {phase: "active", time: Infinity},
-            {phase: "results", time: this.timePhaseResults, text: this.GetOnResultsText, hook: this.OnResultsPhase},
-            {phase: "end", time: Infinity},
+            { phase: "init", time: 0 },
+            { phase: "join", time: this.timePhaseJoin, text: this.GetOnJoinText, hook: this.OnJoinPhase },
+            { phase: "ready", time: this.timePhaseReady, text: this.GetOnReadyText, hook: this.OnReadyPhase },
+            { phase: "active", time: Infinity },
+            { phase: "results", time: this.timePhaseResults, text: this.GetOnResultsText, hook: this.OnResultsPhase },
+            { phase: "end", time: Infinity },
         ];
-        
+
         let now = new Date();
         let currentPhaseIndex = phasePropMap.findIndex(a => a.phase === this.currentPhase);
         let timeOnCurrentPhase = now - this.currentPhaseTimestamp;
@@ -65,7 +65,7 @@ class MinigameBase {
     Tick() {
         if (this.currentPhase === "init") {
             if (this.Initialize) this.Initialize();
-        } 
+        }
         this.ProcessPhaseMove();
 
         this.lastUpdateTimestamp = new Date();
@@ -104,17 +104,23 @@ class MinigameBase {
         return scrambled;
     }
 
-    IsUserTooSoon(user, guess) {
-        let userGuesses = this.guesses.filter(x => x.username.toUpperCase() === user.username.toUpperCase());
+    GetMsSinceUserLastGuess(username) {
+        let userGuesses = this.guesses.filter(x => x.username.toUpperCase() === username.toUpperCase());
         if (userGuesses.length > 0) {
             let latestGuess = userGuesses[userGuesses.length - 1];
             let msSinceLastGuess = (new Date() - latestGuess.timestamp);
-            if (msSinceLastGuess < this.msTimeBetweenGuesses) {
-                // guessing too soon
-                let secondsBetweenGuesses = (this.msTimeBetweenGuesses / 1000).toFixed(0);
-                this.WriteMessage(`${user.username}, you can only guess every ${secondsBetweenGuesses} seconds.`);
-                return true;
-            }
+            return msSinceLastGuess;
+        }
+        return Infinity;
+    }
+
+    IsUserTooSoon(user, guess) {
+        let msSinceLastGuess = this.GetMsSinceUserLastGuess(user.username);
+        if (msSinceLastGuess < this.msTimeBetweenGuesses) {
+            // guessing too soon
+            let secondsBetweenGuesses = (this.msTimeBetweenGuesses / 1000).toFixed(0);
+            this.WriteMessage(`${user.username}, you can only guess every ${secondsBetweenGuesses} seconds.`);
+            return true;
         }
         this.guesses.push({ username: user.username, guess: guess, timestamp: new Date() });
         return false;
@@ -498,7 +504,6 @@ class MinigameMatch extends MinigameBase {
     ];
     cards = [];
     cardImage = MinigameHandler.cardImage;
-    msTimeBetweenGuesses = 10 * 1000;
     guesses = [];
 
     Initialize() {
@@ -748,6 +753,19 @@ var MinigameHandler = {
                 ctx.fillText(record.username, x, y);
                 ctx.textAlign = "right";
                 ctx.fillText(record.points.toFixed(0), MinigameHandler.ctx.canvas.width - x, y);
+
+                if (MinigameHandler.currentGame) {
+                    let timeSinceLast = MinigameHandler.currentGame.GetMsSinceUserLastGuess(record.username);
+                    let totalTime = MinigameHandler.currentGame.msTimeBetweenGuesses;
+                    if (totalTime && timeSinceLast != Infinity) {
+                        let ratio = 1 - (timeSinceLast / totalTime);
+                        ctx.fillStyle = "#EEE";
+                        ctx.beginPath();
+                        ctx.arc(x - 20, y + 10, 10, 0, 2 * Math.PI * ratio);
+                        ctx.fill();
+                    }
+                }
+                
                 y += 20;
             }
         }
