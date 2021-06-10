@@ -85,10 +85,12 @@ class MinigameBase {
     }
 
     AwardPoints(username, amount, pretext) {
-        pointHandler.addPoints(username, amount);
-        let message = `${username} has received ${pointHandler.formatValue(amount)}.`;
-        if (pretext) message = pretext + " " + message;
-        this.WriteMessage(message);
+        if (amount > 0) {
+            pointHandler.addPoints(username, amount);
+            let message = `${username} has received ${pointHandler.formatValue(amount)}.`;
+            if (pretext) message = pretext + " " + message;
+            this.WriteMessage(message);
+        }
         MinigameHandler.LogPoints(username, amount);
     }
 
@@ -179,7 +181,9 @@ class MinigameWordGameBase extends MinigameBase {
         // allow missing special characters
         let trimmedAnswer = this.correctAnswer.split('').filter(this.IsAlphanumeric).join('').toUpperCase();
         let trimmedGuess = guess.split('').filter(this.IsAlphanumeric).join('').toUpperCase();
-
+        
+        // put user on scoreboard
+        this.AwardPoints(user.username, 0);
 
         if (!this.OnGuess || this.OnGuess(user, guess)) {
             // run this block only if there's no special handling, or if special handling returns true
@@ -299,6 +303,9 @@ class MinigameScramble extends MinigameWordGameBase {
         this.drawnClue = this.TileOutText(this.displayedClue);
     }
 
+    OnResultsPhase() {
+        this.Unscramble(30);
+    }
 
     // Scramble letters/numbers
     // e.g. "Final Fantasy: Crystal Chronicles" 
@@ -417,11 +424,15 @@ class MinigameHangman extends MinigameWordGameBase {
             }
             ctx.fillText(char, x, y);
             x += 25;
-            if (x >= ctx.canvas.width - 15) {
+            if (x >= ctx.canvas.width - 25) {
                 x = 50;
                 y += 25;
             }
         }
+    }
+
+    OnResultsPhase() {
+        this.drawnClue.forEach(a => a.hidden = false);
     }
 
     OnGuess(user, guess) {
@@ -764,7 +775,7 @@ var MinigameHandler = {
                             ctx.strokeStyle = "#EEE";
                             ctx.lineWidth = 1;
                             ctx.beginPath();
-                            ctx.arc(x - 20, y - 10, 10, 0 + Math.PI/2, 2 * Math.PI * ratio + Math.PI/2);
+                            ctx.arc(x - 20, y - 10, 10, 0 - Math.PI / 2, 2 * Math.PI * ratio - Math.PI / 2);
                             ctx.lineTo(x - 20, y - 10);
                             ctx.fill();
                             ctx.stroke();
