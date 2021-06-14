@@ -15,6 +15,7 @@ class MinigameBase {
     guesses = [];
 
     OnGameComplete() {
+        this.currentPhase = "active";
         this.forceNextPhase = true;
     }
 
@@ -23,7 +24,7 @@ class MinigameBase {
             { phase: "init", time: 0 },
             { phase: "join", time: this.timePhaseJoin, text: this.GetOnJoinText, hook: this.OnJoinPhase },
             { phase: "ready", time: this.timePhaseReady, text: this.GetOnReadyText, hook: this.OnReadyPhase },
-            { phase: "active", time: Infinity },
+            { phase: "active", time: Infinity, text: this.GetOnActiveText },
             { phase: "results", time: this.timePhaseResults, text: this.GetOnResultsText, hook: this.OnResultsPhase },
             { phase: "end", time: Infinity },
         ];
@@ -51,7 +52,7 @@ class MinigameBase {
                     if (timeToStart === 0) intro = `${this.gameMode} minigame starting now! `;
                     message = intro + message;
                 }
-                this.WriteMessage(message);
+                if (message) this.WriteMessage(message);
                 let hookFunc = phasePropMap[newPhaseIndex].hook;
                 if (hookFunc) hookFunc.bind(this)();
             }
@@ -125,6 +126,17 @@ class MinigameBase {
         }
         this.guesses.push({ username: user.username, guess: guess, timestamp: new Date() });
         return false;
+    }
+
+    DrawTitleLines(ctx, lines) {
+        ctx.textAlign = "center";
+        ctx.font = `${18}px Arial`;
+        ctx.fillStyle = "white";
+        let y = 60;
+        for (let line of lines) {
+            ctx.fillText(line, ctx.canvas.width / 2, y);
+            y += 20;
+        }
     }
 }
 
@@ -214,12 +226,10 @@ class MinigameWordGameBase extends MinigameBase {
         ctx.fillStyle = "#18181b";
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-
-        ctx.textAlign = "center";
-        ctx.font = `${18}px Arial`;
-        ctx.fillStyle = "white";
-        ctx.fillText(`${this.gameMode} Minigame`, ctx.canvas.width / 2, 60);
-        ctx.fillText(`Category: ${this.category}`, ctx.canvas.width / 2, 80);
+        this.DrawTitleLines(ctx, [
+            `${this.gameMode} Minigame`,
+            `Category: ${this.category}`
+        ]);
 
         if (this.state === "active") {
             let margin = 10;
@@ -615,8 +625,11 @@ class MinigameMatch extends MinigameBase {
     }
 
     Draw(ctx) {
+        this.DrawTitleLines(ctx, [
+            `${this.gameMode} Minigame`
+        ]);
         let margin = 20;
-        let baseX = 30;
+        let baseX = 90;
         let rowHeight = this.cardHeight + margin;
         let colWidth = this.cardWidth + margin;
         let baseY = 80;
@@ -655,6 +668,66 @@ class MinigameMatch extends MinigameBase {
     }
 }
 
+class MinigameTugOfWar extends MinigameBase {
+    gameMode = "TUG OF WAR";
+    timePhaseJoin = 30;
+    timePhaseReady = 10;
+    timePhaseResults = 5;
+    areAnyTeamsEmpty = true;
+    flagPosition = 0;
+
+    teams = [
+        {emote: "GivePLZ", name: "GIVE", usernames: []},
+        {emote: "TakeNRG", name: "TAKE", usernames: []},
+    ]
+
+    Initialize() {
+    }
+
+    GetOnJoinText() { 
+        return "Type !join to play this minigame!"; 
+    }
+    GetOnReadyText() { 
+        if (this.areAnyTeamsEmpty) {
+            return "Not enough players for this round! Moving on to another game."
+        } else {
+            return "The round is about to start! Spam your emote when I say go..."; 
+        }
+    }
+    GetOnActiveText() { 
+        let spam = this.teams.map(a => a.emote).join(" ");
+        return `GO! ${spam} ${spam} ${spam}`; 
+    }
+    GetOnResultsText() { return "" }
+
+    ProcessJoin(user, args) {
+        let userTeam = this.teams.find(a => a.usernames.indexOf(user.username) > -1);
+        if (userTeam) return;
+
+        let highestCapacity = Math.max(...this.teams.map(a => a.usernames.length));
+        let areTeamsBalanced = this.teams.every(a => a.usernames.length === highestCapacity);
+        let availableTeams = this.teams.filter(a => a.usernames.length < highestCapacity || areTeamsBalanced);
+        let team = availableTeams[Math.floor(Math.random() * availableTeams.length)];
+        team.usernames.push(user.username);
+        this.WriteMessage(`${user.username}, you are on team ${team.name}. When the game starts, spam the [${team.emote}]! ${team.emote}`);
+        
+        this.areAnyTeamsEmpty = this.teams.some(a => a.usernames.length === 0);
+    }
+
+    GameLoop(msTick) {
+
+    }
+
+    Draw(ctx) {
+        this.DrawTitleLines(ctx, [
+            `${this.gameMode} Minigame`
+        ]);
+        let height = 250;
+        let highestCapacity = Math.max(...this.teams.map(a => a.usernames.length));
+        let heightPerUser = height / highestCapacity;
+    }
+}
+
 
 
 class MinigameSample extends MinigameBase {
@@ -666,11 +739,15 @@ class MinigameSample extends MinigameBase {
     Initialize() {
     }
 
-    GetOnReadyText() { return ""; }
+    GetOnJoinText() { return ""; }
     GetOnReadyText() { return "" }
     GetOnResultsText() { return "" }
 
     GameLoop(msTick) {
+    }
+
+    ProcessJoin(user, args) {
+
     }
 
     Draw(ctx) {
@@ -748,7 +825,7 @@ var MinigameHandler = {
     DrawScores: (ctx) => {
         if (MinigameHandler.points.length !== 0) {
             MinigameHandler.points.sort((a, b) => b.points - a.points);
-            let y = MinigameHandler.ctx.canvas.height / 2;
+            let y = MinigameHandler.ctx.canvas.height / 2 + 40;
             let x = 60;
 
             ctx.font = `${20}px Arial`;

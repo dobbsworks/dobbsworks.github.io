@@ -131,6 +131,7 @@ function LoadCommands() {
 		Command("minigame", "CommandMinigame", commandPermission.mod, commandDisplay.hidden),
 		MessageCommand("minigame", "Compete for bonus tokens! Use !guess YOUR ANSWER to take a stab at solving the puzzle."),
 		Command("guess", "CommandMinigameGuess", commandPermission.all, commandDisplay.hidden),
+		Command("join", "CommandMinigameJoin", commandPermission.all, commandDisplay.hidden),
 
 		Command("tickeradd", "CommandTickerAdd", commandPermission.mod, commandDisplay.hidden),
 		Command("tickerlist", "CommandTickerList", commandPermission.mod, commandDisplay.hidden),
@@ -218,6 +219,7 @@ function LoadCommands() {
 		AliasCommand("asset", "assets"),
 		AliasCommand("oracles", "oracle"),
 		AliasCommand("minigames", "minigame"),
+		AliasCommand("g", "guess"),
 	];
 }
 

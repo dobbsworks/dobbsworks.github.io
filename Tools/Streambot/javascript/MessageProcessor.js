@@ -37,6 +37,9 @@ function ProcessChatMessage(messageEl, isReward) {
 
 	LogChatMessage({ timestamp: new Date(), text: stitchedText, username: username, reward: isReward ? selectedReward : "" });
 
+	// collect data on how much special chars is too many
+	MonitorSpecialChars(username, stitchedText);
+
 	// ban manofsteel
 	Kryptonite(username);
 
@@ -58,6 +61,24 @@ function ProcessChatMessage(messageEl, isReward) {
 			trimmed = trimmed.replace(myRe, "")
 		}
 		TTSMessage(trimmed);
+	}
+}
+
+function MonitorSpecialChars(username, message) {
+	let normalChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
+	let normalCount = 0;
+	for (let char of message.split('')) {
+		if (normalChars.indexOf(char.toUpperCase()) > -1) {
+			normalCount++;
+		}
+	}
+	let normalRatio = normalCount / message.length;
+	if (normalRatio < 0.2) {
+		StorageHandler.alpharatio.push({
+			username: username,
+			text: message,
+			timestamp: new Date()
+		})
 	}
 }
 
