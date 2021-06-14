@@ -65,6 +65,7 @@ function ProcessChatMessage(messageEl, isReward) {
 }
 
 function MonitorSpecialChars(username, message) {
+	if (username.toLowerCase() == "dobbsworks") return;
 	let normalChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
 	let normalCount = 0;
 	for (let char of message.split('')) {
@@ -77,6 +78,7 @@ function MonitorSpecialChars(username, message) {
 		StorageHandler.alpharatio.push({
 			username: username,
 			text: message,
+			normalRatio: normalRatio,
 			timestamp: new Date()
 		})
 	}
