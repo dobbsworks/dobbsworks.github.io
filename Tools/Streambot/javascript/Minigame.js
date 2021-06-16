@@ -769,7 +769,7 @@ class MinigameTugOfWar extends MinigameBase {
 
     GameLoop(msTick) {
         if (this.areAnyTeamsEmpty) this.OnGameComplete();
-        
+
         this.pullBonus += 0.005;
         this.targetDistance -= 0.01;
         for (let team of this.teams) {
@@ -906,7 +906,7 @@ class MinigameSample extends MinigameBase {
 }
 
 var MinigameHandler = {
-    gameTypes: [MinigameScramble, MinigameHangman, MinigameMatch],
+    gameTypes: [MinigameScramble, MinigameHangman, MinigameMatch, MinigameTugOfWar],
     alpha: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
     handlerState: "inactive",
     repeatMode: false,
@@ -954,7 +954,6 @@ var MinigameHandler = {
         if (MinigameHandler.window) MinigameHandler.window.close();
         MinigameHandler.CreateWindow();
         let gameType = MinigameHandler.gameTypes[Math.floor(Math.random() * MinigameHandler.gameTypes.length)];
-        gameType = MinigameTugOfWar;
         MinigameHandler.currentGame = new gameType();
         MinigameHandler.handlerState = "starting";
     },
