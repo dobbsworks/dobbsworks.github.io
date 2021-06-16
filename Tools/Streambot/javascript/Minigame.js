@@ -810,7 +810,7 @@ class MinigameTugOfWar extends MinigameBase {
             let winningTeam = this.teams.find(a => a.dir === winningDir);
             if (winningTeam) {
                 let points = 50;
-                this.WriteMessage(`The winner is team ${winningTeam.name}! Awarded ${points} points each to the teammembers. `);
+                this.WriteMessage(`The winner is team ${winningTeam.name}! Awarded ${points} points each. ${winningTeam.emote} ${winningTeam.emote} ${winningTeam.emote}`);
                 for (let username of winningTeam.usernames) {
                     this.SilentAwardPoints(username, points);
                 }
@@ -868,7 +868,8 @@ class MinigameTugOfWar extends MinigameBase {
 
             if (sprite.teamIndex === 0 || sprite.teamIndex === 1) {
                 ctx.textAlign = sprite.teamIndex === 0 ? "right" : "left";
-                ctx.fillText(sprite.name, x, y);
+                let xOff = sprite.teamIndex === 0 ? -10 : 10 + image.width / 2;
+                ctx.fillText(sprite.name, x + xOff, y + 40);
             }
         }
     }
