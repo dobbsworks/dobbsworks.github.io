@@ -845,6 +845,7 @@ class MinigameTugOfWar extends MinigameBase {
         ctx.fillStyle = "red";
         let fx = ctx.canvas.width / 2 + this.flagPosition;
         let fy = 225;
+        ctx.beginPath();
         ctx.moveTo(fx - 30, fy);
         ctx.lineTo(fx + 30, fy);
         ctx.lineTo(fx, fy + 75);
@@ -853,7 +854,7 @@ class MinigameTugOfWar extends MinigameBase {
         ctx.fillStyle = "yellow";
         for (let markerDir of [-1, 1]) {
             let mx = ctx.canvas.width / 2 + markerDir * this.targetDistance;
-            let my = fy + 100;
+            let my = fy + 10;
             ctx.fillRect(mx - 2, my, 4, 20);
         }
 
