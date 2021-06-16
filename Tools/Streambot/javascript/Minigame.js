@@ -702,6 +702,7 @@ class MinigameTugOfWar extends MinigameBase {
         }
     }
     GetOnActiveText() {
+        if (this.areAnyTeamsEmpty) return "";
         let spam = this.teams.map(a => a.emote).join(" ");
         return `GO! ${spam} ${spam} ${spam}`;
     }
@@ -767,6 +768,8 @@ class MinigameTugOfWar extends MinigameBase {
 
 
     GameLoop(msTick) {
+        if (this.areAnyTeamsEmpty) this.OnGameComplete();
+        
         this.pullBonus += 0.005;
         this.targetDistance -= 0.01;
         for (let team of this.teams) {
@@ -854,7 +857,7 @@ class MinigameTugOfWar extends MinigameBase {
         ctx.fillStyle = "yellow";
         for (let markerDir of [-1, 1]) {
             let mx = ctx.canvas.width / 2 + markerDir * this.targetDistance;
-            let my = fy + 10;
+            let my = fy + 80;
             ctx.fillRect(mx - 2, my, 4, 20);
         }
 
