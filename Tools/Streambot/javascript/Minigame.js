@@ -753,6 +753,8 @@ class MinigameTugOfWar extends MinigameBase {
                 let x = width * 2 - xOffset;
                 sprite.targetX = teamIndex === 0 ? x : MinigameHandler.ctx.canvas.width - x;
                 sprite.targetY = centerY + yOffset;
+                sprite.x = sprite.targetX;
+                sprite.y = sprite.targetY;
 
                 yOffset *= -1
                 if (yOffset >= 0) {
@@ -763,6 +765,7 @@ class MinigameTugOfWar extends MinigameBase {
         }
     }
 
+
     GameLoop(msTick) {
         this.pullBonus += 0.005;
         this.targetDistance -= 0.01;
@@ -771,7 +774,7 @@ class MinigameTugOfWar extends MinigameBase {
             let opposingSize = this.teams.map(a => a.usernames.length).reduce((a, b) => a + b, 0) - teamSize;;
             let bonusRatio = (teamSize < opposingSize) ? (opposingSize / teamSize) : 1;
             while (team.pulls.length > 0) {
-                let pull = this.team.pulls.pop();
+                let pull = team.pulls.pop();
                 let sprite = this.sprites.find(a => a.name === pull);
                 if (sprite.z === 0) {
                     sprite.dz = 3;
