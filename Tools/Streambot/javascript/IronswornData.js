@@ -550,20 +550,26 @@ var ironswornData = {
             text: `⚫ When you make a move which gives you an add for sharing a bond, add +1 more.
             ⚪ When you completely fill a box on your bonds progress track, envision what your relationships have taught you. Then, take 1 experience and +2 momentum.
             ⚪ When you make a move in a crucial moment and score a miss, you may cling to thoughts of your bond-kin for courage or encouragement. If you do, reroll any dice. On another miss, in addition to the outcome of the move, you must mark shaken or corrupted. If both debilities are already marked, Face Desolation. `
-        },
-        {
+        }, {
             name: "Dancer",
             type: "Path",
             text: `⚫ When you Secure an Advantage +edge by dancing for an audience, add +1 and take +2 momentum on a hit. On a strong hit, also add +2 (one time only) if you make a move to interact with someone in the audience.
             ⚪ When you Face Danger +edge in a fight by nimbly avoiding your foe’s attacks, add +1 and take +1 momentum on a hit.
             ⚪ When you or an ally make a progress move and score a hit, you may perform a dance to commemorate the event. If you do, roll +edge. On a strong hit, you and each of your allies take +2 momentum and +1 spirit. On a weak hit, you take +1 momentum or +1 spirit, but your allies are unmoved.`
-        },
-        {
+        }, {
             name: "Devotant",
             type: "Path",
             text: `⚫ When you say your daily prayers, you may Secure an Advantage by asking your god to grant a blessing. If you do, roll +your god’s stat. On a hit, take +2 momentum.
             ⚪ When you Swear an Iron Vow to serve your god on a divine quest, you may roll +your god’s stat and reroll any dice. When you Fulfill Your Vow and mark experience, take +1 experience.
             ⚪ When you Sojourn by sharing the word of your god, you may roll +your god’s stat. If you do, take +1 momentum on a hit.`
+        }, {
+            name: "Herbalist",
+            type: "Path",
+            text: `⚫ When you attempt to Heal using herbal remedies, and you have at least +1 supply, choose one (decide before rolling).
+                • Add +2.
+                • On a hit, take or give an additional +1 health.
+                ⚪ When you Heal a companion, ally, or other character, and score a hit, take +1 spirit or +1 momentum.
+                ⚪ When you Make Camp and choose the option to partake, you can create a restorative meal. If you do, you and your companions take +1 health. Any allies who choose to partake also take +1 health, and do not suffer -supply. `
         }, {
             name: "Honorbound",
             type: "Path",

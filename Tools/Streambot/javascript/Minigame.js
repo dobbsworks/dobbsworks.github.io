@@ -193,7 +193,7 @@ class MinigameWordGameBase extends MinigameBase {
         // allow missing special characters
         let trimmedAnswer = this.correctAnswer.split('').filter(this.IsAlphanumeric).join('').toUpperCase();
         let trimmedGuess = guess.split('').filter(this.IsAlphanumeric).join('').toUpperCase();
-        
+
         // put user on scoreboard
         this.AwardPoints(user.username, 0);
 
@@ -677,26 +677,27 @@ class MinigameTugOfWar extends MinigameBase {
     flagPosition = 0;
 
     teams = [
-        {emote: "GivePLZ", name: "GIVE", usernames: []},
-        {emote: "TakeNRG", name: "TAKE", usernames: []},
-    ]
+        { emote: "GivePLZ", name: "GIVE", usernames: [] },
+        { emote: "TakeNRG", name: "TAKE", usernames: [] },
+    ];
+    sprites = [];
 
     Initialize() {
     }
 
-    GetOnJoinText() { 
-        return "Type !join to play this minigame!"; 
+    GetOnJoinText() {
+        return "Type !join to play this minigame!";
     }
-    GetOnReadyText() { 
+    GetOnReadyText() {
         if (this.areAnyTeamsEmpty) {
             return "Not enough players for this round! Moving on to another game."
         } else {
-            return "The round is about to start! Spam your emote when I say go..."; 
+            return "The round is about to start! Spam your emote when I say go...";
         }
     }
-    GetOnActiveText() { 
+    GetOnActiveText() {
         let spam = this.teams.map(a => a.emote).join(" ");
-        return `GO! ${spam} ${spam} ${spam}`; 
+        return `GO! ${spam} ${spam} ${spam}`;
     }
     GetOnResultsText() { return "" }
 
@@ -709,22 +710,71 @@ class MinigameTugOfWar extends MinigameBase {
         let availableTeams = this.teams.filter(a => a.usernames.length < highestCapacity || areTeamsBalanced);
         let team = availableTeams[Math.floor(Math.random() * availableTeams.length)];
         team.usernames.push(user.username);
-        this.WriteMessage(`${user.username}, you are on team ${team.name}. When the game starts, spam the [${team.emote}]! ${team.emote}`);
-        
+        this.WriteMessage(`${user.username}, you are on team ${team.name}. When the game starts, spam the [${team.emote}] emote! ${team.emote}`);
+
+        let image = MinigameHandler.imageMap[team.emote];
+        this.sprites.push({ name: user.username, image: image, targetX: 0, targetY: 0, z: 0, dz: 0 });
+        this.RepositionTeams();
+
         this.areAnyTeamsEmpty = this.teams.some(a => a.usernames.length === 0);
     }
 
-    GameLoop(msTick) {
+    RepositionTeams() {
+        let height = 250;
+        let width = 50;
+        let highestCapacity = Math.max(...this.teams.map(a => a.usernames.length));
+        let heightPerUser = height / highestCapacity;
+        let widthPerUser = width / (highestCapacity / 2);
+        heightPerUser = Math.min(60, heightPerUser); // clamp down
+        let centerY = 100 + height / 2;
 
+        for (let teamIndex = 0; teamIndex < this.teams.length; teamIndex++) {
+            let isEvenTeam = this.teams[teamIndex].usernames.length % 2 === 0;
+            let yOffset = isEvenTeam ? heightPerUser / 2 : 0;
+            let xOffset = 0;
+            for (let username of this.teams[teamIndex].usernames) {
+                let sprite = this.sprites.find(a => a.username === username);
+                if (!sprite) continue;
+
+                let x = width*2 - xOffset;
+                sprite.targetX = teamIndex === 0 ? x : MinigameHandler.ctx.canvas.width - x;
+                sprite.targetY = centerY + yOffset;
+
+                yOffset *= -1
+                if (yOffset >= 0) {
+                    yOffset += heightPerUser
+                    xOffset += widthPerUser;
+                }
+            }
+        }
+    }
+
+    GameLoop(msTick) {
+        for (let sprite of this.sprites) {
+            if (!sprite.x) sprite.x = sprite.targetX;
+            if (!sprite.y) sprite.y = sprite.targetY;
+
+            sprite.x += (sprite.targetX - sprite.x) * 0.05;
+            if (Math.abs(sprite.x - sprite.targetX) < 0.05) {
+                sprite.x = sprite.targetX;
+            }
+            sprite.y += (sprite.targetY - sprite.y) * 0.05;
+            if (Math.abs(sprite.y - sprite.targetY) < 0.05) {
+                sprite.y = sprite.targetY;
+            }
+        }
     }
 
     Draw(ctx) {
         this.DrawTitleLines(ctx, [
             `${this.gameMode} Minigame`
         ]);
-        let height = 250;
-        let highestCapacity = Math.max(...this.teams.map(a => a.usernames.length));
-        let heightPerUser = height / highestCapacity;
+        for (let sprite of this.sprites) {
+            let image = sprite.image;
+            let x = sprite.x - image.width/2;
+            let y = sprite.y - image.height/2;
+            ctx.drawImage(image, x, y);
+        }
     }
 }
 
@@ -763,6 +813,8 @@ var MinigameHandler = {
     window: null,
     ctx: null,
     cardImage: null,
+    imageMap: {},
+    imageMapKeys: ["GivePLZ", "TakeNRG"],
 
     currentGame: null,
     interval: null,
@@ -801,6 +853,7 @@ var MinigameHandler = {
         if (MinigameHandler.window) MinigameHandler.window.close();
         MinigameHandler.CreateWindow();
         let gameType = MinigameHandler.gameTypes[Math.floor(Math.random() * MinigameHandler.gameTypes.length)];
+        gameType = MinigameTugOfWar;
         MinigameHandler.currentGame = new gameType();
         MinigameHandler.handlerState = "starting";
     },
@@ -903,6 +956,12 @@ var MinigameHandler = {
         let cardImage = MinigameHandler.window.document.getElementById("card");
         MinigameHandler.ctx = canvas.getContext("2d");
         MinigameHandler.cardImage = cardImage;
+
+        for (let imageKey of MinigameHandler.imageMapKeys) {
+            MinigameHandler.window.document.writeln(`<image id="${imageKey}" style="display: none;" src="https://dobbsworks.github.io/Tools/Streambot/images/${imageKey}.png"></image>`);
+            let image = MinigameHandler.window.document.getElementById(imageKey);
+            MinigameHandler.imageMap[imageKey] = image;
+        }
     },
 };
 MinigameHandler.Init();
