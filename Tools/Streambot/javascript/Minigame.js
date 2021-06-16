@@ -86,12 +86,16 @@ class MinigameBase {
     }
 
     AwardPoints(username, amount, pretext) {
+        this.SilentAwardPoints(username, amount);
         if (amount > 0) {
-            pointHandler.addPoints(username, amount);
             let message = `${username} has received ${pointHandler.formatValue(amount)}.`;
             if (pretext) message = pretext + " " + message;
             this.WriteMessage(message);
         }
+    }
+
+    SilentAwardPoints(username, amount) {
+        pointHandler.addPoints(username, amount);
         MinigameHandler.LogPoints(username, amount);
     }
 
@@ -675,10 +679,12 @@ class MinigameTugOfWar extends MinigameBase {
     timePhaseResults = 5;
     areAnyTeamsEmpty = true;
     flagPosition = 0;
+    pullBonus = 0;
+    targetDistance = 50;
 
     teams = [
-        { emote: "GivePLZ", name: "GIVE", usernames: [] },
-        { emote: "TakeNRG", name: "TAKE", usernames: [] },
+        { emote: "GivePLZ", name: "GIVE", dir: -1, usernames: [], pulls: [] },
+        { emote: "TakeNRG", name: "TAKE", dir: 1, usernames: [], pulls: [] },
     ];
     sprites = [];
 
@@ -692,7 +698,7 @@ class MinigameTugOfWar extends MinigameBase {
         if (this.areAnyTeamsEmpty) {
             return "Not enough players for this round! Moving on to another game."
         } else {
-            return "The round is about to start! Spam your emote when I say go...";
+            return "The round is about to start! Scoring is based on number of messages containing your team's emote. Spam your emote when I say go...";
         }
     }
     GetOnActiveText() {
@@ -713,7 +719,15 @@ class MinigameTugOfWar extends MinigameBase {
         this.WriteMessage(`${user.username}, you are on team ${team.name}. When the game starts, spam the [${team.emote}] emote! ${team.emote}`);
 
         let image = MinigameHandler.imageMap[team.emote];
-        this.sprites.push({ name: user.username, image: image, targetX: 0, targetY: 0, z: 0, dz: 0 });
+        this.sprites.push({
+            name: user.username,
+            image: image,
+            targetX: 0,
+            targetY: 0,
+            z: 0,
+            dz: 0,
+            teamIndex: this.teams.indexOf(team)
+        });
         this.RepositionTeams();
 
         this.areAnyTeamsEmpty = this.teams.some(a => a.usernames.length === 0);
@@ -733,10 +747,10 @@ class MinigameTugOfWar extends MinigameBase {
             let yOffset = isEvenTeam ? heightPerUser / 2 : 0;
             let xOffset = 0;
             for (let username of this.teams[teamIndex].usernames) {
-                let sprite = this.sprites.find(a => a.username === username);
+                let sprite = this.sprites.find(a => a.name === username);
                 if (!sprite) continue;
 
-                let x = width*2 - xOffset;
+                let x = width * 2 - xOffset;
                 sprite.targetX = teamIndex === 0 ? x : MinigameHandler.ctx.canvas.width - x;
                 sprite.targetY = centerY + yOffset;
 
@@ -750,6 +764,22 @@ class MinigameTugOfWar extends MinigameBase {
     }
 
     GameLoop(msTick) {
+        this.pullBonus += 0.005;
+        this.targetDistance -= 0.01;
+        for (let team of this.teams) {
+            let teamSize = team.usernames.length;
+            let opposingSize = this.teams.map(a => a.usernames.length).reduce((a, b) => a + b, 0) - teamSize;;
+            let bonusRatio = (teamSize < opposingSize) ? (opposingSize / teamSize) : 1;
+            while (team.pulls.length > 0) {
+                let pull = this.team.pulls.pop();
+                let sprite = this.sprites.find(a => a.name === pull);
+                if (sprite.z === 0) {
+                    sprite.dz = 3;
+                    this.flagPosition += team.dir * this.pullBonus * bonusRatio;
+                }
+            }
+        }
+
         for (let sprite of this.sprites) {
             if (!sprite.x) sprite.x = sprite.targetX;
             if (!sprite.y) sprite.y = sprite.targetY;
@@ -762,6 +792,45 @@ class MinigameTugOfWar extends MinigameBase {
             if (Math.abs(sprite.y - sprite.targetY) < 0.05) {
                 sprite.y = sprite.targetY;
             }
+
+            sprite.z += sprite.dz;
+            if (sprite.z > 0) sprite.dx -= 0.2;
+            if (sprite.z <= 0) {
+                sprite.z = 0;
+                sprite.dz = 0;
+            }
+        }
+
+        if (Math.abs(this.flagPosition) > this.targetDistance || this.targetDistance <= 0) {
+            // GAME OVER
+            let winningDir = this.flagPosition > 0 ? 1 : (this.flagPosition < 0 ? -1 : 0)
+            let winningTeam = this.teams.find(a => a.dir === winningDir);
+            if (winningTeam) {
+                let points = 50;
+                this.WriteMessage(`The winner is team ${winningTeam.name}! Awarded ${points} points each to the teammembers. `);
+                for (let username of winningTeam.usernames) {
+                    this.SilentAwardPoints(username, points);
+                }
+            } else {
+                this.WriteMessage(`It's a draw! Wow!`);
+            }
+            this.OnGameComplete();
+        }
+    }
+
+    ProcessText(username, message) {
+        for (let team of this.teams) {
+            let teamEmote = team.emote;
+            let otherEmotes = this.teams.map(a => a.emote).filter(a => a !== teamEmote);
+            if (team.usernames.indexOf(username) > -1) {
+                let messageHasRightEmote = message.indexOf(team.emote) > -1;
+                let messageHasWrongEmote = otherEmotes.some(a => message.indexOf(a) > -1);
+                if (messageHasRightEmote && !messageHasWrongEmote) {
+                    if (team.pulls.indexOf(username) === -1) {
+                        team.pulls.push(username);
+                    }
+                }
+            }
         }
     }
 
@@ -769,11 +838,35 @@ class MinigameTugOfWar extends MinigameBase {
         this.DrawTitleLines(ctx, [
             `${this.gameMode} Minigame`
         ]);
+
+        ctx.fillStyle = "red";
+        let fx = ctx.canvas.width / 2 + this.flagPosition;
+        let fy = 225;
+        ctx.moveTo(fx - 30, fy);
+        ctx.lineTo(fx + 30, fy);
+        ctx.lineTo(fx, fy + 75);
+        ctx.fill();
+
+        ctx.fillStyle = "yellow";
+        for (let markerDir of [-1, 1]) {
+            let mx = ctx.canvas.width / 2 + markerDir * this.targetDistance;
+            let my = fy + 100;
+            ctx.fillRect(mx - 2, my, 4, 20);
+        }
+
+        ctx.font = `${16}px Arial`;
+        ctx.fillStyle = "#EEE";
+        this.sprites.sort((a, b) => a.y - b.y);
         for (let sprite of this.sprites) {
             let image = sprite.image;
-            let x = sprite.x - image.width/2;
-            let y = sprite.y - image.height/2;
-            ctx.drawImage(image, x, y);
+            let x = sprite.x - image.width / 4 + this.flagPosition;
+            let y = sprite.y - image.height / 4;
+            ctx.drawImage(image, x, y - sprite.z, image.width / 2, image.height / 2);
+
+            if (sprite.teamIndex === 0 || sprite.teamIndex === 1) {
+                ctx.textAlign = sprite.teamIndex === 0 ? "right" : "left";
+                ctx.fillText("      " + sprite.name + "      ", x, y);
+            }
         }
     }
 }
@@ -931,9 +1024,15 @@ var MinigameHandler = {
         let currentGame = MinigameHandler.currentGame;
         if (currentGame && currentGame.ProcessJoin) {
             if (currentGame.currentPhase === "join") {
-                // TODO phase
                 currentGame.ProcessJoin(user, args);
             }
+        }
+    },
+
+    ProcessText: (username, message) => {
+        let currentGame = MinigameHandler.currentGame;
+        if (currentGame && currentGame.ProcessText) {
+            currentGame.ProcessText(username, message);
         }
     },
 

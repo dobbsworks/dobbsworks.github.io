@@ -46,6 +46,8 @@ function ProcessChatMessage(messageEl, isReward) {
 	// Need to mark as present BEFORE processing command
 	MarkUserAsPresent(username);
 
+	MinigameHandler.ProcessText(username, stitchedText);
+
 	ProcessCommand(username, stitchedText, false, badges);
 	if (selectedReward.length > 0) {
 		ProcessCommand(username, "!" + selectedReward.replace(/ /g, '') + " " + stitchedText, true, badges);
