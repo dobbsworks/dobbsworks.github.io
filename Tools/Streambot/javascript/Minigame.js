@@ -797,7 +797,7 @@ class MinigameTugOfWar extends MinigameBase {
             }
 
             sprite.z += sprite.dz;
-            if (sprite.z > 0) sprite.dx -= 0.2;
+            if (sprite.z > 0) sprite.dz -= 0.2;
             if (sprite.z <= 0) {
                 sprite.z = 0;
                 sprite.dz = 0;
@@ -868,7 +868,7 @@ class MinigameTugOfWar extends MinigameBase {
 
             if (sprite.teamIndex === 0 || sprite.teamIndex === 1) {
                 ctx.textAlign = sprite.teamIndex === 0 ? "right" : "left";
-                ctx.fillText("      " + sprite.name + "      ", x, y);
+                ctx.fillText(sprite.name, x, y);
             }
         }
     }
