@@ -633,7 +633,7 @@ class MinigameMatch extends MinigameBase {
             `${this.gameMode} Minigame`
         ]);
         let margin = 20;
-        let baseX = 90;
+        let baseX = 40;
         let rowHeight = this.cardHeight + margin;
         let colWidth = this.cardWidth + margin;
         let baseY = 80;
@@ -906,7 +906,7 @@ class MinigameSample extends MinigameBase {
 }
 
 var MinigameHandler = {
-    gameTypes: [MinigameScramble, MinigameHangman, MinigameMatch, MinigameTugOfWar],
+    gameTypes: [MinigameScramble, MinigameHangman, MinigameMatch],
     alpha: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
     handlerState: "inactive",
     repeatMode: false,
