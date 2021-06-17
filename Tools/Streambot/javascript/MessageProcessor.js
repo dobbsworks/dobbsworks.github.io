@@ -76,7 +76,7 @@ function MonitorSpecialChars(username, message) {
 		}
 	}
 	let normalRatio = normalCount / message.length;
-	if (normalRatio < 0.2) {
+	if (normalRatio < 0.2 && message.length > 10) {
 		StorageHandler.alpharatio.push({
 			username: username,
 			text: message,

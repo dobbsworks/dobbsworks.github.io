@@ -906,7 +906,11 @@ class MinigameSample extends MinigameBase {
 }
 
 var MinigameHandler = {
-    gameTypes: [MinigameScramble, MinigameHangman, MinigameMatch],
+    gameTypesPool: [
+        { game: MinigameScramble, weight: 1 },
+        { game: MinigameHangman, weight: 1 },
+        { game: MinigameMatch, weight: 0.25 },
+    ],
     alpha: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
     handlerState: "inactive",
     repeatMode: false,
@@ -953,9 +957,21 @@ var MinigameHandler = {
         }
         if (MinigameHandler.window) MinigameHandler.window.close();
         MinigameHandler.CreateWindow();
-        let gameType = MinigameHandler.gameTypes[Math.floor(Math.random() * MinigameHandler.gameTypes.length)];
+        let gameType = MinigameHandler.GetRandomGameType();
         MinigameHandler.currentGame = new gameType();
         MinigameHandler.handlerState = "starting";
+    },
+
+    GetRandomGameType: () => {
+        let totalWeight = MinigameHandler.gameTypesPool.map(a => a.weight).reduce((a, b) => a + b, 0);
+        let chosenWeightPoint = Math.random() * totalWeight;
+        let cumulativeWeight = 0;
+        for (let weightedGame of MinigameHandler.gameTypesPool) {
+            cumulativeWeight += weightedGame.weight;
+            if (cumulativeWeight > chosenWeightPoint) return weightedGame.game;
+        }
+        console.error("Error in weighted random, defaulting to random wordgame")
+        return Math.random() > 0.5 ? MinigameScramble : MinigameHangman;
     },
 
     WriteMessage: (message) => {
