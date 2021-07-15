@@ -150,13 +150,15 @@ function LoadCommands() {
 		MessageCommand("discord", "Join the discord here: https://discord.gg/cdPmKUP"),
 		MessageCommand("youtube", "Technically there is a YouTube channel, but it's just VOD exports: https://www.youtube.com/channel/UCV-i_rqdTGBMYzxzrrephSw"),
 		MessageCommand("twitch", "Really? Sure, whatever. Catch me on Twitch here: https://www.twitch.tv/dobbsworks/"),
+		MessageCommand("twitter", "I don't really use it that much: https://twitter.com/dobbsworks"),
 		MessageCommand("phasetendo", "PhaseTendo is a MM2 game by LurkingTurtleGaming. In normal endless, you race to complete extra clear conditions to advance, such as collecting no coins or not killing any enemies."),
 
-		MessageCommand("charity", "I'm setting aside $25 of cash every stream that you can have me spend towards the channel's selected charity. Check the channel points for what we're supporting."),
+		MessageCommand("charity", "I'm setting aside $20 of cash every stream that you can have me spend towards the channel's selected charity. Check the channel points for what we're supporting."),
 		MessageCommand("pronouns", "he/him plz"),
 		MessageCommand("horse", "honse"),
 		MessageCommand("plunk", "plunk successful, thank you."),
 		MessageCommand("disney", "https://disneydunces.podbean.com/"),
+		MessageCommand("gamble", "maybe someday"),
 		MessageCommand("moonrover", "Moon Rover is a vanilla JS game built from chat's suggestions. Play the latest version here: https://dobbsworks.github.io/Games/MoonRover/"),
 
 		Command("gettokens", "CommandGetTokens", commandPermission.reward, commandDisplay.hidden),
@@ -173,6 +175,7 @@ function LoadCommands() {
 		RewardCommand(100, "wheelcolor", "CommandWheelColor", commandPermission.all, "Sets the color for your slice of the !wheel. Example: !wheelcolor red OR !wheelcolor #AA5D00"),
 		RewardCommand(250, "wheelpattern", "CommandWheelPattern", commandPermission.all, "Sets the background pattern for your slice of the !wheel. Lasts one hour for non-subs. Example: !wheelpattern star"),
 		MessageCommand("pattern", "uh, !wheelpattern maybe?"),
+		MessageCommand("color", "You may be looking for !wheelcolor or !wheelpattern"),
 
 		Command("getalevelidea", "CommandLevelIdea", commandPermission.reward, commandDisplay.hidden, "Generates a random level idea."),
 		RewardCommand(25, "levelidea", "CommandLevelIdea", commandPermission.all, "Generates a random level idea."),
@@ -214,6 +217,7 @@ function LoadCommands() {
 		AliasCommand("tickets", "points"),
 		AliasCommand("rover", "moonrover"),
 		AliasCommand("coins", "points"),
+		AliasCommand("balance", "points"),
 		AliasCommand("answer", "guess"),
 		AliasCommand("move", "moves"),
 		AliasCommand("asset", "assets"),

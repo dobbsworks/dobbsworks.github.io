@@ -529,6 +529,7 @@ class MinigameMatch extends MinigameBase {
     cards = [];
     cardImage = MinigameHandler.cardImage;
     guesses = [];
+    msTimeBetweenGuesses = 5 * 1000;
 
     Initialize() {
         let pairsNeeded = this.numCols * this.numRows / 2;
@@ -698,7 +699,7 @@ class MinigameTugOfWar extends MinigameBase {
         if (this.areAnyTeamsEmpty) {
             return "Not enough players for this round! Moving on to another game."
         } else {
-            return "The round is about to start! Scoring is based on number of messages containing your team's emote. Spam your emote when I say go...";
+            return `The round is about to start! Scoring is based on how soon after "PULL" your team sends their emote. Get ready for the first pull...`;
         }
     }
     GetOnActiveText() {
@@ -717,7 +718,7 @@ class MinigameTugOfWar extends MinigameBase {
         let availableTeams = this.teams.filter(a => a.usernames.length < highestCapacity || areTeamsBalanced);
         let team = availableTeams[Math.floor(Math.random() * availableTeams.length)];
         team.usernames.push(user.username);
-        this.WriteMessage(`${user.username}, you are on team ${team.name}. When the game starts, spam the [${team.emote}] emote! ${team.emote}`);
+        this.WriteMessage(`${user.username}, you are on team ${team.name}. When the game starts, send a message with the [${team.emote}] emote as soon as you can after each "PULL" call! ${team.emote}`);
 
         let image = MinigameHandler.imageMap[team.emote];
         this.sprites.push({
@@ -908,8 +909,8 @@ class MinigameSample extends MinigameBase {
 var MinigameHandler = {
     gameTypesPool: [
         { game: MinigameScramble, weight: 1 },
-        { game: MinigameHangman, weight: 1 },
-        { game: MinigameMatch, weight: 0.25 },
+        { game: MinigameHangman, weight: 0.68 },
+        { game: MinigameMatch, weight: 0.24 },
     ],
     alpha: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
     handlerState: "inactive",
@@ -920,6 +921,7 @@ var MinigameHandler = {
     cardImage: null,
     imageMap: {},
     imageMapKeys: ["GivePLZ", "TakeNRG"],
+    gameStartTime: null,
 
     currentGame: null,
     interval: null,
@@ -951,6 +953,7 @@ var MinigameHandler = {
     },
 
     StartGame: () => {
+        MinigameHandler.gameStartTime = new Date();
         if (MinigameHandler.handlerState !== "inactive") {
             MinigameHandler.WriteMessage("There's already a minigame in progress.");
             return;
@@ -1060,6 +1063,14 @@ var MinigameHandler = {
     },
 
     OnGameOver: () => {
+        if (MinigameHandler.currentGame) {
+            let duration = new Date() - MinigameHandler.gameStartTime;
+            StorageHandler.minigametimes.push({
+                mode: MinigameHandler.currentGame.gameMode,
+                timestamp: new Date(),
+                duration: duration
+            })
+        }
         MinigameHandler.handlerState = "inactive";
         MinigameHandler.currentGame = null;
         if (MinigameHandler.repeatMode) {
