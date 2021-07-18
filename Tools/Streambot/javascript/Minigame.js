@@ -970,7 +970,7 @@ class MinigameMemory extends MinigameBase {
         if (winnerCount === 0) {
             resultsMessage += `No one guessed correctly LUL`;
         } else if (winnerCount) {
-            resultsMessage += `${winningUsername[0]} has been awarded ${points*2} points. `;
+            resultsMessage += `${winningUsername[0]} has been awarded ${points * 2} points. `;
             this.SilentAwardPoints(winningUsername[0], points * 2);
         } else {
             resultsMessage += `${winnerCount} users have been awarded ${points} points each. Double points to the first correct user, ${winningUsername[0]}!`;
@@ -1003,17 +1003,16 @@ class MinigameMemory extends MinigameBase {
 
             ctx.drawImage(image, xLeft, 100, emoteSize, emoteSize);
 
-            ctx.font = `${20}px Arial`;
+            ctx.font = `${18}px Arial`;
             ctx.fillStyle = "#EEE";
             ctx.textAlign = "center";
             ctx.fillText(emote, xMid, 175);
 
-            ctx.textAlign = "left";
             ctx.font = `${14}px Arial`;
             let y = 200;
             for (let username of Object.keys(this.userGuesses)) {
                 if (this.userGuesses[username] === emote) {
-                    ctx.fillText(username, xLeft, y);
+                    ctx.fillText(username, xMid, y);
                     y += 20;
                 }
             }
@@ -1063,7 +1062,7 @@ var MinigameHandler = {
         { game: MinigameScramble, weight: 1 },
         { game: MinigameHangman, weight: 0.68 },
         { game: MinigameMatch, weight: 0.24 },
-        { game: MinigameMemory, weight: 999 },
+        { game: MinigameMemory, weight: 0.4 },
     ],
     alpha: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
     handlerState: "inactive",
@@ -1105,7 +1104,7 @@ var MinigameHandler = {
         return { answer: puzzle, category: category };
     },
 
-    StartGame: () => {
+    StartGame: (arg) => {
         MinigameHandler.gameStartTime = new Date();
         if (MinigameHandler.handlerState !== "inactive") {
             MinigameHandler.WriteMessage("There's already a minigame in progress.");
@@ -1113,12 +1112,18 @@ var MinigameHandler = {
         }
         if (MinigameHandler.window) MinigameHandler.window.close();
         MinigameHandler.CreateWindow();
-        let gameType = MinigameHandler.GetRandomGameType();
+        let gameType = MinigameHandler.GetRandomGameType(arg);
         MinigameHandler.currentGame = new gameType();
         MinigameHandler.handlerState = "starting";
     },
 
-    GetRandomGameType: () => {
+    GetRandomGameType: (arg) => {
+        if (arg) {
+            let matchingGame = MinigameHandler.gameTypesPool.
+                find(a => a.game.name.replace("Minigame", "").toLowerCase() === arg.toLowerCase());
+            if (matchingGame) return matchingGame.game;
+        }
+
         let totalWeight = MinigameHandler.gameTypesPool.map(a => a.weight).reduce((a, b) => a + b, 0);
         let chosenWeightPoint = Math.random() * totalWeight;
         let cumulativeWeight = 0;
@@ -1256,7 +1261,7 @@ MinigameHandler.Init();
 function CommandMinigame(user, args) {
     if (!args[0]) return "Usage: !minigame {start|stop|repeat|last}";
     if (args[0].toLowerCase() === "start") {
-        MinigameHandler.StartGame();
+        MinigameHandler.StartGame(args[1]);
     } else if (args[0].toLowerCase() === "stop") {
         MinigameHandler.repeatMode = false;
         MinigameHandler.handlerState = "inactive";
