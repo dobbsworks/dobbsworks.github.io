@@ -951,8 +951,7 @@ class MinigameMemory extends MinigameBase {
             }
         } else if (this.state === "reveal") {
             if (this.stateTimer > 10 * 1000) {
-                this.state = "reveal"
-                this.stateTimer = 0;
+                this.OnGameComplete();
             }
         }
     }
@@ -980,7 +979,7 @@ class MinigameMemory extends MinigameBase {
                 this.SilentAwardPoints(winningUsername[i], points);
             }
         }
-        this.OnGameComplete();
+        this.WriteMessage(resultsMessage);
     }
 
     Draw(ctx) {
@@ -1002,19 +1001,19 @@ class MinigameMemory extends MinigameBase {
                 ctx.fillRect(xLeft - margin / 2, 100, emoteSize + margin, 280);
             }
 
-            ctx.drawImage(image, xLeft, 120, emoteSize, emoteSize);
+            ctx.drawImage(image, xLeft, 100, emoteSize, emoteSize);
 
             ctx.font = `${20}px Arial`;
             ctx.fillStyle = "#EEE";
             ctx.textAlign = "center";
-            ctx.fillText(emote, xMid, 145);
+            ctx.fillText(emote, xMid, 175);
 
             ctx.textAlign = "left";
             ctx.font = `${14}px Arial`;
-            let y = 170;
+            let y = 200;
             for (let username of Object.keys(this.userGuesses)) {
                 if (this.userGuesses[username] === emote) {
-                    ctx.fillText(emote, xLeft, y);
+                    ctx.fillText(username, xLeft, y);
                     y += 20;
                 }
             }
