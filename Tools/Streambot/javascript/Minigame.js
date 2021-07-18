@@ -909,10 +909,11 @@ class MinigameMemory extends MinigameBase {
 
     GetQuestion() {
         let desiredIndex = Math.floor(Math.random() * this.emotesToRemember.length);
-        let isFromEnd = desiredIndex >= 5;
+        let isFromEnd = desiredIndex >= 7;
         let ordinalText = isFromEnd ?
             (this.ordinals[this.emotesToRemember.length - desiredIndex - 1] + " from the end") :
             this.ordinals[desiredIndex]
+        if (desiredIndex === this.emotesToRemember.length - 1) ordinalText = "last";
 
         let questionText = `What emote appeared ${ordinalText}?`;
         let answerEmote = this.emotesToRemember[desiredIndex];
