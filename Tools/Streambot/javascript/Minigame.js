@@ -508,8 +508,10 @@ class MinigameHangman extends MinigameWordGameBase {
 class MinigameMatch extends MinigameBase {
     gameMode = "MATCHING";
     timePhaseReady = 10;
-    cardHeight = 90;
-    cardWidth = 60;
+    cardSourceHeight = 60;
+    cardSourceWidth = 40;
+    cardHeight = 75;
+    cardWidth = 50;
     numRows = 2;
     numCols = 5;
     cardTypes = [
@@ -654,7 +656,7 @@ class MinigameMatch extends MinigameBase {
                 ctx.fillStyle = "#FF0";
                 ctx.fillRect(dx + xOffset - 1, dy - 1, this.cardWidth * cardScale + 2, this.cardHeight + 2);
             }
-            ctx.drawImage(this.cardImage, sx, sy, this.cardWidth, this.cardHeight,
+            ctx.drawImage(this.cardImage, sx, sy, this.cardSourceWidth, this.cardSourceHeight,
                 dx + xOffset, dy, this.cardWidth * cardScale, this.cardHeight);
 
             if (card.state !== "up") {
@@ -940,7 +942,7 @@ class MinigameMemory extends MinigameBase {
             if (this.stateTimer > 1 * 1000) {
                 let q = this.GetQuestion();
                 this.correctAnswer = q.answer;
-                this.WriteMessage(q.question + " " + this.emotePool.join(" ") + " Put your guess in chat!");
+                this.WriteMessage(q.question + " " + this.emotePool.join(" ") + " Put your guess in chat! 30 seconds on the clock.");
                 this.state = "question"
                 this.stateTimer = 0;
             }
