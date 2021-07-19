@@ -67,6 +67,7 @@ function LoadExternalFunctions() {
 		"Shoutout.js",
 		"TextToSpeechHandler.js",
 		"8ball.js",
+		"Counter.js",
 	];
 	let cacheBreaker = (+(new Date()));
 	for (let fileName of fileList) {
@@ -195,6 +196,10 @@ function LoadCommands() {
 		Command("moves", "CommandIronswornMoves", commandPermission.all, commandDisplay.hidden, "Check an Ironsworn move."),
 		Command("assets", "CommandIronswornAssets", commandPermission.all, commandDisplay.hidden, "Check an Ironsworn asset."),
 		Command("oracle", "CommandIronswornOracle", commandPermission.streamer, commandDisplay.hidden, "Roll on an oracle table."),
+		
+		CounterCommand("rigged", "The bot has been rigged $0 times."),
+		CounterCommand("space", "This command has been to space $0 times."),
+		CounterCommand("rover", "Rover has been given pets $0 times."),
 	];
 	aliases = [
 		AliasCommand("brb", "afk"),
@@ -224,6 +229,7 @@ function LoadCommands() {
 		AliasCommand("oracles", "oracle"),
 		AliasCommand("minigames", "minigame"),
 		AliasCommand("g", "guess"),
+		AliasCommand("wheelcolour", "wheelcolor"),
 	];
 }
 
