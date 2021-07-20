@@ -62,7 +62,7 @@ function ProcessChatMessage(messageEl, isReward) {
 			let myRe = new RegExp(cheerType + ' [\d]*', 'g');
 			trimmed = trimmed.replace(myRe, "")
 		}
-		TTSMessage(trimmed);
+		TTSMessage(trimmed, username, false);
 	}
 }
 

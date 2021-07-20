@@ -29,11 +29,11 @@ function TTSLoop() {
 
 function CommandTTS(user, args) {
     let text = args.join(" ");
-    TTSMessage(text);
+    TTSMessage(text, user.username, true);
     return {success: true};
 }
 
-function TTSMessage(text) {
+function TTSMessage(text, username, spentPoints) {
 	let msg = new SpeechSynthesisUtterance(text);
 	msg.volume = 0.8;
 	msg.voice = voice;
@@ -41,7 +41,15 @@ function TTSMessage(text) {
 		WriteMessage("Hey, bot here. ALERT! TTS just DIED or something. @dobbsworks please notice this message, kind of important. Chat, tell dobbs to notice this");
 		console.error('An error has occurred with the speech synthesis: ' + event.error);
     }
-    pendingTtsItems.push(msg);
+    //pendingTtsItems.push(msg);
+    TTSCheckAccountAge(msg, username, (ttsMessage, username) => {
+        // if account is old enough
+        pendingTtsItems.push(ttsMessage);
+    }, (ttsMessage, username) => {
+        // if account is less than a week old
+        WriteMessage(`@${username}, something went wrong with TTS. Your channel points have been returned as !tokens. `)
+        pointHandler.addPoints(username, 500);
+    });
 }
 
 function GetVoice() {
@@ -52,4 +60,28 @@ function GetVoice() {
 		if (!voice) voice = voices.filter(x => x.name === "Google US English")[0];
 	}
 	return voice;
+}
+
+
+function TTSCheckAccountAge(ttsMessage, username, onSuccess, onError) {
+    let request = new XMLHttpRequest();
+	let url = `https://decapi.me/twitch/accountage/${username}`;
+	request.open("GET", url, true);
+	request.onload = () => {
+        let accountAge = request.responseText;
+        // Possible responses:
+        // No user with the name "manofsteel2801" found.
+        // 2 days, 18 hours
+        // 4 weeks, 1 day
+        // 3 years, 4 months
+        let textToFind = ["year", "month", "week"];
+        let isAccountOldEnough = (textToFind.some(a => accountAge.indexOf(a) > -1));
+        
+        if (isAccountOldEnough) {
+            onSuccess(ttsMessage, username);
+        } else {
+            onError(ttsMessage, username)
+        }
+	}
+	request.send();
 }
