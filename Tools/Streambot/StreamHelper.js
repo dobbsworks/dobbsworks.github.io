@@ -157,6 +157,7 @@ function LoadCommands() {
 		MessageCommand("charity", "I'm setting aside $20 of cash every stream that you can have me spend towards the channel's selected charity. Check the channel points for what we're supporting."),
 		MessageCommand("pronouns", "he/him plz"),
 		MessageCommand("horse", "honse"),
+		MessageCommand("0", "That doesn't do anything here."),
 		MessageCommand("plunk", "plunk successful, thank you."),
 		MessageCommand("disney", "https://disneydunces.podbean.com/"),
 		MessageCommand("gamble", "maybe someday"),
@@ -197,9 +198,9 @@ function LoadCommands() {
 		Command("assets", "CommandIronswornAssets", commandPermission.all, commandDisplay.hidden, "Check an Ironsworn asset."),
 		Command("oracle", "CommandIronswornOracle", commandPermission.streamer, commandDisplay.hidden, "Roll on an oracle table."),
 		
-		CounterCommand("rigged", "The bot has been rigged $0 times."),
-		CounterCommand("space", "This command has been to space $0 times."),
-		CounterCommand("rover", "Rover has been given pets $0 times."),
+		CounterCommand("rigged", "The wheel has been rigged $0 times."),
+		CounterCommand("space", "We have been to space $0 times."),
+		CounterCommand("rover", "Chat has given Rover pets $0 times."),
 	];
 	aliases = [
 		AliasCommand("brb", "afk"),
