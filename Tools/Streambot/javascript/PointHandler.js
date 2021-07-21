@@ -49,6 +49,10 @@ function CommandAddPoints(user, args) {
 }
 
 function CommandGivePoints(user, args) {
+    if (args.length <= 1) {
+        return { success: false, message: `Usage: !give @user num` }
+    }
+
     let targetUsername = args[0].replace("@", "");
     let pointValue = +(args[1]);
     if (isNaN(pointValue)) {
