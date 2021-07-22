@@ -75,7 +75,7 @@
 		preEventItems = JSON.parse(JSON.stringify(items));
 		let eventRandValue = Math.random();
 		console.log("eventRandValue", eventRandValue)
-		wheelEvent = (eventRandValue < 0.12) ? RandomFrom(["reversal", "revolution", "prize", "prize", "prize"]) : "";
+		wheelEvent = (eventRandValue < 0.12) ? RandomFrom(["revolution", "revolution", "prize", "prize", "prize"]) : ""; // removed "reversal"
 		if (isBowserEvent()) {
 			// check to see if a bowser event makes sense here
 			let minWeight = Math.min(999999, ...(items.map(x => x.weight)));

@@ -152,7 +152,7 @@ function GetWheelData() {
 function CommandBiggerSlice(user, args) {
     let targetUser = args[0];
     if (targetUser) {
-        targetUser = targetUser.replace("@","");
+        targetUser = targetUser.replace("@", "");
         let success = UpgradeWheelSliceForUser(targetUser);
         if (success) {
             return { message: `Thank you! ${targetUser}'s slice has been upgraded!`, success: true };
@@ -182,12 +182,37 @@ function UpgradeWheelSliceForUser(username) {
 
 
 function CalculateLevelWeight(level) {
+    let allLevels = StorageHandler.queue.values;
+    let levelsSinceThisUser = -1;
+    for (let oldLevel of allLevels) {
+        if (oldLevel.status === "pending") break;
+        if (level.username === oldLevel.username) {
+            levelsSinceThisUser = 0;
+            continue;
+        }
+        if (levelsSinceThisUser >= 0) {
+            let levelTime = new Date(oldLevel.timeEnded) - new Date(oldLevel.timeStarted);
+            if (levelTime > 1000 * 60) { // ignore levels that are live for less than one minute
+                levelsSinceThisUser++;
+            }
+        }
+    }
+
+    let recentPlayPenaltyScale = 1;
+    if (levelsSinceThisUser <= 2) {
+        recentPlayPenaltyScale = (levelsSinceThisUser + 1) / 4
+    }
+    // if you played last, level slice down to 25% weight
+    // if one level played since your level, level slice down to 50% weight
+    // if two levels played since your level, level slice down to 75% weight
+
+
     let now = new Date();
     let timeSinceAdded = (now - new Date(level.timeAdded));
     if (level.totalAfkTime) timeSinceAdded -= level.totalAfkTime;
     let timeBonusWeight = (timeSinceAdded / 1000 / 60 / 10) ** 2;
     let bonusScale = (1 + level.weightPriorityPurchases);
-    let ret = bonusScale * (level.weight + timeBonusWeight);
+    let ret = bonusScale * (level.weight + timeBonusWeight) * recentPlayPenaltyScale;
 
     return ret;
 }
