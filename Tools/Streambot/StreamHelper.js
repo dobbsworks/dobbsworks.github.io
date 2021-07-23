@@ -186,6 +186,7 @@ function LoadCommands() {
 		RewardCommand(75, "soundrandom", "CommandSoundBoardRandom", commandPermission.all, "Play a random sound from the soundboard. Use !sound to play a specific sound."),
 		Command("soundlist", "CommandSoundList", commandPermission.all, "Display sounds for !soundboard"),
 
+		Command("uptime", "CommandUptime", commandPermission.all, commandDisplay.hidden, "Gets current stream uptime."),
 		Command("so", "CommandShoutout", commandPermission.mod, commandDisplay.hidden, "Usage: !so username"),
 		Command("setshoutout", "CommandSetShoutout", commandPermission.mod, commandDisplay.hidden, "Usage: !so username Shout-out to $name!"),
 		Command("transfer", "CommandTransfer", commandPermission.mod, commandDisplay.hidden, "Transfers points, wheel color, etc to a new username (for when a user's name changes). Usage: !transfer oldName newName"),
@@ -318,6 +319,16 @@ function CommandAs(user, args) {
 
 function CommandDebug(user, args) {
 	console.log(user, args);
+}
+
+function CommandUptime(user, args) {
+    let request = new XMLHttpRequest();
+	let url = `https://decapi.me/twitch/uptime/${streamerName}`;
+	request.open("GET", url, true);
+	request.onload = () => {
+        WriteMessage("Uptime: " + request.responseText);
+	}
+	request.send();
 }
 
 
