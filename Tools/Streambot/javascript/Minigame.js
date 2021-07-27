@@ -923,7 +923,7 @@ class MinigameMemory extends MinigameBase {
     }
 
     GetOnJoinText() { return ""; }
-    GetOnReadyText() { return "Try to memorize the upcoming list of emotes, then try to answer the question that follows!" }
+    GetOnReadyText() { return "Try to memorize the upcoming list of emotes, then try to answer the question that follows! Multiple winners are allowed." }
     GetOnResultsText() { return "" }
 
     GameLoop(msTick) {
