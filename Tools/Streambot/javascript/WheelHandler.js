@@ -199,7 +199,7 @@ function CalculateLevelWeight(level) {
     }
 
     let recentPlayPenaltyScale = 1;
-    if (levelsSinceThisUser <= 2) {
+    if (levelsSinceThisUser <= 2 && levelsSinceThisUser > -1) {
         recentPlayPenaltyScale = (levelsSinceThisUser + 1) / 4
     }
     // if you played last, level slice down to 25% weight
