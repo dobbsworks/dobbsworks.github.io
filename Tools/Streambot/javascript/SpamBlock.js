@@ -33,6 +33,7 @@ function AddSpamUser(user) {
 }
 function RemoveSpamUser(username) {
 	let spamUsers = StorageHandler.spamUsers.values;
+	let userRemovedFromSpamList = false;
 	for (let i=0; i<spamUsers.length; i++) {
 		if (spamUsers[i].toLowerCase() === username.toLowerCase()) {
 			spamUsers.splice(i, 1);
