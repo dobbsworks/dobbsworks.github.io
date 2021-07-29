@@ -972,7 +972,7 @@ class MinigameMemory extends MinigameBase {
         let resultsMessage = `The correct answer is ${this.correctAnswer} [${this.correctAnswer}]! `;
         if (winnerCount === 0) {
             resultsMessage += `No one guessed correctly LUL`;
-        } else if (winnerCount) {
+        } else if (winnerCount === 1) {
             resultsMessage += `${winningUsername[0]} has been awarded ${points * 2} points. `;
             this.SilentAwardPoints(winningUsername[0], points * 2);
         } else {
@@ -1185,7 +1185,7 @@ var MinigameHandler = {
                             ctx.strokeStyle = "#EEE";
                             ctx.lineWidth = 1;
                             ctx.beginPath();
-                            ctx.arc(x - 20, y - 10, 10, 0 - Math.PI / 2, 2 * Math.PI * ratio - Math.PI / 2);
+                            ctx.arc(x - 20, y - 10, 8, 0 - Math.PI / 2, 2 * Math.PI * ratio - Math.PI / 2);
                             ctx.lineTo(x - 20, y - 10);
                             ctx.fill();
                             ctx.stroke();
@@ -1282,6 +1282,9 @@ function CommandMinigame(user, args) {
 function CommandMinigameGuess(user, args) {
     let guess = args.join(' ');
     MinigameHandler.ProcessGuess(user, guess);
+    if (guess && guess.toLowerCase().replace(" ","") === "dn") {
+        return "GOTTEM";
+    }
 }
 
 function CommandMinigameJoin(user, args) {
