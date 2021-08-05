@@ -14,7 +14,7 @@ function CommandRandomWin(user, args) {
     // for some mysterious reason resizeto gets the window closer to, but not exactly 0,0
     // call it 10 times I guess? This is really weird behavior
     for (let i = 0; i < 20; i++) wheelWindow.resizeTo(0, 0);
-    let winningUser = args[0];
+    let winningUser = decodeURI(args[0]);
     let availableLevels = StorageHandler.queue.values.filter(x => x.status === levelStatus.pending);
     let level = availableLevels.find(x => x.username === winningUser);
     if (level) {

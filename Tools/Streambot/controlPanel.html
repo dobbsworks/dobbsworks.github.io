@@ -201,11 +201,11 @@
 	}
 
 	function RemoveUser(username) {
-		SendCommand("as " + username + " !leave");
+		SendCommand("as " + encodeURI(username) + " !leave");
 	}
 
 	function PlayNow(username) {
-		SendCommand("randomwin " + username);
+		SendCommand("randomwin " + encodeURI(username));
 	}
 
 	function ClosePanel() {

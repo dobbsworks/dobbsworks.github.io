@@ -297,7 +297,8 @@ function CommandChangeLevel(user, args) {
 
 function CommandLeaveQueue(user, args) {
 	let newLevelList = StorageHandler.queue.values;
-	newLevelList = newLevelList.filter(x => x.username !== user.username || x.status !== levelStatus.pending);
+	let targetUsername = decodeURI(user.username);
+	newLevelList = newLevelList.filter(x => x.username !== targetUsername || x.status !== levelStatus.pending);
 	if (newLevelList.length === StorageHandler.queue.values.length) {
 		return "You have no levels in the queue.";
 	}

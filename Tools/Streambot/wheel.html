@@ -455,11 +455,12 @@
 		let preEventTotalWeight = preEventItems.map(x => x.weight).reduce((a, b) => a + b, 0);
 		let preEventChance = preEventWinWeight / preEventTotalWeight;
 
-		let command = '!randomwin ' + winningUser.name + ' ' + preEventChance + ' ' + winnerChance;
+		let commandUsername = encodeURI(winningUser.name);
+		let command = '!randomwin ' + commandUsername + ' ' + preEventChance + ' ' + winnerChance;
 		console.log("Sending message " + command);
 		(new BroadcastChannel('helper')).postMessage(command);
 
-		if (isPrizeChosen()) (new BroadcastChannel('helper')).postMessage('!bonusprize ' + winningUser.name);
+		if (isPrizeChosen()) (new BroadcastChannel('helper')).postMessage('!bonusprize ' + commandUsername);
 	}
 
 
