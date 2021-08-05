@@ -463,7 +463,12 @@ class MinigameHangman extends MinigameWordGameBase {
                     this.WriteMessage(this.displayedClue);
                 }
             } else {
-                this.WriteMessage(`There are no ${guess.toUpperCase()}'s.`);
+                let isAlreadyGuessed = (this.guessedChars.toUpperCase().indexOf(guess.toUpperCase()) > -1);
+                if (isAlreadyGuessed) {
+                    this.WriteMessage(`${guess.toUpperCase()} was already guessed!`);
+                } else {
+                    this.WriteMessage(`There are no ${guess.toUpperCase()}'s.`);
+                }
             }
             return false;
         }
