@@ -162,6 +162,7 @@ function LoadCommands() {
 		MessageCommand("disney", "https://disneydunces.podbean.com/"),
 		MessageCommand("gamble", "maybe someday"),
 		MessageCommand("moonrover", "Moon Rover is a vanilla JS game built from chat's suggestions. Play the latest version here: https://dobbsworks.github.io/Games/MoonRover/"),
+		MessageCommand("schedule", "https://www.twitch.tv/dobbsworks/schedule"),
 
 		Command("gettokens", "CommandGetTokens", commandPermission.reward, commandDisplay.hidden),
 		Command("getlotsoftokens", "CommandGetLotsOfTokens", commandPermission.reward, commandDisplay.hidden),
