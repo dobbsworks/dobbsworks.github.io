@@ -1,0 +1,58 @@
+<html>
+
+<head>
+	<title>test</title>
+
+	<style>
+		body {
+			background-color: black;
+		}
+
+        img { display: none;}
+
+		button {
+			height: 100px;
+			width: 100px; 
+			font-size: 20px;
+			margin: 20px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<canvas id="canvas" width="960" height="540" style="display: none"></canvas>
+	<img src="./images/ground.png"  />
+	<img src="./images/dobbs.png" data-cols="4" data-rows="8" />
+	<img src="./images/dobbshead.png"  />
+	<img src="./images/flower.png"  />
+	<img src="./images/tree.png"  />
+	<img src="./images/points.png"  />
+	<img src="./images/snek.png" data-rows="2" />
+	<img src="./images/tank.png" />
+	<img src="./images/wagon.png" data-cols="3" data-rows="1" />
+	<img src="./images/turtle.png" data-cols="2" data-rows="1" />
+	<img src="./images/gq.png" data-cols="4" data-rows="1" />
+	<img src="./images/dove.png" />
+	<img src="./images/dobbloon.png" data-cols="6" data-rows="1" />
+	<img src="./images/kirb.png" data-cols="4" data-rows="1" />
+    <audio id="theme" src="./theme.mp3"></audio>
+
+	<button id="start" onclick="Start();">Start!</button>
+
+</body>
+
+<script src="./camera.js"></script>
+<script src="./sprite.js"></script>
+<script src="./interpolate.js"></script>
+<script src="./scenes.js"></script>
+<script src="./main.js"></script>
+<script src="./sprites/dobbs.js"></script>
+<script src="./sprites/ground.js"></script>
+<script src="./sprites/rect.js"></script>
+<script src="./sprites/staticImage.js"></script>
+<script src="./sprites/staticText.js"></script>
+<script src="./sprites/dobbloon.js"></script>
+
+
+</html>
