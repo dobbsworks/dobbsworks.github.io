@@ -25,7 +25,13 @@ function Initialize() {
 }
 
 function Start() {
-    Scene1();
+    canvas.style.opacity = 0;
+    setTimeout(() => {
+        setTimeout(() => {
+            canvas.style.opacity = 1;
+        }, 50);
+        Scene1()
+    }, 1000);
     let button = document.getElementById("start");
     button.style.display = "none";
     canvas.style.display = "unset";

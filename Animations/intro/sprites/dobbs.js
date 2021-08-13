@@ -29,7 +29,7 @@ class Dobbs extends Sprite {
         }
         if (this.isFall) {
             this.tile = 11;
-            this.y += 10;
+            this.y += 20;
             this.rotation += 0.1;
             if (this.y > 300) this.isActive = false;
         }

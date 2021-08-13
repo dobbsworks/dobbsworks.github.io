@@ -1,15 +1,17 @@
 class Sprite {
-    constructor(tileset, x, y, zIndex) {
-        if (typeof tileset == "string" || tileset.addColorStop) {
+    constructor(tileset, x, y) {
+        if (tileset.play) {
+            this.video = tileset;
+        } else if (typeof tileset == "string" || tileset.addColorStop) {
             this.color = tileset;
         } else {
             this.tileset = tileset;
         }
+
         this.initialX = x;
         this.initialY = y;
         this.x = x;
         this.y = y;
-        this.zIndex = zIndex;
         this.tile = 0;
         this.isActive = true;
     }
@@ -56,6 +58,15 @@ class Sprite {
             let width = (this.scale || 1) * (this.xScale || 1);
             let height = (this.scale || 1) * (this.yScale || 1);
             ctx.fillRect(-width/2, -height/2, width, height);
+            ctx.restore();
+        } else if (this.video) {
+            ctx.save();
+            ctx.transform(1, 0, 0, 1, this.x, this.y);
+            ctx.rotate(this.rotation);
+            let width = (this.scale || 1) * (this.xScale || 1);
+            let height = (this.scale || 1) * (this.yScale || 1);
+            ctx.drawImage(this.video, 0, 0, 1920, 1080,
+                -width/2, -height/2, width, height)
             ctx.restore();
         }
     }
