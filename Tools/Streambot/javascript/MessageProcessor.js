@@ -76,13 +76,16 @@ function MonitorSpecialChars(username, message) {
 		}
 	}
 	let normalRatio = normalCount / message.length;
-	if (normalRatio < 0.2 && message.length > 10) {
+	if (normalRatio < 0.2 && message.length > 20) {
 		StorageHandler.alpharatio.push({
 			username: username,
 			text: message,
 			normalRatio: normalRatio,
 			timestamp: new Date()
-		})
+		});
+		setTimeout(() => {
+			WriteMessageRaw("/timeout " + username + " 10 spam");
+		}, 100)
 	}
 }
 
