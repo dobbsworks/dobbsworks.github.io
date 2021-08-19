@@ -886,6 +886,126 @@ class MinigameTugOfWar extends MinigameBase {
     }
 }
 
+class MinigameGuess extends MinigameBase {
+    state = "starting"; // "clue" "clear" "question" "reveal"
+    gameMode = "GUESS";
+    timePhaseJoin = 0;
+    timePhaseReady = 0;
+    timePhaseResults = 0;
+    stateTimer = 0;
+
+    numDistinctEmotes = 4;
+    allEmotes = ["GivePLZ", "TakeNRG", "SingsNote", "VoHiYo", "GlitchCat", "FrankerZ", "StinkyCheese", "DxCat", "Jebaited", "PopCorn"];
+    emotePool = [];
+    correctAnswer = "NO-ANSWER-EMOTE-LOADED";
+    userGuesses = {};
+
+    Initialize() {
+        let shuffledEmotes = this.GetShuffledArray(this.allEmotes);
+        this.emotePool = shuffledEmotes.slice(0, this.numDistinctEmotes);
+        let correctIndex = Math.floor(Math.random() * this.emotePool.length);
+        this.correctAnswer = this.emotePool[correctIndex];
+    }
+
+    GetOnJoinText() { return ""; }
+    GetOnReadyText() { return "" }
+    GetOnResultsText() { return "" }
+
+    GameLoop(msTick) {
+        this.stateTimer += msTick;
+        if (this.state === "starting") {
+            let message = this.emotePool.join(" ");
+            this.WriteMessage(`Guess which of these emotes I'm thinking of! That's literally the game. 30 seconds on the clock. ${message}`);
+            this.state = "question"
+        } else if (this.state === "question") {
+            if (this.stateTimer > 30 * 1000) {
+                this.state = "reveal"
+                this.stateTimer = 0;
+                this.ProcessResults();
+            }
+        } else if (this.state === "reveal") {
+            if (this.stateTimer > 10 * 1000) {
+                this.OnGameComplete();
+            }
+        }
+    }
+
+    ProcessResults() {
+        let winningUsername = [];
+        for (let username of Object.keys(this.userGuesses)) {
+            if (this.userGuesses[username] === this.correctAnswer) {
+                winningUsername.push(username);
+            }
+        }
+
+        let points = 25;
+        let winnerCount = winningUsername.length;
+        let resultsMessage = `The correct answer is ${this.correctAnswer} [${this.correctAnswer}]! `;
+        if (winnerCount === 0) {
+            resultsMessage += `No one guessed correctly LUL`;
+        } else if (winnerCount === 1) {
+            resultsMessage += `${winningUsername[0]} has been awarded ${points * 2} points. `;
+            this.SilentAwardPoints(winningUsername[0], points * 2);
+        } else {
+            resultsMessage += `${winnerCount} users have been awarded ${points} points each. Double points to the first correct user, ${winningUsername[0]}!`;
+            this.SilentAwardPoints(winningUsername[0], points * 2);
+            for (let i = 1; i < winnerCount; i++) {
+                this.SilentAwardPoints(winningUsername[i], points);
+            }
+        }
+        this.WriteMessage(resultsMessage);
+    }
+
+    Draw(ctx) {
+        this.DrawTitleLines(ctx, [
+            `${this.gameMode} Minigame`
+        ]);
+
+        let emoteSize = 56;
+        let margin = Math.floor((ctx.canvas.width - emoteSize * this.emotePool.length) / (this.emotePool.length + 1));
+
+        for (let emoteIndex = 0; emoteIndex < this.emotePool.length; emoteIndex++) {
+            let emote = this.emotePool[emoteIndex];
+            let image = MinigameHandler.imageMap[emote];
+            let xLeft = emoteIndex * (margin + emoteSize) + margin;
+            let xMid = xLeft + emoteSize / 2;
+
+            if (this.state === "reveal" && this.correctAnswer === emote) {
+                ctx.fillStyle = "rgba(255,255,255,0.3)";
+                ctx.fillRect(xLeft - margin / 2, 100, emoteSize + margin, 280);
+            }
+
+            ctx.drawImage(image, xLeft, 100, emoteSize, emoteSize);
+
+            ctx.font = `${18}px Arial`;
+            ctx.fillStyle = "#EEE";
+            ctx.textAlign = "center";
+            ctx.fillText(emote, xMid, 175);
+
+            ctx.font = `${14}px Arial`;
+            let y = 200;
+            for (let username of Object.keys(this.userGuesses)) {
+                if (this.userGuesses[username] === emote) {
+                    ctx.fillText(username, xMid, y);
+                    y += 20;
+                }
+            }
+        }
+    }
+
+    ProcessText(username, message) {
+        if (this.state === "question") {
+            let messageEmotes = this.emotePool.filter(a => message.indexOf(a) > -1);
+            if (messageEmotes.length === 1) {
+                let alreadyGuessed = !!(this.userGuesses[username]);
+                if (!alreadyGuessed) {
+                    this.userGuesses[username] = messageEmotes[0];
+                }
+            }
+        }
+    }
+}
+
 class MinigameMemory extends MinigameBase {
     state = "starting"; // "clue" "clear" "question" "reveal"
     gameMode = "MEMORY";
@@ -1070,7 +1190,7 @@ var MinigameHandler = {
         { game: MinigameScramble, weight: 1 },
         { game: MinigameHangman, weight: 0.68 },
         { game: MinigameMatch, weight: 0.24 },
-        { game: MinigameMemory, weight: 0.4 },
+        { game: MinigameGuess, weight: 0.4 },
     ],
     alpha: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
     handlerState: "inactive",
