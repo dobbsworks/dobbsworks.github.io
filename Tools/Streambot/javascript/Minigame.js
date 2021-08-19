@@ -890,7 +890,7 @@ class MinigameGuess extends MinigameBase {
     state = "starting"; // "clue" "clear" "question" "reveal"
     gameMode = "GUESS";
     timePhaseJoin = 0;
-    timePhaseReady = 1;
+    timePhaseReady = 10;
     timePhaseResults = 0;
     stateTimer = 0;
 
@@ -908,14 +908,14 @@ class MinigameGuess extends MinigameBase {
     }
 
     GetOnJoinText() { return ""; }
-    GetOnReadyText() { return "" }
+    GetOnReadyText() { return "Guess which of these emotes I'm thinking of! That's literally the game. Stand by for the choices." }
     GetOnResultsText() { return "" }
 
     GameLoop(msTick) {
         this.stateTimer += msTick;
         if (this.state === "starting") {
             let message = this.emotePool.join(" ");
-            this.WriteMessage(`Guess which of these emotes I'm thinking of! That's literally the game. 30 seconds on the clock. ${message}`);
+            this.WriteMessage(`30 seconds on the clock. Guess between these emotes: ${message}`);
             this.state = "question"
         } else if (this.state === "question") {
             if (this.stateTimer > 30 * 1000) {
