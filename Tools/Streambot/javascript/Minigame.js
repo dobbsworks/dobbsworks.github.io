@@ -890,7 +890,7 @@ class MinigameGuess extends MinigameBase {
     state = "starting"; // "clue" "clear" "question" "reveal"
     gameMode = "GUESS";
     timePhaseJoin = 0;
-    timePhaseReady = 0;
+    timePhaseReady = 1;
     timePhaseResults = 0;
     stateTimer = 0;
 
