@@ -83,9 +83,7 @@ function MonitorSpecialChars(username, message) {
 			normalRatio: normalRatio,
 			timestamp: new Date()
 		});
-		setTimeout(() => {
-			WriteMessageRaw("/timeout " + username + " 10 spam");
-		}, 100)
+		WriteMessageRaw("/timeout " + username + " 10 spam");
 	}
 }
 
