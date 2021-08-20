@@ -21,7 +21,7 @@ function ProcessMessages() {
 	}
 }
 function ProcessChatMessage(messageEl, isReward) {
-	let textFragments = Array.from(messageEl.querySelectorAll(".text-fragment, .chat-image, .mention-fragment"));
+	let textFragments = Array.from(messageEl.querySelectorAll(".text-fragment, .chat-image, .mention-fragment, .link-fragment"));
 	let stitchedText = textFragments.map(x => x.innerText || x.alt).join("");
 	let selectedReward = messageEl.children[0].innerText.split("\n")[0].replace("Redeemed ", "");
 	let badges = Array.from(messageEl.getElementsByClassName("chat-badge")).map(x => x.alt);
