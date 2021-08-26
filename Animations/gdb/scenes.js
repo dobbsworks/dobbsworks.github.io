@@ -107,7 +107,7 @@ function Scene1() {
         sprites.push(gq);
         SetInterp(gq, { scale: 1, rotation: 0.05, x: -50 }, subtitleDelay, 20, "ease-in-out");
         SetInterp(gq, { x: -100 }, 0, 240, "linear");
-        AddSplotchAndText("GameQueued", "Cracks a pack!", "Right", "#fff147");
+        AddSplotchAndText("GameQueued", "Takes the dev exit!", "Right", "#fff147");
         Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "-100px")
     }
 
