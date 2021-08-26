@@ -110,9 +110,9 @@ function Scene1() {
     }
 
     GQ();
-    setTimeout(Dobbs, 3000);
-    setTimeout(Germdove, 6000);
-    setTimeout(Cleanup, 9000);
+    setTimeout(Dobbs, 2000);
+    setTimeout(Germdove, 4000);
+    setTimeout(Cleanup, 6000);
 
     // let song = document.getElementById("theme");
     // song.volume = 1;
