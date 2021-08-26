@@ -24,7 +24,7 @@ function Scene1() {
     function AddSplotchAndText(titleText, subtitleText, side, bgColor) {
         let container = document.getElementById("perspective");
         let title = document.createElement("div");
-        title.appendChild(CreateTextBlock(titleText, side));
+        title.appendChild(CreateTextBlock(titleText, side + " title"));
         container.appendChild(title);
 
         setTimeout(() => {
@@ -92,6 +92,7 @@ function Scene1() {
         SetInterp(germ, { scale: 0.2, rotation: 0.05, x: -50 }, subtitleDelay, 20, "ease-in-out");
         SetInterp(germ, { x: -100 }, 0, 240, "linear");
         AddSplotchAndText("germdove", "Takes flight!", "Left", "#38926e");
+        Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "-50px")
     }
 
     function GQ() {
@@ -102,17 +103,38 @@ function Scene1() {
 
         ColorLayer("#fff14722");
 
-        let gq = new StaticImage(images.gq, 1, 270, 100);
+        let gq = new StaticImage(images.gq, 1, -170, 100);
         sprites.push(gq);
-        SetInterp(gq, { scale: 0.2, rotation: 0.05, x: -50 }, subtitleDelay, 20, "ease-in-out");
+        SetInterp(gq, { scale: 1, rotation: 0.05, x: -50 }, subtitleDelay, 20, "ease-in-out");
         SetInterp(gq, { x: -100 }, 0, 240, "linear");
-        AddSplotchAndText("GameQueued", "Cracks a pack!", "Left", "#fff147");
+        AddSplotchAndText("GameQueued", "Cracks a pack!", "Right", "#fff147");
+        Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "-100px")
     }
 
-    GQ();
-    setTimeout(Dobbs, 2000);
-    setTimeout(Germdove, 4000);
-    setTimeout(Cleanup, 6000);
+    function Turtle() {
+        Cleanup();
+        let turtleback = new StaticImage(images.turtleback, 2, 0, 0);
+        SetInterp(turtleback, { x: 50 }, 0, 240, "linear");
+        sprites.push(turtleback);
+
+        ColorLayer("#fff14722");
+
+        let turtle = new StaticImage(images.turtle, 1, 270, 100);
+        sprites.push(turtle);
+        SetInterp(turtle, { scale: 0.2, rotation: 0.05, x: -50 }, subtitleDelay, 20, "ease-in-out");
+        SetInterp(turtle, { x: -100 }, 0, 240, "linear");
+        AddSplotchAndText("Lurking Turtle", "Raises shell!", "Left", "blue");
+        Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "-50px")
+    }
+
+    function Go() {
+        Turtle();
+        setTimeout(Dobbs, 2000);
+        setTimeout(Germdove, 4000);
+        setTimeout(GQ, 6000);
+        setTimeout(Go, 8100);
+    }
+    Go();
 
     // let song = document.getElementById("theme");
     // song.volume = 1;
