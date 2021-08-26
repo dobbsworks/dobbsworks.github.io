@@ -175,7 +175,7 @@ function Scene4() {
     sprites.push(sky);
     SetInterp(sky, { y: 2400 }, 0, 60, "ease-in-out");
 
-    
+
     let hills = new StaticImage(images.smwhills, 1, 800, 150);
     SetInterp(hills, { x: -2400 }, 60, 600, "linear");
     sprites.push(hills)
@@ -420,8 +420,20 @@ function Scene8() {
     var crowd = [
         "vidz", "riddle", "yosh", "jen", "ehnu", "typ",
         "gfe", "hudson", "mantis", "mushu", "owley", "richard",
-        "crow", "placeholder", "", "", "", "placeholder"
+        "crow", "", "", "burger", "", "sceptile"
     ]
+
+    function GetShuffledArray(array) {
+        let scrambled = [];
+        let startArray = [...array]; // copy to avoid editing original array
+        while (startArray.length) {
+            let randomIndex = Math.floor(Math.random() * startArray.length);
+            let item = startArray.splice(randomIndex, 1)[0];
+            scrambled.push(item);
+        }
+        return scrambled;
+    }
+    //crowd = GetShuffledArray(crowd);
 
     for (let row = 0; row < 3; row++) {
         let y = row * 100 + 280;
@@ -694,6 +706,11 @@ function Scene13() {
 
 
     let logo = new StaticImage(images.logo, 5, 0, 50);
+    logo.animated = false; //manually animated
+    logo.updateRules.push((frameNum) => {
+        let anim = Math.floor(frameNum / musicBeat * 4) % 16;
+        logo.tile = [0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0][anim];
+    });
     sprites.push(logo);
 
     setTimeout(Scene14, 210 * frames)

@@ -24,6 +24,7 @@ function Initialize() {
     setInterval(Loop, frames);
 }
 
+//setTimeout(Start, 100);
 function Start() {
     canvas.style.opacity = 0;
     setTimeout(() => {
@@ -31,7 +32,8 @@ function Start() {
             canvas.style.opacity = 1;
         }, 50);
         Scene1()
-    }, 1000);
+        //Scene7()
+    }, 3000);
     let button = document.getElementById("start");
     button.style.display = "none";
     canvas.style.display = "unset";

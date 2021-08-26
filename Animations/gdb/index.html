@@ -1,0 +1,176 @@
+<html>
+
+<head>
+	<title>test</title>
+
+	<style>
+		body {
+			background-color: #8c3535;
+		}
+
+		img,
+		video {
+			display: none;
+		}
+
+		button {
+			height: 400px;
+			width: 700px;
+			font-size: 50px;
+			margin: 20px;
+			z-index: 3;
+			opacity: 0.1;
+		}
+
+		* {
+			position: fixed;
+			top: 10px;
+			left: 10px;
+			animation-fill-mode: forwards;
+		}
+
+		#perspective {
+			perspective: 2800px;
+			width: 960px;
+			height: 540px;
+			z-index: 1;
+		}
+
+		.text {
+			color: white;
+			z-index: 5;
+			-webkit-text-stroke: 12px black;
+			white-space: nowrap;
+			font-family: fantasy;
+			font-size: 120px;
+			text-align: center;
+			width: 500px;
+		}
+
+		.text.sub {
+			font-size: 40px;
+			-webkit-text-stroke: 4px black;
+		}
+
+		.overlay {
+			-webkit-text-stroke: unset !important;
+		}
+
+		.perspLeft {
+			transform: rotateY(50deg) rotateX(5deg) rotateZ(5deg) translateY(0px) scaleY(0.75);
+		}
+
+		.perspLeft.sub {
+			transform: rotateY(50deg) rotateX(5deg) rotateZ(5deg) translateY(100px) scaleY(0.75);
+			left: -150px;
+		}
+
+		.perspRight {
+			transform: rotateY(-50deg) rotateX(-5deg) rotateZ(-5deg) translateY(200px) scaleY(0.75) translateX(600px);
+		}
+
+		.perspRight.sub {
+			transform: rotateY(-50deg) rotateX(-5deg) rotateZ(-5deg) translateY(330px) scaleY(0.75) translateX(850px);
+			left: -150px;
+		}
+
+		.border {
+			width: 960px;
+			height: 540px;
+			display: block;
+			border: black 500px solid;
+			position: relative;
+			left: -510px;
+			top: -510px;
+			z-index: 2;
+		}
+
+		.slam-in {
+			animation-duration: .5s;
+			animation-name: slam-in;
+			transform-style: preserve-3d;
+			transform-origin: 60px 60px;
+		}
+
+		.drift-left {
+			animation-duration: 3s;
+			animation-name: drift-left;
+			transform-style: preserve-3d;
+		}
+
+		.drift-right {
+			animation-duration: 3s;
+			animation-name: drift-right;
+			transform-style: preserve-3d;
+		}
+
+		@keyframes slam-in {
+			from {
+				transform: scale(20);
+			}
+
+			to {
+				transform: scale(1);
+			}
+		}
+
+		#perspective>div {
+			transform: translateX(0);
+			transform-style: preserve-3d;
+		}
+
+		@keyframes drift-left {
+			from {
+				transform: translateX(0);
+			}
+
+			to {
+				transform: translateX(-10px);
+			}
+		}
+
+		@keyframes drift-right {
+			from {
+				transform: translateX(0);
+			}
+
+			to {
+				transform: translateX(10px);
+			}
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="border">
+	</div>
+
+	<div id="perspective">
+	</div>
+
+	<canvas id="canvas" width="960" height="540" style="display: none"></canvas>
+	<img src="./images/splotch.png"  />
+	<img src="./images/dobbs.png" data-cols="4" data-rows="8" />
+	<img src="./images/dobbsback.png" />
+	<img src="./images/gq.png" />
+	<img src="./images/gqback.png" />
+	<img src="./images/germdove.png" />
+	<img src="./images/germback.png" />
+	<!-- <audio id="theme" src="./theme.mp3"></audio>
+    <video id="vid" src="./vid.mov" ></video> -->
+
+	<button id="start" onclick="Start();">Start preview</button>
+</body>
+
+<script src="./camera.js"></script>
+<script src="./sprite.js"></script>
+<script src="./interpolate.js"></script>
+<script src="./scenes.js"></script>
+<script src="./main.js"></script>
+<script src="./sprites/rect.js"></script>
+<script src="./sprites/staticImage.js"></script>
+<script src="./sprites/staticText.js"></script>
+
+
+</html>

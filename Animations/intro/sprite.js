@@ -42,7 +42,7 @@ class Sprite {
 
             let dx = this.x;
             let dy = this.y;
-            let dw = sw * (this.scale || 1) * (this.xScale || 1);
+            let dw = Math.floor(sw * (this.scale || 1) * (this.xScale || 1));
             let dh = sh * (this.scale || 1) * (this.yScale || 1);
 
             ctx.save();
