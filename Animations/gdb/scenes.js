@@ -168,7 +168,7 @@ function Scene1() {
 
 
     function Go() {
-        let scenes = [Panda, Dae, Turtle, Dobbs, Germdove, GQ];
+        let scenes = [Turtle, Dobbs, Germdove, GQ, Panda, Dae, ];
         for (let i=0; i<scenes.length; i++) {
             setTimeout(scenes[i], 2000 * i);
         }
