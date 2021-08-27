@@ -76,7 +76,7 @@ function Scene1() {
         sprites.push(dobbs);
         SetInterp(dobbs, { scale: 24, rotation: -0.05, x: 50, y: -70 }, subtitleDelay, 20, "ease-in-out");
         SetInterp(dobbs, { x: -100 }, 0, 240, "linear");
-        AddSplotchAndText("Dobbs", "Slides in!", "Right", "#92cddb");
+        AddSplotchAndText("Dobbs", "Spaces out!", "Right", "#92cddb");
     }
 
     function Germdove() {
@@ -123,16 +123,56 @@ function Scene1() {
         sprites.push(turtle);
         SetInterp(turtle, { scale: 0.2, rotation: 0.05, x: -50 }, subtitleDelay, 20, "ease-in-out");
         SetInterp(turtle, { x: -100 }, 0, 240, "linear");
-        AddSplotchAndText("Lurking Turtle", "Raises shell!", "Left", "blue");
+        AddSplotchAndText("Lurking Turtle", "Raises shell!", "Left", "teal");
         Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "-50px")
     }
 
+    function Panda() {
+        Cleanup();
+        let pandaback = new StaticImage(images.pandaback, 2, 0, 0);
+        SetInterp(pandaback, { x: 50 }, 0, 240, "linear");
+        sprites.push(pandaback);
+
+        ColorLayer("#fff14722");
+
+        let panda = new StaticImage(images.panda, 1, 270, 100);
+        sprites.push(panda);
+        SetInterp(panda, { scale: 0.2, rotation: 0.05, x: -50 }, subtitleDelay, 20, "ease-in-out");
+        SetInterp(panda, { x: -100 }, 0, 240, "linear");
+        AddSplotchAndText("Bardic Panda", "Eats Shoots and Leaves!", "Left", "#626945");
+        Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "-50px")
+        setTimeout(() => {
+            Array.from(document.getElementsByClassName("sub")).forEach(a => a.style.left = "-100px")
+        }, 1000)
+    }
+
+    function Dae() {
+        Cleanup();
+        let snekback = new StaticImage(images.snekback, 2, 0, 0);
+        SetInterp(snekback, { x: 50 }, 0, 240, "linear");
+        sprites.push(snekback);
+
+        ColorLayer("#fff14722");
+
+        let snek = new StaticImage(images.snek, 1, -270, 100);
+        sprites.push(snek);
+        SetInterp(snek, { scale: 1, rotation: 0.05, x: 150, y: 150 }, subtitleDelay, 20, "ease-in-out");
+        SetInterp(snek, { x: -100 }, 0, 240, "linear");
+        AddSplotchAndText("DaeSnek", "Readies the banhammer!", "Right", "#b5866c");
+        Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "10px")
+        setTimeout(() => {
+            Array.from(document.getElementsByClassName("sub")).forEach(a => a.style.left = "-200px")
+        }, 1000)
+    }
+
+
+
     function Go() {
-        Turtle();
-        setTimeout(Dobbs, 2000);
-        setTimeout(Germdove, 4000);
-        setTimeout(GQ, 6000);
-        setTimeout(Go, 8100);
+        let scenes = [Panda, Dae, Turtle, Dobbs, Germdove, GQ];
+        for (let i=0; i<scenes.length; i++) {
+            setTimeout(scenes[i], 2000 * i);
+        }
+        setTimeout(Go, 2000 * scenes.length + 100);
     }
     Go();
 
