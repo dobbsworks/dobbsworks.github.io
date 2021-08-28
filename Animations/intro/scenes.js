@@ -433,7 +433,7 @@ function Scene8() {
         }
         return scrambled;
     }
-    //crowd = GetShuffledArray(crowd);
+    crowd = GetShuffledArray(crowd);
 
     for (let row = 0; row < 3; row++) {
         let y = row * 100 + 280;
@@ -702,18 +702,25 @@ function Scene13() {
 
     let ground = new StaticImage(images.ground, 5, 0, 4300);
     sprites.push(ground);
-    SetInterp(ground, { y: -4000 }, 60, 30, "ease-in-out");
+    SetInterp(ground, { y: -4050 }, 60, 30, "ease-in-out");
 
 
-    let logo = new StaticImage(images.logo, 5, 0, 50);
+    let logo = new StaticImage(images.logo, 5, 0, 0);
     logo.animated = false; //manually animated
     logo.updateRules.push((frameNum) => {
         let anim = Math.floor(frameNum / musicBeat * 4) % 16;
         logo.tile = [0, 0, 1, 1, 2, 2, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0][anim];
     });
     sprites.push(logo);
+    
+    let title = CreateTitle();
+    let num = (Math.random() * 999 + 1).toFixed(0);
+    let color = Rand(["#f6c729", "#03c802", "#04d8f7", "#f73738"])
+    let episodeNumber = new StaticText(`Episode ${num}:`, 30, color, "black", 0, 190);
+    let episodeTitle = new StaticText(title, 30, color, "black", 0, 230);
+    sprites.push(episodeNumber, episodeTitle);
 
-    setTimeout(Scene14, 210 * frames)
+    setTimeout(Scene14, 310 * frames)
 }
 
 // fade out
