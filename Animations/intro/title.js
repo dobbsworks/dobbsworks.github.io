@@ -52,6 +52,8 @@ function CreateTitle() {
         `${char1} Finds a Pizza`,
         `${char1} Finds a Dev Exit`,
         `${char1} Finds Inner Peace`,
+        `${char1} Says "Poggers" IRL`,
+        `${char1} Saves Christmas`,
     ]);
 }
 

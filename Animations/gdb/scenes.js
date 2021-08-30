@@ -165,10 +165,29 @@ function Scene1() {
         }, 1000)
     }
 
+    function Duffy() {
+        Cleanup();
+        let duffyback = new StaticImage(images.duffyback, 1.2, 0, 0);
+        SetInterp(duffyback, { x: 50 }, 0, 240, "linear");
+        sprites.push(duffyback);
+
+        ColorLayer("#fff14722");
+
+        let duffy = new StaticImage(images.duffy, 0.5, -270, 120);
+        sprites.push(duffy);
+        SetInterp(duffy, { scale: 0.5, rotation: 0.05, x: 50, y: 0 }, subtitleDelay, 20, "ease-in-out");
+        SetInterp(duffy, { x: -100 }, 0, 240, "linear");
+        AddSplotchAndText("Duffy", "Has a knife!", "Right", "#b5866c");
+        Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "10px")
+        // setTimeout(() => {
+        //     Array.from(document.getElementsByClassName("sub")).forEach(a => a.style.left = "-200px")
+        // }, 1000)
+    }
+
 
 
     function Go() {
-        let scenes = [Turtle, Dobbs, Germdove, GQ, Panda, Dae, ];
+        let scenes = [Duffy, Turtle, Dobbs, Germdove, GQ, Panda, Dae, ];
         for (let i=0; i<scenes.length; i++) {
             setTimeout(scenes[i], 2000 * i);
         }
