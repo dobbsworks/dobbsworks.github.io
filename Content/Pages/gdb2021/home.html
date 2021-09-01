@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<title>Games Done Badly 2021</title>
+
+	<style>
+		@font-face {
+			font-family: 'Capture it';
+			src: url('../Content/Fonts/Capture it.ttf');
+		}
+	</style>
+	<style>
+		* {
+			-webkit-transition-property: all;
+			transition-property: all;
+			-webkit-transition-duration: 0.2s;
+			transition-duration: 0.2s;
+		}
+
+		html,
+		body {
+			margin: 0px;
+		}
+
+		#sticky-back {
+			position: fixed;
+			left: 0;
+			right: 0;
+			top: 0;
+			bottom: 0;
+			z-index: -1;
+			background-color: #222f26;
+			background: linear-gradient(#002408, #222f26);
+		}
+
+		h1 {
+			background: -webkit-linear-gradient(#c4ff0e, #74fc07);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			font-family: "Capture it";
+			font-size: 60px;
+			margin: 30px;
+			text-align: center;
+		}
+
+		h2 {
+			color: #c4ff0e;
+			font-family: "Capture it";
+			font-size: 40px;
+			margin: 30px;
+			text-align: center;
+			width: 100%;
+			margin-bottom: 15px;
+		}
+
+		#header {
+			background-color: #000;
+			padding: 10px;
+			color: white;
+		}
+
+		#mainContainer {
+			display: flex;
+			flex-flow: row wrap;
+			justify-content: center;
+			align-content: flex-start;
+			padding: 25px;
+			margin: 0px auto;
+			max-width: 800px;
+
+			color: white;
+			font-family: sans-serif;
+		}
+
+		p {
+			max-width: 600px;
+			line-height: 1.5;
+			width: 100%;
+		}
+
+		.stickyContainer {
+			height: 0;
+			width: 100%;
+		}
+
+		.floatingSticky {
+			position: relative;
+			top: -50px;
+			left: calc(100% - 200px);
+		}
+
+		a {
+			color: rgb(255, 169, 169);
+		}
+
+		.streamerContainer {
+			width: 150px;
+			text-align: center;
+			margin: 10px;
+		}
+
+		.streamerContainer:hover {
+			filter: drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.2));
+			transform: scale(1.2);
+		}
+
+		.avatarContainer img {
+			border-radius: 50%;
+			border: solid 3px black;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="sticky-back"></div>
+	<div id="header">
+		<h1>
+			GAMES DONE BADLY 2021
+		</h1>
+		<div class="stickyContainer">
+			<img class="floatingSticky" src="Content/Images/sticky.png" />
+		</div>
+	</div>
+	<div id="mainContainer">
+
+		<h2>What is GDB?</h2>
+
+		<p>Games Done Badly is a yearly <span title="not actually a marathon">marathon*</span> of video game streams.
+			Unlike other gaming marathons that focus on things like extraordinary skill and precise execution, GDB
+			stands out by having no theme at all. Wow. It's more of an excuse to hang out and play video games for a
+			couple of days. </p>
+
+		<p>There is the <em>suggestion</em> of a central theme in that games are played badly, which encompasses being
+			bad at games (offense taken), playing games with some sort of handicap (challenge runs), or playing games
+			that are considered bad (it was good back then, trust me). </p>
+
+		<h2>When is GDB?</h2>
+
+		<p>GDB 2021 will be held Saturday, October 9th and Sunday October 10th. Each day's stream will start at 10 AM
+			Eastern and will last 12 or so hours.</p>
+
+
+
+		<div id="streamerList"></div>
+
+
+		<h2>I want to know more!</h2>
+
+		<p>Want to know more? Maybe even interested in becoming a part of this nonsense? Join the <a href="https://discord.gg/fSMfD5aARk">Discord</a> for more information or to get involved!</p>
+	</div>
+
+
+</body>
+
+<script type="text/javascript">
+	document.body.onload = Initialize;
+
+	function Initialize() {
+		let streamers = [
+			{ name: "dobbsworks", avatar: "dobbsworks.png" },
+			{ name: "daesnek", avatar: "daesnek.png" },
+			{ name: "GameQueued", avatar: "gamequeued.jpeg" },
+			{ name: "germdove", avatar: "germdove.png" },
+			{ name: "hulacowstudios", avatar: "hulacowstudios.png" },
+			{ name: "LurkingTurtleGamer", avatar: "lurkingturtlegamer.png" },
+			// {name: "mastertank56", avatar: "mastertank56.png"}, not for sure yet
+			{ name: "TheBardicPanda", avatar: "thebardicpanda.png" },
+			{ name: "YungMuShu_", avatar: "yungmushu_.jpg" },
+		];
+
+		streamers.sort((a, b) => b.name.localeCompare(a.name));
+
+		let container = document.getElementById("streamerList");
+		for (let streamer of streamers) {
+			let html = `<div class="streamerContainer">
+							<a href="https://www.twitch.tv/${streamer.name}">
+								<div class="avatarContainer">
+									<img src="Content/Images/${streamer.avatar}" />
+								</div>
+								${streamer.name}
+							</a>
+						</div>`;
+			container.insertAdjacentHTML("afterend", html);
+		}
+		let header = `<h2>Who is GDB?</h2>`;
+		container.insertAdjacentHTML("afterend", header);
+	}
+</script>
+
+</html>
