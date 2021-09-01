@@ -164,7 +164,7 @@ function LoadCommands() {
 		MessageCommand("moonrover", "Moon Rover is a vanilla JS game built from chat's suggestions. Play the latest version here: https://dobbsworks.github.io/Games/MoonRover/"),
 		MessageCommand("schedule", "https://www.twitch.tv/dobbsworks/schedule"),
 		
-		MessageCommand("gdb", "Games Done Badly is a 2-day marathon running October 9th & 10th."),
+		MessageCommand("gdb", "Games Done Badly is a 2-day marathon running October 9th & 10th. https://tinyurl.com/gdb2021"),
 
 		Command("gettokens", "CommandGetTokens", commandPermission.reward, commandDisplay.hidden),
 		Command("getlotsoftokens", "CommandGetLotsOfTokens", commandPermission.reward, commandDisplay.hidden),
