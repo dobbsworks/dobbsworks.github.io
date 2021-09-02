@@ -184,10 +184,29 @@ function Scene1() {
         // }, 1000)
     }
 
+    function Shiner() {
+        Cleanup();
+        let shinerback = new StaticImage(images.shinerback, 1.5, 0, 0);
+        SetInterp(shinerback, { x: 50 }, 0, 240, "linear");
+        sprites.push(shinerback);
+
+        ColorLayer("#61000033");
+
+        let shiner = new StaticImage(images.shiner, 0.5, 270, 120);
+        sprites.push(shiner);
+        SetInterp(shiner, { scale: 0.5, rotation: 0.05, x: -50, y: 0 }, subtitleDelay, 20, "ease-in-out");
+        SetInterp(shiner, { x: -100 }, 0, 240, "linear");
+        AddSplotchAndText("Shiner", "Circles the wagons!", "Left", "#8a1700");
+        Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "-80px")
+        setTimeout(() => {
+            Array.from(document.getElementsByClassName("sub")).forEach(a => {a.style.left = "-100px"; a.style.top = "20px"})
+        }, 900)
+    }
+
 
 
     function Go() {
-        let scenes = [Duffy, Turtle, Dobbs, Germdove, GQ, Panda, Dae, ];
+        let scenes = [Shiner, Duffy, Turtle, Dobbs, Germdove, GQ, Panda, Dae, ];
         for (let i=0; i<scenes.length; i++) {
             setTimeout(scenes[i], 2000 * i);
         }
