@@ -88,6 +88,7 @@ function MonitorSpecialChars(username, message) {
 }
 
 var bannedUsernames = ["manofsteel", "mrsteal", "ladyvalkyrie", "mannasteal", "certinalynot_mos"];
+var notificationBlockedUsernames = ["hoss", "h0ss", "0312"]
 function Kryptonite(username) {
 	// check username against known manofsteel account patterns, ban
 	if (!username) return false;
@@ -99,6 +100,12 @@ function Kryptonite(username) {
 			setTimeout(() => {
 				WriteMessageRaw("/ban " + username);
 			}, 100)
+			return true;
+		}
+	}
+	for (let bannedUsername of notificationBlockedUsernames) {
+		let target = bannedUsername.toLowerCase();
+		if (username.indexOf(target) > -1) {
 			return true;
 		}
 	}
