@@ -1,0 +1,134 @@
+<html>
+
+<head>
+	<title>Wheel of Dobbs</title>
+
+	<style>
+		canvas {
+			background-color: #000;
+		}
+
+		img,
+		video {
+			display: none;
+		}
+
+		body > * {
+			position: fixed;
+			top: 10px;
+			left: 10px;
+			animation-fill-mode: forwards;
+		}
+
+		#controls {
+			position: fixed;
+			top: 560px;
+			left: 10px;
+			background-color: rgb(181, 168, 194);
+			width: 500px;
+			padding-bottom: 30px;
+		}
+
+		#controls * {
+			position: relative;
+		}
+
+		.row {
+			margin: 10px;
+		}
+
+		label {
+			background-color: #0002;
+		}
+	</style>
+</head>
+
+<body>
+	<canvas id="canvas" width="960" height="540"></canvas>
+
+	<div id="controls">
+		<div class="row">
+			<input id="letterInput" maxlength="1" onkeyup="selectLetter()" onchange="selectLetter()" />
+			<button id="revealTiles" onclick="revealLetters()">Reveal</button>
+		</div>
+		
+		<div class="row">
+			<button onclick="spinWheel()">Spin wheel</button>
+		</div>
+		
+		<div class="row">
+			<button onclick="camera1()">Cam 1</button>
+			<button onclick="camera2()">Cam 2</button>
+			<button onclick="camera3()">Cam 3</button>
+		</div>
+		
+		<div class="row">
+			<button onclick="setPlayerTurn(0)">Player 1's turn</button>
+			<button onclick="setPlayerTurn(1)">Player 2's turn</button>
+			<button onclick="setPlayerTurn(2)">Player 3's turn</button>
+		</div>
+		
+		<div class="row">
+			<span>Zoom Speed</span>
+			<label><input type="radio" name="zoomSpeed" value="240" checked />Slow</label>
+			<label><input type="radio" name="zoomSpeed" value="120" />Med</label>
+			<label><input type="radio" name="zoomSpeed" value="60" />Fast</label>
+			<label><input type="radio" name="zoomSpeed" value="0"  />Instant</label>
+		</div>
+		
+		<div class="row">
+			<span>Zoom Amount</span>
+			<label><input type="radio" name="zoomAmount" value="1.4" checked />Close</label>
+			<label><input type="radio" name="zoomAmount" value="1" />Med</label>
+			<label><input type="radio" name="zoomAmount" value="0.6" />Distant</label>
+		</div>
+		
+		<div class="row">
+			<span>Zoom</span>
+			<button onclick="zoomOnPlayer(0)">Player 1</button>
+			<button onclick="zoomOnPlayer(1)">Player 2</button>
+			<button onclick="zoomOnPlayer(2)">Player 3</button>
+		</div>
+		
+	</div>
+
+	<img src="./images/dobbs.png" data-cols="5" data-rows="3" />
+	<img src="./images/dobbsback.png" />
+	<img src="./images/gq.png" />
+	<img src="./images/germdove.png" />
+	<img src="./images/turtle.png" />
+	<img src="./images/snek.png" />
+	<img src="./images/panda.png" />
+	<img src="./images/duffy.png" />
+	<img src="./images/marker.png" />
+	<img src="./images/peg.png" />
+	<img src="./images/panel.png" data-cols="3" />
+	<img src="./images/boardBack.png" />
+	<img src="./images/wheelBack.png" />
+	<img src="./images/topBack.png" />
+	<audio id="click" src="./sounds/click.mp3"></audio>
+	<audio id="ding" src="./sounds/ding.mp3"></audio>
+	<audio id="buzz" src="./sounds/noLetter.mp3"></audio>
+	<!-- <video id="vid" src="./vid.mov" ></video> -->
+</body>
+
+<script src="./imageHandler.js"></script>
+<script src="./sprites/avatar.js"></script>
+<script src="./wheel.js"></script>
+<script src="./player.js"></script>
+<script src="./sprites/podium.js"></script>
+<script src="./camera.js"></script>
+<script src="./sprite.js"></script>
+<script src="./interpolate.js"></script>
+<script src="./scenes.js"></script>
+<script src="./sprites/rect.js"></script>
+<script src="./sprites/staticImage.js"></script>
+<script src="./sprites/staticText.js"></script>
+<script src="./puzzleChar.js"></script>
+<script src="./puzzleBoard.js"></script>
+<script src="./sprites/hovercat.js"></script>
+<script src="./main.js"></script>
+<script src="./controls.js"></script>
+
+
+</html>
