@@ -48,7 +48,7 @@ function RollDice(n, d) {
 
 function IronswornAllowed(user) {
     let isMonday = (new Date()).getDay() === 1;
-    let allowedUsers = ["dobbsworks", "GameQueued", "DaeSnek", "LurkingTurtleGamer"].map(a => a.toLowerCase());
+    let allowedUsers = ["dobbsworks", "GameQueued", "DaeSnek", "LurkingTurtleGamer", "LurkingTurtleGaming"].map(a => a.toLowerCase());
     let allowed = allowedUsers.indexOf(user.username.toLowerCase()) > -1;
     return allowed && isMonday;
 }
