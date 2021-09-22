@@ -10,7 +10,7 @@ function TTSLoop() {
         if (speechSynthesis.speaking) {
             // api reports message in progress, but sometimes it's wrong and gets stuck
             let totalSpeakingSeconds = (new Date() - currentTtsTimestamp) / 1000;
-            if (totalSpeakingSeconds > 60) {
+            if (totalSpeakingSeconds > 90) {
                 speechSynthesis.cancel();
                 currentTtsTimestamp = null;
             }
