@@ -10,6 +10,26 @@ function selectLetter() {
         let toReveal = pb.tiles.filter(a => a.char === chosenLetter && !a.revealed);
         let button = document.getElementById("revealTiles");
         button.innerHTML = `Reveal ${toReveal.length} ${chosenLetter}'s`;
+
+        let awardButton = document.getElementById("awardPoints");
+        let toAward = wheelObj.GetCurrentSlice(turnIndex).value * toReveal.length;
+        awardButton.dataset.totalPoints = toAward;
+        awardButton.innerHTML = `Award ${toAward}`;
+    }
+}
+
+function awardPoints() {
+    let awardButton = document.getElementById("awardPoints");
+    let points = (+awardButton.dataset.totalPoints);
+    if (points) {
+        players[turnIndex].currentPoints += points;
+    }
+}
+
+function playerWinRound(playerIndex) {
+    players[playerIndex].bankedPoints += +(players[playerIndex].currentPoints)
+    for (let player of players) {
+        player.currentPoints = 0;
     }
 }
 
@@ -20,6 +40,14 @@ function revealLetters() {
         pb.OnGuessChar(chosenLetter.toUpperCase());
         input.value = "";
     }
+}
+
+function revealRandom() {
+    pb.RevealRandomTile();
+}
+
+function solveCorrect() {
+    pb.Solve();
 }
 
 function spinWheel() {
@@ -80,4 +108,15 @@ function fastZoomOnPlayer(index, targetZoom) {
     camera.x = targetX;
     camera.y = 0;
     camera.zoom = targetZoom;
+}
+
+
+function setPuzzle() {
+    let puzzleText = document.getElementById("puzzleInput").value;
+    let categoryText = document.getElementById("categoryInput").value;
+
+    if (pb) {
+        pb.boardSprites.forEach(a => a.isActive = false);
+    }
+    pb = new PuzzleBoard(puzzleText, categoryText);
 }

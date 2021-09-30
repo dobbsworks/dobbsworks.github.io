@@ -4,7 +4,7 @@
 	<title>Wheel of Dobbs</title>
 
 	<style>
-		canvas {
+		#canvas {
 			background-color: #000;
 		}
 
@@ -20,17 +20,23 @@
 			animation-fill-mode: forwards;
 		}
 
-		#controls {
+		.control-box {
 			position: fixed;
 			top: 560px;
-			left: 10px;
 			background-color: rgb(181, 168, 194);
-			width: 500px;
+			width: 400px;
 			padding-bottom: 30px;
 		}
 
-		#controls * {
+		.control-box * {
 			position: relative;
+		}
+
+		#controls1 {
+			left: 10px;
+		}
+		#controls2 {
+			left: 420px;
 		}
 
 		.row {
@@ -45,15 +51,28 @@
 
 <body>
 	<canvas id="canvas" width="960" height="540"></canvas>
+	<canvas id="canvasOver" width="960" height="540"></canvas>
 
-	<div id="controls">
+	<div id="controls1" class="control-box">
 		<div class="row">
 			<input id="letterInput" maxlength="1" onkeyup="selectLetter()" onchange="selectLetter()" />
 			<button id="revealTiles" onclick="revealLetters()">Reveal</button>
+			<button id="awardPoints" onclick="awardPoints()">Award Points</button>
 		</div>
 		
 		<div class="row">
 			<button onclick="spinWheel()">Spin wheel</button>
+			<button onclick="solveCorrect()">Player Solved!</button>
+		</div>
+		
+		<div class="row">
+			<button onclick="playerWinRound(0)">Player 0 wins</button>
+			<button onclick="playerWinRound(1)">Player 1 wins</button>
+			<button onclick="playerWinRound(2)">Player 2 wins</button>
+		</div>
+		
+		<div class="row">
+			<button onclick="revealRandom()">Reveal random for toss-up</button>
 		</div>
 		
 		<div class="row">
@@ -92,6 +111,18 @@
 		
 	</div>
 
+	<div id="controls2" class="control-box">
+		<div class="row">
+			<label><input id="puzzleInput" />Puzzle</label>
+		</div>
+		<div class="row">
+			<label><input id="categoryInput" />Category</label>
+		</div>
+		<div class="row">
+			<button id="setPuzzle" onclick="setPuzzle()">Begin puzzle</button>
+		</div>
+	</div>
+
 	<img src="./images/dobbs.png" data-cols="5" data-rows="3" />
 	<img src="./images/dobbsback.png" />
 	<img src="./images/gq.png" />
@@ -106,12 +137,16 @@
 	<img src="./images/boardBack.png" />
 	<img src="./images/wheelBack.png" />
 	<img src="./images/topBack.png" />
+	<img id="score" src="./images/score.png" />
 	<audio id="click" src="./sounds/click.mp3"></audio>
 	<audio id="ding" src="./sounds/ding.mp3"></audio>
 	<audio id="buzz" src="./sounds/noLetter.mp3"></audio>
+	<audio id="marioDeath" src="./sounds/marioDeath.mp3"></audio>
+	<audio id="roundWin" src="./sounds/roundWin.mp3"></audio>
 	<!-- <video id="vid" src="./vid.mov" ></video> -->
 </body>
 
+<script src="./audio.js"></script>
 <script src="./imageHandler.js"></script>
 <script src="./sprites/avatar.js"></script>
 <script src="./wheel.js"></script>

@@ -1,9 +1,13 @@
 class PuzzleBoard {
     tiles = [];
     boardSprites = [];
+    availableLetterSprites = [];
+    bannerSprites = [];
     guessedChars = [];
-    constructor(answer) {
+    category = "";
+    constructor(answer, category) {
         this.answer = answer.split("/").join(" ").trim();
+        this.category = category;
         this.generateTiles(answer);
 
         
@@ -21,7 +25,6 @@ class PuzzleBoard {
             new Rect(boardBackBorderColor, a.x, a.y, a.xScale + 60, a.yScale + 60)
         );
         this.boardSprites.push(...borderPanels, panel1, panel2);
-        camera.zoom /= 2;
 
         for (let row of [0, 1, 2, 3]) {
             for (let col of [...Array(14).keys()]) {
@@ -46,7 +49,29 @@ class PuzzleBoard {
             a.x -= panelWidth * 6.5;
             a.y -= panelHeight * 2.5;
         })
+
+        this.availableLetterSprites = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((char, i) => {
+            let text = new StaticText(char, 180, "#FFF", "#0008", (i - 12.5) * 180, 1220);
+            text.lineWidth = 20;
+            return text;
+        });
+
+        let categoryBanner = new Rect("#0406", 0, 950, 8000, 200)
+        let categoryText = new StaticText("Category: " + this.category, 130, "#BBB", "#0008", 0, 950);
+        this.bannerSprites = [categoryBanner, categoryText]
+
+        this.boardSprites.push(...this.availableLetterSprites, ...this.bannerSprites);
+
         sprites.push(...this.boardSprites);
+
+        // push HC to front
+        let hoverCat = sprites.find(a => a instanceof HoverCat);
+        if (hoverCat) {
+            sprites = sprites.filter(a => a !== hoverCat);
+            sprites.push(hoverCat);
+        } else {
+            sprites.push(new HoverCat(-1600, 300))
+        }
     }
 
     RevealTile(tile) {
@@ -61,7 +86,7 @@ class PuzzleBoard {
         let unrevealedTiles = this.tiles.filter(a => !a.revealed);
         if (unrevealedTiles.length === 0) return;
         let chosenIndex = Math.floor(Math.random() * unrevealedTiles.length);
-        this.revealTile(unrevealedTiles[chosenIndex]);
+        this.RevealTile(unrevealedTiles[chosenIndex]);
     }
 
     GetUnrevealedByChar(char) {
@@ -69,7 +94,12 @@ class PuzzleBoard {
     }
 
     OnGuessChar(char) {
-        this.guessedChars.push(char.toUpperCase());
+        char = char.toUpperCase();
+        let spr = this.availableLetterSprites.find(a => a.text === char);
+        if (spr) {
+            spr.color = "#0000";
+        }
+        this.guessedChars.push(char);
         let tiles = this.GetUnrevealedByChar(char);
         let delay = 40 * frames;
         let delayNum = 0;
@@ -77,22 +107,21 @@ class PuzzleBoard {
             tile.guessed = true;
             setTimeout(() => {
                 tile.highlighted = true;
-                let tone = document.getElementById("ding");
-                tone.volume = 0.1;
-                tone.pause();
-                tone.currentTime = 0;
-                tone.play();
+                playAudio("ding");
             }, delayNum * delay)
             delayNum++;
         }
 
         if (tiles.length === 0) {
-            let tone = document.getElementById("buzz");
-            tone.volume = 0.1;
-            tone.pause();
-            tone.currentTime = 0;
-            tone.play();
+            playAudio("buzz");
         }
+    }
+
+    Solve() {
+        this.availableLetterSprites.forEach(a => a.y += 10000);
+        this.bannerSprites.forEach(a => a.y += 10000);
+        this.tiles.forEach(a => pb.RevealTile(a));
+        playAudio("roundWin", 0.2);
     }
 
     splitText(answer) {

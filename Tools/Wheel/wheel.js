@@ -88,7 +88,7 @@ class Wheel {
         this.rotation += this.speed;
         let newSlice = this.GetCurrentPegIndex();
         if (oldSlice != newSlice) {
-            this.PlayTick()
+            playAudio("click");
         }
         this.ctx.save();
         this.ctx.rotate(this.rotation)
@@ -108,8 +108,21 @@ class Wheel {
             this.speed *= 0.98
         }
         if (this.speed < 0.0003 && this.speed > 0) {
+            //wheel stops
             this.speed = 0;
-            console.log(this.GetCurrentSlice(turnIndex))
+            let slice = this.GetCurrentSlice(turnIndex);
+            console.log(slice);
+            if (slice.activate) slice.activate();
+            if (slice.value) {
+                setTimeout(() => {
+                    camera1();
+                }, 1500);
+            } else {
+                setTimeout(() => {
+                    camera2();
+                    players[turnIndex].avatar.Sad();
+                }, 500);
+            }
         }
     }
 
@@ -164,14 +177,6 @@ class Wheel {
         return this.slices[sliceIndex];
     }
 
-    PlayTick() {
-        let tone = document.getElementById("click");
-        tone.volume = 0.1;
-        tone.pause();
-        tone.currentTime = 0;
-        tone.play();
-    }
-
 
     AddBorders() {
         this.sourceCtx.lineWidth = 2;
@@ -194,6 +199,7 @@ class Wheel {
     CreateValueSlice(value, color) {
         let slice = new WheelSlice();
         slice.text = "$" + value;
+        slice.value = value;
         slice.activate = () => {
             // add value to current amount, times highlighted
         }
@@ -218,6 +224,7 @@ class Wheel {
         let slice = new WheelSlice();
         slice.text = "Lose a turn";
         slice.activate = () => {
+            playAudio("marioDeath");
             // add value to current amount, times highlighted
         }
         this.DrawWedge("#FFF");
@@ -244,7 +251,7 @@ class Wheel {
         let slice = new WheelSlice();
         slice.text = "Bankrupt";
         slice.activate = () => {
-            // add value to current amount, times highlighted
+            playAudio("marioDeath");
         }
         this.DrawWedge("#000");
         let chars = "BANKRUPT".split('');

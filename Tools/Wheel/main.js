@@ -1,6 +1,8 @@
 
 var canvas;
 var ctx;
+var canvasOver;
+var ctxOver;
 var images = {};
 var sprites = [];
 var frameNum = 0;
@@ -21,6 +23,20 @@ function CheckPuzzle(puzzle) {
         console.log(lines[row].join(""))
     }
 }
+
+
+/*
+intro sequence
+    introduce guests
+Regular round
+    spin and zoom, then zoom out
+    deduct for buy a vowel
+    lock in points
+
+Audio
+    Jump up, no vocals: https://www.youtube.com/watch?v=C-_a7LP4-yQ
+    SMO another world: https://www.youtube.com/watch?v=naiLRCgXG7I
+*/
 
 
 /*
@@ -56,6 +72,8 @@ function Initialize() {
     }
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
+    canvasOver = document.getElementById("canvasOver");
+    ctxOver = canvasOver.getContext("2d");
 
     // backgrounds
     
@@ -84,8 +102,7 @@ function Initialize() {
     setInterval(Loop, frames);
     //SetInterp(camera, { zoom: 0.5 }, 0, 180, "ease-in-out");
     
-    pb = new PuzzleBoard("It's like you don't even want a gift");
-    sprites.push(new HoverCat(-1600, 300))
+    //pb = new PuzzleBoard("It's like you don't even want a gift");
 
     camera1();
 }
@@ -122,11 +139,39 @@ function Update() {
 
 function Draw() {
     ctx.clearRect(0, 0, 9999, 9999);
+    ctxOver.clearRect(0, 0, 9999, 9999);
     onBeforeDraw(ctx);
     for (let sprite of sprites) {
         sprite.Draw(ctx, frameNum);
     }
     onAfterDraw(ctx);
+
+
+    // scores
+    let image = document.getElementById("score");
+    ctxOver.drawImage(image, 960 - image.width, 0)
+
+    ctxOver.textAlign = "right";
+    let x = 850;
+    let y = 30;
+    for (let player of players) {
+        ctxOver.font = "800 16px Verdana";
+        ctxOver.fillStyle = "#000E";
+        let current = "" + player.currentPoints.toLocaleString()
+        ctxOver.fillText(current, x, y);
+        ctxOver.font = "800 12px Verdana";
+        ctxOver.fillStyle = "#000A";
+        let banked = "" + player.bankedPoints.toLocaleString()
+        ctxOver.fillText(banked, x + 100, y);
+
+        if (player.playerNum === turnIndex) {
+            ctxOver.fillStyle = "#FFFA";
+            ctxOver.fillText("->", x - 100 - turnIndex * 10, y - 5);
+        }
+
+        y += 20;
+        //x -= 10;
+    }
 }
 
 

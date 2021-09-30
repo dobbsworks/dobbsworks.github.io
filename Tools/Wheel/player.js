@@ -19,7 +19,7 @@ class Player {
 
     Update() {
         // logic here for whether to show round total or game total
-        let score = 1000;
+        let score = players[this.playerNum].currentPoints;
         this.podium.SetText("$" + score.toLocaleString())
     }
 }
