@@ -56,6 +56,7 @@ function spinWheel() {
     } else {
         wheelObj.targetSpeed = 0.03 + 0.01 * Math.random();
         wheelObj.speedSpinTimer = 60 + 60 * Math.random();
+        setTimeout(camera3, 1000)
     }
 }
 
@@ -119,4 +120,12 @@ function setPuzzle() {
         pb.boardSprites.forEach(a => a.isActive = false);
     }
     pb = new PuzzleBoard(puzzleText, categoryText);
+}
+
+
+function bankToPlayer(index) {
+    let awardAmount = +(document.getElementById("awardValueInput").value);
+    if (awardAmount) {
+        players[index].bankedPoints += awardAmount;
+    }
 }

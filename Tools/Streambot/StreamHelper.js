@@ -162,6 +162,7 @@ function LoadCommands() {
 		MessageCommand("disney", "https://disneydunces.podbean.com/"),
 		MessageCommand("gamble", "maybe someday"),
 		MessageCommand("moonrover", "Moon Rover is a vanilla JS game built from chat's suggestions. Play the latest version here: https://dobbsworks.github.io/Games/MoonRover/"),
+		MessageCommand("fightorflightless", "Fight Or Flightless is a vanilla JS game built from chat's suggestions. Play the latest version here: https://dobbsworks.github.io/Games/FightOrFlightless/"),
 		MessageCommand("schedule", "https://www.twitch.tv/dobbsworks/schedule"),
 		
 		MessageCommand("gdb", "Games Done Badly is a 2-day marathon running October 9th & 10th. https://tinyurl.com/gdb2021"),
@@ -226,6 +227,7 @@ function LoadCommands() {
 		AliasCommand("credits", "points"),
 		AliasCommand("tickets", "points"),
 		AliasCommand("rover", "moonrover"),
+		AliasCommand("fof", "fightorflightless"),
 		AliasCommand("coins", "points"),
 		AliasCommand("balance", "points"),
 		AliasCommand("answer", "guess"),
