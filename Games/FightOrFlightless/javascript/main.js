@@ -27,6 +27,7 @@ function Initialize() {
     ctx.imageSmoothingEnabled = false;
 
     setInterval(Loop, frames);
+    sprites.push(new SouthPole(0, 0));
     sprites.push(new Snowman(-3, -1))
     sprites.push(new Snowman(-4, 3))
     sprites.push(new Snowman(-1, -1))
@@ -36,6 +37,8 @@ function Initialize() {
     sprites.push(new Snowman(0, 1))
     sprites.push(new SnowDrift(0, -5))
     sprites.push(new Hat(0, -1))
+    
+    navMesh = new NavMesh();
 }
 
 function Loop() {
@@ -54,10 +57,28 @@ function Update() {
     sprites = sprites.filter(a => a.isActive);
 }
 
+
+var navMesh;
 function Draw() {
     DrawCells();
     for (let sprite of sprites) {
         sprite.Draw(ctx);
+    }
+    if (navMesh) {
+        let offset = (frameNum % 40) / 40 * cellWidth;
+        for (let tile of navMesh.mesh) {
+            if (tile.critical) {
+                let x = tile.tileX * cellWidth;
+                let y = tile.tileY * cellHeight;
+                ctx.fillStyle = "#0F04";
+                for (let route of tile.routes) {
+                    ctx.fillRect(
+                        canvas.width / 2 + x - 4 + route.x * offset,
+                        canvas.height / 2 + y - 4 + route.y * offset,
+                        8, 8);
+                }
+            }
+        }
     }
 }
 
@@ -74,8 +95,6 @@ function DrawCells() {
             DrawTile(images.art, 0, canvas.width / 2 + x, canvas.height / 2 + y, 2)
         }
     }
-
-    DrawTile(images.art, 5, canvas.width / 2, canvas.height / 2, 2)
 }
 
 

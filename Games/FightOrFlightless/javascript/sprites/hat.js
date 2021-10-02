@@ -15,10 +15,24 @@ class Hat extends Sprite {
     Update() {
         this.HandleMovement();
 
+        let existingSpriteAtLocation = sprites.
+            filter(a => !(a instanceof Hat)).
+            some(a => a.tileX === this.tileX && a.tileY === this.tileY);
+
         if (keyState.action1) {
-            let existingSnowman = sprites.filter(a => a instanceof Snowman);
-            if (!existingSnowman.some(a => a.tileX === this.tileX && a.tileY === this.tileY)) {
+            if (!existingSpriteAtLocation) {
                 sprites.push(new Snowman(this.tileX, this.tileY));
+            }
+        } else if (keyState.action2) {
+            if (!existingSpriteAtLocation) {
+                let navTile = navMesh.mesh.find(a => a.tileX === this.tileX && a.tileY === this.tileY);
+                if (navTile) {
+                    let doesLeavePathOpen = navMesh.mesh.filter(a => a.distance === navTile.distance && a.critical).length > 1;
+                    if (doesLeavePathOpen) {
+                        sprites.push(new SnowWall(this.tileX, this.tileY));
+                        navMesh = new NavMesh();
+                    }
+                }
             }
         }
     }

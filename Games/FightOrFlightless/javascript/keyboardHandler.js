@@ -10,6 +10,7 @@ var keyState = {
     "left": false,
     "right": false,
     "action1": false,
+    "action2": false,
 }
 
 var keyMap = {
@@ -23,7 +24,8 @@ var keyMap = {
     "ArrowDown": "down",
     "Digit1": "action1",
     "Numpad1": "action1",
-    //"Space": "action1",
+    "Digit2": "action2",
+    "Numpad2": "action2",
 }
 
 function OnKeyDown(e) {

@@ -22,7 +22,7 @@ class Snowball extends Sprite {
         this.y += speed * Math.sin(theta);
 
         let distanceToTarget = (this.x - this.targetX) ** 2 + (this.y - this.targetY) ** 2;
-        if (distanceToTarget < speed) {
+        if (distanceToTarget < speed ** 2) {
             this.isActive = false;
             if (this.target.isActive) {
                 this.target.hp -= 1;
