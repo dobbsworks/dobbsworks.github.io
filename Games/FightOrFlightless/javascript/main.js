@@ -37,7 +37,7 @@ function Initialize() {
     sprites.push(new Snowman(0, 1))
     sprites.push(new SnowDrift(0, -5))
     sprites.push(new Hat(0, -1))
-    
+
     navMesh = new NavMesh();
 }
 
@@ -67,16 +67,22 @@ function Draw() {
     if (navMesh) {
         let offset = (frameNum % 40) / 40 * cellWidth;
         for (let tile of navMesh.mesh) {
+            let x = tile.tileX * cellWidth;
+            let y = tile.tileY * cellHeight;
             if (tile.critical) {
-                let x = tile.tileX * cellWidth;
-                let y = tile.tileY * cellHeight;
-                ctx.fillStyle = "#0F04";
+                ctx.fillStyle = "#0F08";
                 for (let route of tile.routes) {
                     ctx.fillRect(
-                        canvas.width / 2 + x - 4 + route.x * offset,
-                        canvas.height / 2 + y - 4 + route.y * offset,
-                        8, 8);
+                        canvas.width / 2 + x - 2 + route.x * offset,
+                        canvas.height / 2 + y - 2 + route.y * offset,
+                        4, 4);
                 }
+            }
+            if (tile.trueDistance && tile.trueDistance < 100) {
+                ctx.fillStyle = "#F00B";
+                ctx.font = "16px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText(tile.distance.toFixed(0), canvas.width / 2 + x, canvas.height / 2 + y)
             }
         }
     }

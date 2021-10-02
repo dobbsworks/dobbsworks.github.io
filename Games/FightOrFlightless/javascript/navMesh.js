@@ -38,6 +38,7 @@ class NavMesh {
             let tile = tiles.find(a => a.tileX === wall.tileX && a.tileY === wall.tileY);
             if (tile) {
                 tile.distance = -1;
+                tile.trueDistance = 9999;
             } else {
                 console.error(`No tile found at (${wall.tileX},${wall.tileY})`);
             }
@@ -58,21 +59,20 @@ class NavMesh {
         }
 
         baseTile.distance = 0;
+        baseTile.trueDistance = 0;
 
-        let isDone = false;
-        let searchDistance = 0;
-        while(!isDone) {
-            let tilesToSearchFrom = tiles.filter(a => a.distance === searchDistance); 
-            for (let tileToSearchFrom of tilesToSearchFrom) {
-                let neighbors = this.FindNeighborTiles(tiles, tileToSearchFrom);
-                let validNeighbors = neighbors.filter(a => a.distance === null);
-                for (let neighbor of validNeighbors) {
-                    neighbor.distance = searchDistance + 1;
-                    tileToSearchFrom.routes.push({x: 0, y: 0})
-                }
-            }
-            if (tilesToSearchFrom.length === 0) isDone = true;
-            searchDistance++;
+        let toProcess = this.FindNeighborTiles(tiles, baseTile);
+        while (toProcess.length > 0) {
+            let tile = toProcess.shift();
+            let neighbors = this.FindNeighborTiles(tiles, tile).filter(a => a.distance !== null && a.distance > -1);
+            let minNeighborDist = Math.min(...neighbors.map(a => a.distance));
+            tile.distance = minNeighborDist + 1;
+            let minNeighborTrueDist = Math.min(...neighbors.map(a => a.trueDistance));
+            let closestNeighbors = neighbors.filter(a => a.trueDistance <= minNeighborTrueDist + 0.1);
+            let closestNeighbor = closestNeighbors[0];
+            tile.trueDistance = closestNeighbor.trueDistance + Math.sqrt((closestNeighbor.tileX - tile.tileX)**2 + (closestNeighbor.tileY - tile.tileY)**2);
+            let unprocessedNeighbors = this.FindNeighborTiles(tiles, tile).filter(a => a.distance === null && toProcess.indexOf(a) === -1);
+            toProcess.push(...unprocessedNeighbors);
         }
     }
 
@@ -80,7 +80,8 @@ class NavMesh {
         for (let tile of mesh) {
             let neighbors = this.FindNeighborTiles(mesh, tile);
             let validNeighbors = neighbors.filter(a => a.distance === tile.distance - 1);
-            tile.routes = validNeighbors.map(a => ({
+            let lowestDist = Math.min(...validNeighbors.map(a => a.trueDistance));
+            tile.routes = validNeighbors.filter(a => true || a.trueDistance <= lowestDist + 0.1).map(a => ({
                 x: a.tileX - tile.tileX,
                 y: a.tileY - tile.tileY
             }));
@@ -107,8 +108,8 @@ class NavMesh {
 
 
     FindNeighborTiles(mesh, targetTile) {
-        //return mesh.filter(a => Math.abs(a.tileX - targetTile.tileX) <= 1 && Math.abs(a.tileY - targetTile.tileY) <= 1);
-        return mesh.filter(a => Math.abs(a.tileX - targetTile.tileX) + Math.abs(a.tileY - targetTile.tileY) === 1);
+        return mesh.filter(a => Math.abs(a.tileX - targetTile.tileX) <= 1 && Math.abs(a.tileY - targetTile.tileY) <= 1 && a !== targetTile);
+        //return mesh.filter(a => Math.abs(a.tileX - targetTile.tileX) + Math.abs(a.tileY - targetTile.tileY) === 1);
     }
 
 

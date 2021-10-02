@@ -27,7 +27,7 @@ class Hat extends Sprite {
             if (!existingSpriteAtLocation) {
                 let navTile = navMesh.mesh.find(a => a.tileX === this.tileX && a.tileY === this.tileY);
                 if (navTile) {
-                    let doesLeavePathOpen = navMesh.mesh.filter(a => a.distance === navTile.distance && a.critical).length > 1;
+                    let doesLeavePathOpen = navMesh.mesh.filter(a => a.distance === navTile.distance && a.critical && a !== navTile).length >= 1;
                     if (doesLeavePathOpen) {
                         sprites.push(new SnowWall(this.tileX, this.tileY));
                         navMesh = new NavMesh();

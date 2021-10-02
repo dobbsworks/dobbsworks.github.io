@@ -19,11 +19,13 @@ class Penguin extends Sprite {
         if (isAtTarget) {
             let navTile = navMesh.mesh.find(a => a.tileX === this.tileX && a.tileY === this.tileY);
             if (navTile) {
-                let routes = navTile.routes;
-                let route = routes[Math.floor(Math.random() * routes.length)];
+                let routes = navTile.routes.map(a => ({route: a, tile: navMesh.mesh.find(b => b.tileX === this.tileX + a.x && b.tileY === this.tileY + a.y)}));
+                let lowestDist = Math.min(...routes.map(a => a.tile ? a.tile.trueDistance : 9999));
+                let validRoutes = routes.filter(a => a.tile && a.tile.trueDistance <= lowestDist + 0.1);
+                let route = validRoutes[Math.floor(Math.random() * validRoutes.length)];
                 if (route) {
-                    this.tileX += route.x;
-                    this.tileY += route.y;
+                    this.tileX += route.route.x;
+                    this.tileY += route.route.y;
                 } else {
                     console.error("Penguin can't find route!");
                 }
