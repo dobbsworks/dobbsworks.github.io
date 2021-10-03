@@ -1,16 +1,16 @@
 class NavMesh {
 
-    constructor() {
+    constructor(blockedCells) {
         //let t0 = performance.now();
-        this.mesh = this.GenerateMesh();
+        this.mesh = this.GenerateMesh(blockedCells || []);
         // let t1 = performance.now();
         // console.log(((t1 - t0)/1000).toFixed(3))
     }
 
 
-    GenerateMesh() {
+    GenerateMesh(blockedCells) {
         let mesh = this.GenerateBlankMesh();
-        this.DetermineAvailableTiles(mesh);
+        this.DetermineAvailableTiles(mesh, blockedCells);
         this.CalculateDistanceForTiles(mesh);
         this.CalculateRoutes(mesh);
         return mesh;
@@ -32,10 +32,19 @@ class NavMesh {
         return ret;
     }
 
-    DetermineAvailableTiles(tiles) {
+    DetermineAvailableTiles(tiles, blockedCells) {
         let walls = sprites.filter(a => a instanceof SnowWall);
         for (let wall of walls) {
             let tile = tiles.find(a => a.tileX === wall.tileX && a.tileY === wall.tileY);
+            if (tile) {
+                tile.distance = -1;
+                tile.trueDistance = 9999;
+            } else {
+                console.error(`No tile found at (${wall.tileX},${wall.tileY})`);
+            }
+        }
+        for (let blockedCell of blockedCells) {
+            let tile = tiles.find(a => a.tileX === blockedCell.tileX && a.tileY === blockedCell.tileY);
             if (tile) {
                 tile.distance = -1;
                 tile.trueDistance = 9999;
@@ -61,7 +70,7 @@ class NavMesh {
         baseTile.distance = 0;
         baseTile.trueDistance = 0;
 
-        let toProcess = this.FindNeighborTiles(tiles, baseTile);
+        let toProcess = this.FindNeighborTiles(tiles, baseTile).filter(a => a.distance !== -1);
         while (toProcess.length > 0) {
             let tile = toProcess.shift();
             let neighbors = this.FindNeighborTiles(tiles, tile).filter(a => a.distance !== null && a.distance > -1);
@@ -79,9 +88,9 @@ class NavMesh {
     CalculateRoutes(mesh) {
         for (let tile of mesh) {
             let neighbors = this.FindNeighborTiles(mesh, tile);
-            let validNeighbors = neighbors.filter(a => a.distance === tile.distance - 1);
+            let validNeighbors = neighbors.filter(a => a.distance === tile.distance - 1 && a.distance >= 0);
             let lowestDist = Math.min(...validNeighbors.map(a => a.trueDistance));
-            tile.routes = validNeighbors.filter(a => true || a.trueDistance <= lowestDist + 0.1).map(a => ({
+            tile.routes = validNeighbors.filter(a => a.trueDistance <= lowestDist + 0.1).map(a => ({
                 x: a.tileX - tile.tileX,
                 y: a.tileY - tile.tileY
             }));

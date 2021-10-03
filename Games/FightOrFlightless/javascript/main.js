@@ -28,13 +28,13 @@ function Initialize() {
 
     setInterval(Loop, frames);
     sprites.push(new SouthPole(0, 0));
-    sprites.push(new Snowman(-3, -1))
+    sprites.push(new Snowman(-3, -2))
     sprites.push(new Snowman(-4, 3))
-    sprites.push(new Snowman(-1, -1))
-    sprites.push(new Snowman(1, -2))
-    sprites.push(new Snowman(1, 2))
+    sprites.push(new Snowman(-4, -3))
+    sprites.push(new Snowman(4, -2))
+    sprites.push(new Snowman(3, 2))
     sprites.push(new Snowman(0, 2))
-    sprites.push(new Snowman(0, 1))
+    sprites.push(new Snowman(0, 4))
     sprites.push(new SnowDrift(0, -5))
     sprites.push(new Hat(0, -1))
 
@@ -64,20 +64,36 @@ function Draw() {
     for (let sprite of sprites) {
         sprite.Draw(ctx);
     }
+    DrawNavMesh();
+}
+
+function DrawNavMesh() {
     if (navMesh) {
-        let offset = (frameNum % 40) / 40 * cellWidth;
+        let offset = (frameNum % 80) / 80 * cellWidth;
         for (let tile of navMesh.mesh) {
             let x = tile.tileX * cellWidth;
             let y = tile.tileY * cellHeight;
-            if (tile.critical) {
-                ctx.fillStyle = "#0F08";
-                for (let route of tile.routes) {
-                    ctx.fillRect(
-                        canvas.width / 2 + x - 2 + route.x * offset,
-                        canvas.height / 2 + y - 2 + route.y * offset,
-                        4, 4);
-                }
+
+            ctx.strokeStyle = "#0b05";
+            ctx.fillStyle = "#0b0F";
+            ctx.lineWidth = 3;
+            if (!tile.critical) {
+                ctx.strokeStyle = "#8c8B"
+                ctx.fillStyle = "#8c8B";
+                ctx.lineWidth = 1;
             }
+            for (let route of tile.routes) {
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 2 + x, canvas.height / 2 + y);
+                ctx.lineTo(canvas.width / 2 + x + route.x * cellWidth, canvas.height / 2 + y + route.y * cellHeight);
+                ctx.stroke();
+                ctx.fillRect(
+                    canvas.width / 2 + x - 2 + route.x * offset,
+                    canvas.height / 2 + y - 2 + route.y * offset,
+                    4, 4);
+            }
+
+            // show distance numbers
             if (tile.trueDistance && tile.trueDistance < 100) {
                 ctx.fillStyle = "#F00B";
                 ctx.font = "16px Arial";
