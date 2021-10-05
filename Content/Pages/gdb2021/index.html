@@ -155,11 +155,11 @@
 		<p>GDB 2021 will be held Saturday, October 9th and Sunday October 10th. Each day's stream will start at 10 AM
 			Eastern and will last 12 or so hours.</p>
 
+		<div id="schedule"></div>
 
 
 		<div id="streamerList"></div>
 
-		<div id="schedule"></div>
 
 
 		<h2>I want to know more!</h2>
@@ -215,19 +215,19 @@
 
 	function SetupSchedule() {
 		let slots = [
-			{ day: 0, utcHour: 15, streamer: "germdove", category: "Jurassic Park 2 + mystery WR" },
-			{ day: 0, utcHour: 17, streamer: "TeddaySR", category: "SMZ3 Randomizer" },
-			{ day: 0, utcHour: 19, streamer: "GameQueued", category: "" },
-			{ day: 0, utcHour: 21, streamer: "daesnek", category: "" },
-			{ day: 0, utcHour: 23, streamer: "LurkingTurtleGamer", category: "Minecraft Skyblock" },
-			{ day: 0, utcHour: 25, streamer: "Various", category: "Multiplayer games" },
+			{ day: 0, utcHour: 14, streamer: "germdove", category: "Jurassic Park 2 + mystery WR" },
+			{ day: 0, utcHour: 16, streamer: "TeddaySR", category: "SMZ3 Randomizer" },
+			{ day: 0, utcHour: 18, streamer: "GameQueued", category: "" },
+			{ day: 0, utcHour: 20, streamer: "daesnek", category: "" },
+			{ day: 0, utcHour: 22, streamer: "LurkingTurtleGamer", category: "Minecraft Skyblock" },
+			{ day: 0, utcHour: 24, streamer: "Various", category: "Multiplayer games" },
 
-			{ day: 1, utcHour: 15, streamer: "hulacowstudios", category: "" },
-			{ day: 1, utcHour: 17, streamer: "ShinerMax", category: "" },
-			{ day: 1, utcHour: 19, streamer: "mastertank56", category: "" },
-			{ day: 1, utcHour: 22, streamer: "TheBardicPanda", category: "Randomizer" },
-			{ day: 1, utcHour: 25, streamer: "dobbsworks", category: "Wheel of Dobbs" },
-			{ day: 1, utcHour: 26, streamer: "Various", category: "Multiplayer games" },
+			{ day: 1, utcHour: 14, streamer: "hulacowstudios", category: "" },
+			{ day: 1, utcHour: 16, streamer: "ShinerMax", category: "" },
+			{ day: 1, utcHour: 18, streamer: "mastertank56", category: "" },
+			{ day: 1, utcHour: 21, streamer: "TheBardicPanda", category: "Randomizer" },
+			{ day: 1, utcHour: 24, streamer: "dobbsworks", category: "Wheel of Dobbs" },
+			{ day: 1, utcHour: 25, streamer: "Various", category: "Multiplayer games" },
 		];
 
 
@@ -245,17 +245,12 @@
 				let timeText = localHour + " " + ampm;
 				if (timeText === "0 am") timeText = "Midnight";
 				let streamerLink = `<a href="twitch.tv/${slot.streamer}">${slot.streamer}</a>`;
+				if (slot.streamer === "Various") streamerLink = "Various";
 				tableContents += `<tr><td>${timeText}</td><td>${streamerLink}</td><td>${slot.category}</td></tr>`
 			}
 		}
 		let tableHtml = `<table>${tableContents}</table>`
 		container.insertAdjacentHTML("afterend", tableHtml);
-
-		let text = `<p>Things get started at 11 AM Eastern on Saturday. Check below for the full schedule in your local time.</p>`;
-		container.insertAdjacentHTML("afterend", text);
-
-		let header = `<h2>What's the schedule?</h2>`;
-		container.insertAdjacentHTML("afterend", header);
 	}
 
 
