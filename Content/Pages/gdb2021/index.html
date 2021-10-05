@@ -244,7 +244,7 @@
 				if (localHour > 12) localHour -= 12;
 				let timeText = localHour + " " + ampm;
 				if (timeText === "0 am") timeText = "Midnight";
-				let streamerLink = `<a href="twitch.tv/${slot.streamer}">${slot.streamer}</a>`;
+				let streamerLink = `<a href="https://twitch.tv/${slot.streamer}">${slot.streamer}</a>`;
 				if (slot.streamer === "Various") streamerLink = "Various";
 				tableContents += `<tr><td>${timeText}</td><td>${streamerLink}</td><td>${slot.category}</td></tr>`
 			}

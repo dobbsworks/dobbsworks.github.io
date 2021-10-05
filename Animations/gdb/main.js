@@ -19,7 +19,7 @@ function Initialize() {
     }
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
-    ctx.imageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = true;
 
 
     setInterval(Loop, frames);
@@ -34,7 +34,7 @@ function Start() {
         }, 50);
         Scene1()
         //Scene7()
-    }, 30);
+    }, 1030);
     let button = document.getElementById("start");
     button.style.display = "none";
     canvas.style.display = "unset";
