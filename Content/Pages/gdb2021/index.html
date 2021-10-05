@@ -67,7 +67,7 @@
 			align-content: flex-start;
 			padding: 25px;
 			margin: 0px auto;
-			max-width: 800px;
+			max-width: 850px;
 
 			color: white;
 			font-family: sans-serif;
@@ -109,6 +109,21 @@
 			border-radius: 50%;
 			border: solid 3px black;
 		}
+
+		table {
+			border-spacing: 5px;
+			width: 100%;
+		}
+
+		td {
+			padding: 5px;
+			background-color: #0004;
+		}
+
+		.dayRow {
+			text-align: center;
+			background-color: #0008;
+		}
 	</style>
 </head>
 
@@ -144,10 +159,13 @@
 
 		<div id="streamerList"></div>
 
+		<div id="schedule"></div>
+
 
 		<h2>I want to know more!</h2>
 
-		<p>Want to know more? Maybe even interested in becoming a part of this nonsense? Join the <a href="https://discord.gg/fSMfD5aARk">Discord</a> for more information or to get involved!</p>
+		<p>Want to know more? Maybe even interested in becoming a part of this nonsense? Join the <a
+				href="https://discord.gg/fSMfD5aARk">Discord</a> for more information or to get involved!</p>
 	</div>
 
 
@@ -157,18 +175,23 @@
 	document.body.onload = Initialize;
 
 	function Initialize() {
+		SetupStreamerList();
+		SetupSchedule();
+	}
+
+	function SetupStreamerList() {
 		let streamers = [
 			{ name: "dobbsworks", avatar: "dobbsworks.png" },
 			{ name: "daesnek", avatar: "daesnek.png" },
 			{ name: "GameQueued", avatar: "gamequeued.jpeg" },
-			{ name: "Generic_Mystic", avatar: "generic_mystic.png" },
+			//{ name: "Generic_Mystic", avatar: "generic_mystic.png" },
 			{ name: "germdove", avatar: "germdove.png" },
 			{ name: "hulacowstudios", avatar: "hulacowstudios.png" },
 			{ name: "LurkingTurtleGamer", avatar: "lurkingturtlegamer.png" },
-			{name: "mastertank56", avatar: "mastertank56.png"}, 
+			{ name: "mastertank56", avatar: "mastertank56.png" },
 			{ name: "TeddaySR", avatar: "teddaysr.png" },
 			{ name: "TheBardicPanda", avatar: "thebardicpanda.png" },
-			{ name: "YungMuShu_", avatar: "yungmushu_.jpg" },
+			//{ name: "YungMuShu_", avatar: "yungmushu_.jpg" },
 			{ name: "ShinerMax", avatar: "shinermax.png" },
 		];
 
@@ -189,6 +212,50 @@
 		let header = `<h2>Who is GDB?</h2>`;
 		container.insertAdjacentHTML("afterend", header);
 	}
+
+	function SetupSchedule() {
+		let slots = [
+			{ day: 0, utcHour: 15, streamer: "germdove", category: "Jurassic Park 2 + mystery WR" },
+			{ day: 0, utcHour: 17, streamer: "TeddaySR", category: "SMZ3 Randomizer" },
+			{ day: 0, utcHour: 19, streamer: "GameQueued", category: "" },
+			{ day: 0, utcHour: 21, streamer: "daesnek", category: "" },
+			{ day: 0, utcHour: 23, streamer: "LurkingTurtleGamer", category: "Minecraft Skyblock" },
+			{ day: 0, utcHour: 25, streamer: "Various", category: "Multiplayer games" },
+
+			{ day: 1, utcHour: 15, streamer: "hulacowstudios", category: "" },
+			{ day: 1, utcHour: 17, streamer: "ShinerMax", category: "" },
+			{ day: 1, utcHour: 19, streamer: "mastertank56", category: "" },
+			{ day: 1, utcHour: 22, streamer: "TheBardicPanda", category: "Randomizer" },
+			{ day: 1, utcHour: 25, streamer: "dobbsworks", category: "Wheel of Dobbs" },
+			{ day: 1, utcHour: 26, streamer: "Various", category: "Multiplayer games" },
+		];
+
+
+		let container = document.getElementById("schedule");
+		let tableContents = "";
+		let days = ["Saturday, October 9", "Sunday, October 10"];
+		let timezoneOffset = +((new Date().getTimezoneOffset() / 60).toFixed(0));
+		for (let dayIndex in days) {
+			let day = days[dayIndex];
+			tableContents += `<tr><td colspan="3" class="dayRow">${day}</td></tr>`
+			for (let slot of slots.filter(a => a.day == dayIndex)) {
+				let localHour = (24 + slot.utcHour - timezoneOffset) % 24;
+				let ampm = localHour >= 12 ? "pm" : "am";
+				if (localHour > 12) localHour -= 12;
+				let timeText = localHour + " " + ampm;
+				let streamerLink = `<a href="twitch.tv/${slot.streamer}">${slot.streamer}</a>`;
+				tableContents += `<tr><td>${timeText}</td><td>${streamerLink}</td><td>${slot.category}</td></tr>`
+			}
+		}
+		let tableHtml = `<table>${tableContents}</table>`
+		container.insertAdjacentHTML("afterend", tableHtml);
+
+		let header = `<h2>What's the schedule?</h2>`;
+		container.insertAdjacentHTML("afterend", header);
+	}
+
+
+
 </script>
 
 </html>
