@@ -8,6 +8,7 @@ class Snowball extends Sprite {
         this.targetY = target.y;
     }
 
+    drawOrder = 150;
 
     Update() {
         if (this.target.isActive) {

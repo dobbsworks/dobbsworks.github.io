@@ -11,27 +11,53 @@ class Hat extends Sprite {
     }
 
     framesPerMove = 20;
+    drawOrder = 100;
 
     Update() {
         this.HandleMovement();
 
-        let existingSpriteAtLocation = sprites.
-            filter(a => !(a instanceof Hat)).
+        let isGroundAtLocation = sprites.
+            filter(a => a instanceof GroundTile).
+            some(a => a.tileX === this.tileX && a.tileY === this.tileY);
+
+        let isBlockingSpriteAtLocation = sprites.
+            filter(a => a.blocksBuild).
             some(a => a.tileX === this.tileX && a.tileY === this.tileY);
 
         if (keyState.action1) {
-            if (!existingSpriteAtLocation) {
-                sprites.push(new Snowman(this.tileX, this.tileY));
+            if (!isBlockingSpriteAtLocation && isGroundAtLocation) {
+                let cost = 100;
+                if (money >= cost) {
+                    money -= cost;
+                    sprites.push(new Snowman(this.tileX, this.tileY));
+                }
             }
         } else if (keyState.action2) {
-            if (!existingSpriteAtLocation) {
-                let newMesh = new NavMesh([{tileX: this.tileX, tileY: this.tileY}]);
+            if (!isBlockingSpriteAtLocation && isGroundAtLocation) {
+                let newMesh = new NavMesh([{ tileX: this.tileX, tileY: this.tileY }]);
                 if (newMesh.mesh.some(a => a.critical && a.distance)) {
-                    sprites.push(new SnowWall(this.tileX, this.tileY));
-                    navMesh = newMesh;
+                    let cost = 20;
+                    if (money >= cost) {
+                        money -= cost;
+                        sprites.push(new SnowWall(this.tileX, this.tileY));
+                        navMesh = newMesh;
+                    }
                 }
             }
         }
+
+        if (this.age % 10 === 0) {
+            let snowBank = sprites.
+                find(a => a instanceof SnowBank && a.tileX === this.tileX && a.tileY === this.tileY);
+            if (snowBank && snowBank.money > 0) {
+                // grab money
+                let grabRate = 1;
+                let moneyGrabbed = Math.min(grabRate, snowBank.money);
+                snowBank.money -= moneyGrabbed;
+                money += moneyGrabbed;
+            }
+        }
+
     }
 
     HandleMovement() {

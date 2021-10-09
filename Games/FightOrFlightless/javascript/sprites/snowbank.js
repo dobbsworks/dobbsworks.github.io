@@ -1,4 +1,4 @@
-class SnowDrift extends Sprite {
+class SnowBank extends Sprite {
 
     constructor(tileX, tileY) {
         super(
@@ -8,5 +8,13 @@ class SnowDrift extends Sprite {
         this.tile = 1;
         this.tileX = tileX;
         this.tileY = tileY;
+    }
+    
+    drawOrder = 10;
+    blocksBuild = true;
+    money = 500;
+
+    Update() {
+        if (this.money <= 0) this.tile = 11;
     }
 }

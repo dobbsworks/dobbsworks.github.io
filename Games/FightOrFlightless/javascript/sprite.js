@@ -7,6 +7,9 @@ class Sprite {
 
     tile = 0;
     isActive = true;
+    drawOrder = 0;
+    blocksBuild = false;
+    age = 0;
 
     Update() { }
 

@@ -11,6 +11,8 @@ var cellWidth = 40;
 var cellRowCount = 13;
 var cellColCount = 13;
 
+var money = 250;
+
 function Initialize() {
     InitKeyHandlers();
     let htmlImages = document.getElementsByTagName("img");
@@ -27,6 +29,7 @@ function Initialize() {
     ctx.imageSmoothingEnabled = false;
 
     setInterval(Loop, frames);
+    sprites.push(new Hat(0, -1))
     sprites.push(new SouthPole(0, 0));
     sprites.push(new Snowman(-3, -2))
     sprites.push(new Snowman(-4, 3))
@@ -35,8 +38,17 @@ function Initialize() {
     sprites.push(new Snowman(3, 2))
     sprites.push(new Snowman(0, 2))
     sprites.push(new Snowman(0, 4))
-    sprites.push(new SnowDrift(0, -5))
-    sprites.push(new Hat(0, -1))
+    sprites.push(new SnowBank(0, -5))
+
+    for (let row = 0; row < cellRowCount; row++) {
+        for (let col = 0; col < cellColCount; col++) {
+            let xIndex = col - (cellColCount - 1) / 2;
+            let yIndex = row - (cellRowCount - 1) / 2;
+            if (Math.random() > 0.05) {
+                sprites.push(new GroundTile(xIndex, yIndex));
+            }
+        }
+    }
 
     navMesh = new NavMesh();
 }
@@ -53,6 +65,7 @@ function Update() {
     }
     for (let sprite of sprites) {
         sprite.Update();
+        sprite.age++;
     }
     sprites = sprites.filter(a => a.isActive);
 }
@@ -60,11 +73,20 @@ function Update() {
 
 var navMesh;
 function Draw() {
-    DrawCells();
+    ClearCanvas();
+
+    // draw sprites by layer, back-to-front for same layer
+    sprites.sort((a, b) => {
+        if (a.drawOrder == b.drawOrder) {
+            return a.y - b.y
+        }
+        return a.drawOrder - b.drawOrder
+    });
     for (let sprite of sprites) {
         sprite.Draw(ctx);
     }
-    DrawNavMesh();
+    //DrawNavMesh();
+    DrawHUD();
 }
 
 function DrawNavMesh() {
@@ -104,22 +126,17 @@ function DrawNavMesh() {
     }
 }
 
-function DrawCells() {
+function ClearCanvas() {
     ctx.fillStyle = "#3a3c86";
     ctx.fillRect(-5000, -5000, 10000, 10000);
-
-    for (let col = 0; col < cellColCount; col++) {
-        for (let row = 0; row < cellRowCount; row++) {
-            let xIndex = col - (cellColCount - 1) / 2;
-            let yIndex = row - (cellRowCount - 1) / 2;
-            let x = xIndex * cellWidth;
-            let y = yIndex * cellHeight;
-            DrawTile(images.art, 0, canvas.width / 2 + x, canvas.height / 2 + y, 2)
-        }
-    }
 }
 
-
+function DrawHUD() {
+    ctx.fillStyle = "#dbfff3";
+    ctx.textAlign = "left";
+    ctx.font = "16pt Courier";
+    ctx.fillText(`Money: ${money.toFixed(0)}`, 10, 30)
+}
 
 
 function SliceImageToTiles(imageId, rows, cols) {

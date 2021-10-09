@@ -2,14 +2,20 @@ class Penguin extends Sprite {
 
     constructor(initialTileX, initialTileY) {
         super(
-            initialTileX * cellWidth, 
-            initialTileY * cellHeight, 
+            initialTileX * cellWidth,
+            initialTileY * cellHeight,
             images.art);
         this.tile = 3;
         this.hp = 5;
         this.tileX = initialTileX;
         this.tileY = initialTileY;
+        this.oldTileX = null;
+        this.oldTileY = null;
     }
+
+    drawOrder = 50;
+    blocksBuild = true;
+
 
     Update() {
         //eventually: find nearest starting point
@@ -19,9 +25,11 @@ class Penguin extends Sprite {
         if (isAtTarget) {
             let navTile = navMesh.mesh.find(a => a.tileX === this.tileX && a.tileY === this.tileY);
             if (navTile) {
-                let routes = navTile.routes.map(a => ({route: a, tile: navMesh.mesh.find(b => b.tileX === this.tileX + a.x && b.tileY === this.tileY + a.y)}));
+                let routes = navTile.routes.map(a => ({ route: a, tile: navMesh.mesh.find(b => b.tileX === this.tileX + a.x && b.tileY === this.tileY + a.y) }));
                 let route = routes[Math.floor(Math.random() * routes.length)];
                 if (route) {
+                    this.oldTileX = this.tileX;
+                    this.oldTileY = this.tileY;
                     this.tileX += route.route.x;
                     this.tileY += route.route.y;
                 } else {
@@ -43,6 +51,17 @@ class Penguin extends Sprite {
             let theta = Math.atan2(targetY - this.y, targetX - this.x);
             this.x += speed * Math.cos(theta);
             this.y += speed * Math.sin(theta);
+        }
+
+        let isOnGround = sprites.
+            filter(a => a instanceof GroundTile).
+            some(a => (a.tileX === this.tileX && a.tileY === this.tileY)
+                || (a.tileX === this.oldTileX && a.tileY === this.oldTileY));
+
+        if (isOnGround) {
+            this.tile = 3;
+        } else {
+            this.tile = (this.age % 60 < 30) ? 9 : 10;
         }
 
 

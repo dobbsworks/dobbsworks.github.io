@@ -10,7 +10,9 @@ class Snowman extends Sprite {
         this.tileY = tileY;
     }
 
+    drawOrder = 40;
     reloadTimer = 0;
+    blocksBuild = true;
 
     Update() {
         if (this.reloadTimer > 0) {
