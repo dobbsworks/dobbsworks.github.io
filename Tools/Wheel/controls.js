@@ -83,6 +83,26 @@ function camera3() {
 
 }
 
+function camera4() {
+    interps = [];
+    camera.x = 10000;
+    camera.y = -100;
+    camera.zoom = 1;
+}
+
+function camera5() {
+    camera4();
+    
+    SetInterp(camera, { zoom: 1, y: 100 }, 0, 120, "ease-in-out");
+}
+
+function camera6() {
+    interps = [];
+    camera.x = -10000;
+    camera.y = -200;
+    camera.zoom = 1.5;
+}
+
 function setPlayerTurn(index) {
     turnIndex = index;
 }
@@ -125,7 +145,25 @@ function setPuzzle() {
 
 function bankToPlayer(index) {
     let awardAmount = +(document.getElementById("awardValueInput").value);
+    document.getElementById("awardValueInput").value = "";
+    let roundAwardAmount = +(document.getElementById("awardValueRoundInput").value);
+    document.getElementById("awardValueRoundInput").value = "";
     if (awardAmount) {
         players[index].bankedPoints += awardAmount;
     }
+    if (roundAwardAmount) {
+        players[index].currentPoints += roundAwardAmount;
+    }
+}
+
+function playSoundControl(soundName) {
+    playAudio(soundName);
+}
+
+function Emote(playerIndex, emoteName) {
+    players[playerIndex].avatar[emoteName]();
+}
+
+function ToggleScore() {
+    showScore = !showScore;
 }

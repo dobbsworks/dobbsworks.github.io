@@ -66,9 +66,9 @@
 		</div>
 		
 		<div class="row">
-			<button onclick="playerWinRound(0)">Player 0 wins</button>
-			<button onclick="playerWinRound(1)">Player 1 wins</button>
-			<button onclick="playerWinRound(2)">Player 2 wins</button>
+			<button onclick="playerWinRound(0)">Player 1 wins</button>
+			<button onclick="playerWinRound(1)">Player 2 wins</button>
+			<button onclick="playerWinRound(2)">Player 3 wins</button>
 		</div>
 		
 		<div class="row">
@@ -79,6 +79,9 @@
 			<button onclick="camera1()">Cam 1</button>
 			<button onclick="camera2()">Cam 2</button>
 			<button onclick="camera3()">Cam 3</button>
+			<button onclick="camera4()">Cam 4</button>
+			<button onclick="camera5()">Cam 5</button>
+			<button onclick="camera6()">Cam 6</button>
 		</div>
 		
 		<div class="row">
@@ -126,10 +129,39 @@
 			<label><input id="awardValueInput" />Bank amount</label>
 		</div>
 		<div class="row">
+			<label><input id="awardValueRoundInput" />Round amount</label>
+		</div>
+		<div class="row">
 			<button onclick="bankToPlayer(0)">Player 1</button>
 			<button onclick="bankToPlayer(1)">Player 2</button>
 			<button onclick="bankToPlayer(2)">Player 3</button>
 		</div>
+
+		
+		<div class="row">
+			<button onclick="playSoundControl('buzz')">Play "buzz"</button>
+			<button onclick="playSoundControl('ding')">Play "ding"</button>
+			<button onclick="playSoundControl('roundWin')">Play "roundWin"</button>
+			<button onclick="playSoundControl('marioDeath')">Play "marioDeath"</button>
+		</div>
+
+		
+		<div class="row">
+			<button onclick="Emote(0, 'Happy')">Player 1 Happy</button>
+			<button onclick="Emote(1, 'Happy')">Player 2 Happy</button>
+			<button onclick="Emote(2, 'Happy')">Player 3 Happy</button>
+		</div>
+		<div class="row">
+			<button onclick="Emote(0, 'Sad')">Player 1 Sad</button>
+			<button onclick="Emote(1, 'Sad')">Player 2 Sad</button>
+			<button onclick="Emote(2, 'Sad')">Player 3 Sad</button>
+		</div>
+
+		<div class="row">
+			<button onclick="ToggleScore()">Toggle Score</button>
+		</div>
+
+
 	</div>
 
 	<img src="./images/dobbs.png" data-cols="5" data-rows="3" />

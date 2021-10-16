@@ -10,12 +10,13 @@ var frames = 1000 / 60;
 
 var wheelObj = null;
 var turnIndex = 0;
+var showScore = false;
 
 function CheckPuzzle(puzzle) {
     let pb = new PuzzleBoard(puzzle);
-    let lines = [[],[],[],[]];
-    for (let row=0; row<4; row++) {
-        for (let col=0; col<14; col++) {
+    let lines = [[], [], [], []];
+    for (let row = 0; row < 4; row++) {
+        for (let col = 0; col < 14; col++) {
             let tile = pb.tiles.find(a => a.row === row && a.col === col);
             if (tile) lines[row].push(tile.char);
             else lines[row].push(" ");
@@ -42,23 +43,28 @@ Audio
 /*
 no solving until a certain percentage is revealed?
 
-Haven't you ever seen a pig
-Don't look at my games
-That's almost a year
-Macho Madness
-The goose is loose
-The Forbidden Sound & Riddle (same name)
+gq
+
+//Haven't you ever seen a pig
+//Don't look at my games
+//That's almost a year
+//Macho Madness
+//The goose is loose
+//Pway my webel stweamer
+//Wanna become famous?
+//spaaaaace
+//The Forbidden Sound & Riddle (same name)
+//throwing for content
+//the third one
+//It's like you don't even want a gift
+//Playmobil
 The Amiibo of the day
 Please do not the cat
-Pway my webel stweamer
 Gift Sub Sandwich (before & after)
-It's like you don't even want a gift
-spaaaaace
 the sneaky snail
-the third one
-Wanna become famous?
-throwing for content
 The rise and fall of germdove
+Work On Your Aim
+
 */
 
 function Initialize() {
@@ -77,18 +83,20 @@ function Initialize() {
     ctxOver = canvasOver.getContext("2d");
 
     // backgrounds
-    
+
     let bg1 = new StaticImage(images.boardBack, 5, 0, 0);
-    let bg2 = new StaticImage(images.wheelBack, 1/0.6, 5000, 0);
-    let bg3 = new StaticImage(images.topBack, 1/0.6, 5000, 1600);
-    sprites.push(bg1, bg2, bg3);
+    let bg2 = new StaticImage(images.wheelBack, 1 / 0.6, 5000, 0);
+    let bg3 = new StaticImage(images.topBack, 1 / 0.6, 5000, 1600);
+    let bg4 = new StaticImage(images.wheelBack, 1 / 0.6, 10000, 0);
+    let bg5 = new StaticImage(images.wheelBack, 1 / 0.6, -10000, 0);
+    sprites.push(bg1, bg2, bg3, bg4, bg5);
 
     wheelObj = new Wheel()
     let wheelSprite = new StaticImage(wheelObj.canvas, 1.5, 0, 250);
-    let markerSprites = [0,1,2,3,4,5,6,7,8,9].map(a => new StaticImage(wheelObj.markerCanvas, 1.5, 0, 250 - a * 1))
+    let markerSprites = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(a => new StaticImage(wheelObj.markerCanvas, 1.5, 0, 250 - a * 1))
     let wheelSprites = [wheelSprite, ...markerSprites];
     wheelSprites.forEach(a => {
-        a.yScale = 0.2; 
+        a.yScale = 0.2;
         a.x += 5000;
     });
     let flatWheelSprite = new StaticImage(wheelObj.canvas, 1.5, 5000, 2000);
@@ -98,11 +106,15 @@ function Initialize() {
             a.rotation = (-turnIndex + 1) * 7 / 72 * Math.PI * 2;
         })
     })
-    sprites.push(...wheelSprites, flatWheelSprite, flatWheelMarkers)
+
+    let host = new StaticImage(images.dobbs, 1, 10000, 0);
+    host.animated = false;
+
+    sprites.push(...wheelSprites, flatWheelSprite, flatWheelMarkers, host)
     SetupPlayers()
     setInterval(Loop, frames);
     //SetInterp(camera, { zoom: 0.5 }, 0, 180, "ease-in-out");
-    
+
     //pb = new PuzzleBoard("It's like you don't even want a gift");
 
     camera1();
@@ -115,7 +127,7 @@ function SetupPlayers() {
         new Player(1, images.germdove),
         new Player(2, images.turtle),
     ]
-    
+
 }
 
 
@@ -149,29 +161,31 @@ function Draw() {
 
 
     // scores
-    let image = document.getElementById("score");
-    ctxOver.drawImage(image, 960 - image.width, 0)
+    if (showScore) {
+        let image = document.getElementById("score");
+        ctxOver.drawImage(image, 960 - image.width, 0)
 
-    ctxOver.textAlign = "right";
-    let x = 850;
-    let y = 30;
-    for (let player of players) {
-        ctxOver.font = "800 16px Verdana";
-        ctxOver.fillStyle = "#000E";
-        let current = "" + player.currentPoints.toLocaleString()
-        ctxOver.fillText(current, x, y);
-        ctxOver.font = "800 12px Verdana";
-        ctxOver.fillStyle = "#000A";
-        let banked = "" + player.bankedPoints.toLocaleString()
-        ctxOver.fillText(banked, x + 100, y);
+        ctxOver.textAlign = "right";
+        let x = 850;
+        let y = 30;
+        for (let player of players) {
+            ctxOver.font = "800 16px Verdana";
+            ctxOver.fillStyle = "#000E";
+            let current = "" + player.currentPoints.toLocaleString()
+            ctxOver.fillText(current, x, y);
+            ctxOver.font = "800 12px Verdana";
+            ctxOver.fillStyle = "#000A";
+            let banked = "" + player.bankedPoints.toLocaleString()
+            ctxOver.fillText(banked, x + 100, y);
 
-        if (player.playerNum === turnIndex) {
-            ctxOver.fillStyle = "#FFFA";
-            ctxOver.fillText("->", x - 100 - turnIndex * 10, y - 5);
+            if (player.playerNum === turnIndex) {
+                ctxOver.fillStyle = "#FFFA";
+                ctxOver.fillText("->", x - 100 - turnIndex * 10, y - 5);
+            }
+
+            y += 20;
+            //x -= 10;
         }
-
-        y += 20;
-        //x -= 10;
     }
 }
 

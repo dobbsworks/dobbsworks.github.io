@@ -60,9 +60,7 @@ function Loop() {
 
 function Update() {
     frameNum++;
-    if (frameNum % 60 * 3 === 0) {
-        sprites.push(new Penguin(Math.random() > 0.5 ? -10 : 10, Math.floor(Math.random() * 10) - 5));
-    }
+    ScenarioUpdate();
     for (let sprite of sprites) {
         sprite.Update();
         sprite.age++;
@@ -87,6 +85,7 @@ function Draw() {
     }
     //DrawNavMesh();
     DrawHUD();
+    ScenarioDraw();
 }
 
 function DrawNavMesh() {
@@ -135,7 +134,7 @@ function DrawHUD() {
     ctx.fillStyle = "#dbfff3";
     ctx.textAlign = "left";
     ctx.font = "16pt Courier";
-    ctx.fillText(`Money: ${money.toFixed(0)}`, 10, 30)
+    ctx.fillText(`Money: ${money.toFixed(0)}`, 10, 30);
 }
 
 

@@ -207,6 +207,7 @@ class Wheel {
         let text = value.toFixed(0);
         this.DrawLines(["$", ...text.split("")]);
         this.sourceCtx.rotate(this.sliceRad);
+        this.color = color;
         return slice;
     }
 

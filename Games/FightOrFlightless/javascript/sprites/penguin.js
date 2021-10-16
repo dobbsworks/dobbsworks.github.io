@@ -71,3 +71,5 @@ class Penguin extends Sprite {
     }
 
 }
+
+enemyClasses.Penguin = Penguin;

@@ -25,7 +25,7 @@ class NavMesh {
         let ret = [];
         for (let x = -absoluteMaxX; x <= absoluteMaxX; x++) {
             for (let y = -absoluteMaxY; y <= absoluteMaxY; y++) {
-                let tile = {tileX: x, tileY: y, distance: null, routes: []};
+                let tile = { tileX: x, tileY: y, distance: null, routes: [] };
                 ret.push(tile);
             }
         }
@@ -79,7 +79,7 @@ class NavMesh {
             let minNeighborTrueDist = Math.min(...neighbors.map(a => a.trueDistance));
             let closestNeighbors = neighbors.filter(a => a.trueDistance <= minNeighborTrueDist + 0.1);
             let closestNeighbor = closestNeighbors[0];
-            tile.trueDistance = closestNeighbor.trueDistance + Math.sqrt((closestNeighbor.tileX - tile.tileX)**2 + (closestNeighbor.tileY - tile.tileY)**2);
+            tile.trueDistance = closestNeighbor.trueDistance + Math.sqrt((closestNeighbor.tileX - tile.tileX) ** 2 + (closestNeighbor.tileY - tile.tileY) ** 2);
             let unprocessedNeighbors = this.FindNeighborTiles(tiles, tile).filter(a => a.distance === null && toProcess.indexOf(a) === -1);
             toProcess.push(...unprocessedNeighbors);
         }
@@ -125,3 +125,4 @@ class NavMesh {
     //TODO: zoo problem
 
 }
+

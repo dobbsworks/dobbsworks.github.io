@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<title>Games Done Badly 2022</title>
+
+	<style>
+		@font-face {
+			font-family: 'Capture it';
+			src: url('../Content/Fonts/Capture it.ttf');
+		}
+	</style>
+	<style>
+		* {
+			-webkit-transition-property: all;
+			transition-property: all;
+			-webkit-transition-duration: 0.2s;
+			transition-duration: 0.2s;
+		}
+
+		html,
+		body {
+			margin: 0px;
+		}
+
+		#sticky-back {
+			position: fixed;
+			left: 0;
+			right: 0;
+			top: 0;
+			bottom: 0;
+			z-index: -1;
+			background-color: #222f26;
+			background: linear-gradient(#002408, #222f26);
+		}
+
+		h1 {
+			background: -webkit-linear-gradient(#c4ff0e, #74fc07);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			font-family: "Capture it";
+			font-size: 60px;
+			margin: 30px;
+			text-align: center;
+		}
+
+		h2 {
+			color: #c4ff0e;
+			font-family: "Capture it";
+			font-size: 40px;
+			margin: 30px;
+			text-align: center;
+			width: 100%;
+			margin-bottom: 15px;
+		}
+
+		#header {
+			background-color: #000;
+			padding: 10px;
+			color: white;
+		}
+
+		#mainContainer {
+			display: flex;
+			flex-flow: row wrap;
+			justify-content: center;
+			align-content: flex-start;
+			padding: 25px;
+			margin: 0px auto;
+			max-width: 850px;
+
+			color: white;
+			font-family: sans-serif;
+		}
+
+		p {
+			max-width: 600px;
+			line-height: 1.5;
+			width: 100%;
+		}
+
+		.stickyContainer {
+			height: 0;
+			width: 100%;
+		}
+
+		.floatingSticky {
+			position: relative;
+			top: -50px;
+			left: calc(100% - 200px);
+		}
+
+		a {
+			color: rgb(255, 169, 169);
+		}
+
+		.streamerContainer {
+			width: 150px;
+			text-align: center;
+			margin: 10px;
+		}
+
+		.streamerContainer:hover {
+			filter: drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.2));
+			transform: scale(1.2);
+		}
+
+		.avatarContainer img {
+			border-radius: 50%;
+			border: solid 3px black;
+		}
+
+		table {
+			border-spacing: 5px;
+			width: 550px;
+		}
+
+		td {
+			padding: 5px;
+			background-color: #0004;
+		}
+
+		.dayRow {
+			text-align: center;
+			background-color: #0008;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="sticky-back"></div>
+	<div id="header">
+		<h1>
+			GAMES DONE BADLY 2022
+		</h1>
+		<div class="stickyContainer">
+			<img class="floatingSticky" src="Content/Images/sticky.png" />
+		</div>
+	</div>
+	<div id="mainContainer">
+
+		<h2>What is GDB?</h2>
+
+		<p>Games Done Badly is a yearly <span title="not actually a marathon">marathon*</span> of video game streams.
+			Unlike other gaming marathons that focus on things like extraordinary skill and precise execution, GDB
+			stands out by having no theme at all. Wow. It's more of an excuse to hang out and play video games for a
+			couple of days. </p>
+
+		<p>There is the <em>suggestion</em> of a central theme in that games are played badly, which encompasses being
+			bad at games (offense taken), playing games with some sort of handicap (challenge runs), or playing games
+			that are considered bad (it was good back then, trust me). </p>
+
+		<h2>When is GDB?</h2>
+
+		<p>GDB 2022 will be held some weekend duing 2022. Stay tuned for more details!</p>
+
+		<div id="schedule"></div>
+
+
+		<div id="streamerList"></div>
+
+
+
+		<h2>I want to know more!</h2>
+
+		<p>Want to know more? Maybe even interested in becoming a part of this nonsense? Join the <a
+				href="https://discord.gg/fSMfD5aARk">Discord</a> for more information or to get involved!</p>
+	</div>
+
+
+</body>
+
+<script type="text/javascript">
+	document.body.onload = Initialize;
+
+	function Initialize() {
+		//SetupStreamerList();
+		//SetupSchedule();
+	}
+
+	function SetupStreamerList() {
+		let streamers = [
+			{ name: "dobbsworks", avatar: "dobbsworks.png" },
+			{ name: "daesnek", avatar: "daesnek.png" },
+			{ name: "GameQueued", avatar: "gamequeued.jpeg" },
+			//{ name: "Generic_Mystic", avatar: "generic_mystic.png" },
+			{ name: "germdove", avatar: "germdove.png" },
+			{ name: "hulacowstudios", avatar: "hulacowstudios.png" },
+			{ name: "LurkingTurtleGamer", avatar: "lurkingturtlegamer.png" },
+			{ name: "mastertank56", avatar: "mastertank56.png" },
+			{ name: "TeddaySR", avatar: "teddaysr.png" },
+			{ name: "TheBardicPanda", avatar: "thebardicpanda.png" },
+			//{ name: "YungMuShu_", avatar: "yungmushu_.jpg" },
+			{ name: "ShinerMax", avatar: "shinermax.png" },
+		];
+
+		streamers.sort((a, b) => b.name.localeCompare(a.name));
+
+		let container = document.getElementById("streamerList");
+		for (let streamer of streamers) {
+			let html = `<div class="streamerContainer">
+							<a href="https://www.twitch.tv/${streamer.name}">
+								<div class="avatarContainer">
+									<img src="Content/Images/${streamer.avatar}" />
+								</div>
+								${streamer.name}
+							</a>
+						</div>`;
+			container.insertAdjacentHTML("afterend", html);
+		}
+		let header = `<h2>Who is GDB?</h2>`;
+		container.insertAdjacentHTML("afterend", header);
+	}
+
+	function SetupSchedule() {
+		let slots = [
+			{ day: 0, utcHour: 14, streamer: "germdove", category: "Jurassic Park 2 + mystery WR" },
+			{ day: 0, utcHour: 16, streamer: "TeddaySR", category: "SMZ3 Randomizer" },
+			{ day: 0, utcHour: 18, streamer: "GameQueued", category: "Celeste" },
+			{ day: 0, utcHour: 20, streamer: "daesnek", category: "Croc: Legend of the Gobbos" },
+			{ day: 0, utcHour: 22, streamer: "LurkingTurtleGamer", category: "Minecraft Skyblock" },
+			{ day: 0, utcHour: 24, streamer: "Various", category: "Multiplayer games" },
+
+			{ day: 1, utcHour: 14, streamer: "hulacowstudios", category: "Legacy of the Wizard" },
+			{ day: 1, utcHour: 16, streamer: "ShinerMax", category: "CD-i Showcase" },
+			{ day: 1, utcHour: 18, streamer: "mastertank56", category: "Crosskeys" },
+			{ day: 1, utcHour: 21, streamer: "TheBardicPanda", category: "Randomizer" },
+			{ day: 1, utcHour: 24, streamer: "dobbsworks", category: "Wheel of Dobbs" },
+			{ day: 1, utcHour: 25, streamer: "Various", category: "Multiplayer games" },
+		];
+
+
+		let container = document.getElementById("schedule");
+		let tableContents = "";
+		let days = ["Saturday, October 9", "Sunday, October 10"];
+		let timezoneOffset = +((new Date().getTimezoneOffset() / 60).toFixed(0));
+		for (let dayIndex in days) {
+			let day = days[dayIndex];
+			tableContents += `<tr><td colspan="3" class="dayRow">${day}</td></tr>`
+			for (let slot of slots.filter(a => a.day == dayIndex)) {
+				let localHour = (24 + slot.utcHour - timezoneOffset) % 24;
+				let ampm = localHour >= 12 ? "pm" : "am";
+				if (localHour > 12) localHour -= 12;
+				let timeText = localHour + " " + ampm;
+				if (timeText === "0 am") timeText = "Midnight";
+				let streamerLink = `<a href="https://twitch.tv/${slot.streamer}">${slot.streamer}</a>`;
+				if (slot.streamer === "Various") streamerLink = "Various";
+				tableContents += `<tr><td>${timeText}</td><td>${streamerLink}</td><td>${slot.category}</td></tr>`
+			}
+		}
+		let tableHtml = `<table>${tableContents}</table>`
+		container.insertAdjacentHTML("afterend", tableHtml);
+	}
+
+
+
+</script>
+
+</html>
