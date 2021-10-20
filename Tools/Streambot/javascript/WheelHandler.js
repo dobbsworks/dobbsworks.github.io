@@ -6,7 +6,7 @@ function CommandRandomNext(user, args) {
         return "There's still a level going on, mark it as complete/skipped first.";
     } else {
         CreateWheelOfLevels(StorageHandler.queue.values);
-        return "HERE COMES THE WHEEL GivePLZ dobbswWheel TakeNRG";
+        return `HERE COMES THE WHEEL GivePLZ ${wheelEmote} TakeNRG`;
     }
 }
 

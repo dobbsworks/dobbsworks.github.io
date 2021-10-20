@@ -25,7 +25,7 @@ function CommandAddLevel(user, args) {
 				if (DoesUserHaveQueueSpace(user.username)) {
 					PushQueueEntry(user, strippedCode);
 					let formattedCode = strippedCode.match(/.{1,3}/g).join('-').toUpperCase();
-					return {success: true, message: `Your level (${formattedCode}) has been queued, may the !wheel spin in your favor GivePLZ dobbswWheel `};
+					return {success: true, message: `Your level (${formattedCode}) has been queued, may the !wheel spin in your favor GivePLZ ${wheelEmote} `};
 				} else {
 					if (DoesUserHaveReserve(user.username)) {
 						return CommandChangeLevel(user, args);
