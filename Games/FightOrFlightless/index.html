@@ -17,10 +17,10 @@
 <script src="javascript/sprites/southpole.js"></script>
 <script src="javascript/navMesh.js"></script>
 <script src="javascript/scenario.js"></script>
+<script src="javascript/editor/editor.js"></script>
 <script src="javascript/main.js"></script>
 
 <body>
-    <span>Click iceberg to focus. Then WASD to move the hat, "1" to buy a snowman, "2" to buy a wall.</span>
     <canvas id="canvas" width="900" height="600"></canvas>
     <div id="imageContainer">
         <image src="./images/art.png" data-cols="4" data-rows="4"></image>
@@ -28,6 +28,16 @@
     <div id="music">
         <!-- <audio id="music-shop" src="content/audio/music/shop.mp3"></audio> -->
     </div>
+
+    <div id="editorContainer">
+        <div id="editorButtons">
+            <button onclick="ExportScenario()">Export</button>
+            <button onclick="ImportScenario()">Import</button>
+        </div>
+        <div id="editorPanels"></div>
+    </div>
+
+    <button id="editButton" onclick="SwitchToEditor()">Edit Mode</button>
 </body>
 
 </html>

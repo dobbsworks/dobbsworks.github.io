@@ -84,7 +84,7 @@ function Draw() {
         sprite.Draw(ctx);
     }
     //DrawNavMesh();
-    DrawHUD();
+    if (!isEditMode) DrawHUD();
     ScenarioDraw();
 }
 

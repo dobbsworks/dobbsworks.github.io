@@ -14,8 +14,10 @@ class Sprite {
     Update() { }
 
     Draw() {
+        let xOffset = canvas.width / 2;
+        if (isEditMode) xOffset += 160;
         DrawTile(this.tileset, this.tile, 
-            canvas.width / 2 + this.x, 
+            xOffset + this.x, 
             canvas.height / 2 + this.y, 
             2);
     }

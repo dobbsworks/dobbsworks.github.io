@@ -2,7 +2,9 @@
 var sampleScenario = {
     waves: [
         {
-            name: "Here they come!",
+            name: "Wave 1",
+            announcement: "Here they come!",
+            delay: 0,
             spawns: [
                 {
                     enemy: "Penguin",
@@ -13,7 +15,9 @@ var sampleScenario = {
             ]
         },
         {
-            name: "Incoming from the flank!",
+            name: "Wave 2",
+            announcement: "Incoming from the flank!",
+            delay: 0,
             spawns: [
                 {
                     enemy: "Penguin",
@@ -29,12 +33,15 @@ var sampleScenario = {
             ]
         },
         {
-            name: "Rebuild, quickly!",
+            name: "Rest",
+            announcement: "Rebuild, quickly!",
             spawns: [],
             delay: 16
         },
         {
-            name: "Huge wave approaching from the iceberg!",
+            name: "Wave 3",
+            announcement: "Huge wave approaching from the iceberg!",
+            delay: 0,
             spawns: [
                 {
                     enemy: "Penguin",
