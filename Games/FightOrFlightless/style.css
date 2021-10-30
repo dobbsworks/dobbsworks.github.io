@@ -33,7 +33,7 @@ canvas {
 .editorWave {
     width: 260px;
     padding: 10px;
-    margin: 20px 10px;
+    margin: 20px 10px 40px 10px;
     background-color: #FFF4;
     min-height: 50px;
 }
@@ -42,7 +42,7 @@ canvas {
     width: 220px;
     background-color: #FFF4;
     padding: 10px;
-    margin: 20px 10px;
+    margin: 20px 10px 40px 10px;
 }
 
 .editorWave label {
@@ -62,8 +62,11 @@ label span {
 }
 
 .newWaveButton, .newSpawnButton {
-    bottom: -5px;
-    background-color: #00cc00;
+    bottom: -32px;
+    left: 0px;
+    width: 200px;
+    height: 23px;
+    background-color: #2b7a2b;
 }
 
 .deleteWaveButton, .deleteSpawnButton {
@@ -79,4 +82,19 @@ label span {
 
 .editorWave button:hover {
     filter: brightness(1.5)
+}
+
+#tileButtons {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+}
+
+#tileButtons button {
+    margin: 5px;
+    height: 40px;
+}
+
+#tileButtons button.selected {
+    border: 5px solid rgb(0, 255, 42);
 }

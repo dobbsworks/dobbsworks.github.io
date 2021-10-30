@@ -1,5 +1,6 @@
 var isEditMode = false;
 var editorScenario = CreateDefaultScenario();
+var selectedTileType = "";
 
 function SwitchToEditor() {
     isEditMode = true;
@@ -9,9 +10,86 @@ function SwitchToEditor() {
     container.style.display = "block";
     let button = document.getElementById("editButton");
     button.style.display = "none";
+    let tileButtonContainer = document.getElementById("tileButtons");
+    for (let tileChar of Object.keys(tileDirectory)) {
+        let tileName = tileDirectory[tileChar].name;
+        let button = document.createElement("button");
+        button.innerHTML = tileName;
+        button.className = "tileButton";
+        button.onclick = () => {
+            Array.from(document.getElementsByClassName("selected")).
+                forEach(a => a.classList.remove("selected"));
+            button.classList.add("selected");
+            SetSelectedTileType(tileChar);
+        }
+        tileButtonContainer.appendChild(button);
+    }
+    LoadScenarioTerrain(editorScenario.layout);
+}
+
+function DrawEditorGrid() {
+    ctx.strokeStyle = "#0004";
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 13; i++) {
+        let x = 160 + (i - 6) * 40 - 20 + canvas.width / 2;
+        ctx.beginPath();
+        ctx.moveTo(x, canvas.height);
+        ctx.lineTo(x, 0);
+        ctx.stroke();
+    }
+    for (let i = 0; i <= 13; i++) {
+        let y = (i - 6) * 40 - 20 + canvas.height / 2;
+        ctx.beginPath();
+        ctx.moveTo(canvas.width, y);
+        ctx.lineTo(320, y);
+        ctx.stroke();
+    }
+}
+
+function EditorUpdate() {
+    if (isMouseDown) {
+        let tileX = Math.floor((mouseX + 10) / 40) - 9;
+        let tileY = Math.floor(mouseY / 40) - 1;
+        if (tileX < 13 && tileX >= 0 && tileY < 13 && tileY >= 0) {
+            SetTile(tileX, tileY);
+        }
+    }
+}
+
+function SetSelectedTileType(char) {
+    selectedTileType = char;
+}
+
+function SetTile(tileX, tileY) {
+    if (!selectedTileType) return;
+
+    let isUnique = tileDirectory[selectedTileType].isUnique;
+    if (isUnique) {
+        editorScenario.layout = editorScenario.layout.split(selectedTileType).join("-");
+    }
+
+    let rows = editorScenario.layout.split("\n");
+    let cells = rows[tileY].split("");
+    cells[tileX] = selectedTileType;
+    rows[tileY] = cells.join("");
+    editorScenario.layout = rows.join("\n");
+
+    LoadScenarioTerrain(editorScenario.layout);
 }
 
 function ExportScenario() {
+    let hasBase = editorScenario.layout.indexOf("@") > -1;
+    let hasHat = editorScenario.layout.indexOf("H") > -1;
+    if (!hasBase) {
+        alert("Layout requires a South Pole.");
+        return;
+    }
+    if (!hasHat) {
+        alert("Layout requires a Player Start.");
+        return;
+    }
+
+    editorScenario.layout = editorScenario.layout;
     let text = JSON.stringify(editorScenario);
     text = text.split("\n").join("");
     prompt("Here's your exported scenario:", text);
@@ -21,7 +99,10 @@ function ImportScenario() {
     let text = prompt("Enter scenario text:");
     let scenario = JSON.parse(text);
     editorScenario = scenario;
+    
     CreateHtmlFromScenario(editorScenario);
+    
+    LoadScenarioTerrain(editorScenario.layout);
 }
 
 function CreateHtmlFromScenario(scenario) {
@@ -49,7 +130,7 @@ function CreateHtmlFromWave(wave, scenario) {
     announcementInput.type = "text";
     announcementInput.value = wave.announcement;
     announcementInput.className = "waveAnnouncement";
-    nameInput.placeholder = "Wave announcement";
+    announcementInput.placeholder = "Wave announcement";
     container.appendChild(announcementInput);
     LinkInputToModel(announcementInput, wave, "announcement");
 
@@ -67,7 +148,7 @@ function CreateHtmlFromWave(wave, scenario) {
 
     // add new wave Button
     let newWaveButton = document.createElement("button");
-    newWaveButton.innerHTML = "+";
+    newWaveButton.innerHTML = "Add new wave";
     newWaveButton.className = "newWaveButton";
     newWaveButton.onclick = () => {
         let newWave = CreateDefaultWave();
@@ -133,7 +214,7 @@ function CreateHtmlFromWaveSpawn(waveSpawn, wave) {
 
     // add new spawn Button
     let newSpawnButton = document.createElement("button");
-    newSpawnButton.innerHTML = "+";
+    newSpawnButton.innerHTML = "Add new spawn";
     newSpawnButton.className = "newSpawnButton";
     newSpawnButton.onclick = () => {
         let newSpawn = CreateDefaultWaveSpawn();
@@ -185,8 +266,20 @@ function SurroundWithLabel(element, label) {
 function CreateDefaultScenario() {
     return {
         waves: [CreateDefaultWave()],
-        layout: ""
+        layout: CreateDefaultLayout()
     }
+}
+
+function CreateDefaultLayout() {
+    let lines = [];
+    for (let i = 0; i < 13; i++) {
+        if (i === 7) {
+            lines.push("     -@-     ");
+        } else if (i === 6) {
+            lines.push("     -H-     ");
+        } else lines.push("             ");
+    }
+    return lines.join("\n");
 }
 
 function CreateDefaultWave() {

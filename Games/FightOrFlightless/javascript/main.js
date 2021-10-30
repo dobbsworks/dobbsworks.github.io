@@ -14,7 +14,6 @@ var cellColCount = 13;
 var money = 250;
 
 function Initialize() {
-    InitKeyHandlers();
     let htmlImages = document.getElementsByTagName("img");
     for (let image of htmlImages) {
         let src = image.src.replace(".png", "");
@@ -27,6 +26,9 @@ function Initialize() {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false;
+
+    InitKeyHandlers();
+    InitMouseHandlers();
 
     setInterval(Loop, frames);
     sprites.push(new Hat(0, -1))
@@ -56,9 +58,14 @@ function Initialize() {
 function Loop() {
     Update();
     Draw();
+    UpdateMouseChanged();
 }
 
 function Update() {
+    if (isEditMode) {
+        EditorUpdate();
+        return;
+    }
     frameNum++;
     ScenarioUpdate();
     for (let sprite of sprites) {
@@ -86,6 +93,7 @@ function Draw() {
     //DrawNavMesh();
     if (!isEditMode) DrawHUD();
     ScenarioDraw();
+    if (isEditMode) DrawEditorGrid();
 }
 
 function DrawNavMesh() {

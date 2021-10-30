@@ -66,27 +66,34 @@ var sampleScenario = {
 }
 
 var tileDirectory = {
-    "#": [GroundTile, SnowWall],
-    "-": [GroundTile],
-    "@": [GroundTile, SouthPole],
-    "8": [GroundTile, Snowman],
-    "H": [GroundTile, Hat],
-    "$": [GroundTile, SnowBank],
+    "@": {name: "South Pole", isUnique: true, tiles: [GroundTile, SouthPole]},
+    "H": {name: "Player Start", isUnique: true, tiles: [GroundTile, Hat]},
+    "-": {name: "Ground", isUnique: false, tiles: [GroundTile]},
+    " ": {name: "Water", isUnique: false, tiles: []},
+    "#": {name: "Wall", isUnique: false, tiles: [GroundTile, SnowWall]},
+    "8": {name: "Snowman", isUnique: false, tiles: [GroundTile, Snowman]},
+    "$": {name: "Snowbank", isUnique: false, tiles: [GroundTile, SnowBank]},
 };
 
 var currentScenario = null;
 function LoadScenario(scenario) {
     currentScenario = scenario;
-    sprites = [];
 
-    let rows = scenario.layout.split('\n');
+    LoadScenarioTerrain(scenario.layout);
+
+    navMesh = new NavMesh();
+}
+
+function LoadScenarioTerrain(layout) {
+    sprites = [];
+    let rows = layout.split('\n');
     // remove blanks from beginning and end
-    while (rows.length > 0 && rows[0].trim().length == 0) {
-        rows.shift();
-    }
-    while (rows.length > 0 && rows[rows.length - 1].trim().length == 0) {
-        rows.pop();
-    }
+    // while (rows.length > 0 && rows[0].trim().length == 0) {
+    //     rows.shift();
+    // }
+    // while (rows.length > 0 && rows[rows.length - 1].trim().length == 0) {
+    //     rows.pop();
+    // }
 
     let maxX = Math.max(...rows.map(a => a.length));
     let maxY = rows.length;
@@ -96,14 +103,12 @@ function LoadScenario(scenario) {
     for (let x = 0; x < maxX; x++) {
         for (let y = 0; y < maxY; y++) {
             let char = rows[y][x];
-            let tilesToBuild = tileDirectory[char] || [];
+            let tilesToBuild = (tileDirectory[char] || {}).tiles || [];
             for (let tileToBuild of tilesToBuild) {
                 sprites.push(new tileToBuild(x + xOffset, y + yOffset));
             }
         }
     }
-
-    navMesh = new NavMesh();
 }
 
 function ScenarioUpdate() {
