@@ -5,7 +5,7 @@ let overlayWindow = null;
 let marqueeWindow = null;
 let ironSwornWindow = null;
 let streamerName = "dobbsworks";
-let wheelEmote = "dobbswHalloWheel";
+let wheelEmote = "dobbswWheel";
 var StorageHandler;
 
 let commandPermission = {       // TODO VIP?
