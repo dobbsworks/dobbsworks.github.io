@@ -238,6 +238,7 @@ function LoadCommands() {
 		AliasCommand("minigames", "minigame"),
 		AliasCommand("g", "guess"),
 		AliasCommand("wheelcolour", "wheelcolor"),
+		AliasCommand("ir", "ironroll"),
 	];
 }
 

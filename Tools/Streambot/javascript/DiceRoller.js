@@ -35,7 +35,7 @@ function CommandRoll(user, args) {
         }
         let ret = "You rolled a " + total + "!";
         if (totalDice > 1) ret += " " + breakdowns.map(x => "[" + x.toString() + "]").join(",");
-        if (total === 69 && rawRollString === "d100") ret += "Nice.";
+        if (total === 69 && rawRollString === "+d100") ret += " Nice.";
         return ret;
     }
 }
