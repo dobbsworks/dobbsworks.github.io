@@ -17,6 +17,10 @@ class UiButton {
         return this.x;
     }
 
+    get right() {
+        return this.x + this.width;
+    }
+
     Draw() {
         ctx.fillStyle = "#13142d";
         ctx.fillRect(this.x, this.y, this.width, this.height);

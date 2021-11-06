@@ -98,3 +98,19 @@ label span {
 #tileButtons button.selected {
     border: 5px solid rgb(0, 255, 42);
 }
+
+#versionHistory {
+    display: none;
+    position: absolute;
+    background-color: #0004;
+    top: 20px;
+    height: 520px;
+    padding: 20px;
+    left: 20px;
+    width: 820px;
+    overflow-y: auto;
+}
+
+#exitVersionHistory {
+    margin: 20px;
+}

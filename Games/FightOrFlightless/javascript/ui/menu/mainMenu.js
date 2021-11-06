@@ -14,6 +14,13 @@ class MainMenu {
             width: 200, 
             height: 50
         }, SwitchToEditor);
+
+        let historyButton = uiHandler.Button("Version " + versionNumber, {
+            left: playButton.right + 25, 
+            y: 400, 
+            width: 200, 
+            height: 50
+        }, this.ShowVersionHistory.bind(this));
     }
 
 
@@ -23,5 +30,11 @@ class MainMenu {
         let scenario = JSON.parse(text);
         LoadScenario(scenario);
         uiHandler.elements = [];
+    }
+
+    ShowVersionHistory() {
+        uiHandler.elements = [];
+        document.getElementById("versionHistory").style.display = "block";
+        document.getElementById("versionHistoryText").innerHTML = versionHistory;
     }
 }
