@@ -3,6 +3,7 @@ var canvas;
 var ctx;
 var images = {};
 var sprites = [];
+var uiHandler;
 var frames = 1000 / 60;
 var frameNum = 0;
 
@@ -26,36 +27,18 @@ function Initialize() {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false;
+    uiHandler = new UiHandler();
 
     InitKeyHandlers();
     InitMouseHandlers();
 
     setInterval(Loop, frames);
-    sprites.push(new Hat(0, -1))
-    sprites.push(new SouthPole(0, 0));
-    sprites.push(new Snowman(-3, -2))
-    sprites.push(new Snowman(-4, 3))
-    sprites.push(new Snowman(-4, -3))
-    sprites.push(new Snowman(4, -2))
-    sprites.push(new Snowman(3, 2))
-    sprites.push(new Snowman(0, 2))
-    sprites.push(new Snowman(0, 4))
-    sprites.push(new SnowBank(0, -5))
 
-    for (let row = 0; row < cellRowCount; row++) {
-        for (let col = 0; col < cellColCount; col++) {
-            let xIndex = col - (cellColCount - 1) / 2;
-            let yIndex = row - (cellRowCount - 1) / 2;
-            if (Math.random() > 0.05) {
-                sprites.push(new GroundTile(xIndex, yIndex));
-            }
-        }
-    }
-
-    navMesh = new NavMesh();
+    new MainMenu().LoadMainMenu()
 }
 
 function Loop() {
+    uiHandler.Update();
     Update();
     Draw();
     UpdateMouseChanged();
@@ -93,6 +76,7 @@ function Draw() {
     //DrawNavMesh();
     if (!isEditMode) DrawHUD();
     ScenarioDraw();
+    uiHandler.Draw();
     if (isEditMode) DrawEditorGrid();
 }
 
@@ -139,6 +123,7 @@ function ClearCanvas() {
 }
 
 function DrawHUD() {
+    if (!currentScenario) return;
     ctx.fillStyle = "#dbfff3";
     ctx.textAlign = "left";
     ctx.font = "16pt Courier";

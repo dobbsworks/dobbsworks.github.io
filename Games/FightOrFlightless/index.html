@@ -6,6 +6,9 @@
 <link rel="stylesheet" href="style.css">
 <script src="javascript/keyboardHandler.js"></script>
 <script src="javascript/mouseHandler.js"></script>
+<script src="javascript/ui/uiButton.js"></script>
+<script src="javascript/ui/uiHandler.js"></script>
+<script src="javascript/ui/menu/mainMenu.js"></script>
 <script src="javascript/enemyManager.js"></script>
 <script src="javascript/sprite.js"></script>
 <script src="javascript/sprites/groundTile.js"></script>
@@ -34,13 +37,11 @@
         <div id="editorButtons">
             <button onclick="ExportScenario()">Export</button>
             <button onclick="ImportScenario()">Import</button>
+            <button onclick="ReturnToMainMenu()">Back to Main Menu</button>
         </div>
         <div id="editorPanels"></div>
         <div id="tileButtons"></div>
     </div>
-
-
-    <button id="editButton" onclick="SwitchToEditor()">Edit Mode</button>
 </body>
 
 </html>

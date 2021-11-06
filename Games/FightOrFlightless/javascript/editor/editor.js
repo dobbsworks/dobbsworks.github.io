@@ -3,13 +3,12 @@ var editorScenario = CreateDefaultScenario();
 var selectedTileType = "";
 
 function SwitchToEditor() {
+    uiHandler.elements = [];
     isEditMode = true;
     editorScenario = CreateDefaultScenario();
     CreateHtmlFromScenario(editorScenario);
     let container = document.getElementById("editorContainer");
     container.style.display = "block";
-    let button = document.getElementById("editButton");
-    button.style.display = "none";
     let tileButtonContainer = document.getElementById("tileButtons");
     for (let tileChar of Object.keys(tileDirectory)) {
         let tileName = tileDirectory[tileChar].name;
@@ -317,4 +316,16 @@ function LinkInputToModel(input, model, prop) {
         }
         targetModel[finalProp] = value;
     }
+}
+
+function ReturnToMainMenu() {
+    isEditMode = false;
+    sprites = [];
+    
+    let container = document.getElementById("editorContainer");
+    container.style.display = "none";
+    let tileButtonContainer = document.getElementById("tileButtons");
+    tileButtonContainer.innerHTML = "";
+
+    new MainMenu().LoadMainMenu();
 }
