@@ -6,7 +6,10 @@ var versionHistoryData = [
 ];
 
 var versionHistory = versionHistoryData.map(a => 
-    a.t + "\n<ul>" + a.c.map(change => "<li>" + change + "</li>").join("") + "</ul>"
+    "<h2>" + a.v + " - " + a.t + "</h2>" +
+    "\n<ul>" + 
+    a.c.map(change => "<li>" + change + "</li>").join("") + 
+    "</ul>"
 ).join("\n\n");
 
 var versionNumber = versionHistoryData[0].v;

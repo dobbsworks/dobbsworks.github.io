@@ -109,6 +109,8 @@ label span {
     left: 20px;
     width: 820px;
     overflow-y: auto;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 #exitVersionHistory {
