@@ -230,7 +230,7 @@ function CommandOpenQueue(user, args) {
 
 function UpdateStreamTitleForQueue(isOpen) {
 	let quickButtons = Array.from(document.querySelectorAll("button.quick-action"));
-	let editInfoButton = quickButtons.find(x => x.innerText === "Edit Stream Info");
+	let editInfoButton = quickButtons.find(x => x.ariaLabel === "Edit Stream Info");
 	editInfoButton.click();
 
 	setTimeout(() => {
