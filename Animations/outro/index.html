@@ -1,0 +1,45 @@
+<html>
+
+<head>
+	<title>test</title>
+
+	<style>
+		body {
+			background-color: black;
+		}
+
+        img, video { display: none;}
+
+		button {
+			height: 400px;
+			width: 700px; 
+			font-size: 50px;
+			margin: 20px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<canvas id="canvas" width="960" height="540" style="display: none"></canvas>
+	<img src="./images/ground.png"  />
+	<img src="./images/logo.png" data-cols="3"  />
+    <audio id="theme" src="./ending.mp3" loop></audio>
+
+	<button id="start" onclick="Start();">Start preview</button> 
+
+</body>
+
+<script src="./camera.js"></script>
+<script src="./sprite.js"></script>
+<script src="./interpolate.js"></script>
+<script src="./scenes.js"></script>
+<script src="./main.js"></script>
+<script src="./sprites/ground.js"></script>
+<script src="./sprites/rect.js"></script>
+<script src="./sprites/staticImage.js"></script>
+<script src="./sprites/staticText.js"></script>
+<script src="./title.js"></script>
+
+
+</html>
