@@ -41,10 +41,18 @@ function Initialize() {
 		bc.onmessage = OnBroadcastMessage;
 		setInterval(ProcessMessages, 1000);
 		let now = new Date();
-		let targetEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12 + 9, 28, 0);
+		let targetEnd1 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12 + 9, 28, 0);
+		let targetEnd2 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12 + 9, 48, 0);
+		let targetEnd3 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12 + 10, 5, 0);
 		setTimeout(() => {
 			WriteMessage("BEEP BOOP! Dobbs needs to end stream soon! Everyone bug him about it! GivePLZ GivePLZ GivePLZ")
-		}, targetEnd - now);
+		}, targetEnd1 - now);
+		setTimeout(() => {
+			WriteMessage("BEEP BOOP! Ok, really time to start wrapping up now, Hover Cat is going to be very sleepy!")
+		}, targetEnd2 - now);
+		setTimeout(() => {
+			WriteMessage("BEEP BOOP! Hi Dobbs, past-Dobbs here. I get it, you're having a good time, feeling good. But think of poor Hover Cat, please.")
+		}, targetEnd3 - now);
 	}, 1000);
 }
 
