@@ -44,7 +44,7 @@ function LoopingLogo() {
         let c = b.toString("16");
         if (c.length < 2) c = "0" + c;
 
-        let volume = 1-(-Math.cos(groundShadow.timer2 / 720) + 1) / 2;
+        let volume = 1-(-Math.cos(groundShadow.timer / 360) + 1) / 2;
         song.volume = volume;
 
         let color = "#000000" + c;

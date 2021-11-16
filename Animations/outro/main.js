@@ -24,7 +24,7 @@ function Initialize() {
     setInterval(Loop, frames);
 }
 
-//setTimeout(Start, 100);
+setTimeout(Start, 100);
 function Start() {
     canvas.style.opacity = 0;
     setTimeout(() => {
