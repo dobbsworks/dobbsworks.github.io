@@ -156,6 +156,11 @@ function LoadCommands() {
 		MessageCommand("bot", "Hello there, I'm the bot! Dobbs wrote me in JavaScript of all things. I handle the level queue and stuff. Sometimes I break for no good reason! Kappa"),
 		MessageCommand("schedule", "all times in Eastern: Mon 8:30PM, Wed 5PM, Sat 2PM. Mario Maker every stream except Monday."),
 
+		MessageCommand("shell", "My highest level clear is a 4.0, but 2.0-2.5 is my comfort range."),
+		MessageCommand("troll", " plz no WutFace "),
+		MessageCommand("kaizo", " yes please! "),
+		MessageCommand("levels", "I prefer !kaizo, I'm so-so at !shell stuff, but please no !troll levels <3 "),
+
 		MessageCommand("wheel", "Instead of taking levels in order, we'll go randomly. Your chances of being chosen are based on how long you've been in the queue."),
 		MessageCommand("discord", "Join the discord here: https://discord.gg/cdPmKUP"),
 		MessageCommand("youtube", "Technically there is a YouTube channel, but it's just VOD exports: https://www.youtube.com/channel/UCV-i_rqdTGBMYzxzrrephSw"),
@@ -247,6 +252,7 @@ function LoadCommands() {
 		AliasCommand("g", "guess"),
 		AliasCommand("wheelcolour", "wheelcolor"),
 		AliasCommand("ir", "ironroll"),
+		AliasCommand("level", "levels"),
 	];
 }
 
