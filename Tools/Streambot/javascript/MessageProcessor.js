@@ -24,6 +24,10 @@ function ProcessChatMessage(messageEl, isReward) {
 	let textFragments = Array.from(messageEl.querySelectorAll(".text-fragment, .chat-image, .mention-fragment, .link-fragment"));
 	let stitchedText = textFragments.map(x => x.innerText || x.alt).join("");
 	let selectedReward = messageEl.children[0].innerText.split("\n")[0].replace("Redeemed ", "");
+
+	// don't want to parse first time chat message as a message
+	if (selectedReward == "First Time Chat from viewer") return;
+
 	let badges = Array.from(messageEl.getElementsByClassName("chat-badge")).map(x => x.alt);
 
 	let username = "";
