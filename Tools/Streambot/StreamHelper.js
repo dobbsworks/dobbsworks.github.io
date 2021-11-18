@@ -121,7 +121,7 @@ function LoadCommands() {
 		Command("skip", "CommandSkip", commandPermission.streamer, commandDisplay.panel),
 		Command("next", "CommandNext", commandPermission.streamer, commandDisplay.panel),
 		Command("randomnext", "CommandRandomNext", commandPermission.streamer, commandDisplay.panel),
-		Command("freeze", "CommandFreezeLevel", commandPermission.streamer, commandDisplay.panel),
+		Command("freeze", "CommandFreezeUserLevel", commandPermission.streamer, commandDisplay.hidden),
 		Command("randomwin", "CommandRandomWin", commandPermission.streamer, commandDisplay.hidden),
 		Command("bonusprize", "CommandBonusPrize", commandPermission.streamer, commandDisplay.hidden),
 		Command("resettimer", "CommandResetTimer", commandPermission.streamer, commandDisplay.panel),

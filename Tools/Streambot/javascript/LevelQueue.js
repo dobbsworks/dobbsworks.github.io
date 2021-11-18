@@ -315,15 +315,16 @@ function CommandDebugAdd() {
 	CommandAddLevel({ username: username, badges: [], isSub: false }, [levelCode]);
 }
 
-function CommandFreezeLevel() {
-	// marks current live level as pending/afk
+function CommandFreezeUserLevel(user, args) {
+	let targetUsername = args[0];
+	// marks current/pending level as pending/afk
 	let levels = StorageHandler.queue.values;
-	let liveLevel = levels.find(x => x.status === levelStatus.live);
-	if (!liveLevel) return "There is no live level.";
-	liveLevel.status = levelStatus.pending;
-	liveLevel.afkStartTime = new Date();
+	let level = levels.find(x => x.username.toLowerCase() === targetUsername.toLowerCase() && (x.status === levelStatus.live || x.status === levelStatus.pending));
+	if (!level) return "There is no level to freeze for " + targetUsername + ".";
+	level.status = levelStatus.pending;
+	level.afkStartTime = new Date();
 	StorageHandler.queue = levels;
-	return "Level has been cryogenically frozen and will be thawed when " + liveLevel.username + " says something in chat.";
+	return "Level has been cryogenically frozen and will be thawed when " + level.username + " says something in chat.";
 }
 
 function CommandAfk(user, args) {

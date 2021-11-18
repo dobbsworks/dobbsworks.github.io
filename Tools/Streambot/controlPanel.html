@@ -101,6 +101,7 @@
 		.log {
 			float: right;
 		}
+
 		#cli {
 			float: right;
 			background-color: black;
@@ -184,6 +185,7 @@
 			container.innerHTML += selectedLevelCode + " by " + selectedLevel.username;
 			container.innerHTML += "<br/>Added " + GetTimeDiff(selectedLevel.timeAdded, new Date()) + " ago";
 			container.innerHTML += `<br/><button type="button" onclick="RemoveUser('${selectedLevel.username}')">Remove Level</button>`;
+			container.innerHTML += `<br/><button type="button" onclick="Freeze('${selectedLevel.username}')">Freeze Level</button>`;
 			container.innerHTML += `<br/><button type="button" onclick="PlayNow('${selectedLevel.username}')">Play Now</button>`;
 			container.innerHTML += `<br/><button type="button" onclick="ClosePanel()">Close Panel</button>`;
 
@@ -202,6 +204,10 @@
 
 	function RemoveUser(username) {
 		SendCommand("as " + encodeURI(username) + " !leave");
+	}
+
+	function FreezeUser(username) {
+		SendCommand("freeze " + encodeURI(username));
 	}
 
 	function PlayNow(username) {
@@ -231,7 +237,7 @@
 
 	function UpdateWarningLight() {
 		let now = new Date();
-		let targetEndStreamTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12+9, 15, 0);
+		let targetEndStreamTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12 + 9, 15, 0);
 		let minutesUntilStreamEnd = (targetEndStreamTime - now) / 1000 / 60;
 		let pendingLevels = StorageHandler.queue.values.filter(x => x.status === "pending");
 

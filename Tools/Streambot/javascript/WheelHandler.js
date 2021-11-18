@@ -24,7 +24,7 @@ function CommandRandomWin(user, args) {
         let postEventChance = (100 * parseFloat(args[2])).toFixed(1) + "%";
 
         returnText = "The next level is from @" + winningUser + "!";
-        if (!isNaN(preEventChance)) {
+        if (!isNaN(parseFloat(args[1]))) {
             returnText = "The wheel has chosen @" + winningUser + "! The chance of this slice being chosen was: " + preEventChance;
             if (preEventChance !== postEventChance) {
                 returnText += " (" + postEventChance + " after wheel shenanigans)"
