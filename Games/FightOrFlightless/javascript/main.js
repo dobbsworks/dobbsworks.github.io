@@ -143,13 +143,14 @@ function SliceImageToTiles(imageId, rows, cols) {
     return tiles;
 }
 
-function DrawTile(tileset, tileIndex, x, y, scale) {
+function DrawTile(tileset, tileIndex, x, y, scale, isTrimmed) {
     let rotation = 0;
     let image = tileset.image;
     let sw = tileset.width;
     let sh = tileset.height;
     let sx = sw * (tileIndex % tileset.cols);
     let sy = sh * Math.floor(tileIndex / tileset.cols);
+    if (isTrimmed) sh *= 8/20;
 
     // trim edges to reduce bleed
     // sx += 0.05;
@@ -161,6 +162,7 @@ function DrawTile(tileset, tileIndex, x, y, scale) {
     let dy = Math.floor(y);
     let dw = Math.floor(sw * (scale || 1));
     let dh = Math.floor(sh * (scale || 1));
+    if (isTrimmed) dy -= 6;
 
     ctx.save();
     ctx.transform(1, 0, 0, 1, dx, dy);

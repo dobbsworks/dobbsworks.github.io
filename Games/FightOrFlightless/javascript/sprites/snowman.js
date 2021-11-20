@@ -20,7 +20,7 @@ class Snowman extends Sprite {
         }
         if (this.reloadTimer <= 0) {
             let range = cellWidth * 5;
-            let allPenguins = sprites.filter(a => a instanceof Penguin);
+            let allPenguins = sprites.filter(a => a instanceof Enemy && !a.isSubmerged);
             let nearPenguins = allPenguins.filter(a => (this.x - a.x) ** 2 + (this.y - a.y) ** 2 < range ** 2);
             if (nearPenguins.length > 0) {
                 // TODO: how to find best target?

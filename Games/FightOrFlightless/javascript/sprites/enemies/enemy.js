@@ -1,4 +1,4 @@
-class Penguin extends Sprite {
+class Enemy extends Sprite {
 
     constructor(initialTileX, initialTileY) {
         super(
@@ -15,12 +15,16 @@ class Penguin extends Sprite {
 
     drawOrder = 50;
     blocksBuild = true;
+    isWading = false;
+    isSubmerged = false;
 
+    // override in derived class
+    speed = 0.5;
+    swimSpeedRatio = 1.0;
+    swimsUnderwater = true;
+    artTileIndex = 3;
 
     Update() {
-        //eventually: find nearest starting point
-        let speed = 0.5;
-
         let isAtTarget = this.tileX * cellWidth === this.x && this.tileY * cellWidth === this.y;
         if (isAtTarget) {
             let navTile = navMesh.mesh.find(a => a.tileX === this.tileX && a.tileY === this.tileY);
@@ -33,12 +37,25 @@ class Penguin extends Sprite {
                     this.tileX += route.route.x;
                     this.tileY += route.route.y;
                 } else {
-                    console.error("Penguin can't find route!");
+                    console.error("Enemy can't find route!");
                 }
             } else {
-                console.error("Penguin can't nav!");
+                console.error("Enemy can't nav!");
             }
         }
+        
+        let isOnGround = sprites.
+            filter(a => a instanceof GroundTile).
+            some(a => (a.tileX === this.tileX && a.tileY === this.tileY)
+                || (a.tileX === this.oldTileX && a.tileY === this.oldTileY));
+
+        if (!this.swimsUnderwater) {
+            this.isWading = !isOnGround;
+        } else {
+            this.isSubmerged = !isOnGround;
+        }
+
+        let speed = this.speed * (isOnGround ? 1 : this.swimSpeedRatio);
 
         let targetX = this.tileX * cellWidth;
         let targetY = this.tileY * cellHeight;
@@ -53,17 +70,11 @@ class Penguin extends Sprite {
             this.y += speed * Math.sin(theta);
         }
 
-        let isOnGround = sprites.
-            filter(a => a instanceof GroundTile).
-            some(a => (a.tileX === this.tileX && a.tileY === this.tileY)
-                || (a.tileX === this.oldTileX && a.tileY === this.oldTileY));
-
-        if (isOnGround) {
-            this.tile = 3;
+        if (isOnGround || this.isWading) {
+            this.tile = this.artTileIndex;
         } else {
             this.tile = (this.age % 60 < 30) ? 9 : 10;
         }
-
 
         if (this.hp <= 0) {
             this.isActive = false;
@@ -71,5 +82,3 @@ class Penguin extends Sprite {
     }
 
 }
-
-enemyClasses.Penguin = Penguin;
