@@ -256,6 +256,7 @@ function ProcessActivityMessage(messageEl) {
 			let user = line1;
 			let alertText = user + " is raiding!";
 			marqueeWindow.AddAlert(alertText, "rgb(128,128,255)");
+			CommandShoutout(null, [user]);
 		}
 		// Subscribe
 		if (line2.startsWith("Subscribed ")) {
