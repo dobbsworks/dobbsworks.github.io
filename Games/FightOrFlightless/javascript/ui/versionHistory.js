@@ -1,4 +1,8 @@
 var versionHistoryData = [
+    {v: "0.0.3", d: "2021-11-26", t: "Rome Wasn't Build Instantly", c: [
+        "Towers now have a time for building to complete",
+        "For testing, you can now play built maps immediately from the editor"
+    ]}, 
     {v: "0.0.2", d: "2021-11-19", t: "The Second Update", c: [
         "New enemy type: seal! Faster in water, slower on land",
         "Some enemies remain submerged while on water tiles, and can't be attacked while underwater",

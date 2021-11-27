@@ -12,6 +12,7 @@ class SnowWall extends Sprite {
 
     drawOrder = 50;
     blocksBuild = true;
+    blocksNav = true;
 
     Update() {
     }

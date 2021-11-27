@@ -76,6 +76,12 @@ function SetTile(tileX, tileY) {
     LoadScenarioTerrain(editorScenario.layout);
 }
 
+function TestScenario() {
+    ReturnToMainMenu();
+    uiHandler.elements = [];
+    LoadScenario(editorScenario);
+}
+
 function ExportScenario() {
     let hasBase = editorScenario.layout.indexOf("@") > -1;
     let hasHat = editorScenario.layout.indexOf("H") > -1;
