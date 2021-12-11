@@ -1,6 +1,7 @@
 class MainMenu {
 
     LoadMainMenu() {
+        uiHandler.elements = [];
         let playButton = uiHandler.Button("Import Level", {
             centerX: canvas.width / 2,
             y: 400,

@@ -1,87 +1,28 @@
 
-var sampleScenario = {
-    waves: [
-        {
-            name: "Wave 1",
-            announcement: "Here they come!",
-            delay: 0,
-            spawns: [
-                {
-                    enemy: "Penguin",
-                    count: 16,
-                    spawnPoint: { x: -10, y: 0 },
-                    spawnSpeedRatio: 0.5
-                }
-            ]
-        },
-        {
-            name: "Wave 2",
-            announcement: "Incoming from the flank!",
-            delay: 0,
-            spawns: [
-                {
-                    enemy: "Penguin",
-                    count: 8,
-                    spawnPoint: { x: -10, y: 0 },
-                },
-                {
-                    enemy: "Penguin",
-                    count: 64,
-                    spawnPoint: { x: 10, y: 0 },
-                    spawnSpeedRatio: 2
-                }
-            ]
-        },
-        {
-            name: "Rest",
-            announcement: "Rebuild, quickly!",
-            spawns: [],
-            delay: 16
-        },
-        {
-            name: "Wave 3",
-            announcement: "Huge wave approaching from the iceberg!",
-            delay: 0,
-            spawns: [
-                {
-                    enemy: "Penguin",
-                    count: 64,
-                    spawnPoint: { x: -10, y: 0 },
-                }
-            ]
-        },
-    ],
-    layout: `
- -------
-----H----
--8#---#8-
--8#-@-#8-
--8#---#8-
----------
- ---$---
-    `,
-    rules: {
-    //    "startingMoney": 0
-    }
-}
 
 var tileDirectory = {
-    "@": {name: "South Pole", isUnique: true, tiles: [GroundTile, SouthPole]},
-    "H": {name: "Player Start", isUnique: true, tiles: [GroundTile, Hat]},
-    "-": {name: "Ground", isUnique: false, tiles: [GroundTile]},
-    " ": {name: "Water", isUnique: false, tiles: []},
-    "#": {name: "Wall", isUnique: false, tiles: [GroundTile, SnowWall]},
-    "8": {name: "Snowman", isUnique: false, tiles: [GroundTile, Snowman]},
-    "$": {name: "Snowbank", isUnique: false, tiles: [GroundTile, SnowBank]},
+    "@": { name: "South Pole", isUnique: true, tiles: [GroundTile, SouthPole] },
+    "H": { name: "Player Start", isUnique: true, tiles: [GroundTile, Hat] },
+    "-": { name: "Ground", isUnique: false, tiles: [GroundTile] },
+    " ": { name: "Water", isUnique: false, tiles: [] },
+    "#": { name: "Wall", isUnique: false, tiles: [GroundTile, SnowWall] },
+    "8": { name: "Snowman", isUnique: false, tiles: [GroundTile, Snowman] },
+    "$": { name: "Snowbank", isUnique: false, tiles: [GroundTile, SnowBank] },
 };
 
 var currentScenario = null;
+var currentScenarioBackup = null;
 function LoadScenario(scenario) {
     currentScenario = scenario;
+    currentScenarioBackup = JSON.parse(JSON.stringify(scenario));
 
     LoadScenarioTerrain(scenario.layout);
 
     navMesh = new NavMesh();
+}
+
+function RestartScenario() {
+    LoadScenario(currentScenarioBackup);
 }
 
 function LoadScenarioTerrain(layout) {
@@ -111,13 +52,66 @@ function LoadScenarioTerrain(layout) {
     }
 }
 
+function OnScenarioWin() {
+    uiHandler.elements = [];
+    currentScenario = null;
+    sprites = [];
+
+    let mainMenu = uiHandler.Button("You win! Return to Main Menu", {
+        centerX: canvas.width / 2,
+        y: 400,
+        width: 350,
+        height: 100
+    }, () => { new MainMenu().LoadMainMenu() });
+}
+
+function OnScenarioLose() {
+    uiHandler.elements = [];
+    currentScenario = null;
+    sprites = [];
+
+    let mainMenu = uiHandler.Button("Return to Main Menu", {
+        left: canvas.width / 2 + 25,
+        y: 400,
+        width: 350,
+        height: 100
+    }, () => { new MainMenu().LoadMainMenu() });
+
+    let retryButton = uiHandler.Button("You lose! Retry?", {
+        right: canvas.width / 2 - 25,
+        y: 400,
+        width: 350,
+        height: 100
+    }, () => {
+        uiHandler.elements = [];
+        RestartScenario()
+    });
+}
+
 function ScenarioUpdate() {
     if (!currentScenario) return;
 
-    let currentWave = currentScenario.waves[0];
-    if (!currentWave) return; // scenario complete!
-    if (!currentWave.timer) currentWave.timer = 0;
+    let southPole = sprites.find(a => a instanceof SouthPole);
+    if (southPole) {
+        if (southPole.hp <= 0) {
+            this.OnScenarioLose();
+            return;
+        }
+    }
 
+    let currentWave = currentScenario.waves[0];
+    if (!currentWave) {
+        // no more waves to process, watch for all enemeies dead
+        let enemies = sprites.filter(a => a instanceof Enemy);
+        if (enemies.length) {
+            // keep waiting
+            return;
+        } else {
+            OnScenarioWin();
+            return; // scenario complete!
+        }
+    }
+    if (!currentWave.timer) currentWave.timer = 0;
 
     let framesPerSpawn = 20;
 
@@ -170,7 +164,7 @@ function ScenarioDraw() {
         ctx.textAlign = "center";
         ctx.font = "16pt Courier";
         ctx.lineWidth = 4;
-        ctx.strokeText(currentWave.name, canvas.width/2, 500);
-        ctx.fillText(currentWave.name, canvas.width/2, 500);
+        ctx.strokeText(currentWave.name, canvas.width / 2, 500);
+        ctx.fillText(currentWave.name, canvas.width / 2, 500);
     }
 }

@@ -24,6 +24,7 @@ class Snowman extends Sprite {
             let nearPenguins = allPenguins.filter(a => (this.x - a.x) ** 2 + (this.y - a.y) ** 2 < range ** 2);
             if (nearPenguins.length > 0) {
                 // TODO: how to find best target?
+                nearPenguins.sort((a,b) => a.distanceToTower - b.distanceToTower);
                 let target = nearPenguins[0];
                 this.reloadTimer = 45;
                 sprites.push(new Snowball(this.x, this.y, target));

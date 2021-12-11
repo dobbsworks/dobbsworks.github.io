@@ -32,7 +32,7 @@ function Start() {
             canvas.style.opacity = 1;
         }, 50);
         Scene1()
-    }, 30);
+    }, 3000);
     let button = document.getElementById("start");
     button.style.display = "none";
     canvas.style.display = "unset";

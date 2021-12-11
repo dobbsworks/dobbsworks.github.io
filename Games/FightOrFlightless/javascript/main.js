@@ -63,14 +63,15 @@ var navMesh;
 function Draw() {
     ClearCanvas();
 
+    let toDraw = [...sprites];
     // draw sprites by layer, back-to-front for same layer
-    sprites.sort((a, b) => {
+    toDraw.sort((a, b) => {
         if (a.drawOrder == b.drawOrder) {
             return a.y - b.y
         }
         return a.drawOrder - b.drawOrder
     });
-    for (let sprite of sprites) {
+    for (let sprite of toDraw) {
         sprite.Draw(ctx);
     }
     //DrawNavMesh();
@@ -128,6 +129,14 @@ function DrawHUD() {
     ctx.textAlign = "left";
     ctx.font = "16pt Courier";
     ctx.fillText(`Money: ${money.toFixed(0)}`, 10, 30);
+
+    let southPole = sprites.find(a => a instanceof SouthPole);
+    let hp = southPole.hp;
+    let missingHp = southPole.maxHp - hp;
+    let hpBarText = "";
+    for (let i=0; i<hp; i++) hpBarText += "@";
+    for (let i=0; i<missingHp && i<southPole.maxHp; i++) hpBarText += "-";
+    ctx.fillText(`Tower HP: [${hpBarText}]`, 200, 30);
 }
 
 

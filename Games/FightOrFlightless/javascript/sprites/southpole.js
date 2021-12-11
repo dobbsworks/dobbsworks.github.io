@@ -10,6 +10,9 @@ class SouthPole extends Sprite {
         this.tileY = tileY;
     }
 
+    maxHp = 10;
+    hp = 10;
+    
     drawOrder = 10;
     blocksBuild = true;
 }

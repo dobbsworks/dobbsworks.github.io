@@ -9,6 +9,8 @@ class Enemy extends Sprite {
         this.hp = 5;
         this.tileX = initialTileX;
         this.tileY = initialTileY;
+        this.initialTileX = initialTileX;
+        this.initialTileY = initialTileY;
         this.oldTileX = null;
         this.oldTileY = null;
     }
@@ -17,18 +19,28 @@ class Enemy extends Sprite {
     blocksBuild = true;
     isWading = false;
     isSubmerged = false;
+    distanceToTower = 9999;
 
     // override in derived class
+    damageToPole = 1;
     speed = 0.5;
     swimSpeedRatio = 1.0;
     swimsUnderwater = true;
     artTileIndex = 3;
+
+    ResetPosition() {
+        this.x = this.initialTileX * cellWidth;
+        this.y = this.initialTileY * cellHeight;
+        this.tileX = this.initialTileX;
+        this.tileY = this.initialTileY;
+    }
 
     Update() {
         let isAtTarget = this.tileX * cellWidth === this.x && this.tileY * cellWidth === this.y;
         if (isAtTarget) {
             let navTile = navMesh.mesh.find(a => a.tileX === this.tileX && a.tileY === this.tileY);
             if (navTile) {
+                this.distanceToTower = navTile.trueDistance;
                 let routes = navTile.routes.map(a => ({ route: a, tile: navMesh.mesh.find(b => b.tileX === this.tileX + a.x && b.tileY === this.tileY + a.y) }));
                 let route = routes[Math.floor(Math.random() * routes.length)];
                 if (route) {
@@ -37,7 +49,16 @@ class Enemy extends Sprite {
                     this.tileX += route.route.x;
                     this.tileY += route.route.y;
                 } else {
-                    console.error("Enemy can't find route!");
+                    let southPole = sprites.find(a => a instanceof SouthPole);
+                    if (southPole.tileX === this.tileX && southPole.tileY === this.tileY) {
+                        // enemy has reached central tower!
+                        southPole.hp -= this.damageToPole;
+                        this.isActive = false;
+                    } else {
+                        // enemy is trapped!
+                        this.ResetPosition();
+                    }
+                    //console.error("Enemy can't find route!");
                 }
             } else {
                 console.error("Enemy can't nav!");

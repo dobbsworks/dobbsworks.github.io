@@ -1,4 +1,10 @@
 var versionHistoryData = [
+    {v: "0.0.4", d: "2021-12-10", t: "Abort? Retry? Fail?", c: [
+        "Added logic to scenarios to handle wins/losses. Prompts for retry on a loss.",
+        "Added a rough HP meter. For now, south pole takes 10 hits to go down.",
+        "Snowmen now prioritize targets based on remaining travel distance to the south pole.",
+        "Trapped enemies will be instantly sent back to their spawn point."
+    ]}, 
     {v: "0.0.3", d: "2021-11-26", t: "Rome Wasn't Build Instantly", c: [
         "Towers now have a time for building to complete",
         "For testing, you can now play built maps immediately from the editor"
