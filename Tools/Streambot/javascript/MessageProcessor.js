@@ -231,10 +231,10 @@ function FindActivityMessagesToProcess() {
 	return toProcess;
 }
 function ProcessActivityMessage(messageEl) {
-	let line1 = messageEl.querySelector(".activity-base-list-item__title").textContent;
+	let line1 = messageEl.querySelector(".tw-link").textContent;
 	let line2 = messageEl.querySelector(".activity-base-list-item__subtitle span").textContent;
 	let time = messageEl.querySelector(".activity-base-list-item__subtitle > span:last-child").textContent;
-
+	
 	if (time.indexOf("day") === -1 && time.indexOf("month") === -1 && time.indexOf("hour") === -1) {
 		// Follows
 		if (line2 === "Followed you") {
