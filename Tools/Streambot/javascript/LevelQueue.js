@@ -44,13 +44,13 @@ function CommandAddLevel(user, args) {
 
 function CommandAddSR(user, args) {
 	if (isQueueOpen) {
-		let userInputCode = args[0];
+		let userInputCode = args.join(' ');
 		if (!userInputCode) {
 			return { success: false, message: `You did not include a song request. Usage: !sr PLZ PLAY THIS SONG` };
 		}
 		if (DoesUserHaveQueueSpace(user.username)) {
 			PushQueueEntry(user, userInputCode);
-			return { success: true, message: `Your level (${userInputCode}) has been queued, may the !wheel spin in your favor GivePLZ ${wheelEmote} ` };
+			return { success: true, message: `Your request (${userInputCode}) has been queued GivePLZ ${wheelEmote} ` };
 		} else {
 			return { success: false, message: "You're already in the queue, wait until your request has been completed." };
 		}
