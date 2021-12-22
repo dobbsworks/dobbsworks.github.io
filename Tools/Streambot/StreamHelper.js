@@ -96,6 +96,8 @@ let commands = [];
 let aliases = [];
 function LoadCommands() {
 	commands = [
+		Command("sr", "CommandAddSR", commandPermission.all, commandDisplay.chat, "Add a song request to the queue. Usage: !add PLZ PWAY THIS SONG"),
+
 		Command("add", "CommandAddLevel", commandPermission.all, commandDisplay.chat, "Add a level to the queue. Usage: !add LEV-ELC-ODE"),
 		Command("afk", "CommandAfk", commandPermission.all, commandDisplay.chat, "Mark yourself as AFK so that your level doesn't get played until you get back."),
 		Command("notspam", "CommandNotSpam", commandPermission.all, commandDisplay.hidden),
