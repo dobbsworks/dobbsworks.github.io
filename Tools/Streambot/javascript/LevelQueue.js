@@ -42,23 +42,6 @@ function CommandAddLevel(user, args) {
 	}
 }
 
-function CommandAddSR(user, args) {
-	if (isQueueOpen) {
-		let userInputCode = args.join(' ');
-		if (!userInputCode) {
-			return { success: false, message: `You did not include a song request. Usage: !sr PLZ PLAY THIS SONG` };
-		}
-		if (DoesUserHaveQueueSpace(user.username)) {
-			PushQueueEntry(user, userInputCode);
-			return { success: true, message: `Your request (${userInputCode}) has been queued GivePLZ ${wheelEmote} ` };
-		} else {
-			return { success: false, message: "You're already in the queue, wait until your request has been completed." };
-		}
-	} else {
-		return { success: false, message: "The queue is closed right now. :(" };
-	}
-}
-
 function GetMakerID(username) {
 	let makerRecord = StorageHandler.maker.getUser(username);
 	if (makerRecord) return makerRecord.maker;

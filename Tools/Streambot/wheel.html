@@ -77,7 +77,6 @@
 		let eventRandValue = Math.random();
 		console.log("eventRandValue", eventRandValue)
 		wheelEvent = (eventRandValue < 0.12) ? RandomFrom(["revolution", "revolution", "prize", "prize", "prize"]) : ""; // removed "reversal"
-		wheelEvent = ""; // suppress events for now
 		if (isBowserEvent()) {
 			// check to see if a bowser event makes sense here
 			let minWeight = Math.min(999999, ...(items.map(x => x.weight)));
@@ -503,8 +502,8 @@
 	}
 
 	function PlayAudio(ytid) {
-		// let w = window.open("https://www.youtube.com/watch?v=" + ytid);
-		// return w;
+		let w = window.open("https://www.youtube.com/watch?v=" + ytid);
+		return w;
 	}
 
 	function PlayTone() {
