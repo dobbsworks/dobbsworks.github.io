@@ -49,7 +49,7 @@ class AchievementHandler {
             "Upgrade a single weapon %0 times in one run",
             [[4], [6], [9]],
             (vars) => {
-                return Math.max(weaponHandler.inventory.map(x => x.level)) - 1 >= vars[0];
+                return Math.max(...weaponHandler.inventory.map(x => x.level)) - 1 >= vars[0];
             }
         ),
         ramming: new Achievement(
