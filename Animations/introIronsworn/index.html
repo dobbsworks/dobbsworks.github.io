@@ -1,0 +1,557 @@
+<html>
+
+<head>
+    <style>
+        #border {
+            z-index: 1000;
+            display: block;
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 1200px;
+            height: 820px;
+            border: black solid 25px;
+            box-sizing: border-box;
+            border-radius: 0px;
+        }
+
+        #border2 {
+            z-index: 1000;
+            display: block;
+            position: fixed;
+            left: -1000px;
+            top: -1000px;
+            width: 3200px;
+            height: 2820px;
+            border: black solid 1025px;
+            box-sizing: border-box;
+        }
+
+        #back,
+        #back2,
+        #overlay {
+            position: fixed;
+            left: 0;
+            top: 0;
+            animation: 60s linear infinite normal infinite-scroll;
+        }
+
+        #back {
+            filter: brightness(0.8);
+            z-index: 0;
+        }
+
+        #overlay {
+            position: fixed;
+            bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #8b77633b;
+            opacity: 0.5;
+            z-index: 999;
+        }
+
+        #images>img {
+            filter: drop-shadow(0 0 1px black) drop-shadow(4px 8px 5px rgb(56, 49, 49));
+            position: fixed;
+            animation: 60s linear forwards drift-left;
+            transform-origin: bottom left;
+            left: -1717px;
+            z-index: 500;
+        }
+
+        #back2 {
+            filter: brightness(0.8);
+            opacity: 0.5;
+            z-index: 100;
+            mix-blend-mode: multiply;
+        }
+
+        @keyframes infinite-scroll {
+            from {
+                left: 0px;
+            }
+
+            to {
+                left: -2880px;
+            }
+        }
+
+        @keyframes drift-left {
+            from {
+                left: 1175px;
+            }
+
+            to {
+                left: -1692px;
+            }
+        }
+
+        @keyframes drift-left-long {
+            from {
+                left: 2162px;
+            }
+
+            to {
+                left: -2162px;
+            }
+        }
+
+        @keyframes drift-left-tight {
+            from {
+                left: 1170px;
+            }
+
+            to {
+                left: -497px;
+            }
+        }
+
+        .nameContainer {
+            font-family: 'Enchanted Land';
+            font-size: 80px;
+            color: black;
+            z-index: 999;
+            position: fixed;
+            left: -1000px;
+            top: 100px;
+            animation: 10s cubic-bezier(0.01, 0.88, 0.99, 0.12) forwards drift-left-tight;
+            filter: drop-shadow(0 0 1px rgb(56, 34, 9));
+            animation-delay: 0s;
+            text-align: center;
+        }
+
+        .character {
+            filter: drop-shadow(0 0 1px rgb(56, 34, 9)) drop-shadow(0 0 6px #FFF8);
+        }
+
+        .preName {
+            font-size: 40px;
+            position: relative;
+            top: 60px;
+            width: 300px;
+        }
+
+        .nameContainer>* {
+            position: absolute;
+        }
+
+        .player {
+            top: 85px;
+        }
+
+        .as {
+            top: 140px;
+            font-size: 60px;
+        }
+
+        .character {
+            top: 130px;
+            left: 45px;
+            font-size: 160px;
+        }
+
+        .emblem {
+            transform: translateX(-400px) scale(1.5);
+            top: 100px;
+            opacity: 0.3;
+            filter: blur(4px);
+            animation: 10s cubic-bezier(0.01, 0.88, 0.99, 0.12) forwards drift-left-tight;
+        }
+
+        .serene {
+            animation-delay: 28.5s;
+        }
+
+        .glain {
+            animation-delay: 41.25s;
+        }
+
+        .torgan {
+            animation-delay: 54.5s;
+        }
+
+        .scrollingText {
+            position: fixed;
+            z-index: 1;
+            animation: 90s linear infinite drift-left-long;
+            top: 100px;
+            opacity: 0.3;
+            transform: scaleY(2);
+            left: -9999px;
+            animation-delay: -45s;
+        }
+
+        .scrollingText>img {
+            margin-bottom: -20px;
+        }
+
+        .scrollingText>img:nth-of-type(even) {
+            transform: translateX(-100px);
+        }
+
+        .scrollingText2 {
+            animation-delay: 0s;
+            left: -9999px;
+        }
+
+        #openingBlackCover, #fadeOutBlack {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: black;
+            z-index: 1000;
+            opacity: 1;
+            animation: 14s 9s linear forwards openingFadeOut;
+        }
+
+        #fadeOutBlack {
+            z-index: 498;
+            animation-delay: 77.3s;
+            animation-duration: 0.5s;
+            opacity: 0;
+            animation-direction: reverse;
+        }
+
+        @keyframes openingFadeOut {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes openingFadeInOut {
+            0% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+
+        @keyframes flicker {
+            0% {
+                filter: drop-shadow(0 0 25px rgba(255, 249, 170, 0.2));
+            }
+
+            20% {
+                filter: drop-shadow(0 0 10px #fff2);
+            }
+
+            40% {
+                filter: drop-shadow(0 0 25px rgba(255, 249, 170, 0.2));
+            }
+
+            80% {
+                filter: drop-shadow(0 0 50px #fff2);
+            }
+
+            100% {
+                filter: drop-shadow(0 0 25px rgba(255, 249, 170, 0.2));
+            }
+        }
+
+        .flicker {
+            filter: drop-shadow(0 0 5px white);
+            animation: 1s ease-in-out infinite normal flicker;
+        }
+
+        #openingText,
+        #openingText2 {
+            position: absolute;
+            color: white;
+            font-family: 'Enchanted Land';
+            font-size: 70px;
+            text-align: center;
+            width: 1200px;
+            margin-top: 300px;
+            opacity: 0;
+            animation: 6s 1.5s linear forwards openingFadeInOut;
+            line-height: 0.7;
+        }
+
+        #openingText2 {
+            animation-delay: 8.5s;
+        }
+
+        body {
+            display: none;
+        }
+
+        html {
+            background-color: black;
+            animation: finalFade 2s linear 80s forwards;
+        }
+
+        #d20 {
+            position: fixed;
+            z-index: 500;
+            left: 544px;
+            top: 286px;
+            filter: drop-shadow(0 0 1px rgb(56, 34, 9)) drop-shadow(0 0 6px #FFF8);
+            animation: diceSlam 0.8s linear 77.3s forwards;
+            opacity: 0;
+        }
+
+        #title {
+            position: fixed;
+            font-family: 'Enchanted Land';
+            font-size: 180px;
+            color: black;
+            z-index: 501;
+            top: 236px;
+            text-align: center;
+            width: 1200px;
+            animation: diceSlam 0.8s linear 77.3s forwards;
+            filter: drop-shadow(0 0 1px rgb(56, 34, 9)) drop-shadow(0 0 6px #FFF8);
+            opacity: 0;
+        }
+        
+
+        @keyframes diceSlam {
+            0% {
+                opacity: 0;
+                transform: scale(20);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+
+        @keyframes finalFade {
+            0% {
+                filter: brightness(1);
+            }
+
+            100% {
+                filter: brightness(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <img id="back" src="images/parchmentBack.png" />
+    <img id="back2" src="images/parchmentTexture.png" />
+    <div class="scrollingText">
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+    </div>
+    <div class="scrollingText scrollingText2">
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+        <img src="images/vow.png" />
+    </div>
+    <div id="images">
+        <img src="images/cart.png" data-start="10" data-sepia="0.5" data-z="1" data-scale="0.7" data-y="0" data-speed="1.25" />
+        <img src="images/fire.png" data-start="12" data-sepia="0.5" data-z="1" data-scale="0.6" data-y="-60" data-speed="1.5" />
+        <img src="images/arrow.png" data-start="30" data-scale="0.5" data-y="400" data-speed="40" />
+        <img src="images/arrow.png" data-start="32" data-scale="0.8" data-y="300" data-speed="45" />
+        <img src="images/serene.png" data-start="24" data-scale="1" data-speed="2.5" />
+        <img src="images/arrow.png" data-start="29" data-scale="1" data-y="250" data-speed="60" />
+        <img src="images/arrow.png" data-start="34" data-scale="1.5" data-y="300" data-speed="90" />
+        <img src="images/arrow2.png" data-start="36" data-scale="1.2" data-y="400" data-speed="-90" />
+        <img src="images/arrow2.png" data-start="36.25" data-scale="1" data-y="350" data-speed="-90" />
+        <img src="images/arrow2.png" data-start="36.5" data-scale="1" data-y="410" data-speed="-90" />
+        <img src="images/arrow2.png" data-start="36.75" data-scale="1.2" data-y="375" data-speed="-90" />
+        <img src="images/arrowBody2.png" data-start="36.5" data-scale="1" data-y="0" data-speed="1.8" data-z="25" />
+        <img src="images/glain.png" data-start="42" data-scale="1" data-y="-30" data-speed="2.5" data-z="25" />
+        <img src="images/arrowBody1.png" data-start="37.5" data-scale="1" data-y="0" data-speed="2" data-z="25" />
+        <img src="images/cliff.png" data-start="25" data-scale="1" data-y="-200" data-speed="1.5" data-z="24" />
+        <img src="images/cliff.png" data-start="27" data-scale="0.8" data-y="0" data-speed="1.4" data-z="23" />
+        <img src="images/torgan.png" data-start="52" data-scale="1" data-y="-30" data-speed="2.5" data-z="25" />
+        <img src="images/wolf.png" data-start="60" data-scale="0.85" data-y="0" data-speed="2.9" data-z="25" />
+        
+    </div>
+    <div id="overlay"></div>
+   
+    <div class="nameContainer serene">
+        <div class="preName">Featuring</div>
+        <div class="player">DaeSnek</div>
+        <span class="as">as</span>
+        <span class="character">Serene</span>
+        <img class="emblem serene" src="images/emblemSerene.png" />
+    </div>
+    <div class="nameContainer glain">
+        <div class="preName"></div>
+        <div class="player">GameQueued</div>
+        <span class="as">as</span>
+        <span class="character">Glain</span>
+        <img class="emblem glain" src="images/emblemGlain.png" />
+    </div>
+    <div class="nameContainer torgan">
+        <div class="preName">And introducing</div>
+        <div class="player">LurkingTurtleGaming</div>
+        <span class="as">as</span>
+        <span class="character">Torgan</span>
+        <img class="emblem torgan" src="images/emblemTorgan.png" />
+    </div>
+    <div id="border"></div>
+    <div id="border2"></div>
+
+    <div id="openingBlackCover">
+        <div id="openingText">
+            <div class="flicker">Dobbsworks <br />
+                presents</div>
+        </div>
+        <div id="openingText2">
+            <div class="flicker">An Ironsworn Game</div>
+        </div>
+
+    </div>
+
+    <div id="fadeOutBlack"></div>
+    <div id="title">Dobbs Quest</div>
+    <img id="d20" src="images/d20.png" />
+
+    <audio id="music" src="ironsworn.mp3?"></audio>
+</body>
+
+<script>
+    window.onload = Initialize;
+
+    function Start() {
+        if (document.body.style.display == "initial") return;
+        document.body.style.display = "initial";
+        document.getElementById("music").play();
+    }
+
+    function Initialize() {
+        CreateForest(20);
+        CreateForest(40);
+        CreateForest(49);
+        CreateOcean();
+        CreateVows();
+        SetStyles();
+        setTimeout(Start, 1000);
+        setTimeout(DeleteOcean, 60000);
+        setTimeout(RevealVows, 63000);
+    }
+
+    function RevealVows() {
+        let images = document.getElementsByTagName("img");
+        for (let img of images) {
+            if (img.dataset.name == "vow") img.style.opacity = Math.random()/2 + 0.25;
+        }
+    }
+
+    function CreateVows() {
+        let container = document.getElementById("images");
+        let vowCount = 30;
+        for (let i = 0; i < vowCount; i++) {
+            let img = document.createElement("img");
+            img.src = "images/vow.png";
+            img.dataset.start = 63 + Math.random() * 1;
+            img.dataset.scale = Math.random() * 3 + 0.5;
+            img.dataset.speed = 3 + Math.random() * 2;
+            img.dataset.y = i/vowCount * 800 + Math.random() * 10;
+            img.dataset.sepia = 0.6;
+            img.dataset.z = 1;
+            img.dataset.opacity = 0;
+            img.dataset.name = "vow";
+            container.prepend(img);
+        }
+    }
+
+    function DeleteOcean() {
+        let images = document.getElementsByTagName("img");
+        for (let img of images) {
+            if (img.dataset.name == "wave") img.style.opacity = 0;
+        }
+    }
+
+    function CreateOcean() {
+        let container = document.getElementById("images");
+        let waveCount = 30;
+        let rowCount = 10;
+        for (let row = 0; row < rowCount; row++) {
+            let offset = Math.random();
+            for (let i = 0; i < waveCount; i++) {
+                let img = document.createElement("img");
+                img.src = "images/wave.png";
+                img.dataset.start = 25 + i * 4 + offset + Math.random() * 0.25;
+                img.dataset.scale = 5 + (rowCount - row) * 2;
+                img.dataset.color = Math.random() * 10 + row * 2;
+                img.dataset.speed = 1 + (rowCount - row) / 3;
+                img.dataset.z = -row + 20;
+                img.dataset.y = 80 * (Math.pow(row, 0.95) - 4) - 30;
+                img.dataset.sepia = row / rowCount / 2;
+                img.dataset.name = "wave";
+
+                container.prepend(img);
+            }
+        }
+    }
+
+    function CreateForest(start) {
+        let container = document.getElementById("images");
+        let treeCount = 15;
+        for (let i = 0; i < treeCount; i++) {
+            let img = document.createElement("img");
+            img.src = "images/tree1.png";
+            img.dataset.start = start + Math.random() * 10;
+            img.dataset.scale = (i / treeCount) / 4 + 2;
+            img.dataset.color = Math.random() * 30;
+            img.dataset.sepia = 0.5;
+            img.dataset.speed = (((treeCount - i) / treeCount) / 3 + 1) * 2;
+            img.dataset.y = -Math.floor(20 * Math.random());
+            img.dataset.z = 25;
+            container.prepend(img);
+        }
+    }
+
+    function SetStyles() {
+        let images = document.getElementsByTagName("img");
+        for (let image of images) {
+            if (image.parentElement.id !== "images") continue;
+            image.style.bottom = window.innerHeight - 795 + (+(image.dataset.y || 0)) + "px";
+            image.style.transform = "scale(" + (image.dataset.scale || 1) + ")";
+            image.style.animationDelay = (image.dataset.start || 0) + "s";
+            image.style.animationDuration = 1 / Math.abs(+(image.dataset.speed || 1)) * 60 + "s";
+            if (+(image.dataset.speed || 1) < 0) image.style.animationDirection = "reverse";
+            if (image.dataset.color !== undefined) image.style.filter = `hue-rotate(${image.dataset.color || 0}deg) drop-shadow(0 0 1px black) drop-shadow(4px 8px 5px rgb(56, 49, 49))`;
+            if (image.dataset.sepia) image.style.filter += ` sepia(${image.dataset.sepia})`;
+            image.style.zIndex = image.dataset.z || 500;
+            image.style.opacity = Math.min(1, image.dataset.opacity || 1);
+        }
+    }
+
+</script>
+
+</html>
