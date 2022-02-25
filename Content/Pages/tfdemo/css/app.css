@@ -40,8 +40,7 @@ body {
     font-family: Bangers,sans-serif;
     background-color: #65c3ff;
     border-bottom: 2px solid #c32923;
-    left: -15px;
-    right: 15px;
+    filter: drop-shadow(0px 5px 1px #2e5b77BB);
 }
 #name-container {
     font-size: 60px;
@@ -49,6 +48,8 @@ body {
     display: flex;
     justify-content: center;
 }
+
+
 .team-name {
     padding: 5px;
     color: white;
@@ -83,8 +84,12 @@ body {
     justify-content: center;
     flex-direction: row;
     align-items: flex-start;
-    align-content: center;
+    align-content: flex-start;
     flex-wrap: wrap;
+    min-height: 100vh;
+}
+.hidden {
+    display: none;
 }
 
 .panel {
@@ -95,6 +100,8 @@ body {
     margin: 10px;
     padding: 10px;
     font-family: "Segoe UI",Roboto,"Helvetica Neue",Arial;
+    filter: drop-shadow(5px 5px 1px #2e5b77BB);
+    max-width: 1000px;
 }
 .warning-panel {
     background-color: #e9b8b7;
@@ -110,22 +117,13 @@ body {
     max-width: 500px;
 }
 
-.drop-shadow {
-    filter: drop-shadow(5px 5px 1px #2e5b77BB);
-}
-
-.drop-shadow-straight {
-    filter: drop-shadow(0px 5px 1px #2e5b77BB);
-}
-
 code {
     font-family: monospace;
     background-color: #DDD;
     border-radius: 3px;
-    display: inline-block;
-    white-space: pre;
     max-width: 100%;
     padding: 0 5px 0 5px;
+    font-size: 16px;
   }
 
 .discord-link {
@@ -145,11 +143,24 @@ code {
     position: fixed;
     inset: 0;
     opacity: 0.6;
-    z-index: -1;
+    z-index: -2;
     /* -webkit-mask-image: -webkit-gradient(linear, left bottom, left top, from(black), to(transparent));
     -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%);
     mask-image: -webkit-gradient(linear, left bottom, left top, from(black), to(transparent));
     mask-image: linear-gradient(to top, black 0%, transparent 100%); */
+}
+
+
+.sup {
+    image-rendering: pixelated;
+    display: flex;
+    justify-content: center;
+    z-index: -1;
+}
+
+.sup > * {
+    width: 60px;
+    opacity: 0;
 }
 
 .scrolling-footer {
