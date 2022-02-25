@@ -6,8 +6,36 @@ function CreateTitle() {
             "Gracie", 
             //"Lil' Toadette",
             "Rover",
+        ]),
+        Rand([
+            "Turtle", 
+            "GQ", 
+            "Dove",
+            Rand([
+                "Kirbs",
+                "Tank",
+                "Shiner",
+                "Dae",
+                "Hudson",
+                "Pixel",
+                "Mantis",
+                Rand([
+                    "Gorj",
+                    "MoS",
+                    "The Molsc",
+                ])
+            ])
         ])
     ]);
+
+    let animals = [
+        "Snail",
+        "Horse",
+        "Turtle",
+        "Muncher",
+    ];
+    let animal1 = Rand(animals)
+    let animal2 = Rand(animals.filter(a => a !== animal1));
     
     let platform = Rand([
         "Twitch",
@@ -31,6 +59,7 @@ function CreateTitle() {
         `${char1} Gets a Job`,
         `${char1}'s Triple Bypass`,
         `${char1} vs. The Monorail`,
+        `${char1} vs. The ${animal1}`,
         `${char1} Gets Famous`,
         `${char1} vs. Malibu Stacy`,
         `${char1}'s Rival`,
@@ -54,6 +83,12 @@ function CreateTitle() {
         `${char1} Finds Inner Peace`,
         `${char1} Says "Poggers" IRL`,
         `${char1} Saves Christmas`,
+        `${char1} Reinvents the Wheel`,
+        `Dobbs Makes Yet Another Intro`,
+        `Too Many Intros`,
+        `Unedited Footage of a ${animal1}`,
+        `Gugyugubah!`,
+        `Crouching ${animal1}, Hidden ${animal2}`,
     ]);
 }
 
