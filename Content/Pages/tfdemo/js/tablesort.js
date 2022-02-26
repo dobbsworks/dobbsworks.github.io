@@ -1,86 +1,135 @@
-var allLevels = [
-    { code: "B44-RYC-62G", maker: "Rogervalo TC FBT", title: "In the nightside of Eden", difficulty: 2.5, style: "SMW", tags: ["0 CP", "Short & Sweet"] },
-    { code: "6JC-K0N-TLF", maker: "AMMondMilk", title: "Planet No-put-foot", difficulty: 1, style: "SMW", tags: ["0 CP"] },
-    { code: "498-KLG-RQF", maker: "defman144", title: "SJL_TV caverns #TF", difficulty: 5, style: "SMW", tags: ["1 CP"] },
-    { code: "JW2-5T7-JVG", maker: "Hanzo", title: "-[Shots Fired]- [TF]", difficulty: 2, style: "SMW", tags: ["0 CP"] },
-    { code: "1BR-N43-N0H", maker: "Dolph1n", title: "Peppermint Pie #TeamFantastik", difficulty: 3, style: "SMB3", tags: ["Contest", "FS V"] },
-    { code: "TGW-V7Q-HSF", maker: "Joshbones", title: "Where's my Z? #TF #TJ", difficulty: 3, style: "SMW", tags: ["Contest", "FS V"] },
-    { code: "1GK-NBP-62G", maker: "PhoenixNL", title: "Biohazard #TF#FS", difficulty: 2.5, style: "SMW", tags: ["Contest", "FS V"] },
-    { code: "PSK-V3N-HDF", maker: "jevarel_UXB_56X-V1N-6JF", title: "No Shells please. We're British.", difficulty: 1, style: "SMB1", tags: ["Contest", "FS V"] },
-];
-var filteredData = [];
-var levelSorter = "difficulty";
-var sortDirection = 1;
-var itemsPerPage = 3;
-var currentPage = 1;
 
-setTimeout(InitializeTable, 500);
+// rawData.split("\n---").filter(a => a.length > 5).map(a => a.replace("\n","")).map(a => ({
+//     code: a.substring(0,11).replace("\n",""),
+//     title: a.substring(13).split("' by ")[0],
+//     maker: a.split("' by ")[1].split(" ")[0].split("\n")[0],
+//     difficulty: a.split("Difficulty: ")[1].split(" ")[0],
+//     style: a.split(" | Style: ")[1].split(" | ")[0],
+//     tags: a.split(" | Tags: ")[1].split(", "),
+//    // raw: a 
+// })).map(a => `{code: "${a.code}", maker: "${a.maker}", title: "${a.title}", difficulty: ${a.difficulty}, style: "${a.style}", tags: ["${a.tags.join('","')}"] },`)
 
-function InitializeTable() {
-    var table = document.getElementById("level-table");
+var levelTable;
+setTimeout(() => {
+    levelTable = InitializeTable("level-table-container", allLevelsTestData);
+}, 100);
+
+function InitializeTable(containerId, data) {
+
+    var container = document.getElementById(containerId);
+    var table = container.querySelector(".data-table");
+    var prevButton = container.querySelector(".prev-button");
+    var nextButton = container.querySelector(".next-button");
+    prevButton.onclick = () => { PrevPage(dataTableObj); }
+    nextButton.onclick = () => { NextPage(dataTableObj); }
+    
+    
+    let textNav = container.querySelector(".table-navigation-text");
+
+    var dataTableObj = {
+        container: container,
+        tableEl: table,
+        levelSorter: "difficulty",
+        sortDirection: 1,
+        itemsPerPage: 10,
+        currentPage: 1,
+        nextButton: nextButton,
+        prevButton: prevButton,
+        textNav: textNav,
+        allRecords: data,
+        filteredRecords: data
+    }
     var headers = table.rows[0].cells;
     for (let header of headers) {
         if (header.dataset.sort) {
-            header.onclick = OnClickHeader;
+            header.onclick = () => { OnClickHeader(header, dataTableObj) };
         }
     }
-    RefreshTable();
+    var filters = container.querySelectorAll(".filters input");
+    for (let filter of filters) {
+        filter.onchange = () => {RefreshTable(dataTableObj)};
+        filter.onkeyup = () => {RefreshTable(dataTableObj)};
+    }
+    RefreshTable(dataTableObj);
+    return dataTableObj;
 }
 
-function OnClickHeader(e) {
-    let newSorter = e.target.dataset.sort;
-    if (newSorter == levelSorter) {
-        sortDirection *= -1;
+function OnClickHeader(header, dataTableObj) {
+    let newSorter = header.dataset.sort;
+    if (newSorter == dataTableObj.levelSorter) {
+        dataTableObj.sortDirection *= -1;
     } else {
-        sortDirection = 1;
+        dataTableObj.sortDirection = 1;
     }
-    levelSorter = newSorter;
+    dataTableObj.levelSorter = newSorter;
 
     let ascText = " (ASC)";
     let descText = " (DESC)";
-    let headerRow = e.target.parentElement;
+    let headerRow = header.parentElement;
     for (let tableHeader of headerRow.children) {
         tableHeader.innerHTML = tableHeader.innerHTML.replace(ascText, "").replace(descText, "");
-        if (tableHeader == e.target) {
-            tableHeader.innerHTML += (sortDirection == 1 ? ascText : descText);
+        if (tableHeader == header) {
+            tableHeader.innerHTML += (dataTableObj.sortDirection == 1 ? ascText : descText);
         }
     }
 
-    RefreshTable();
+    dataTableObj.currentPage = 1;
+    RefreshTable(dataTableObj);
 }
 
-function RefreshTable() {
-    let lastPage = Math.ceil(filteredData.length / itemsPerPage);
-    if (currentPage > lastPage) currentPage = lastPage;
-    if (currentPage < 1) currentPage = 1;
+function RefreshTable(dataTableObj) {
+    // respect filters
+    dataTableObj.filteredRecords = dataTableObj.allRecords;
+    var filters = dataTableObj.container.querySelectorAll(".filters input");
+    for (let filter of filters) {
+        let filterCol = filter.dataset.filterCol;
+        let filterType = filter.dataset.filterType;
+        let filterValue = filter.value;
+        if (!filterCol || !filterType || !filterValue) continue;
+        if (filterType == "min") {
+            filterValue = +(filterValue);
+            dataTableObj.filteredRecords = dataTableObj.filteredRecords.filter(a => a[filterCol] >= filterValue);
+        }
+        if (filterType == "max") {
+            filterValue = +(filterValue);
+            dataTableObj.filteredRecords = dataTableObj.filteredRecords.filter(a => a[filterCol] <= filterValue);
+        }
+        if (filterType == "like") {
+            let columns = filterCol.split(",");
+            dataTableObj.filteredRecords = dataTableObj.filteredRecords.filter(a => columns.some(c => {
+                return a[c].toLowerCase().indexOf(filterValue.toLowerCase()) > -1
+            }));
+        }
+    }
 
-    allLevels.sort((a,b) => a[levelSorter] < b[levelSorter] ? -sortDirection : sortDirection);
-    filteredData = allLevels;
-    let startingRecordIndex = (currentPage - 1) * itemsPerPage;
-    let endingRecordExclusiveIndex = startingRecordIndex + itemsPerPage;
-    let thisPage = filteredData.slice(startingRecordIndex, endingRecordExclusiveIndex);
-    RenderTableData(thisPage);
 
-    let nextButton = document.getElementById("level-table-next");
-    let prevButton = document.getElementById("level-table-prev");
-    prevButton.disabled = (currentPage == 1);
-    nextButton.disabled = (currentPage == lastPage);
+    let lastPage = Math.ceil(dataTableObj.filteredRecords.length / dataTableObj.itemsPerPage);
+    if (dataTableObj.currentPage > lastPage) dataTableObj.currentPage = lastPage;
+    if (dataTableObj.currentPage < 1) dataTableObj.currentPage = 1;
 
-    let text = document.getElementById("level-table-text");
+    dataTableObj.allRecords.sort((a,b) => a[dataTableObj.levelSorter] < b[dataTableObj.levelSorter] ? -dataTableObj.sortDirection : dataTableObj.sortDirection);
+    let startingRecordIndex = (dataTableObj.currentPage - 1) * dataTableObj.itemsPerPage;
+    let endingRecordExclusiveIndex = startingRecordIndex + dataTableObj.itemsPerPage;
+    let thisPage = dataTableObj.filteredRecords.slice(startingRecordIndex, endingRecordExclusiveIndex);
+    RenderTableData(dataTableObj, thisPage);
+
+    dataTableObj.prevButton.disabled = (dataTableObj.currentPage == 1);
+    dataTableObj.nextButton.disabled = (dataTableObj.currentPage == lastPage);
+
     let startRecordNum = startingRecordIndex + 1;
-    let endingRecordNum = Math.min(endingRecordExclusiveIndex, filteredData.length);
-    text.innerHTML = `${startRecordNum} - ${endingRecordNum} of ${filteredData.length} levels`
+    let endingRecordNum = Math.min(endingRecordExclusiveIndex, dataTableObj.filteredRecords.length);
+    dataTableObj.textNav.innerHTML = `${startRecordNum} - ${endingRecordNum} of ${dataTableObj.filteredRecords.length} levels`
 
 }
 
-function PrevPage(button) {
-    currentPage--;
-    RefreshTable();
+function PrevPage(dataTableObj) {
+    dataTableObj.currentPage--;
+    RefreshTable(dataTableObj);
 }
 
-function NextPage(button) {
-    currentPage++;
-    RefreshTable();
+function NextPage(dataTableObj) {
+    dataTableObj.currentPage++;
+    RefreshTable(dataTableObj);
 }
 
 function ClearTable(table) {
@@ -89,14 +138,16 @@ function ClearTable(table) {
     }
 }
 
-function RenderTableData(records) {
-    var table = document.getElementById("level-table");
+function RenderTableData(dataTableObj, records) {
+    var table = dataTableObj.tableEl;
     ClearTable(table);
     for (let record of records) {
         var row = table.insertRow(table.rows.length);
         row.insertCell(0).innerHTML = record.code;
         row.insertCell(1).innerHTML = record.maker;
-        row.insertCell(2).innerHTML = record.title;
+        row.insertCell(2).innerHTML = 
+            `${record.title} <span class="level-tag style-${record.style.toLowerCase()}">${record.style}</span>` +
+            record.tags.map(a => `<span class="level-tag">${a}</span>`).reduce((a,b)=>a+b,"");
         row.insertCell(3).innerHTML = record.difficulty;
     }
 }

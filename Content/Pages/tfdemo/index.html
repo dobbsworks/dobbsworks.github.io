@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="./css/app.css">
 	<link rel="stylesheet" href="./css/fun.css">
 	<link rel="stylesheet" href="./css/table.css">
+	<script type="text/javascript" src="./js/testData.js"></script>
 	<script type="text/javascript" src="./js/tablesort.js"></script>
 	<script type="text/javascript" src="./js/app.js"></script>
 	<link rel="icon" type="image/x-icon" href="./assets/logo.ico">
@@ -83,14 +84,30 @@
 
 	<!-- Level list + filtering -->
 	<div class="content hidden" data-tab="levels">
-		<div class="panel">
+		<div class="panel" id="level-table-container">
 			<div class="panel-header">Play some levels!</div>
 			<p>This is just a sample, we're not pulling live level data just yet.</p>
+
+			<div class="filters">
+				<div class="filter-block">
+					<span>Difficulty range</span>
+					<input value="0.5" type="number" min="0.5" max="10" step="0.5" data-filter-col="difficulty"
+						data-filter-type="min" />
+					<input value="10" type="number" min="0.5" max="10" step="0.5" data-filter-col="difficulty"
+						data-filter-type="max" />
+				</div>
+				<div class="filter-block">
+					<span>Maker/Title search</span>
+					<input type="text" data-filter-col="code,maker,title" data-filter-type="like"
+						placeholder="Try 'muncher' or 'spring'" />
+				</div>
+			</div>
+
 			<div class="table-navigation">
-				<div id="level-table-text" class="table-navigation-text"></div>
+				<div class="table-navigation-text"></div>
 				<div class="table-navigation-buttons">
-					<button id="level-table-prev" onclick="PrevPage()">Previous</button>
-					<button id="level-table-next" onclick="NextPage()">Next</button>
+					<button class="prev-button">Previous</button>
+					<button class="next-button">Next</button>
 				</div>
 			</div>
 			<table id="level-table" class="data-table">

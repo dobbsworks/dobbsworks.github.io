@@ -10,6 +10,10 @@
     padding: 6px;
 }
 
+.data-table th {
+    height: 40px;
+}
+
 .data-table th[data-sort] {
     cursor: pointer;
 }
@@ -19,16 +23,6 @@
 
 .data-table tr:hover {
     filter: brightness(1.05);
-}
-
-#level-table th:nth-child(1) {
-    width: 20%;
-}
-#level-table th:nth-child(2) {
-    width: 25%;
-}
-#level-table th:nth-child(3) {
-    width: 45%;
 }
 
 @media screen and (min-width: 900px) {
@@ -52,12 +46,74 @@
     padding: 5px;
     cursor: pointer;
     background-color: #65c3ff;
+    color: white;
 }
 
-.table-navigation button:hover {
+.table-navigation button:not(:enabled) {
+    background-color: #9ec8e2;
+}
+
+.table-navigation button:enabled:hover {
     background-color: #519ccc;
 }
 
 .table-navigation-text, .table-navigation-buttons {
     display: inline;
+}
+
+
+
+
+#level-table th:nth-child(1) {
+    width: 20%;
+}
+#level-table th:nth-child(2) {
+    width: 25%;
+}
+#level-table th:nth-child(3) {
+    width: 45%;
+}
+
+.level-tag {
+    background-color: #a6adb3;
+    font-size: 10px;
+    color: white;
+    padding: 5px;
+    border-radius: 20px;
+    margin-left: 4px;
+    white-space: pre;
+}
+.style-smb, .style-smb1 {
+    background-color: #dd5718; 
+    color: #ffdfbc;
+}
+.style-smb3 {
+    background-color: #fed8a7;
+    color: #2b91c7;
+}
+.style-smw {
+    background-color: #94fdff;
+    color: #f73738;
+}
+.style-nsmb {
+    background-color: #fdd803;
+    color: white;
+}
+.style-sm3dw  {
+    background-color: #1493fe;
+    color: #f8b707;
+}
+
+.filters { 
+    background-color: #d1dbdb;
+    margin: 20px 0;
+    padding: 10px;
+}
+.filter-block {
+    display: inline;
+    margin-right: 20px;
+}
+
+.filters input[type=number] {
+    width:50px;
 }
