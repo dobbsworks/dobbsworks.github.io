@@ -1,0 +1,65 @@
+
+
+.scrolling-footer-container {
+    overflow: hidden;
+    position: fixed;
+    inset: 0;
+    opacity: 0.6;
+    z-index: -2;
+    /* -webkit-mask-image: -webkit-gradient(linear, left bottom, left top, from(black), to(transparent));
+    -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%);
+    mask-image: -webkit-gradient(linear, left bottom, left top, from(black), to(transparent));
+    mask-image: linear-gradient(to top, black 0%, transparent 100%); */
+}
+
+
+.sup {
+    image-rendering: pixelated;
+    display: flex;
+    justify-content: center;
+    z-index: -1;
+}
+
+.sup > * {
+    width: 60px;
+    opacity: 0;
+}
+
+.scrolling-footer {
+    animation: slide 30s linear infinite;
+    height: 476px;
+    width: 8192px;
+    transform-origin: bottom left;
+    bottom: 0;
+    position: absolute;
+}
+
+.footer-1 {
+    background: url("../assets/images/tf-bg-1.png") repeat-x;
+    animation-duration: 35s;
+    filter: blur(4px);
+}
+.footer-2 {
+    background: url("../assets/images/tf-bg-2.png") repeat-x;
+    animation-duration: 50s;
+    filter: blur(3px);
+}
+.footer-3 {
+    background: url("../assets/images/tf-bg-3.png") repeat-x;
+    animation-duration: 40s;
+    filter: blur(2px);
+}
+.footer-4 {
+    background: url("../assets/images/tf-bg-4.png") repeat-x;
+    animation-duration: 30s;
+    filter: blur(1px);
+}
+
+@keyframes slide{
+    0% {
+      transform: scale(2) translateX(0px);
+    }
+    100% {
+      transform: scale(2) translateX(-512px);
+    }
+}

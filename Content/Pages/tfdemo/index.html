@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <head>
-	
+
 	<title>Team Fantastik</title>
 	<link rel="stylesheet" href="./css/app.css">
+	<link rel="stylesheet" href="./css/fun.css">
+	<link rel="stylesheet" href="./css/table.css">
+	<script type="text/javascript" src="./js/tablesort.js"></script>
 	<script type="text/javascript" src="./js/app.js"></script>
+	<link rel="icon" type="image/x-icon" href="./assets/logo.ico">
 </head>
 
 <body>
@@ -22,7 +27,8 @@
 		</div>
 	</div>
 
-	<div class="content" data-tab="home">
+	<!-- Main content panels -->
+	<div class="content " data-tab="home">
 		<noscript>
 			<div class="panel warning-panel">
 				<div class="panel-header">Heads up!</div>
@@ -34,7 +40,7 @@
 		</noscript>
 		<div>
 			<div class="panel small">
-				<div class="panel-header">Welcome to the team!</div>
+				<div class="panel-header"><img src="./assets/images/sound-hands.png" /> Welcome to the team!</div>
 				<p>
 					TeamFantastik is a team filled with creative makers that love making fun levels with a mixture of
 					shell
@@ -43,7 +49,7 @@
 				</p>
 			</div>
 			<div class="panel small">
-				<div class="panel-header">Get Registered</div>
+				<div class="panel-header"><img src="./assets/images/sound-bulb.png" />Get Registered</div>
 				<p>
 					Anyone can play and enjoy these Fantastik levels, but if you want to start tracking your clears and
 					climbing the leaderboard, you'll need to get registered on <a class="discord-link"
@@ -52,14 +58,14 @@
 				</p>
 			</div>
 			<div class="panel small">
-				<div class="panel-header">Find levels</div>
+				<div class="panel-header"><img src="./assets/images/sound-popper.png" />Find levels</div>
 				<p>In the #bot-spam channel, type <code>!random 0.5</code> to get a hand-picked warm-up level. Once
 					you've cleared it, use <code>!clear LEV-ELC-ODE</code> to let us know you've cleared it. Add
 					<code>like</code> to the command to let us know it's a great course. That's it!
 				</p>
 			</div>
 			<div class="panel small">
-				<div class="panel-header">Submit levels</div>
+				<div class="panel-header"><img src="./assets/images/sound-disco.png" />Submit levels</div>
 				<p>When you feel like you have a good feel for what makes a level Fantastik, you can submit your own!
 					Make sure to read through #level-rules and #banned-tech before submitting, then head over to
 					#submit-levels. To get your level submitted for review, use
@@ -75,15 +81,32 @@
 		</div>
 	</div>
 
+	<!-- Level list + filtering -->
 	<div class="content hidden" data-tab="levels">
 		<div class="panel">
 			<div class="panel-header">Play some levels!</div>
-			<p>
-				Nothing here yet, this is just a demo site!
-			</p>
+			<p>This is just a sample, we're not pulling live level data just yet.</p>
+			<div class="table-navigation">
+				<div id="level-table-text" class="table-navigation-text"></div>
+				<div class="table-navigation-buttons">
+					<button id="level-table-prev" onclick="PrevPage()">Previous</button>
+					<button id="level-table-next" onclick="NextPage()">Next</button>
+				</div>
+			</div>
+			<table id="level-table" class="data-table">
+				<thead>
+					<tr>
+						<th data-sort="code">Level Code</th>
+						<th data-sort="maker">Maker</th>
+						<th data-sort="title">Title</th>
+						<th data-sort="difficulty">Difficulty</th>
+					</tr>
+				</thead>
+			</table>
 		</div>
 	</div>
 
+	<!-- Maker list + filtering -->
 	<div class="content hidden" data-tab="makers">
 		<div class="panel">
 			<div class="panel-header">Check out these Fantastik makers!</div>
@@ -94,7 +117,7 @@
 	</div>
 
 	<div class="sup">
-		<img id="supImage" src="./assets/images/mecha.png" />
+		<img id="supImage" src="./assets/images/mecha.png" title="Oh hi there" />
 	</div>
 
 	<div class="scrolling-footer-container">
