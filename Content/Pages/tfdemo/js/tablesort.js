@@ -23,7 +23,9 @@ function InitializeTable(containerId, data) {
     prevButton.onclick = () => { PrevPage(dataTableObj); }
     nextButton.onclick = () => { NextPage(dataTableObj); }
     
-    
+    let allTags = data.flatMap(a => a.tags).filter( (value, index, self) => {
+        return self.indexOf(value) === index;
+    });
     let textNav = container.querySelector(".table-navigation-text");
 
     var dataTableObj = {
@@ -37,7 +39,8 @@ function InitializeTable(containerId, data) {
         prevButton: prevButton,
         textNav: textNav,
         allRecords: data,
-        filteredRecords: data
+        filteredRecords: data,
+        tagFilters: []
     }
     var headers = table.rows[0].cells;
     for (let header of headers) {
@@ -50,6 +53,9 @@ function InitializeTable(containerId, data) {
         filter.onchange = () => {RefreshTable(dataTableObj)};
         filter.onkeyup = () => {RefreshTable(dataTableObj)};
     }
+
+    var pageCountInput = container.querySelector(".records-per-page");
+    pageCountInput.onchange = () => {RefreshTable(dataTableObj)};
     RefreshTable(dataTableObj);
     return dataTableObj;
 }
@@ -77,8 +83,30 @@ function OnClickHeader(header, dataTableObj) {
     RefreshTable(dataTableObj);
 }
 
+function OnClickTag(tagEl, dataTableObj, add) {
+    let tag = tagEl.textContent;
+    if (add) {
+        if (dataTableObj.tagFilters.indexOf(tag) == -1) {
+            dataTableObj.tagFilters.push(tag);
+        }
+    } else {
+        dataTableObj.tagFilters = dataTableObj.tagFilters.filter(a => a != tag);
+    }
+    let filterTagContainer = dataTableObj.container.querySelector(".filter-tags");
+    if (add) {
+        filterTagContainer.innerHTML += tagEl.outerHTML;
+    } else {
+        filterTagContainer.innerHTML = filterTagContainer.innerHTML.replace(tagEl.outerHTML, "");
+    }
+    for (let tag of filterTagContainer.querySelectorAll(".level-tag")) {
+        tag.onclick = () => { OnClickTag(tag, dataTableObj, false) };
+    }
+    RefreshTable(dataTableObj);
+}
+
 function RefreshTable(dataTableObj) {
-    // respect filters
+    dataTableObj.allRecords.sort((a,b) => a[dataTableObj.levelSorter] < b[dataTableObj.levelSorter] ? -dataTableObj.sortDirection : dataTableObj.sortDirection);
+    dataTableObj.itemsPerPage = +(dataTableObj.container.querySelector(".records-per-page").value);
     dataTableObj.filteredRecords = dataTableObj.allRecords;
     var filters = dataTableObj.container.querySelectorAll(".filters input");
     for (let filter of filters) {
@@ -101,13 +129,14 @@ function RefreshTable(dataTableObj) {
             }));
         }
     }
+    dataTableObj.filteredRecords = dataTableObj.filteredRecords.filter(a => dataTableObj.tagFilters.every(t => {
+        return a.tags.indexOf(t) > -1 || a.style == t
+    }));
 
 
     let lastPage = Math.ceil(dataTableObj.filteredRecords.length / dataTableObj.itemsPerPage);
     if (dataTableObj.currentPage > lastPage) dataTableObj.currentPage = lastPage;
     if (dataTableObj.currentPage < 1) dataTableObj.currentPage = 1;
-
-    dataTableObj.allRecords.sort((a,b) => a[dataTableObj.levelSorter] < b[dataTableObj.levelSorter] ? -dataTableObj.sortDirection : dataTableObj.sortDirection);
     let startingRecordIndex = (dataTableObj.currentPage - 1) * dataTableObj.itemsPerPage;
     let endingRecordExclusiveIndex = startingRecordIndex + dataTableObj.itemsPerPage;
     let thisPage = dataTableObj.filteredRecords.slice(startingRecordIndex, endingRecordExclusiveIndex);
@@ -149,5 +178,8 @@ function RenderTableData(dataTableObj, records) {
             `${record.title} <span class="level-tag style-${record.style.toLowerCase()}">${record.style}</span>` +
             record.tags.map(a => `<span class="level-tag">${a}</span>`).reduce((a,b)=>a+b,"");
         row.insertCell(3).innerHTML = record.difficulty;
+    }
+    for(let tag of table.querySelectorAll(".level-tag")) {
+        tag.onclick = () => { OnClickTag(tag, dataTableObj, true)};
     }
 }

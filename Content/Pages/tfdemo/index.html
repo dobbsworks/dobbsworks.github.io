@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1" />
 
 <head>
 
@@ -44,9 +44,8 @@
 				<div class="panel-header"><img src="./assets/images/sound-hands.png" /> Welcome to the team!</div>
 				<p>
 					TeamFantastik is a team filled with creative makers that love making fun levels with a mixture of
-					shell
-					tricks and fun platforming in a "RomHack" style. Our team welcomes anyone who loves to build or play
-					levels that are well-made, intuitive, and fun to play.
+					shell tricks and fun platforming in a "RomHack" style. Our team welcomes anyone who loves to build
+					or play levels that are well-made, intuitive, and fun to play.
 				</p>
 			</div>
 			<div class="panel small">
@@ -101,11 +100,21 @@
 					<input type="text" data-filter-col="code,maker,title" data-filter-type="like"
 						placeholder="Try 'muncher' or 'spring'" />
 				</div>
+				<div class="filter-block">
+					<span>Tags</span>
+					<div class="filter-tags"></div>
+				</div>
 			</div>
 
 			<div class="table-navigation">
 				<div class="table-navigation-text"></div>
 				<div class="table-navigation-buttons">
+					<select class="records-per-page">
+						<option value="10">10 per page</option>
+						<option value="25">25 per page</option>
+						<option value="50">50 per page</option>
+						<option value="999999">Show all</option>
+					</select>
 					<button class="prev-button">Previous</button>
 					<button class="next-button">Next</button>
 				</div>
@@ -129,9 +138,25 @@
 			<div class="panel-header">Check out these Fantastik makers!</div>
 			<p>
 				Nothing here yet, stay tuned!
+				<!--
+					Name
+					Levels created
+					Clears
+					Likes
+					Points
+				-->
 			</p>
 		</div>
 	</div>
+
+	<!-- bonus stats
+		Num levels
+		Num members
+		Num clears
+		Max possible score
+
+		graph levels by difficulty
+	-->
 
 	<div class="sup">
 		<img id="supImage" src="./assets/images/mecha.png" title="Oh hi there" />
