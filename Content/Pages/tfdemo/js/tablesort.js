@@ -1,29 +1,37 @@
-
-// rawData.split("\n---").filter(a => a.length > 5).map(a => a.replace("\n","")).map(a => ({
-//     code: a.substring(0,11).replace("\n",""),
-//     title: a.substring(13).split("' by ")[0],
-//     maker: a.split("' by ")[1].split(" ")[0].split("\n")[0],
-//     difficulty: a.split("Difficulty: ")[1].split(" ")[0],
-//     style: a.split(" | Style: ")[1].split(" | ")[0],
-//     tags: a.split(" | Tags: ")[1].split(", "),
-//    // raw: a 
-// })).map(a => `{code: "${a.code}", maker: "${a.maker}", title: "${a.title}", difficulty: ${a.difficulty}, style: "${a.style}", tags: ["${a.tags.join('","')}"] },`)
-
 var levelTable;
+var userTable;
 setTimeout(() => {
-    levelTable = InitializeTable("level-table-container", allLevelsTestData);
+    levelTable = InitializeTable("level-table-container", allLevelsTestData, LevelTableRender);
+}, 100);
+setTimeout(() => {
+    userTable = InitializeTable("user-table-container", allUsersTestData, UserTableRender);
 }, 100);
 
-function InitializeTable(containerId, data) {
+function InitializeTable(containerId, data, rowRenderer) {
 
     var container = document.getElementById(containerId);
+    var paginationPlaceholder = container.querySelector(".pagination-placeholder");
+    paginationPlaceholder.innerHTML = `<div class="table-navigation">
+    <div class="table-navigation-text"></div>
+    <div class="table-navigation-buttons">
+        <select class="records-per-page">
+            <option value="10">10 per page</option>
+            <option value="25">25 per page</option>
+            <option value="50">50 per page</option>
+            <option value="999999">Show all</option>
+        </select>
+        <button class="prev-button">Previous</button>
+        <button class="next-button">Next</button>
+    </div>
+</div>`;
     var table = container.querySelector(".data-table");
     var prevButton = container.querySelector(".prev-button");
     var nextButton = container.querySelector(".next-button");
     prevButton.onclick = () => { PrevPage(dataTableObj); }
     nextButton.onclick = () => { NextPage(dataTableObj); }
-    
-    let allTags = data.flatMap(a => a.tags).filter( (value, index, self) => {
+
+    //TODO style
+    let allTags = data.filter(a => a.tags).flatMap(a => a.tags.split(", ")).filter((value, index, self) => {
         return self.indexOf(value) === index;
     });
     let textNav = container.querySelector(".table-navigation-text");
@@ -31,7 +39,7 @@ function InitializeTable(containerId, data) {
     var dataTableObj = {
         container: container,
         tableEl: table,
-        levelSorter: "difficulty",
+        levelSorter: "points",
         sortDirection: 1,
         itemsPerPage: 10,
         currentPage: 1,
@@ -40,7 +48,8 @@ function InitializeTable(containerId, data) {
         textNav: textNav,
         allRecords: data,
         filteredRecords: data,
-        tagFilters: []
+        tagFilters: [],
+        rowRenderer: rowRenderer
     }
     var headers = table.rows[0].cells;
     for (let header of headers) {
@@ -50,12 +59,12 @@ function InitializeTable(containerId, data) {
     }
     var filters = container.querySelectorAll(".filters input");
     for (let filter of filters) {
-        filter.onchange = () => {RefreshTable(dataTableObj)};
-        filter.onkeyup = () => {RefreshTable(dataTableObj)};
+        filter.onchange = () => { RefreshTable(dataTableObj) };
+        filter.onkeyup = () => { RefreshTable(dataTableObj) };
     }
 
     var pageCountInput = container.querySelector(".records-per-page");
-    pageCountInput.onchange = () => {RefreshTable(dataTableObj)};
+    pageCountInput.onchange = () => { RefreshTable(dataTableObj) };
     RefreshTable(dataTableObj);
     return dataTableObj;
 }
@@ -105,7 +114,7 @@ function OnClickTag(tagEl, dataTableObj, add) {
 }
 
 function RefreshTable(dataTableObj) {
-    dataTableObj.allRecords.sort((a,b) => a[dataTableObj.levelSorter] < b[dataTableObj.levelSorter] ? -dataTableObj.sortDirection : dataTableObj.sortDirection);
+    dataTableObj.allRecords.sort((a, b) => a[dataTableObj.levelSorter] < b[dataTableObj.levelSorter] ? -dataTableObj.sortDirection : dataTableObj.sortDirection);
     dataTableObj.itemsPerPage = +(dataTableObj.container.querySelector(".records-per-page").value);
     dataTableObj.filteredRecords = dataTableObj.allRecords;
     var filters = dataTableObj.container.querySelectorAll(".filters input");
@@ -130,7 +139,7 @@ function RefreshTable(dataTableObj) {
         }
     }
     dataTableObj.filteredRecords = dataTableObj.filteredRecords.filter(a => dataTableObj.tagFilters.every(t => {
-        return a.tags.indexOf(t) > -1 || a.style == t
+        return a.tags.indexOf(t) > -1 || a.levelStyle == t
     }));
 
 
@@ -147,7 +156,7 @@ function RefreshTable(dataTableObj) {
 
     let startRecordNum = startingRecordIndex + 1;
     let endingRecordNum = Math.min(endingRecordExclusiveIndex, dataTableObj.filteredRecords.length);
-    dataTableObj.textNav.innerHTML = `${startRecordNum} - ${endingRecordNum} of ${dataTableObj.filteredRecords.length} levels`
+    dataTableObj.textNav.innerHTML = `${startRecordNum} - ${endingRecordNum} of ${dataTableObj.filteredRecords.length} rows`
 
 }
 
@@ -172,14 +181,27 @@ function RenderTableData(dataTableObj, records) {
     ClearTable(table);
     for (let record of records) {
         var row = table.insertRow(table.rows.length);
-        row.insertCell(0).innerHTML = record.code;
-        row.insertCell(1).innerHTML = record.maker;
-        row.insertCell(2).innerHTML = 
-            `${record.title} <span class="level-tag style-${record.style.toLowerCase()}">${record.style}</span>` +
-            record.tags.map(a => `<span class="level-tag">${a}</span>`).reduce((a,b)=>a+b,"");
-        row.insertCell(3).innerHTML = record.difficulty;
+        dataTableObj.rowRenderer(record, row);
     }
-    for(let tag of table.querySelectorAll(".level-tag")) {
-        tag.onclick = () => { OnClickTag(tag, dataTableObj, true)};
+    for (let tag of table.querySelectorAll(".level-tag")) {
+        tag.onclick = () => { OnClickTag(tag, dataTableObj, true) };
     }
+}
+
+function LevelTableRender(record, row) {
+    row.insertCell(0).innerHTML = record.code;
+    row.insertCell(1).innerHTML = record.author;
+    row.insertCell(2).innerHTML =
+        `${record.title} <span class="level-tag style-${record.levelStyle.toLowerCase()}">${record.levelStyle}</span>` +
+        record.tags.split(", ").map(a => `<span class="level-tag">${a}</span>`).reduce((a, b) => a + b, "");
+    row.insertCell(3).innerHTML = record.points;
+}
+
+function UserTableRender(record, row) {
+    row.insertCell(0).innerHTML = record.rank;
+    row.insertCell(1).innerHTML = record.userName;
+    row.insertCell(2).innerHTML = record.makerID;
+    row.insertCell(3).innerHTML = record.clearCount;
+    row.insertCell(4).innerHTML = record.levelCount;
+    row.insertCell(5).innerHTML = record.points;
 }

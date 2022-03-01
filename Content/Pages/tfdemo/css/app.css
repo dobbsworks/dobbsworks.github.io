@@ -144,3 +144,7 @@ code {
 .discord-link:hover {
     filter: brightness(0.9);
 }
+
+.twitter-panel {
+    width: 500px;
+}
