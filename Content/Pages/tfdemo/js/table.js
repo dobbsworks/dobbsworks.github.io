@@ -1,14 +1,18 @@
-var levelTable;
-var userTable;
-setTimeout(() => {
-    levelTable = InitializeTable("level-table-container", allLevelsTestData, LevelTableRender);
-}, 100);
-setTimeout(() => {
-    userTable = InitializeTable("user-table-container", allUsersTestData, UserTableRender);
-}, 100);
+function RequestTableData() {
+    // fetch('')
+    //     .then(response => response.json())
+    //     .then(data => 
+    //         InitializeTable("level-table-container", data, LevelTableRender)
+    //     );
+    // fetch('')
+    //     .then(response => response.json())
+    //     .then(data => 
+    //         InitializeTable("user-table-container", data, UserTableRender)
+    //     );
+}
+
 
 function InitializeTable(containerId, data, rowRenderer) {
-
     var container = document.getElementById(containerId);
     var paginationPlaceholder = container.querySelector(".pagination-placeholder");
     paginationPlaceholder.innerHTML = `<div class="table-navigation">
@@ -134,7 +138,7 @@ function RefreshTable(dataTableObj) {
         if (filterType == "like") {
             let columns = filterCol.split(",");
             dataTableObj.filteredRecords = dataTableObj.filteredRecords.filter(a => columns.some(c => {
-                return a[c].toLowerCase().indexOf(filterValue.toLowerCase()) > -1
+                return a[c] && a[c].toLowerCase().indexOf(filterValue.toLowerCase()) > -1
             }));
         }
     }

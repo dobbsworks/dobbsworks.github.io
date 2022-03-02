@@ -70,16 +70,6 @@
 
 
 
-#level-table th:nth-child(1) {
-    width: 20%;
-}
-#level-table th:nth-child(2) {
-    width: 25%;
-}
-#level-table th:nth-child(3) {
-    width: 45%;
-}
-
 .level-tag {
     background-color: #a6adb3;
     font-size: 10px;
@@ -127,4 +117,26 @@
 
 .filter-tags {
     display: inline;
+}
+
+
+#level-table th:nth-child(1) {
+    width: 20%;
+}
+#level-table th:nth-child(2) {
+    width: 25%;
+}
+#level-table th:nth-child(3) {
+    width: 45%;
+}
+
+
+#user-table th:nth-child(1) {
+    width: 50px;
+}
+#user-table th:nth-child(4) {
+    width: 100px;
+}
+#user-table th:nth-child(5) {
+    width: 100px;
 }
