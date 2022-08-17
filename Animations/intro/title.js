@@ -1,29 +1,29 @@
 function CreateTitle() {
     let char1 = Rand([
-        "Dobbs", 
+        "Dobbs",
         Rand([
-            "Hover Cat", 
-            "Gracie", 
+            "Hover Cat",
+            "Gracie",
             //"Lil' Toadette",
             "Rover",
-        ]),
-        Rand([
-            "Turtle", 
-            "GQ", 
+            // ]),
+            // Rand([
+            "Turtle",
+            "GQ",
             "Dove",
+
+            "Kirbs",
+            "Tank",
+            //"Shiner",
+            "Dae",
+            "Hudson",
+            "Al",
+            "Pixel",
+            "Mantis",
             Rand([
-                "Kirbs",
-                "Tank",
-                "Shiner",
-                "Dae",
-                "Hudson",
-                "Pixel",
-                "Mantis",
-                Rand([
-                    "Gorj",
-                    "MoS",
-                    "The Molsc",
-                ])
+                "Gorj",
+                "MoS",
+                "The Molsc",
             ])
         ])
     ]);
@@ -36,7 +36,7 @@ function CreateTitle() {
     ];
     let animal1 = Rand(animals)
     let animal2 = Rand(animals.filter(a => a !== animal1));
-    
+
     let platform = Rand([
         "Twitch",
         "Twitter",
@@ -59,14 +59,16 @@ function CreateTitle() {
         `${char1} Gets a Job`,
         `${char1}'s Triple Bypass`,
         `${char1} vs. The Monorail`,
+        `${char1} vs. The Tornado`,
+        `${char1} vs. The Volcano`,
         `${char1} vs. The ${animal1}`,
         `${char1} Gets Famous`,
-        `${char1} vs. Malibu Stacy`,
+       // `${char1} vs. Malibu Stacy`,
         `${char1}'s Rival`,
         `Who Shot ${char1}? (Part One)`,
         `In ${char1} We Trust`,
         `Where No ${Rand(["Dobbs", "Dog"])} Has Gone Before`,
-        `The Wheel Within`,
+       // `The Wheel Within`,
         `We'll Always Have ${platform}`,
         `I, ${char1}`,
         `${char1} Forgets The Oxygen`,
@@ -84,9 +86,15 @@ function CreateTitle() {
         `${char1} Says "Poggers" IRL`,
         `${char1} Saves Christmas`,
         `${char1} Reinvents the Wheel`,
+        `${char1} Finally Goes to Bed`,
+        `${char1} Ruins Christmas`,
+        `${char1} Ruins ${Rand(["Arbor Day", "Colombus Day", "Labor Day", "the Ole Labor Dabor", "Halloween"])}`,
+        `${char1} Launches the Rocket`,
+        `It's the Great Pumpkin, ${char1}`,
         `Dobbs Makes Yet Another Intro`,
         `Too Many Intros`,
         `Unedited Footage of a ${animal1}`,
+        `So Long, and Thanks for all the ${animal1}s`,
         `Gugyugubah!`,
         `Crouching ${animal1}, Hidden ${animal2}`,
     ]);

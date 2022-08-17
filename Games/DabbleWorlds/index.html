@@ -1,0 +1,339 @@
+<html>
+
+<head>
+    <title>Dabble Worlds</title>
+    <link rel="stylesheet" href="app.css">
+<!-- 
+    <link rel="stylesheet" href="css/app.css?v=0.5.0"> -->
+
+    <script src="js/utility/utility.js?v=0.10.0"></script>
+    <script src="js/systems/version.js?v=0.10.0"></script>
+    <script src="js/utility/direction.js?v=0.10.0"></script>
+    <script src="js/utility/tileCoord.js?v=0.10.0"></script>
+    <script src="js/utility/levelState.js?v=0.10.0"></script>
+    <script src="js/systems/storageService.js?v=0.10.0"></script>
+    <script src="js/systems/keyboardHandler.js?v=0.10.0"></script>
+    <script src="js/systems/mouseHandler.js?v=0.10.0"></script>
+    <script src="js/systems/replayHandler.js?v=0.10.0"></script>
+    <script src="js/systems/camera.js?v=0.10.0"></script>
+    <script src="js/systems/audioHandler.js?v=0.10.0"></script>
+    <script src="js/levelStructure/frameData.js?v=0.10.0"></script>
+    <script src="js/levelStructure/imageTile.js?v=0.10.0"></script>
+    <script src="js/sprites/_sprite.js?v=0.10.0"></script>
+    <script src="js/sprites/_enemy.js?v=0.10.0"></script>
+    <script src="js/levelStructure/solidity.js?v=0.10.0"></script>
+    <script src="js/levelStructure/tileType.js?v=0.10.0"></script>
+    <script src="js/levelStructure/levelTile.js?v=0.10.0"></script>
+    <script src="js/levelStructure/levelLayer.js?v=0.10.0"></script>
+    <script src="js/levelStructure/levelMap.js?v=0.10.0"></script>
+    <script src="js/levelStructure/backgroundLayer.js?v=0.10.0"></script>
+    <script src="js/systems/circuitHandler.js?v=0.10.0"></script>
+
+    <script src="js/sprites/enemies/deadEnemy.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/snail.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/pig.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/bigPig.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/prickle.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/prickleEgg.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/crab.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/shrub.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/spider.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/snouter.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/snowman.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/snowmanWorm.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/pricklySnouter.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/snouterBullet.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/fish.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/bee.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/porco.js?v=0.10.0"></script>
+    <script src="js/sprites/enemies/sparky.js?v=0.10.0"></script>
+
+    <script src="js/sprites/player.js?v=0.10.0"></script>
+
+    <script src="js/sprites/gadgets/airBubble.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/lightbulb.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/umbrella.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/dice.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/floorButton.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/rightSideButton.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/leftSideButton.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/ceilingButton.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/lever.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/barrel.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/pumpkin.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/testBox.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/baseball.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/cannon.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/rollingSnailShell.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/snailShell.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/gust.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/fan.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/door.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/doorAnimation.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/key.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/keyDomino.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/gift.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/chest.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/battery.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/ring.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/motor.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/rocket.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/balloon.js?v=0.10.0"></script>
+    <script src="js/sprites/gadgets/flag.js?v=0.10.0"></script>
+    
+    <script src="js/sprites/level/goldGear.js?v=0.10.0"></script>
+    <script src="js/sprites/level/redGear.js?v=0.10.0"></script>
+    <script src="js/sprites/level/silverGear.js?v=0.10.0"></script>
+    <script src="js/sprites/level/coin.js?v=0.10.0"></script>
+    <script src="js/sprites/level/points.js?v=0.10.0"></script>
+    <script src="js/sprites/level/heart.js?v=0.10.0"></script>
+    
+    <script src="js/sprites/hazard.js?v=0.10.0"></script>
+    <script src="js/sprites/hazards/propeller.js?v=0.10.0"></script>
+
+
+    <script src="js/ui/uiHandler.js?v=0.10.0"></script>
+    <script src="js/ui/uiElement.js?v=0.10.0"></script>
+    <script src="js/ui/panel.js?v=0.10.0"></script>
+    <script src="js/ui/spacer.js?v=0.10.0"></script>
+    <script src="js/ui/button.js?v=0.10.0"></script>
+    <script src="js/ui/slider.js?v=0.10.0"></script>
+    <script src="js/ui/editorButton.js?v=0.10.0"></script>
+    <script src="js/ui/editorButtonSprite.js?v=0.10.0"></script>
+    <script src="js/ui/editorButtonTile.js?v=0.10.0"></script>
+    <script src="js/ui/editorButtonFillBrush.js?v=0.10.0"></script>
+    <script src="js/ui/editorButtonSlopePen.js?v=0.10.0"></script>
+    <script src="js/ui/editorButtonDrawer.js?v=0.10.0"></script>
+    <script src="js/ui/editorButtonDrawerHandle.js?v=0.10.0"></script>
+    <script src="js/ui/editorButtonEraser.js?v=0.10.0"></script>
+    <script src="js/ui/editorButtonToggle.js?v=0.10.0"></script>
+    <script src="js/ui/editorButtonBackgroundSource.js?v=0.10.0"></script>
+    <script src="js/ui/editorButtonBackgroundLoad.js?v=0.10.0"></script>
+    <script src="js/ui/editorButtonSong.js?v=0.10.0"></script>
+    <script src="js/ui/imageFromTile.js?v=0.10.0"></script>
+    <script src="js/ui/uiText.js?v=0.10.0"></script>
+    <script src="js/ui/saveSlotChart.js?v=0.10.0"></script>
+
+
+    <script src="js/ui/menu/_menu.js?v=0.10.0"></script>
+    <script src="js/ui/menu/_menuHandler.js?v=0.10.0"></script>
+    <script src="js/ui/menu/initialMenu.js?v=0.10.0"></script>
+    <script src="js/ui/menu/mainMenu.js?v=0.10.0"></script>
+    <script src="js/ui/menu/myLevelsMenu.js?v=0.10.0"></script>
+    <script src="js/ui/menu/recentLevelsMenu.js?v=0.10.0"></script>
+    <script src="js/ui/menu/blankMenu.js?v=0.10.0"></script>
+    <script src="js/ui/menu/levelSuccessMenu.js?v=0.10.0"></script>
+    <script src="js/ui/menu/pauseMenu.js?v=0.10.0"></script>
+    <script src="js/ui/menu/optionsMenu.js?v=0.10.0"></script>
+
+    <script src="js/models/levelUploadDt.js?v=0.10.0"></script>
+    <script src="js/models/userDT.js?v=0.10.0"></script>
+    <script src="js/models/levelListing.js?v=0.10.0"></script>
+    <script src="js/models/levelProgressModel.js?v=0.10.0"></script>
+
+
+    <script src="js/editor/_editor.js?v=0.10.0"></script>
+    <script src="js/editor/editorHotbar.js?v=0.10.0"></script>
+    <script src="js/editor/editorSprite.js?v=0.10.0"></script>
+    <script src="js/editor/editorTool.js?v=0.10.0"></script>
+    <script src="js/editor/editorSelectTool.js?v=0.10.0"></script>
+    <script src="js/editor/editorUI.js?v=0.10.0"></script>
+    <script src="js/editor/skyEditor.js?v=0.10.0"></script>
+    <script src="js/editor/backgroundLayerEditor.js?v=0.10.0"></script>
+    <script src="js/editor/editorHistory.js?v=0.10.0"></script>
+    <script src="js/editor/editorSaveLoad.js?v=0.10.0"></script>
+    <script src="js/editor/mapSizeEditor.js?v=0.10.0"></script>
+
+
+    <script src="js/sprites/platforms/_basePlatform.js?v=0.10.0"></script>
+    <script src="js/sprites/platforms/shakyPlatform.js?v=0.10.0"></script>
+    <script src="js/sprites/platforms/weightedPlatform.js?v=0.10.0"></script>
+    <script src="js/sprites/platforms/floatingPlatform.js?v=0.10.0"></script>
+    <script src="js/sprites/platforms/risingPlatform.js?v=0.10.0"></script>
+    <script src="js/sprites/platforms/cloudPlatform.js?v=0.10.0"></script>
+    <script src="js/sprites/platforms/bouncePlatform.js?v=0.10.0"></script>
+    <script src="js/sprites/platforms/mushroomPlatform.js?v=0.10.0"></script>
+
+    <script src="js/systems/benchmarkService.js?v=0.10.0"></script>
+    <script src="js/systems/dataService.js?v=0.10.0"></script>
+    <script src="js/sprites/spriteList.js?v=0.10.0"></script>
+    <script src="js/app.js?v=0.10.0"></script>
+</head>
+
+
+<body>
+    <img id="banner" src="siteImages/demoBanner.png" />
+    <div id="logo"></div>
+
+    <div class="p-section">
+        <p>Dabble Worlds is a maker-style platformer focusing on a wide set of mix-and-match level pieces and a variety of gadgets and enemies to play with. Get creative and build a level unlike anything seen before, then unleash it for other players to try their hand at it. Take a look through other levels out there to see if you can manage to improve your personal best, and maybe find some inspiration for your next masterpiece. </p>
+        <p>Dabble Worlds aims to improve on the maker genre by removing level themes altogether in favor of full customization of how your background looks, which rules are in play, and more. No theme-locked tiles, backgrounds and music. Everything can be mixed together however you want. </p>
+    </div>
+    <h1>Releasing soon!</h1>
+    <div class="p-section">
+        <p>Currently on-target for a release date of (drumroll, please)...</p>
+        <p><strong>October 12, 2022!</strong></p>
+        <p>But hey, maybe you'd like to get your hands on this a little early? Well you're in luck. I know a guy who knows a guy, and he found this demo here. Good condition, fell off a truck, capiche? </p>
+    </div>
+
+    <canvas id="canvas" width="960" height="576"></canvas>
+<!-- 
+    <div id="below">
+        <div>
+            <div>Dabble Worlds</div>
+            <div>© Dobbsworks 2022</div>
+            <div>Alpha test release</div>
+            <div id="data"></div>
+        </div>
+        <div id="perf"></div>
+        <textarea id="errorLog" spellcheck="false"></textarea>
+    </div> -->
+
+
+    <div id="imageResources" style="display:none;">
+        <img src="images/logo.png?v=0.10.0" data-cols="3" data-rows="1" />
+
+        <img src="images/empty.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/terrain.png?v=0.10.0" data-cols="28" data-rows="20" />
+        <img src="images/hanging.png?v=0.10.0" data-cols="4" data-rows="1" />
+        <img src="images/conveyor.png?v=0.10.0" data-cols="3" data-rows="4" />
+        <img src="images/bumper.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/dobbs.png?v=0.10.0" data-cols="4" data-rows="8" />
+        <img src="images/dobbsGhost.png?v=0.10.0" data-cols="4" data-rows="8" id="ghostImage"/>
+        <img src="images/dead.png?v=0.10.0" data-cols="4" data-rows="1" />
+        <img src="images/misc.png?v=0.10.0" data-cols="5" data-rows="5" />
+        <img src="images/baseball.png?v=0.10.0" data-cols="12" data-rows="1" />
+        <img src="images/snail.png?v=0.10.0" data-cols="10" data-rows="1" />
+        <img src="images/wire.png?v=0.10.0" data-cols="10" data-rows="10" />
+        <img src="images/water.png?v=0.10.0" data-cols="8" data-rows="9" />
+        <img src="images/gust.png?v=0.10.0" data-cols="12" data-rows="2" />
+        <img src="images/dice.png?v=0.10.0" data-cols="6" data-rows="6" />
+        <img src="images/barrel.png?v=0.10.0" data-cols="8" data-rows="2" />
+        <img src="images/pumpkin.png?v=0.10.0" data-cols="8" data-rows="2" />
+        <img src="images/door.png?v=0.10.0" data-cols="6" data-rows="2" />
+        <img src="images/lockpoof.png?v=0.10.0" data-cols="10" data-rows="1" />
+        <img src="images/pig.png?v=0.10.0" data-cols="6" data-rows="4" />
+        <img src="images/bigpig.png?v=0.10.0" data-cols="6" data-rows="1" />
+        <img src="images/prickle.png?v=0.10.0" data-cols="2" data-rows="1" />
+        <img src="images/prickle-egg.png?v=0.10.0" data-cols="4" data-rows="5" />
+        <img src="images/snouter.png?v=0.10.0" data-cols="2" data-rows="5" />
+        <img src="images/snowman.png?v=0.10.0" data-cols="4" data-rows="2" />
+        <img src="images/shrub.png?v=0.10.0" data-cols="8" data-rows="4" />
+        <img src="images/spider.png?v=0.10.0" data-cols="4" data-rows="2" />
+        <img src="images/slime.png?v=0.10.0" data-cols="5" data-rows="1" />
+        <img src="images/crab.png?v=0.10.0" data-cols="2" data-rows="2" />
+        <img src="images/chest.png?v=0.10.0" data-cols="6" data-rows="1" />
+        <img src="images/gift.png?v=0.10.0" data-cols="6" data-rows="1" />
+        <img src="images/key.png?v=0.10.0" data-cols="5" data-rows="1" />
+        <img src="images/platform.png?v=0.10.0" data-cols="4" data-rows="12" />
+        <img src="images/platform2.png?v=0.10.0" data-cols="4" data-rows="4" />
+        <img src="images/editor.png?v=0.10.0" data-cols="7" data-rows="9" />
+        <img src="images/rainbow.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/gears.png?v=0.10.0" data-cols="6" data-rows="4" />
+        <img src="images/bubbleBlock.png?v=0.10.0" data-cols="5" data-rows="2" />
+        <img src="images/fish.png?v=0.10.0" data-cols="3" data-rows="1" />
+        <img src="images/bee.png?v=0.10.0" data-cols="2" data-rows="1" />
+        <img src="images/waterChanger.png?v=0.10.0" data-cols="4" data-rows="3" />
+        <img src="images/pipes.png?v=0.10.0" data-cols="6" data-rows="4" />
+        <img src="images/musicnotes.png?v=0.10.0" data-cols="6" data-rows="4" />
+        <img src="images/propeller.png?v=0.10.0" data-cols="4" data-rows="1" />
+        <img src="images/aviator.png?v=0.10.0" data-cols="4" data-rows="3" />
+        <img src="images/cannon.png?v=0.10.0" data-cols="16" data-rows="4" />
+        <img src="images/ring.png?v=0.10.0" data-cols="5" data-rows="4" />
+        <img src="images/motorTrack.png?v=0.10.0" data-cols="4" data-rows="5" />
+        <img src="images/rocket.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/coin.png?v=0.10.0" data-cols="6" data-rows="4" />
+        <img src="images/dobbloon.png?v=0.10.0" data-cols="6" data-rows="4" />
+        <img src="images/points.png?v=0.10.0" data-cols="10" data-rows="10" />
+        <img src="images/sparky.png?v=0.10.0" data-cols="4" data-rows="1" />
+        <img src="images/balloon.png?v=0.10.0" data-cols="7" data-rows="4" />
+        <img src="images/menuButtons.png?v=0.10.0" data-cols="2" data-rows="2" />
+        <img src="images/flag.png?v=0.10.0" data-cols="5" data-rows="2" />
+        <img src="images/heart.png?v=0.10.0" data-cols="3" data-rows="1" />
+        <img src="images/heartSmall.png?v=0.10.0" data-cols="3" data-rows="1" />
+
+        <img src="images/bgThumbs.png?v=0.10.0" data-cols="4" data-rows="4" />
+        <img src="images/bg/clouds1.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/clouds2.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/mountain1.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/trees1.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/trees2.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/brambles.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/pillars.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/pillars2.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/pillars3.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/sea.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/planet.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/stars.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/desert.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/brickwall.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/clubs.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/spades.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/hearts.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/diamonds.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/stars1.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/stalactites.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/circle.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/circles.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/checker.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/towers.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/bricks.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/chains1.png?v=0.10.0" data-cols="1" data-rows="1" />
+        <img src="images/bg/chains2.png?v=0.10.0" data-cols="1" data-rows="1" />
+    </div>
+
+    <div id="audioResources" style="display:none;">
+        
+        <div id="music">
+            <audio id="silence" controls src="audio/music/Silence.mp3" data-bpm="120" data-intro-beats="0" data-loop-beats="2"></audio>
+            <audio id="levelEnd" controls src="audio/music/LevelEnd.mp3" data-bpm="160" data-intro-beats="8" data-loop-beats="80"></audio>
+            <audio id="menuJazz" controls src="audio/music/MenuJazz.mp3" data-bpm="151" data-intro-beats="16" data-loop-beats="96"></audio>
+
+            <audio id="intro" controls src="audio/music/Intro.mp3" data-bpm="160" data-intro-beats="8" data-loop-beats="128"></audio>
+            <audio id="desert" controls src="audio/music/Desert.mp3" data-bpm="128" data-intro-beats="8" data-loop-beats="96"></audio>
+            <audio id="grassland" controls src="audio/music/Grassland.mp3" data-bpm="150" data-intro-beats="0" data-loop-beats="104"></audio>
+            <audio id="adventure" controls src="audio/music/Adventure.mp3" data-bpm="150" data-intro-beats="8" data-loop-beats="96"></audio>
+            <audio id="carnival" controls src="audio/music/Carnival.mp3" data-bpm="190" data-intro-beats="0" data-loop-beats="108"></audio>
+            <audio id="haunt" controls src="audio/music/Haunt.mp3" data-bpm="144" data-intro-beats="12" data-loop-beats="144"></audio>
+            <audio id="sky" controls src="audio/music/Sky.mp3" data-bpm="95" data-intro-beats="24" data-loop-beats="64"></audio>
+            <audio id="chill" controls src="audio/music/Chill.mp3" data-bpm="176" data-intro-beats="32" data-loop-beats="128"></audio>
+            <audio id="computer" controls src="audio/music/Computer.mp3" data-bpm="150" data-intro-beats="40" data-loop-beats="128"></audio>
+            <audio id="crunch" controls src="audio/music/Crunch.mp3" data-bpm="150" data-intro-beats="0" data-loop-beats="160"></audio>
+            <audio id="frost" controls src="audio/music/Frost.mp3" data-bpm="130" data-intro-beats="0" data-loop-beats="192"></audio>
+            <audio id="forest" controls src="audio/music/Forest.mp3" data-bpm="156" data-intro-beats="24" data-loop-beats="48"></audio>
+        </div>
+        <div id="sfx">
+            <audio src="audio/sfx/pick-up.mp3?v=0"></audio>
+            <audio src="audio/sfx/throw.mp3?v=0"></audio>
+            <audio src="audio/sfx/jump.mp3?v=0"></audio>
+            <audio src="audio/sfx/swim.mp3"></audio>
+            <audio src="audio/sfx/dead.mp3"></audio>
+            <audio src="audio/sfx/oink.mp3"></audio>
+            <audio src="audio/sfx/bop.mp3"></audio>
+            <audio src="audio/sfx/confirm.mp3"></audio>
+            <audio src="audio/sfx/small-confirm.mp3?v=0"></audio>
+            <audio src="audio/sfx/small-beep.mp3"></audio>
+            <audio src="audio/sfx/error.mp3"></audio>
+            <audio src="audio/sfx/scroll.mp3"></audio>
+            <audio src="audio/sfx/thump.mp3"></audio>
+            <audio src="audio/sfx/erase.mp3"></audio>
+            <audio src="audio/sfx/bwump.mp3"></audio>
+            <audio src="audio/sfx/pomp.mp3"></audio>
+            <audio src="audio/sfx/coin.mp3"></audio>
+            <audio src="audio/sfx/dobbloon.mp3"></audio>
+            <audio src="audio/sfx/unlock.mp3"></audio>
+            <audio src="audio/sfx/rocket.mp3"></audio>
+            <audio src="audio/sfx/airBubble.mp3"></audio>
+            <audio src="audio/sfx/bwow.mp3"></audio>
+            <audio src="audio/sfx/checkpoint.mp3"></audio>
+            <audio src="audio/sfx/heart.mp3"></audio>
+            <audio src="audio/sfx/boing.mp3"></audio>
+            <audio src="audio/sfx/pop.mp3"></audio>
+
+            <audio bpm="88" src="audio/sfx/instrument-square.mp3"></audio>
+            <audio bpm="88" src="audio/sfx/instrument-flute.mp3"></audio>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+</body>

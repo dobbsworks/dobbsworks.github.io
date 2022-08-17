@@ -1,0 +1,97 @@
+html {
+    background: linear-gradient(#00dddd, #eeeeff);
+    min-width: 1020px;;
+}
+
+body {
+    background-color: #272441;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    /* background: linear-gradient(0deg, #272441 0%, #0e0d18 100%); */
+    background: linear-gradient(#00dddd, #eeeeff);
+    margin: 0;
+    font-family: Geneva, Verdana, sans-serif;
+    background-image: url("./siteImages/grid.png");
+    background-position: top 0px;
+}
+
+#banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+p {
+    color: #eee;
+    font-weight: 200;
+}
+.p-section {
+    margin: 0;
+    max-width: 600px;
+    padding: 0 180px;
+    background-color: #0003;
+    background: linear-gradient(90deg, #0000 0%, #483075dd 15%, #303775dd 85%, #0000 100%);
+}
+
+#logo {
+    margin: 30px;
+    width: 452px;
+    height: 244px;
+    background-image: url("./siteImages/logo.png");
+    image-rendering: pixelated;
+    background-size: 1356px 244px;
+    background-position: left 0px;
+    animation: logoAnimation 0.25s linear 0s infinite forwards;
+    animation-timing-function: steps(3, jump-both);
+}
+
+@keyframes logoAnimation {
+    from {
+        background-position: top right 0px;
+    }
+
+    to {
+        background-position: top right 1808px;
+    }
+}
+
+#footer {
+    width: 100%;
+    height: 244px;
+    background-image: url("./siteImages/footer.png");
+    image-rendering: pixelated;
+    /* background-size: 1356px 244px; */
+    background-repeat: repeat-x;
+}
+
+canvas {
+    margin: 20px;
+    background-color: #FFF4;
+    filter: drop-shadow(0px 0px 31px #000);
+}
+
+#below {
+    display: flex;
+    align-items: flex-start;
+    align-content: stretch;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: space-around;
+
+    margin: 10px;
+    color: #888;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 9pt;
+    width: 900px;
+}
+
+textarea {
+    width: 400px;
+    height: 200px;
+    background-color: #181628;
+    color: #FFF3;
+}

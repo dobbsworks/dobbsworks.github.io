@@ -673,6 +673,13 @@ function Scene12() {
     lovers.scale = 0.5;
     sprites.push(lovers);
 
+    let factorio = new StaticImage(images.factorio, 1, 500, -1200);
+    SetInterp(factorio, { y: 2000 }, 480, 150, "linear");
+    SetInterp(factorio, { isActive: false }, 630, 1, "set");
+    factorio.rotation = 0.05;
+    factorio.scale = 0.5;
+    sprites.push(factorio);
+
 
     let moon = new StaticImage(images.moon, 1, 0, -250);
     SetInterp(moon, { y: 150 }, 460, 200, "linear");
