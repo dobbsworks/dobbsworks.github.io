@@ -52,10 +52,12 @@ function MainLoop() {
     Draw();
     audioHandler.Update();
     let perf = <HTMLElement>document.getElementById("perf");
-    perf.innerHTML = BenchmarkService.GetReports();
-    let otherData = <HTMLElement>document.getElementById("data");
-    otherData.innerHTML = "Version: " + version;
-    BenchmarkService.Log("IDLE")
+    if (perf) {
+        perf.innerHTML = BenchmarkService.GetReports();
+        let otherData = <HTMLElement>document.getElementById("data");
+        otherData.innerHTML = "Version: " + version;
+        BenchmarkService.Log("IDLE")
+    }
 }
 
 function Draw() {

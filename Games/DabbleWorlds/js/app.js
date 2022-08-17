@@ -58,10 +58,12 @@ function MainLoop() {
     Draw();
     audioHandler.Update();
     var perf = document.getElementById("perf");
-    perf.innerHTML = BenchmarkService.GetReports();
-    var otherData = document.getElementById("data");
-    otherData.innerHTML = "Version: " + version;
-    BenchmarkService.Log("IDLE");
+    if (perf) {
+        perf.innerHTML = BenchmarkService.GetReports();
+        var otherData = document.getElementById("data");
+        otherData.innerHTML = "Version: " + version;
+        BenchmarkService.Log("IDLE");
+    }
 }
 function Draw() {
     if (currentMap)
