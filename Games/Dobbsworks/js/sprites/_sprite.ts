@@ -522,18 +522,6 @@ abstract class Sprite {
         }
     }
 
-    KeepInBounds(): void {
-        if (this.x < 0) {
-            this.x = 0;
-            if (this.dx < 0) this.dx = 0;
-        }
-        let maxX = this.layer.tiles.length * this.layer.tileWidth;
-        if (this.xRight > maxX) {
-            this.x = maxX - this.width;
-            if (this.dx > 0) this.dx = 0;
-        }
-    }
-
     GentlyEjectFromSolids() {
         // Push out of solid walls and then reset velocity
         let oldDx = this.dx;
@@ -729,6 +717,33 @@ abstract class Sprite {
 
     GetThumbnail(): ImageTile {
         let frameData = this.GetFrameData(0);
+        if (this instanceof CameraLockHorizontal) {
+            frameData = {
+                imageTile: tiles["camera"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            }
+        }
+        if (this instanceof CameraScrollTrigger) {
+            frameData = {
+                imageTile: tiles["camera"][this.frameCol][1],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            }
+        }
+        if (this instanceof CameraZoomTrigger) {
+            frameData = {
+                imageTile: tiles["camera"][this.frameCol][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            }
+        }
         let imageTile = ('xFlip' in frameData) ? frameData.imageTile : frameData[frameData.length - 1].imageTile;
         return imageTile;
     }

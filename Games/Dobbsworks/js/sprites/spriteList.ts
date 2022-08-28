@@ -64,4 +64,15 @@ var spriteTypes: SpriteType[] = [
     GreenBalloon,
     RedCannon,
     PrickleRock,
+
+    CameraLockHorizontal,
+    CameraScrollUp,
+    CameraScrollDown,
+    CameraScrollLeft,
+    CameraScrollRight,
+
+    Yufo,
+
+    CameraZoomOut,
+    CameraZoomIn,
 ];

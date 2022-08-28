@@ -140,6 +140,7 @@ var Motor = /** @class */ (function (_super) {
         if (!this.connectedSprite)
             return;
         if (!this.connectedSprite.updatedThisFrame) {
+            this.connectedSprite.SharedUpdate();
             this.connectedSprite.Update();
             this.connectedSprite.updatedThisFrame = true;
         }

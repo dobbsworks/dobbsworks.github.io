@@ -3,6 +3,27 @@ var KeyAction = /** @class */ (function () {
     function KeyAction(keyCode) {
         this.keyCode = keyCode;
     }
+    KeyAction.Hotkey = function (hotkeyNumber) {
+        if (hotkeyNumber == 1)
+            return KeyAction.EditorHotkey1;
+        if (hotkeyNumber == 2)
+            return KeyAction.EditorHotkey2;
+        if (hotkeyNumber == 3)
+            return KeyAction.EditorHotkey3;
+        if (hotkeyNumber == 4)
+            return KeyAction.EditorHotkey4;
+        if (hotkeyNumber == 5)
+            return KeyAction.EditorHotkey5;
+        if (hotkeyNumber == 6)
+            return KeyAction.EditorHotkey6;
+        if (hotkeyNumber == 7)
+            return KeyAction.EditorHotkey7;
+        if (hotkeyNumber == 8)
+            return KeyAction.EditorHotkey8;
+        if (hotkeyNumber == 9)
+            return KeyAction.EditorHotkey9;
+        return KeyAction.EditorHotkey1;
+    };
     KeyAction.Up = new KeyAction("up");
     KeyAction.Left = new KeyAction("left");
     KeyAction.Right = new KeyAction("right");
@@ -48,18 +69,19 @@ var KeyboardHandler = /** @class */ (function () {
         var mappedAction = KeyboardHandler.keyMap.find(function (a) { return a.k === keyCode; });
         if (mappedAction) {
             KeyboardHandler.SetActionState(mappedAction === null || mappedAction === void 0 ? void 0 : mappedAction.v, true);
-            //e.preventDefault();
+            e.preventDefault();
         }
         else {
-            console.log(keyCode);
+            // console.log(keyCode);
+            // e.preventDefault();
         }
-        e.preventDefault();
     };
     KeyboardHandler.OnKeyUp = function (e) {
         var keyCode = e.code;
         var mappedAction = KeyboardHandler.keyMap.find(function (a) { return a.k === keyCode; });
         if (mappedAction) {
             KeyboardHandler.SetActionState(mappedAction === null || mappedAction === void 0 ? void 0 : mappedAction.v, false);
+            KeyboardHandler.recentlyReleasedKeys.push(mappedAction === null || mappedAction === void 0 ? void 0 : mappedAction.v);
         }
     };
     KeyboardHandler.GetStateAsByte = function () {
@@ -110,6 +132,9 @@ var KeyboardHandler = /** @class */ (function () {
             }
         }
     };
+    KeyboardHandler.AfterUpdate = function () {
+        KeyboardHandler.recentlyReleasedKeys = [];
+    };
     KeyboardHandler.GetKeyState = function (keyAction) {
         var keyState = KeyboardHandler.keyState.find(function (a) { return a.keyAction === keyAction; });
         return keyState;
@@ -125,6 +150,9 @@ var KeyboardHandler = /** @class */ (function () {
             }
         }
         return false;
+    };
+    KeyboardHandler.IsKeyReleased = function (keyAction) {
+        return KeyboardHandler.recentlyReleasedKeys.indexOf(keyAction) > -1;
     };
     KeyboardHandler.UpdateGamepad = function () {
         for (var i = 0; i < navigator.getGamepads().length; i++) {
@@ -233,6 +261,7 @@ var KeyboardHandler = /** @class */ (function () {
         { k: "Numpad9", v: KeyAction.EditorHotkey9 },
     ];
     KeyboardHandler.keyState = [];
+    KeyboardHandler.recentlyReleasedKeys = [];
     KeyboardHandler.gamepadIndex = -1; //current active in-use
     return KeyboardHandler;
 }());

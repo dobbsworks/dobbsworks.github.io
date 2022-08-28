@@ -10,7 +10,7 @@ var UiHandler = /** @class */ (function () {
     function UiHandler() {
         this.elements = [];
         this.mousedOverElements = [];
-        this.lastClickedButton = null;
+        this.lastClickedButton = null; // used to handle closing open drawers
         this.dragSource = null;
         this.initialized = false;
     }

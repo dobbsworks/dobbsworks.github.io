@@ -122,10 +122,11 @@ class EditorHandler {
 
 
         /* ENEMY PANEL */
-        let enemyTypes: SpriteType[] = [Piggle, Hoggle,  Biggle, PorcoRosso, PorcoBlu, Snail, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, Shrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky];
+        let enemyTypes: SpriteType[] = [Piggle, Hoggle,  Biggle, PorcoRosso, PorcoBlu, Snail, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, 
+            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, Shrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Yufo];
         let enemyButtons = enemyTypes.map(a => new EditorButtonSprite(a));
         enemyButtons.filter(a => a.spriteType == Piggle || a.spriteType == Snail).forEach(a => hotbarDefaults.push(a));
-        let enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 3, 7);
+        let enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 4, 6);
 
         let gizmoTypes: (SpriteType)[] = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform,
@@ -263,9 +264,16 @@ class EditorHandler {
             new EditorButtonSprite(Dobbloon),
             new EditorButtonSprite(ExtraHitHeart),
 
+            new EditorButtonSprite(CameraLockHorizontal),
+            new EditorButtonSprite(CameraScrollRight),
+            new EditorButtonSprite(CameraScrollUp),
+            new EditorButtonSprite(CameraScrollLeft),
+            new EditorButtonSprite(CameraScrollDown),
+            new EditorButtonSprite(CameraZoomIn),
+            new EditorButtonSprite(CameraZoomOut),
             //new EditorButtonSprite(CopperGear),
             //new EditorButtonSprite(IronGear),
-        ], 1, 5);
+        ], 3, 5);
         let levelFlowHandle = new EditorButtonDrawerHandle(tiles["editor"][5][3], "Level flow element", [levelFlowPanel]);
         let levelFlowHandlePanel = new Panel(mapSizePanel.x + 160, mapSizePanel.y, 70, 70);
         levelFlowPanel.targetX = levelFlowHandlePanel.x;
@@ -397,6 +405,7 @@ class EditorHandler {
         if (this.exportString) {
             currentMap = LevelMap.FromImportString(this.exportString, true);
         }
+        camera.Reset();
     }
 
     SwitchToPlayMode(): void {
@@ -422,6 +431,12 @@ class EditorHandler {
             }
 
             camera.target = currentMap.mainLayer.sprites.find(a => a instanceof Player) || null;
+            if (camera.target) {
+                camera.x = camera.target.xMid;
+                camera.y = camera.target.yMid;
+                camera.targetX = camera.x;
+                camera.targetY = camera.y;
+            }
         }
         if (this.editorParentElementsTop[0].targetY > 0) {
             this.editorParentElementsTop.forEach(a => a.targetY -= 90);
@@ -444,6 +459,7 @@ class EditorHandler {
         } else {
             this.bankedCheckpointTime = 0;
         }
+        camera.Reset();
     }
 
     ToggleMinimizeMode(): void {
@@ -490,16 +506,16 @@ class EditorHandler {
 
         this.frameNum++;
         let cameraSpeed = 6 / camera.scale;
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Left, false)) camera.x -= cameraSpeed;
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Right, false)) camera.x += cameraSpeed;
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false)) camera.y -= cameraSpeed;
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Down, false)) camera.y += cameraSpeed;
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Left, false)) camera.targetX -= cameraSpeed;
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Right, false)) camera.targetX += cameraSpeed;
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false)) camera.targetY -= cameraSpeed;
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Down, false)) camera.targetY += cameraSpeed;
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorMinimize, true)) this.ToggleMinimizeMode();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true)) (<EditorButton>this.eraserPanel.children[0]).Click();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorPlayerHotkey, true)) (<EditorButton>this.playerButton).Click();
 
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorUndo, true)) this.history.Undo();
-        //if (KeyboardHandler.IsKeyPressed(KeyAction.EditorRedo, true)) this.history.Redo();
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorRedo, true)) this.history.Redo();
 
         if (KeyboardHandler.IsKeyPressed(KeyAction.Cancel, true)) {
             this.currentTool = this.selectionTool;
@@ -508,15 +524,10 @@ class EditorHandler {
             this.CloseDrawers();
         }
 
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey1, true)) (<EditorButton>this.hotbar.panel.children[0]).Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey2, true)) (<EditorButton>this.hotbar.panel.children[1]).Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey3, true)) (<EditorButton>this.hotbar.panel.children[2]).Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey4, true)) (<EditorButton>this.hotbar.panel.children[3]).Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey5, true)) (<EditorButton>this.hotbar.panel.children[4]).Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey6, true)) (<EditorButton>this.hotbar.panel.children[5]).Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey7, true)) (<EditorButton>this.hotbar.panel.children[6]).Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey8, true)) (<EditorButton>this.hotbar.panel.children[7]).Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey9, true)) (<EditorButton>this.hotbar.panel.children[8]).Click();
+        for (let hotkey = 1; hotkey <= 9; hotkey++) {
+            let keyAction = KeyAction.Hotkey(hotkey);
+            if (KeyboardHandler.IsKeyReleased(keyAction)) this.hotbar.KeyboardSelectNum(hotkey);
+        }
 
         if (uiHandler.mousedOverElements.length == 0) {
             if (mouseHandler.mouseScroll > 0) {
@@ -564,8 +575,8 @@ class EditorHandler {
                 if (!mouseHandler.isMouseDown && mouseHandler.isMouseChanged && this.currentTool.initiallyClicked) {
                     this.currentTool.invalidTiles = [];
                     if (mouseHandler.isMouseOver) {
-                        this.history.RecordHistory();
                         this.currentTool.OnReleaseClick();
+                        this.history.RecordHistory();
                     } else {
                         this.currentTool.OnCancel();
                     }
@@ -579,15 +590,16 @@ class EditorHandler {
                 }
             }
             if (this.selectionTool.selectedTiles.length > 0 && KeyboardHandler.IsKeyPressed(KeyAction.EditorDelete, true)) {
-                this.history.RecordHistory();
                 this.selectionTool.DeleteSelectedTiles();
                 this.selectionTool.Reset();
                 audioHandler.PlaySound("erase", true);
+                this.history.RecordHistory();
             }
             if (mouseHandler.isMouseClicked() && uiHandler.mousedOverElements.length == 0) {
                 this.CloseDrawers();
             }
         }
+        camera.Update();
         BenchmarkService.Log("EditorUpdateDone");
     }
 

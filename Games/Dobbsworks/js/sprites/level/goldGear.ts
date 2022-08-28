@@ -33,6 +33,7 @@ class GoldGear extends Sprite {
             let player = <Player>(this.layer.sprites.find(a => a instanceof Player));
             if (player && player.IsGoingToOverlapSprite(this)) {
                 this.isTouched = true;
+                camera.Reset();
                 this.playerAge = player.age + editorHandler.bankedCheckpointTime;
                 //console.log(player.replayHandler.ExportToBase64());
             }

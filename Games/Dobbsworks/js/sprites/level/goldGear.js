@@ -45,6 +45,7 @@ var GoldGear = /** @class */ (function (_super) {
             var player_1 = (this.layer.sprites.find(function (a) { return a instanceof Player; }));
             if (player_1 && player_1.IsGoingToOverlapSprite(this)) {
                 this.isTouched = true;
+                camera.Reset();
                 this.playerAge = player_1.age + editorHandler.bankedCheckpointTime;
                 //console.log(player.replayHandler.ExportToBase64());
             }

@@ -114,6 +114,7 @@ var BackgroundLayerEditor = /** @class */ (function (_super) {
         return slider;
     };
     BackgroundLayerEditor.prototype.OnChange = function () {
+        var _this = this;
         var bgLayer = currentMap.backgroundLayers[this.layerIndex];
         if (bgLayer.backgroundSource != this.selectedSource) {
             this.hslOffset = __assign({}, this.selectedSource.defaultRecolor);
@@ -126,7 +127,7 @@ var BackgroundLayerEditor = /** @class */ (function (_super) {
         }
         bgLayer.hslOffset = this.hslOffset;
         var scaleRatio = Math.pow(2, this.scalePower / 4);
-        bgLayer.imageTile = this.selectedSource.imageTile.GetRecolor(this.hslOffset.h, this.hslOffset.s, this.hslOffset.l).Scale(scaleRatio, this.horizontalFlip, this.verticalFlip);
+        bgLayer.imageTiles = Object.values(this.selectedSource.imageTiles).map(function (a) { return a.GetRecolor(_this.hslOffset.h, _this.hslOffset.s, _this.hslOffset.l).Scale(scaleRatio, _this.horizontalFlip, _this.verticalFlip); });
         bgLayer.scale = this.scalePower;
         bgLayer.cameraScrollSpeed = this.depthSlider.value;
         bgLayer.verticalAnchor = this.verticalFlip ? (this.selectedSource.defaultVerticalAnchor == "top" ? "bottom" : "top") : this.selectedSource.defaultVerticalAnchor;

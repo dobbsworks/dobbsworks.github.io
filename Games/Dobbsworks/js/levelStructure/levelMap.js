@@ -35,6 +35,8 @@ var LevelMap = /** @class */ (function () {
         this.lavaLevel = new FluidLevel(TileType.LavaSurface, TileType.Lava, 2);
         this.fluidLevels = [this.waterLevel, this.purpleWaterLevel, this.lavaLevel];
         this.songId = 0;
+        this.isInitialized = false;
+        this.cameraLocksHorizontal = [];
         mainLayer.map = this;
         wireLayer.map = this;
         waterLayer.map = this;
@@ -46,6 +48,14 @@ var LevelMap = /** @class */ (function () {
     }
     LevelMap.prototype.Update = function () {
         var _this = this;
+        if (!this.isInitialized && player) {
+            this.isInitialized = true;
+            camera.SnapCamera();
+            this.cameraLocksHorizontal = this.mainLayer.sprites.filter(function (a) { return a instanceof CameraLockHorizontal; });
+            this.cameraLocksHorizontal.forEach(function (a) { return a.isActive = false; });
+            this.cameraLocksHorizontal.sort(function (a, b) { return a.x - b.x; });
+        }
+        camera.Update();
         this.fluidLevels.forEach(function (a) {
             if (a.currentY == -1)
                 a.currentY = (_this.mapHeight + 1) * 12;
@@ -100,7 +110,10 @@ var LevelMap = /** @class */ (function () {
                 _loop_3(autoChangeTile);
             }
         }
-        if (this.doorTransition) {
+        if (camera.transitionTimer > 0) {
+            // do not process any updates
+        }
+        else if (this.doorTransition) {
             this.ProcessDoorTransition(this.doorTransition);
         }
         else {
@@ -381,6 +394,7 @@ var LevelMap = /** @class */ (function () {
         editorHandler.sprites.push(new EditorSprite(Player, { tileX: 4, tileY: 20 }));
         editorHandler.sprites.push(new EditorSprite(GoldGear, { tileX: 55, tileY: 20 }));
         editorHandler.playerFrames = [];
+        editorHandler.history.RecordHistory();
     };
     return LevelMap;
 }());

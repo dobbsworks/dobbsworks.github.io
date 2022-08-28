@@ -127,6 +127,7 @@ class Motor extends Sprite {
     MoveConnectedSprite(): void {
         if (!this.connectedSprite) return;
         if (!this.connectedSprite.updatedThisFrame) {
+            this.connectedSprite.SharedUpdate();
             this.connectedSprite.Update();
             this.connectedSprite.updatedThisFrame = true;
         }

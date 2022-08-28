@@ -2,7 +2,7 @@ class UiHandler {
 
     elements: UIElement[] = [];
     mousedOverElements: UIElement[] = [];
-    lastClickedButton: Button | null = null;
+    lastClickedButton: Button | null = null; // used to handle closing open drawers
     dragSource: Button | null = null;
 
     Draw(ctx: CanvasRenderingContext2D): void {

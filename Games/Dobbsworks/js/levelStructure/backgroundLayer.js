@@ -1,17 +1,17 @@
 "use strict";
 var BackgroundSource = /** @class */ (function () {
-    function BackgroundSource(imageTile, defaultVerticalAnchor, xLoop, yLoop, defaultRecolor, defaultScrollSpeed) {
-        this.imageTile = imageTile;
+    function BackgroundSource(imageTiles, defaultVerticalAnchor, xLoop, yLoop, defaultRecolor, defaultScrollSpeed) {
+        this.imageTiles = imageTiles;
         this.defaultVerticalAnchor = defaultVerticalAnchor;
         this.xLoop = xLoop;
         this.yLoop = yLoop;
         this.defaultRecolor = defaultRecolor;
         this.defaultScrollSpeed = defaultScrollSpeed;
-        this.thumbnail = imageTile.GetSquareThumbnail().GetRecolor(defaultRecolor.h, defaultRecolor.s, defaultRecolor.l);
+        this.thumbnail = imageTiles[0].GetSquareThumbnail().GetRecolor(defaultRecolor.h, defaultRecolor.s, defaultRecolor.l);
     }
     BackgroundSource.GetSources = function () {
         if (this.sources.length == 0) {
-            this.sources.push(new BackgroundSource(tiles["bg_clouds1"][0][0], "top", true, false, { h: 240, s: 0.2, l: 2 }, 0.05), new BackgroundSource(tiles["bg_mountain1"][0][0], "bottom", true, false, { h: 240, s: 0.3, l: 1 }, 0.1), new BackgroundSource(tiles["bg_trees1"][0][0], "bottom", true, false, { h: 120, s: 0.8, l: 0.8 }, 0.2), new BackgroundSource(tiles["bg_trees2"][0][0], "bottom", true, false, { h: 120, s: 0.8, l: 0.7 }, 0.3), new BackgroundSource(tiles["bg_brambles"][0][0], "bottom", true, true, { h: 120, s: 0.8, l: 0.7 }, 0.5), new BackgroundSource(tiles["bg_pillars"][0][0], "bottom", true, true, { h: 36, s: 0.8, l: 0.3 }, 0.5), new BackgroundSource(tiles["bg_pillars2"][0][0], "bottom", true, true, { h: 36, s: 0.8, l: 0.3 }, 0.5), new BackgroundSource(tiles["bg_pillars3"][0][0], "bottom", true, true, { h: 36, s: 0.8, l: 0.3 }, 0.5), new BackgroundSource(tiles["bg_sea"][0][0], "bottom", true, false, { h: 240, s: 0.8, l: 1.0 }, 0.5), new BackgroundSource(tiles["bg_clouds2"][0][0], "bottom", true, false, { h: 180, s: 0.8, l: 1.3 }, 0.5), new BackgroundSource(tiles["bg_planet"][0][0], "top", false, false, { h: 180, s: 0.8, l: 1.3 }, 0.5), new BackgroundSource(tiles["bg_stars"][0][0], "top", true, true, { h: 180, s: 0.8, l: 1.3 }, 0.5), new BackgroundSource(tiles["bg_desert"][0][0], "bottom", true, false, { h: 33, s: 1, l: 0.65 }, 0.5), new BackgroundSource(tiles["bg_brickwall"][0][0], "bottom", true, true, { h: 33, s: 1, l: 0.65 }, 0.5), new BackgroundSource(tiles["bg_clubs"][0][0], "bottom", true, true, { h: 120, s: 1, l: 1 }, 0.5), new BackgroundSource(tiles["bg_spades"][0][0], "bottom", true, true, { h: 240, s: 1, l: 1 }, 0.5), new BackgroundSource(tiles["bg_hearts"][0][0], "bottom", true, true, { h: 0, s: 1, l: 1 }, 0.5), new BackgroundSource(tiles["bg_diamonds"][0][0], "bottom", true, true, { h: 60, s: 1, l: 1 }, 0.5), new BackgroundSource(tiles["bg_stars1"][0][0], "bottom", true, true, { h: 60, s: 1, l: 1 }, 0.5), new BackgroundSource(tiles["bg_stalactites"][0][0], "top", true, false, { h: 5, s: 1, l: 0.6 }, 0.4), new BackgroundSource(tiles["bg_circle"][0][0], "top", false, false, { h: 50, s: 1, l: 1 }, 0), new BackgroundSource(tiles["bg_circles"][0][0], "top", true, true, { h: 330, s: 1, l: 1 }, 0.5), new BackgroundSource(tiles["bg_checker"][0][0], "top", true, true, { h: 0, s: 1, l: 1 }, 0.5), new BackgroundSource(tiles["bg_towers"][0][0], "bottom", true, false, { h: 0, s: 0, l: 0.7 }, 0.4), new BackgroundSource(tiles["bg_bricks"][0][0], "bottom", true, true, { h: 0, s: 0.7, l: 1 }, 0.4), new BackgroundSource(tiles["bg_chains1"][0][0], "top", true, true, { h: 0, s: 0, l: 0.7 }, 0.4), new BackgroundSource(tiles["bg_chains2"][0][0], "top", true, false, { h: 0, s: 0, l: 0.7 }, 0.4));
+            this.sources.push(new BackgroundSource(tiles["bg_clouds1"][0], "top", true, false, { h: 240, s: 0.2, l: 2 }, 0.05), new BackgroundSource(tiles["bg_mountain1"][0], "bottom", true, false, { h: 240, s: 0.3, l: 1 }, 0.1), new BackgroundSource(tiles["bg_trees1"][0], "bottom", true, false, { h: 120, s: 0.8, l: 0.8 }, 0.2), new BackgroundSource(tiles["bg_trees2"][0], "bottom", true, false, { h: 120, s: 0.8, l: 0.7 }, 0.3), new BackgroundSource(tiles["bg_brambles"][0], "bottom", true, true, { h: 120, s: 0.8, l: 0.7 }, 0.5), new BackgroundSource(tiles["bg_pillars"][0], "bottom", true, true, { h: 36, s: 0.8, l: 0.3 }, 0.5), new BackgroundSource(tiles["bg_pillars2"][0], "bottom", true, true, { h: 36, s: 0.8, l: 0.3 }, 0.5), new BackgroundSource(tiles["bg_pillars3"][0], "bottom", true, true, { h: 36, s: 0.8, l: 0.3 }, 0.5), new BackgroundSource(tiles["bg_sea"][0], "bottom", true, false, { h: 240, s: 0.8, l: 1.0 }, 0.5), new BackgroundSource(tiles["bg_clouds2"][0], "bottom", true, false, { h: 180, s: 0.8, l: 1.3 }, 0.5), new BackgroundSource(tiles["bg_planet"][0], "top", false, false, { h: 180, s: 0.8, l: 1.3 }, 0.5), new BackgroundSource(tiles["bg_stars"][0], "top", true, true, { h: 180, s: 0.8, l: 1.3 }, 0.5), new BackgroundSource(tiles["bg_desert"][0], "bottom", true, false, { h: 33, s: 1, l: 0.65 }, 0.5), new BackgroundSource(tiles["bg_brickwall"][0], "bottom", true, true, { h: 33, s: 1, l: 0.65 }, 0.5), new BackgroundSource(tiles["bg_clubs"][0], "bottom", true, true, { h: 120, s: 1, l: 1 }, 0.5), new BackgroundSource(tiles["bg_spades"][0], "bottom", true, true, { h: 240, s: 1, l: 1 }, 0.5), new BackgroundSource(tiles["bg_hearts"][0], "bottom", true, true, { h: 0, s: 1, l: 1 }, 0.5), new BackgroundSource(tiles["bg_diamonds"][0], "bottom", true, true, { h: 60, s: 1, l: 1 }, 0.5), new BackgroundSource(tiles["bg_stars1"][0], "bottom", true, true, { h: 60, s: 1, l: 1 }, 0.5), new BackgroundSource(tiles["bg_stalactites"][0], "top", true, false, { h: 5, s: 1, l: 0.6 }, 0.4), new BackgroundSource(tiles["bg_circle"][0], "top", false, false, { h: 50, s: 1, l: 1 }, 0), new BackgroundSource(tiles["bg_circles"][0], "top", true, true, { h: 330, s: 1, l: 1 }, 0.5), new BackgroundSource(tiles["bg_checker"][0], "top", true, true, { h: 0, s: 1, l: 1 }, 0.5), new BackgroundSource(tiles["bg_towers"][0], "bottom", true, false, { h: 0, s: 0, l: 0.7 }, 0.4), new BackgroundSource(tiles["bg_towers2"][0], "bottom", true, false, { h: 0, s: 0, l: 0.7 }, 0.4), new BackgroundSource(tiles["bg_bricks"][0], "bottom", true, true, { h: 0, s: 0.7, l: 1 }, 0.4), new BackgroundSource(tiles["bg_chains1"][0], "top", true, true, { h: 0, s: 0, l: 0.7 }, 0.4), new BackgroundSource(tiles["bg_chains2"][0], "top", true, false, { h: 0, s: 0, l: 0.7 }, 0.4), new BackgroundSource(tiles["bg_gears"][0], "top", true, true, { h: 0, s: 0, l: 0.7 }, 0.4));
         }
         return this.sources;
     };
@@ -29,7 +29,7 @@ var BackgroundLayer = /** @class */ (function () {
         this.scale = scale;
         this.horizontalFlip = false;
         var scaleRatio = Math.pow(2, scale / 4);
-        this.imageTile = backgroundSource.imageTile.GetRecolor(hslOffset.h, hslOffset.s, hslOffset.l).Scale(scaleRatio, false, verticalAnchor != backgroundSource.defaultVerticalAnchor);
+        this.imageTiles = Object.values(backgroundSource.imageTiles).map(function (a) { return a.GetRecolor(hslOffset.h, hslOffset.s, hslOffset.l).Scale(scaleRatio, false, verticalAnchor != backgroundSource.defaultVerticalAnchor); });
     }
     BackgroundLayer.FromDefaults = function (backgroundSource) {
         return new BackgroundLayer(backgroundSource, backgroundSource.defaultScrollSpeed, backgroundSource.defaultRecolor, backgroundSource.defaultVerticalAnchor, 0, 0, 0);
@@ -37,8 +37,8 @@ var BackgroundLayer = /** @class */ (function () {
     BackgroundLayer.prototype.Draw = function (camera, frameNum, test) {
         if (test === void 0) { test = false; }
         var scale = 4;
-        var dx = this.imageTile.width * scale;
-        var dy = this.imageTile.height * scale;
+        var dx = this.imageTiles[0].width * scale;
+        var dy = this.imageTiles[0].height * scale;
         var initialX = (camera.minX - camera.x) * this.cameraScrollSpeed * 4;
         if (this.backgroundSource.xLoop) {
             initialX += frameNum * this.autoHorizontalScrollSpeed;
@@ -51,7 +51,7 @@ var BackgroundLayer = /** @class */ (function () {
             initialY += (camera.minY - camera.y) * this.cameraScrollSpeed * 4;
         }
         else {
-            initialY += (camera.maxY - camera.y) * this.cameraScrollSpeed * 4 + camera.canvas.height - this.imageTile.height * scale;
+            initialY += (camera.maxY - camera.y) * this.cameraScrollSpeed * 4 + camera.canvas.height - this.imageTiles[0].height * scale;
         }
         if (this.backgroundSource.yLoop) {
             initialY += frameNum * this.autoVerticalScrollSpeed;
@@ -59,9 +59,10 @@ var BackgroundLayer = /** @class */ (function () {
             if (initialY > 0)
                 initialY -= Math.abs(dy);
         }
+        var tileIndex = Math.floor(frameNum / 5) % this.imageTiles.length;
         for (var destX = initialX; destX < camera.canvas.width; destX += dx) {
             for (var destY = initialY; destY < camera.canvas.height && destY + Math.abs(dy) >= 0; destY += dy) {
-                this.imageTile.Draw(camera.ctx, destX, destY, scale);
+                this.imageTiles[tileIndex].Draw(camera.ctx, destX, destY, scale);
                 if (!this.backgroundSource.yLoop)
                     destY = 99999999;
             }

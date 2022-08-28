@@ -82,6 +82,7 @@ var Player = /** @class */ (function (_super) {
         this.PlayerMovement(); // includes gravity
         this.HandleEnemies(); // includes gravity
         this.PlayerInertia();
+        this.PushByAutoscroll();
         this.ReactToPlatformsAndSolids();
         this.SlideDownSlopes();
         this.MoveByVelocity();
@@ -298,7 +299,7 @@ var Player = /** @class */ (function (_super) {
                     if (this.IsOnIce())
                         accel = 0.025;
                     if (!KeyboardHandler.IsKeyPressed(KeyAction.Action2, false)) {
-                        maxSpeed = 1.5;
+                        maxSpeed = this.moveSpeed * 0.7;
                         // ORIGINAL: 0.7
                         // NEXT 0.75
                     }
@@ -447,6 +448,54 @@ var Player = /** @class */ (function (_super) {
             this.dy = this.dyFromBumper;
         }
     };
+    Player.prototype.PushByAutoscroll = function () {
+        if (camera.isAutoscrolling) {
+            if (this.x < camera.GetLeftCameraEdge() && this.dx < camera.autoscrollX)
+                this.dx = camera.autoscrollX;
+            if (this.xRight > camera.GetRightCameraEdge() && this.dx > camera.autoscrollX)
+                this.dx = camera.autoscrollX;
+        }
+    };
+    Player.prototype.KeepInBounds = function () {
+        if (this.x < 0) {
+            this.x = 0;
+            if (this.dx < 0)
+                this.dx = 0;
+        }
+        var maxX = this.layer.tiles.length * this.layer.tileWidth;
+        if (this.xRight > maxX) {
+            this.x = maxX - this.width;
+            if (this.dx > 0)
+                this.dx = 0;
+        }
+        if (camera.isAutoscrolling) {
+            var leftEdge = camera.GetLeftCameraEdge();
+            if (this.x < leftEdge) {
+                if (this.isTouchingRightWall && camera.autoscrollX > 0)
+                    this.OnPlayerDead();
+                else
+                    this.x = leftEdge;
+            }
+            var rightEdge = camera.GetRightCameraEdge();
+            if (this.xRight > rightEdge) {
+                if (this.isTouchingLeftWall && camera.autoscrollX < 0)
+                    this.OnPlayerDead();
+                else
+                    this.x = rightEdge - this.width;
+            }
+            if (camera.autoscrollY > 0) {
+                // scrolling down
+                if (this.yBottom < camera.GetTopCameraEdge() - 24 && this.standingOn.length) {
+                    // more than two tiles above screen, standing on surface
+                    this.OnPlayerDead();
+                }
+            }
+            if (this.y > camera.GetBottomCameraEdge() + 12) {
+                // more than one tile below screen edge
+                this.OnPlayerDead();
+            }
+        }
+    };
     Player.prototype.HandleEnemies = function () {
         var sprites = this.layer.sprites;
         for (var _i = 0, sprites_1 = sprites; _i < sprites_1.length; _i++) {
@@ -566,6 +615,8 @@ var Player = /** @class */ (function (_super) {
         editorHandler.bankedCheckpointTime += this.age;
         this.layer.sprites.push(deadPlayer);
         audioHandler.PlaySound("dead", true);
+        camera.autoscrollX = 0;
+        camera.autoscrollY = 0;
     };
     Player.prototype.IsOnIce = function () {
         return this.standingOn.length > 0 && this.standingOn.every(function (a) { return a.tileType.isSlippery; });

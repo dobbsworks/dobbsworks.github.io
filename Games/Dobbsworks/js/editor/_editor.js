@@ -107,10 +107,11 @@ var EditorHandler = /** @class */ (function () {
         tilePanelButtons.push(new EditorButtonSlopePen(new SlopeFill("Cave", TileType.CaveGround)));
         var tilePanel = this.CreateFloatingButtonPanel(tilePanelButtons, 5, 9);
         /* ENEMY PANEL */
-        var enemyTypes = [Piggle, Hoggle, Biggle, PorcoRosso, PorcoBlu, Snail, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, Shrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky];
+        var enemyTypes = [Piggle, Hoggle, Biggle, PorcoRosso, PorcoBlu, Snail, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish,
+            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, Shrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Yufo];
         var enemyButtons = enemyTypes.map(function (a) { return new EditorButtonSprite(a); });
         enemyButtons.filter(function (a) { return a.spriteType == Piggle || a.spriteType == Snail; }).forEach(function (a) { return hotbarDefaults.push(a); });
-        var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 3, 7);
+        var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 4, 6);
         var gizmoTypes = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform,
             Checkpoint, Baseball, Battery, Door, Fan, Key, Umbrella, SnailShell, Propeller, RedCannon, BlueCannon, Ring, Rocket, RedBalloon, BlueBalloon, YellowBalloon,
@@ -238,7 +239,14 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonSprite(Coin),
             new EditorButtonSprite(Dobbloon),
             new EditorButtonSprite(ExtraHitHeart),
-        ], 1, 5);
+            new EditorButtonSprite(CameraLockHorizontal),
+            new EditorButtonSprite(CameraScrollRight),
+            new EditorButtonSprite(CameraScrollUp),
+            new EditorButtonSprite(CameraScrollLeft),
+            new EditorButtonSprite(CameraScrollDown),
+            new EditorButtonSprite(CameraZoomIn),
+            new EditorButtonSprite(CameraZoomOut),
+        ], 3, 5);
         var levelFlowHandle = new EditorButtonDrawerHandle(tiles["editor"][5][3], "Level flow element", [levelFlowPanel]);
         var levelFlowHandlePanel = new Panel(mapSizePanel.x + 160, mapSizePanel.y, 70, 70);
         levelFlowPanel.targetX = levelFlowHandlePanel.x;
@@ -357,6 +365,7 @@ var EditorHandler = /** @class */ (function () {
         if (this.exportString) {
             currentMap = LevelMap.FromImportString(this.exportString, true);
         }
+        camera.Reset();
     };
     EditorHandler.prototype.SwitchToPlayMode = function () {
         this.playerFrames = [];
@@ -382,6 +391,12 @@ var EditorHandler = /** @class */ (function () {
                 currentMap.mainLayer.sprites.push(new Player(48, 0, currentMap.mainLayer, []));
             }
             camera.target = currentMap.mainLayer.sprites.find(function (a) { return a instanceof Player; }) || null;
+            if (camera.target) {
+                camera.x = camera.target.xMid;
+                camera.y = camera.target.yMid;
+                camera.targetX = camera.x;
+                camera.targetY = camera.y;
+            }
         }
         if (this.editorParentElementsTop[0].targetY > 0) {
             this.editorParentElementsTop.forEach(function (a) { return a.targetY -= 90; });
@@ -404,6 +419,7 @@ var EditorHandler = /** @class */ (function () {
         else {
             this.bankedCheckpointTime = 0;
         }
+        camera.Reset();
     };
     EditorHandler.prototype.ToggleMinimizeMode = function () {
         this.isTempMinimized = false;
@@ -450,13 +466,13 @@ var EditorHandler = /** @class */ (function () {
         this.frameNum++;
         var cameraSpeed = 6 / camera.scale;
         if (KeyboardHandler.IsKeyPressed(KeyAction.Left, false))
-            camera.x -= cameraSpeed;
+            camera.targetX -= cameraSpeed;
         if (KeyboardHandler.IsKeyPressed(KeyAction.Right, false))
-            camera.x += cameraSpeed;
+            camera.targetX += cameraSpeed;
         if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false))
-            camera.y -= cameraSpeed;
+            camera.targetY -= cameraSpeed;
         if (KeyboardHandler.IsKeyPressed(KeyAction.Down, false))
-            camera.y += cameraSpeed;
+            camera.targetY += cameraSpeed;
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorMinimize, true))
             this.ToggleMinimizeMode();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true))
@@ -465,31 +481,19 @@ var EditorHandler = /** @class */ (function () {
             this.playerButton.Click();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorUndo, true))
             this.history.Undo();
-        //if (KeyboardHandler.IsKeyPressed(KeyAction.EditorRedo, true)) this.history.Redo();
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorRedo, true))
+            this.history.Redo();
         if (KeyboardHandler.IsKeyPressed(KeyAction.Cancel, true)) {
             this.currentTool = this.selectionTool;
             this.selectionTool.OnCancel();
             this.selectionTool.Reset();
             this.CloseDrawers();
         }
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey1, true))
-            this.hotbar.panel.children[0].Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey2, true))
-            this.hotbar.panel.children[1].Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey3, true))
-            this.hotbar.panel.children[2].Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey4, true))
-            this.hotbar.panel.children[3].Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey5, true))
-            this.hotbar.panel.children[4].Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey6, true))
-            this.hotbar.panel.children[5].Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey7, true))
-            this.hotbar.panel.children[6].Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey8, true))
-            this.hotbar.panel.children[7].Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey9, true))
-            this.hotbar.panel.children[8].Click();
+        for (var hotkey = 1; hotkey <= 9; hotkey++) {
+            var keyAction = KeyAction.Hotkey(hotkey);
+            if (KeyboardHandler.IsKeyReleased(keyAction))
+                this.hotbar.KeyboardSelectNum(hotkey);
+        }
         if (uiHandler.mousedOverElements.length == 0) {
             if (mouseHandler.mouseScroll > 0) {
                 camera.targetScale -= 1;
@@ -538,8 +542,8 @@ var EditorHandler = /** @class */ (function () {
                 if (!mouseHandler.isMouseDown && mouseHandler.isMouseChanged && this.currentTool.initiallyClicked) {
                     this.currentTool.invalidTiles = [];
                     if (mouseHandler.isMouseOver) {
-                        this.history.RecordHistory();
                         this.currentTool.OnReleaseClick();
+                        this.history.RecordHistory();
                     }
                     else {
                         this.currentTool.OnCancel();
@@ -553,15 +557,16 @@ var EditorHandler = /** @class */ (function () {
                 }
             }
             if (this.selectionTool.selectedTiles.length > 0 && KeyboardHandler.IsKeyPressed(KeyAction.EditorDelete, true)) {
-                this.history.RecordHistory();
                 this.selectionTool.DeleteSelectedTiles();
                 this.selectionTool.Reset();
                 audioHandler.PlaySound("erase", true);
+                this.history.RecordHistory();
             }
             if (mouseHandler.isMouseClicked() && uiHandler.mousedOverElements.length == 0) {
                 this.CloseDrawers();
             }
         }
+        camera.Update();
         BenchmarkService.Log("EditorUpdateDone");
     };
     EditorHandler.prototype.CloseDrawers = function () {

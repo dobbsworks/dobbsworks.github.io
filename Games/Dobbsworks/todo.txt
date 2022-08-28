@@ -1,15 +1,11 @@
-SEPTEMBER 28th/30th?   TRAILER DROP
+SEPTEMBER 28th   TRAILER DROP
 OCTOBER 12th     FULL RELEASE 1.0.0
 
 BUGS
     Physics engine does not like things being inside walls
         Throwing right while under center of pair of ceilings, item goes FLYING right
-    FIXED Start muted. Collect two coins at once, sound plays on 2nd coin!
-    FIXED Jumping under near cannon while running caused super-powered shot
-    FIXED Shrub stacked on stationary enemy could run off the stack when in running mode
 
 FEATURES
-    Undo button
     New enemies 
         fire lizard - shoots fireballs, then vulnerable
         winged pig
@@ -28,9 +24,6 @@ FEATURES
     Warn user when leveldata gets too big
     List level status in MyLevels
     
-    DONE Bouncy mushroom
-    DONE new cannon variety
-    DONE use solidity of top tile when off-screen
 
 
 MENU/UI CHANGES
@@ -91,87 +84,34 @@ some rando's ideas for SMM3 - https://docs.google.com/document/d/1qrOyKu2M8TzLXn
 
 
 ##########################################
-v0.10.0 - Hearts, Hearts, and... Mehs
+v0.12.0 - Some Light Camera Action
 ##########################################
-* CHECKPOINTS!
-    + Touch a checkpoint flag to lock in 
-    your progress. If you die in the level 
-    you'll respawn at the last checkpoint 
-    you activated. 
-    + No hard limit right now to the 
-    number of checkpoints. 
-    + Need to restart the level? Select 
-    "RETRY FROM FLAG" from the pause menu,
-    wow!
-* Extra Hit Hearts
-    + Pick one of these up for a bit of 
-    security.
-    + If you take normal damage, you'll 
-    get two seconds of invulnerability 
-    before you can take damage again. 
-    + NOTE: lava, bottom of screen, air 
-    depletion and skull blocks cause insta
-    death, so be careful!
-* Clear checks have been implemented!
-    + Uploaded levels begin with a status
-    of "pending clear check"
-    + At this point it won't be available
-    for others to play, but will be safe
-    on the cloud
-    + Play a pending level from the 
-    "Uploaded Levels" tab in "My Levels"
-    to clear check it
-    + If you beat a pending level, its 
-    status changes to "ready to publish"
-    + Levels in "ready" state are still 
-    not visible to others
-    + Once a level is ready to publish,
-    click "Publish Level" from the 
-    "Uploaded Levels" tab
-* Likes and dislikes!
-    + Beat a level, then leave feedback.
-    + In the future level completion 
-    won't be required. 
-* Added the ability to slide down slopes 
-    by pressing down
-* Added the ability to delete levels 
-    + This can't be undone, so maybe pull 
-    it into the editor to make a copy
-    first?
-* Added more detailed information to the 
-    level cards in Recent Levels
-* And some bug fixes 
-    + Fixed Hoggle's name not showing 
-    correctly in the editor
-    + Fixed Hoggle being able to ascend
-    walls while running right
-    + EXIT button in editor now returns 
-    you to the previous menu, instead of 
-    always going back to the title screen 
-    + Fixed rolling snail shells sometimes
-    falling through semisolids
+* Camera Lock
+    + Use Camera Horizontal Locks to keep
+    the camera from freely scrolling
+    + Can be used to make a series of 
+    one-screen rooms, for instance
+    + If there's no physical wall where 
+    the camera lock is, the player can 
+    Megaman their way into the next screen 
+* Autoscroll Triggers
+    + When an autoscroll trigger is on 
+    screen, the camera stops following 
+    the player and starts moving on its 
+    own 
+    + Stack multiples to increase the 
+    scroll speed (base 0.8 tiles/second)
+    + Player can be killed by getting 
+    stuck against the moving camera edge 
+* Zoom Triggers 
+    + When a zoom trigger is on screen, 
+    the camera will zoom in or out up to 
+    a predefined limit
+    + Use this to make areas feel more 
+    open or claustrophobic! 
+* New enemy - Yufo
+    + Bounces back and forth, occasionally
+    pausing to fire a laser downward
+    + Jump on it to flip it over, 
+    exposing a very bouncy underside!
 ##########################################
-
-
-
-
-    FIXED? able to place platforms on platforms
-    FIXED! pigs not going up slopes
-    FIXED? thorn bush not obviously
-    FIXED? Still possible to have two players
-    FIXED! Slope filling out hotbar
-    FIXED! swimming props buttons set from load
-    FIXED! able to jump up into solid that overlaps propeller
-    FIXED! need instant zoom when switch to play mode
-    MIGHT NOT FIX map size change can leave sprites out of bounds
-
-    NOT YET, TOO JANKY - slide down steep slope 
-    DONE Grabbable rocket
-    DONE Map size edit step - 1,5,20
-    DONE Reset all button
-    DONE Map size up/left
-    DONE dobbloons
-    DONE button/lever sounds (volume based on proximity?)
-    DONE sparky zappy thing
-    DONE key block sounds
-    DONE boar - aggro running pig

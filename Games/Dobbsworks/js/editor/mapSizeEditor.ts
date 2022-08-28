@@ -156,6 +156,7 @@ class MapSizeEditor extends Panel {
         }
 
         layers.forEach(a => a.isDirty = true);
+        editorHandler.history.RecordHistory();
     }
 
 

@@ -4,7 +4,7 @@ class Player extends Sprite {
     public width: number = 5;
     public direction: -1 | 1 = 1;
     private jumpBufferTimer: number = -1; // how long since initial jump tap
-    private coyoteTimer: number = 999; // how long since not on ground // start this value above threshold so that player cannot immediately jump if starting in air, must hit ground first
+    public coyoteTimer: number = 999; // how long since not on ground // start this value above threshold so that player cannot immediately jump if starting in air, must hit ground first
     private frameNum: number = 0;
     public jumpTimer: number = -1; // how long have we been ascending for current jump
     private throwTimer: number = -1; // how long since throwing something
@@ -71,6 +71,7 @@ class Player extends Sprite {
         this.PlayerMovement(); // includes gravity
         this.HandleEnemies(); // includes gravity
         this.PlayerInertia();
+        this.PushByAutoscroll();
         this.ReactToPlatformsAndSolids();
         this.SlideDownSlopes();
         this.MoveByVelocity();
@@ -273,7 +274,7 @@ class Player extends Sprite {
                     let accel = this.isOnGround ? 0.06 : 0.035;
                     if (this.IsOnIce()) accel = 0.025;
                     if (!KeyboardHandler.IsKeyPressed(KeyAction.Action2, false)) {
-                        maxSpeed = 1.5;
+                        maxSpeed = this.moveSpeed * 0.7;
                         // ORIGINAL: 0.7
                         // NEXT 0.75
                     }
@@ -423,6 +424,52 @@ class Player extends Sprite {
         }
     }
 
+    PushByAutoscroll(): void {
+        if (camera.isAutoscrolling) {
+            if (this.x < camera.GetLeftCameraEdge() && this.dx < camera.autoscrollX) this.dx = camera.autoscrollX
+            if (this.xRight > camera.GetRightCameraEdge() && this.dx > camera.autoscrollX) this.dx = camera.autoscrollX
+        }
+    }
+
+    KeepInBounds(): void {
+        if (this.x < 0) {
+            this.x = 0;
+            if (this.dx < 0) this.dx = 0;
+        }
+        let maxX = this.layer.tiles.length * this.layer.tileWidth;
+        if (this.xRight > maxX) {
+            this.x = maxX - this.width;
+            if (this.dx > 0) this.dx = 0;
+        }
+
+        if (camera.isAutoscrolling) {
+            let leftEdge = camera.GetLeftCameraEdge();
+            if (this.x < leftEdge) {
+                if (this.isTouchingRightWall && camera.autoscrollX > 0) this.OnPlayerDead();
+                else this.x = leftEdge;
+            }
+            let rightEdge = camera.GetRightCameraEdge();
+            if (this.xRight > rightEdge) {
+                if (this.isTouchingLeftWall && camera.autoscrollX < 0) this.OnPlayerDead();
+                else this.x = rightEdge - this.width;
+            }
+
+            if (camera.autoscrollY > 0) {
+                // scrolling down
+                if (this.yBottom < camera.GetTopCameraEdge() - 24 && this.standingOn.length) {
+                    // more than two tiles above screen, standing on surface
+                    this.OnPlayerDead();
+                }
+            }
+
+            if (this.y > camera.GetBottomCameraEdge() + 12) {
+                // more than one tile below screen edge
+                this.OnPlayerDead();
+            }
+
+        }
+    }
+
     HandleEnemies(): void {
         let sprites = this.layer.sprites;
         for (let sprite of sprites) {
@@ -530,6 +577,8 @@ class Player extends Sprite {
         editorHandler.bankedCheckpointTime += this.age;
         this.layer.sprites.push(deadPlayer);
         audioHandler.PlaySound("dead", true);
+        camera.autoscrollX = 0;
+        camera.autoscrollY = 0;
     }
 
     IsOnIce(): boolean {

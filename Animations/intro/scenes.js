@@ -1,3 +1,66 @@
+
+
+function Temp() {
+    let skyGradient = ctx.createLinearGradient(0, 1200, 0, -800);
+    skyGradient.addColorStop(0.00, "rgba(255,235,98,0)");
+    skyGradient.addColorStop(0.12, "rgba(255,235,98,1)");
+    skyGradient.addColorStop(0.20, "rgba(255,146,103,1)");
+    skyGradient.addColorStop(0.35, "rgba(255,97,97,1)");
+    skyGradient.addColorStop(0.60, "rgba(22,39,97,1)");
+    skyGradient.addColorStop(0.80, "rgba(11,20,50,1)");
+    //skyGradient.addColorStop(0.90, "rgba(0,0,0,1)");
+    let sky = new Rect(skyGradient, 0, 150 - 2400, 2800, 4800)
+    sprites.push(sky);
+    SetInterp(sky, { y: 3600 }, 0, 150, "linear");
+    
+    let swapDelayFrame = 310;
+    for (let i=0; i< 2000; i++) {
+        let x = ((Math.random() - 0.5) * 2) * 226;
+        let y = ((Math.random() - 0.5) * 2) * 122;
+        let dx = (x > 0 ? 1 : -1) * Math.random() * 3;
+        let panel = new Rect("#FFFFFF", x, y - 1000, 4, 4);
+        panel.dy = (Math.random() * 5 - 3);
+        sprites.push(panel);
+        SetInterp(panel, { y: 1000 }, swapDelayFrame + 120, 1, "linear");
+        panel.Update = () => {
+            if (panel.y > -500) {
+                panel.y += panel.dy;
+                panel.x += dx;
+                panel.dy += 0.05;
+            }
+        }
+    }
+
+
+    let skyGear = new StaticImage(images.gears, 6, 0, 400);
+    SetInterp(skyGear, { y: -800 }, 0, 150, "linear");
+    skyGear.animationSpeed = 11.7 / 3;
+    sprites.push(skyGear);
+
+    let logoNoGearBlack = new StaticImage(images.logonogearblack, 4, 0, -400);
+    SetInterp(logoNoGearBlack, { y: 400 }, 160, 40, "ease-in-out");
+    sprites.push(logoNoGearBlack);
+
+    
+    let logoGear = new StaticImage(images.logogear, 4, -55, -400 + 33);
+    logoGear.animated = false
+    SetInterp(logoGear, { y: 400 }, 190, 120, "ease-in-out");
+    sprites.push(logoGear);
+
+    let logo = new StaticImage(images.dwlogo, 4, 0, -400);
+    sprites.push(logo);
+
+    SetInterp(logoNoGearBlack, { y: -10000 }, swapDelayFrame, 1, "set");
+    SetInterp(logoGear, { y: -10000 }, swapDelayFrame, 1, "set");
+    SetInterp(logo, { y: 0 }, swapDelayFrame, 1, "set");
+
+
+
+}
+
+
+
+
 // Player 1 start
 function Scene1() {
     let song = document.getElementById("theme");

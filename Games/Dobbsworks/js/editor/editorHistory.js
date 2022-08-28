@@ -2,36 +2,51 @@
 var EditorHistory = /** @class */ (function () {
     function EditorHistory() {
         this.stack = [];
-        // public Redo(): void {
-        //     let previousState = this.redoStack.pop();
-        //     if (previousState) {
-        //         let mapExport = currentMap.GetExportString();
-        //         this.stack.push(previousState);
-        //         currentMap = LevelMap.FromImportString(mapExport);
-        //     }
-        // }
+        this.currentStateIndex = -1;
     }
-    //public redoStack: string[] = []
     EditorHistory.prototype.RecordHistory = function () {
         var mapExport = currentMap.GetExportString();
-        var previousState = this.stack[this.stack.length - 1];
-        if (previousState) {
-            if (mapExport == previousState)
-                return;
+        var previousState = this.stack[this.currentStateIndex];
+        if (previousState && mapExport == previousState) {
+            return;
+        }
+        if (this.currentStateIndex < this.stack.length - 1) {
+            // we did some undo-ing, need to delete redo stack
+            this.stack.splice(this.currentStateIndex + 1, this.stack.length - (this.currentStateIndex + 1));
+            // [ # # # # x x x x x x x x x x]
+            //         ^ current state
         }
         this.stack.push(mapExport);
-        //this.redoStack = [];
-        if (this.stack.length > 20)
+        if (this.stack.length > 20) {
             this.stack.shift();
+        }
+        else {
+            this.currentStateIndex++;
+        }
     };
     EditorHistory.prototype.Undo = function () {
-        // TODO
-        // let previousState = this.stack.pop();
-        // if (previousState) {
-        //     let mapExport = currentMap.GetExportString();
-        //     //this.redoStack.push(mapExport);
-        //     currentMap = LevelMap.FromImportString(previousState);
-        // }
+        if (this.currentStateIndex <= 0) {
+            // no historical states to revert to
+            return;
+        }
+        this.currentStateIndex--;
+        var historyState = this.stack[this.currentStateIndex];
+        if (historyState) {
+            currentMap = LevelMap.FromImportString(historyState);
+        }
+    };
+    EditorHistory.prototype.Redo = function () {
+        if (this.currentStateIndex >= this.stack.length - 1) {
+            // no historical states to revert to
+            // [ # # # # ]
+            //         ^ current state
+            return;
+        }
+        this.currentStateIndex++;
+        var historyState = this.stack[this.currentStateIndex];
+        if (historyState) {
+            currentMap = LevelMap.FromImportString(historyState);
+        }
     };
     return EditorHistory;
 }());

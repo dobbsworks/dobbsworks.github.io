@@ -58,6 +58,7 @@ var EditorLoadButton = /** @class */ (function (_super) {
             var code = prompt("Please enter your level code");
             if (code) {
                 currentMap = LevelMap.FromImportString(code);
+                editorHandler.history.RecordHistory();
             }
         });
         return _this;
@@ -106,6 +107,7 @@ var EditorSaveSlotButton = /** @class */ (function (_super) {
                     // leaving slot 1, but slot 1 changes are already saved to storage
                     editorHandler.currentSaveSlot = _this.slotNumber;
                     currentMap = LevelMap.FromImportString(buttonSlotData.level);
+                    editorHandler.history.RecordHistory();
                 }
                 else {
                     // There are unsaved changes in the current slot!
@@ -113,6 +115,7 @@ var EditorSaveSlotButton = /** @class */ (function (_super) {
                     if (confirmed) {
                         editorHandler.currentSaveSlot = _this.slotNumber;
                         currentMap = LevelMap.FromImportString(buttonSlotData.level);
+                        editorHandler.history.RecordHistory();
                     }
                     else {
                         return;

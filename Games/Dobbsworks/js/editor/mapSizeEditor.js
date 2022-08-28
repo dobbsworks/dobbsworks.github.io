@@ -170,6 +170,7 @@ var MapSizeEditor = /** @class */ (function (_super) {
             camera.y += dTop * 12;
         }
         layers.forEach(function (a) { return a.isDirty = true; });
+        editorHandler.history.RecordHistory();
     };
     MapSizeEditor.prototype.Draw = function (ctx) {
         _super.prototype.Draw.call(this, ctx);

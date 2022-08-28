@@ -36,6 +36,19 @@ class KeyAction {
     static EditorHotkey7 = new KeyAction("EditorHotkey7");
     static EditorHotkey8 = new KeyAction("EditorHotkey8");
     static EditorHotkey9 = new KeyAction("EditorHotkey9");
+
+    static Hotkey(hotkeyNumber: number): KeyAction {
+        if (hotkeyNumber == 1) return KeyAction.EditorHotkey1;
+        if (hotkeyNumber == 2) return KeyAction.EditorHotkey2;
+        if (hotkeyNumber == 3) return KeyAction.EditorHotkey3;
+        if (hotkeyNumber == 4) return KeyAction.EditorHotkey4;
+        if (hotkeyNumber == 5) return KeyAction.EditorHotkey5;
+        if (hotkeyNumber == 6) return KeyAction.EditorHotkey6;
+        if (hotkeyNumber == 7) return KeyAction.EditorHotkey7;
+        if (hotkeyNumber == 8) return KeyAction.EditorHotkey8;
+        if (hotkeyNumber == 9) return KeyAction.EditorHotkey9;
+        return KeyAction.EditorHotkey1;
+    }
 }
 
 class KeyboardHandler {
@@ -100,6 +113,7 @@ class KeyboardHandler {
     ];
 
     private static keyState: KeyState[] = [];
+    private static recentlyReleasedKeys: KeyAction[] = [];
 
     public static OnKeyDown(e: KeyboardEvent) {
         KeyboardHandler.gamepadIndex = -1;
@@ -107,11 +121,11 @@ class KeyboardHandler {
         let mappedAction = KeyboardHandler.keyMap.find(a => a.k === keyCode);
         if (mappedAction) {
             KeyboardHandler.SetActionState(mappedAction?.v, true);
-            //e.preventDefault();
+            e.preventDefault();
         } else {
-            console.log(keyCode);
+            // console.log(keyCode);
+            // e.preventDefault();
         }
-        e.preventDefault();
     }
 
     public static OnKeyUp(e: KeyboardEvent) {
@@ -119,6 +133,7 @@ class KeyboardHandler {
         let mappedAction = KeyboardHandler.keyMap.find(a => a.k === keyCode);
         if (mappedAction) {
             KeyboardHandler.SetActionState(mappedAction?.v, false);
+            KeyboardHandler.recentlyReleasedKeys.push(mappedAction?.v);
         }
     }
 
@@ -165,6 +180,10 @@ class KeyboardHandler {
         }
     }
 
+    public static AfterUpdate() {
+        KeyboardHandler.recentlyReleasedKeys = [];
+    }
+
     private static GetKeyState(keyAction: KeyAction) {
         let keyState = KeyboardHandler.keyState.find(a => a.keyAction === keyAction);
         return keyState;
@@ -179,6 +198,10 @@ class KeyboardHandler {
             }
         }
         return false;
+    }
+
+    public static IsKeyReleased(keyAction: KeyAction) {
+        return KeyboardHandler.recentlyReleasedKeys.indexOf(keyAction) > -1;
     }
 
     static gamepadIndex: number = -1; //current active in-use

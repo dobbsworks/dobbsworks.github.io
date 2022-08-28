@@ -45,6 +45,7 @@ class EditorLoadButton extends EditorButton {
                 let code = prompt("Please enter your level code");
                 if (code) {
                     currentMap = LevelMap.FromImportString(code);
+                    editorHandler.history.RecordHistory();
                 }
             }
         );
@@ -98,12 +99,14 @@ class EditorSaveSlotButton extends EditorButton {
                         // leaving slot 1, but slot 1 changes are already saved to storage
                         editorHandler.currentSaveSlot = this.slotNumber;
                         currentMap = LevelMap.FromImportString(buttonSlotData.level);
+                        editorHandler.history.RecordHistory();
                     } else {
                         // There are unsaved changes in the current slot!
                         let confirmed = confirm("You have unsaved changes in the editor. Discard changes and load slot " + this.slotNumber + "?");
                         if (confirmed) {
                             editorHandler.currentSaveSlot = this.slotNumber;
                             currentMap = LevelMap.FromImportString(buttonSlotData.level);
+                            editorHandler.history.RecordHistory();
                         } else {
                             return;
                         }

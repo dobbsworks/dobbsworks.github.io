@@ -42,8 +42,19 @@ class LevelMap {
     lavaLevel = new FluidLevel(TileType.LavaSurface, TileType.Lava, 2);
     fluidLevels = [this.waterLevel, this.purpleWaterLevel, this.lavaLevel];
     songId: number = 0;
+    isInitialized = false;
+
+    cameraLocksHorizontal: CameraLockHorizontal[] = [];
 
     Update(): void {
+        if (!this.isInitialized && player) {
+            this.isInitialized = true;
+            camera.SnapCamera();
+            this.cameraLocksHorizontal = <CameraLockHorizontal[]>this.mainLayer.sprites.filter(a => a instanceof CameraLockHorizontal);
+            this.cameraLocksHorizontal.forEach(a => a.isActive = false);
+            this.cameraLocksHorizontal.sort((a,b) => a.x - b.x);
+        }
+        camera.Update();
         this.fluidLevels.forEach(a => {
             if (a.currentY == -1) a.currentY = (this.mapHeight + 1) * 12;
             a.Update();
@@ -86,7 +97,9 @@ class LevelMap {
 
         }
 
-        if (this.doorTransition) {
+        if (camera.transitionTimer > 0) {
+            // do not process any updates
+        } else if (this.doorTransition) {
             this.ProcessDoorTransition(this.doorTransition)
         } else {
             BenchmarkService.Log("SpriteUpdate");
@@ -138,7 +151,6 @@ class LevelMap {
             camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
         }
         BenchmarkService.Log("DrawDone");
-
 
         if (player) {
             this.timerText = Utility.FramesToTimeText(player.age + (player.isActive ? editorHandler.bankedCheckpointTime : 0));
@@ -392,6 +404,7 @@ class LevelMap {
         editorHandler.sprites.push(new EditorSprite(Player, { tileX: 4, tileY: 20 }));
         editorHandler.sprites.push(new EditorSprite(GoldGear, { tileX: 55, tileY: 20 }));
         editorHandler.playerFrames = [];
+        editorHandler.history.RecordHistory();
     }
 }
 

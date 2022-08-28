@@ -134,7 +134,7 @@ class BackgroundLayerEditor extends Panel {
         }
         bgLayer.hslOffset = this.hslOffset;
         let scaleRatio = Math.pow(2, this.scalePower / 4);
-        bgLayer.imageTile = this.selectedSource.imageTile.GetRecolor(this.hslOffset.h, this.hslOffset.s, this.hslOffset.l).Scale(scaleRatio, this.horizontalFlip, this.verticalFlip);
+        bgLayer.imageTiles = Object.values(this.selectedSource.imageTiles).map(a => a.GetRecolor(this.hslOffset.h, this.hslOffset.s, this.hslOffset.l).Scale(scaleRatio, this.horizontalFlip, this.verticalFlip));
         bgLayer.scale = this.scalePower;
         bgLayer.cameraScrollSpeed = this.depthSlider.value;
         bgLayer.verticalAnchor = this.verticalFlip ? (this.selectedSource.defaultVerticalAnchor == "top" ? "bottom" : "top") : this.selectedSource.defaultVerticalAnchor;
