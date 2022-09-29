@@ -7,6 +7,8 @@ abstract class Enemy extends Sprite {
     stackIndex: number = 0;
     destackForgiveness: number = -1;
     killedByProjectiles: boolean = true;
+    canStandOn: boolean = false;
+    damagesPlayer: boolean = true;
 
     bounceSoundId: string = "bop";
 

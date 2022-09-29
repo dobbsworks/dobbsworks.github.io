@@ -28,7 +28,31 @@ function Init() {
         audios.push(document.getElementById("audio" + i));
     Reset();
     Loop();
+    SetupColorOptions();
 }
+
+function SetupColorOptions() {
+    let colors = [
+        "Gainsboro",
+        "Cornsilk",
+        "Lavender",
+        "LightCyan",
+        "LightGoldenrodYellow",
+        "Coral",
+    ];
+    let container = document.getElementById("colorButtons");
+    for (let color of colors) {
+        let button = document.createElement("button");
+        button.innerHTML = color;
+        //button.style.backgroundColor = color;
+        container.appendChild(button);
+        button.onclick = () => {
+            let game = document.getElementsByClassName("gameContainer")[0];
+            game.style.backgroundColor = color;
+        }
+    }
+}
+
 function Reset() {
     playerColumn = 1;
     generatorColumn = 2;

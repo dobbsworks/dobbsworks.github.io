@@ -75,7 +75,23 @@ function Scene1() {
         sprites.push(dobbs);
         SetInterp(dobbs, { scale: 1, rotation: -0.05, x: 50, y: -70 }, subtitleDelay, 20, "ease-in-out");
         SetInterp(dobbs, { x: -100 }, 0, 240, "linear");
-        AddSplotchAndText("Dobbs", "Spaces out!", "Right", "#92cddb");
+        AddSplotchAndText("Dobbs", "Prepares to launch!", "Right", "#92cddb");
+    }
+
+    function HoverCat() {
+        Cleanup();
+        let hovercatback = new StaticImage(images.hovercatback, 1.2, 0, 0);
+        SetInterp(hovercatback, { x: 50 }, 0, 240, "linear");
+        sprites.push(hovercatback);
+
+        ColorLayer("#92cddb22");
+
+        let hovercat = new StaticImage(images.hovercat, 1, -270, 170);
+        hovercat.animated = false;
+        sprites.push(hovercat);
+        SetInterp(hovercat, { scale: 1, rotation: -0.05, x: 50, y: -70 }, subtitleDelay, 20, "ease-in-out");
+        SetInterp(hovercat, { x: -100 }, 0, 240, "linear");
+        AddSplotchAndText("Hover Cat", "Rises to the challenge!", "Right", "#92cddb");
     }
 
     function Germdove() {
@@ -90,7 +106,46 @@ function Scene1() {
         sprites.push(germ);
         SetInterp(germ, { scale: 0.2, rotation: 0.05, x: -50 }, subtitleDelay, 20, "ease-in-out");
         SetInterp(germ, { x: -100 }, 0, 240, "linear");
-        AddSplotchAndText("germdove", "Takes flight!", "Left", "#38926e");
+        //AddSplotchAndText("germdove", "Takes flight!", "Left", "#38926e");
+        AddSplotchAndText("germdove", "Rocks the 'Tok!", "Left", "#38926e");
+        Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "-50px")
+    }
+
+
+    function SuperBeast() {
+        Cleanup();
+        let superbeastback = new StaticImage(images.superbeastback, 2, 0, 0);
+        SetInterp(superbeastback, { x: 50 }, 0, 240, "linear");
+        sprites.push(superbeastback);
+
+        ColorLayer("#38926e22");
+
+        let superbeast = new StaticImage(images.superbeast, 1, 270, 100);
+        sprites.push(superbeast);
+        SetInterp(superbeast, { scale: 0.2, rotation: 0.05, x: -50 }, subtitleDelay, 20, "ease-in-out");
+        SetInterp(superbeast, { x: -100 }, 0, 240, "linear");
+        //AddSplotchAndText("germdove", "Takes flight!", "Left", "#38926e");
+        AddSplotchAndText("SuperBeast", "Brought sandwiches!", "Left", "#38926e");
+        Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "-50px")
+        setTimeout(() => {
+            Array.from(document.getElementsByClassName("sub")).forEach(a => a.style.left = "-70px")
+        }, 700)
+    }
+
+    function Teddy() {
+        Cleanup();
+        let teddyback = new StaticImage(images.teddyback, 2, 0, 0);
+        SetInterp(teddyback, { x: 50 }, 0, 240, "linear");
+        sprites.push(teddyback);
+
+        ColorLayer("#38926e22");
+
+        let teddy = new StaticImage(images.teddy, 1, 270, 100);
+        sprites.push(teddy);
+        SetInterp(teddy, { scale: 0.2, rotation: 0.05, x: -50 }, subtitleDelay, 20, "ease-in-out");
+        SetInterp(teddy, { x: -100 }, 0, 240, "linear");
+        //AddSplotchAndText("germdove", "Takes flight!", "Left", "#38926e");
+        AddSplotchAndText("Teddy", "Is ready to party!", "Left", "#38926e");
         Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "-50px")
     }
 
@@ -106,7 +161,9 @@ function Scene1() {
         sprites.push(gq);
         SetInterp(gq, { scale: 1, rotation: 0.05, x: -50 }, subtitleDelay, 20, "ease-in-out");
         SetInterp(gq, { x: -100 }, 0, 240, "linear");
-        AddSplotchAndText("GameQueued", "Takes the dev exit!", "Right", "#fff147");
+        //AddSplotchAndText("GameQueued", "Takes the dev exit!", "Right", "#fff147");
+        AddSplotchAndText("GameQueued", "Cracks a pack!", "Right", "#fff147");
+        //AddSplotchAndText("GameQueued", "Takes the dev exit!", "Right", "#fff147");
         Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "-100px")
     }
 
@@ -122,8 +179,10 @@ function Scene1() {
         sprites.push(turtle);
         SetInterp(turtle, { scale: 0.2, rotation: 0.05, x: -50 }, subtitleDelay, 20, "ease-in-out");
         SetInterp(turtle, { x: -100 }, 0, 240, "linear");
-        AddSplotchAndText("Lurking Turtle", "Raises shell!", "Left", "teal");
+        //AddSplotchAndText("Lurking Turtle", "Raises shell!", "Left", "teal");
+        AddSplotchAndText("Lurking Turtle", "Rolls a strong hit!", "Left", "teal");
         Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "-50px")
+
     }
 
     function Panda() {
@@ -138,7 +197,7 @@ function Scene1() {
         sprites.push(panda);
         SetInterp(panda, { scale: 0.2, rotation: 0.05, x: -50 }, subtitleDelay, 20, "ease-in-out");
         SetInterp(panda, { x: -100 }, 0, 240, "linear");
-        AddSplotchAndText("Bardic Panda", "Eats Shoots and Leaves!", "Left", "#626945");
+        AddSplotchAndText("Bardic Panda", "Is this even randomized?!", "Left", "#626945");
         Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "-50px")
         setTimeout(() => {
             Array.from(document.getElementsByClassName("sub")).forEach(a => a.style.left = "-100px")
@@ -164,6 +223,25 @@ function Scene1() {
         }, 1000)
     }
 
+    function Sunberry() {
+        Cleanup();
+        let sunberryback = new StaticImage(images.sunberryback, 2, 0, 0);
+        SetInterp(sunberryback, { x: 50 }, 0, 240, "linear");
+        sprites.push(sunberryback);
+
+        ColorLayer("#fff14722");
+
+        let sunberry = new StaticImage(images.sunberry, 2.5, -270, 130);
+        sprites.push(sunberry);
+        SetInterp(sunberry, { scale: 1.5, rotation: -0.05, x: 15, y: 0 }, subtitleDelay, 20, "ease-in-out");
+        SetInterp(sunberry, { x: -100 }, 0, 240, "linear");
+        AddSplotchAndText("Sunberry", "Is Ready To Jam!", "Right", "#ee4433");
+        Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "10px")
+        setTimeout(() => {
+            Array.from(document.getElementsByClassName("sub")).forEach(a => a.style.left = "-200px")
+        }, 1000)
+    }
+
     function Duffy() {
         Cleanup();
         let duffyback = new StaticImage(images.duffyback, 1.2, 0, 0);
@@ -176,37 +254,57 @@ function Scene1() {
         sprites.push(duffy);
         SetInterp(duffy, { scale: 0.5, rotation: 0.05, x: 50, y: 0 }, subtitleDelay, 20, "ease-in-out");
         SetInterp(duffy, { x: -100 }, 0, 240, "linear");
-        AddSplotchAndText("Duffy", "Has a knife!", "Right", "#b5866c");
+        AddSplotchAndText("Duffy", "Announces his return!", "Right", "#b5866c");
         Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "10px")
         // setTimeout(() => {
         //     Array.from(document.getElementsByClassName("sub")).forEach(a => a.style.left = "-200px")
         // }, 1000)
     }
 
-    function Shiner() {
+    function Al() {
         Cleanup();
-        let shinerback = new StaticImage(images.shinerback, 1.5, 0, 0);
-        SetInterp(shinerback, { x: 50 }, 0, 240, "linear");
-        sprites.push(shinerback);
+        let alback = new StaticImage(images.alback, 1.5, 0, 0);
+        SetInterp(alback, { x: 50 }, 0, 240, "linear");
+        sprites.push(alback);
 
         ColorLayer("#61000033");
 
-        let shiner = new StaticImage(images.shiner, 0.5, 270, 120);
-        sprites.push(shiner);
-        SetInterp(shiner, { scale: 0.5, rotation: 0.05, x: -50, y: 0 }, subtitleDelay, 20, "ease-in-out");
-        SetInterp(shiner, { x: -100 }, 0, 240, "linear");
-        AddSplotchAndText("Shiner", "Circles the wagons!", "Left", "#8a1700");
+        let al = new StaticImage(images.al, 0.5, 270, 120);
+        sprites.push(al);
+        SetInterp(al, { scale: 0.5, rotation: 0.05, x: -50, y: 0 }, subtitleDelay, 20, "ease-in-out");
+        SetInterp(al, { x: -100 }, 0, 240, "linear");
+        AddSplotchAndText("Al", "Thanks for the stream!", "Left", "#8a1700");
         Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "-80px")
         setTimeout(() => {
             Array.from(document.getElementsByClassName("sub")).forEach(a => {a.style.left = "-100px"; a.style.top = "20px"})
         }, 900)
     }
 
+    function Ally() {
+        Cleanup();
+        let allyback = new StaticImage(images.allyback, 2, 0, 0);
+        SetInterp(allyback, { x: 50 }, 0, 240, "linear");
+        sprites.push(allyback);
+
+        ColorLayer("#fff14722");
+
+        let ally = new StaticImage(images.ally, 2, -270, 100);
+        sprites.push(ally);
+        SetInterp(ally, { scale: 1, rotation: 0.05, x: 150, y: 150 }, subtitleDelay, 20, "ease-in-out");
+        SetInterp(ally, { x: -100 }, 0, 240, "linear");
+        AddSplotchAndText("AllyKat", "Has been unleashed!", "Right", "#b5866c");
+        Array.from(document.getElementsByClassName("title")).forEach(a => a.style.left = "10px")
+        setTimeout(() => {
+            Array.from(document.getElementsByClassName("sub")).forEach(a => a.style.left = "-200px")
+        }, 1000)
+    }
+
 
 
     function Go() {
-        let scenes = [Germdove, GQ, Shiner, Duffy, Panda, Dae, Turtle, Dobbs ];
-        //scenes = []
+        // left // germ, suberbeast teddy, turtle, panda, al
+        //right //ally, duffy, sun, GQ, hovercat, dae, dobbs
+        let scenes = [Turtle, GQ, Al, Sunberry, SuperBeast, HoverCat, Teddy, Ally, Germdove, Duffy, Panda, Dae, Dobbs ];
         for (let i=0; i<scenes.length; i++) {
             setTimeout(scenes[i], 1650 * i);
         }
@@ -222,7 +320,7 @@ function Scene2() {
     document.getElementById("perspective").innerHTML = "";
     let rect = new Rect("#000", 0, 0, 2000, 2000);
     sprites.push(rect);
-    let logo = new StaticImage(images.logo, 2, 0, 1200);
+    let logo = new StaticImage(images.logo3, 2, 0, 1200);
     sprites.push(logo);
     
     SetInterp(logo, { y: -1200, rotation: Math.PI*2, scale: -1 }, 0, 30, "ease-in-out");

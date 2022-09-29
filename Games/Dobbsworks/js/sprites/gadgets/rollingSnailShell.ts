@@ -18,14 +18,16 @@ class RollingSnailShell extends Enemy {
             this.direction = -1;
         }
 
+        let baseSpeed = 1.2; //should be equal to player run speed
+
         if (this.age < 12) {
-            this.dx = this.direction * 1.5 / 2;
+            this.dx = this.direction * 1.5 * baseSpeed;
         } else if (this.age < 22) {
-            this.dx = this.direction * 1.3 / 2;
+            this.dx = this.direction * 1.3 * baseSpeed;
         } else if (this.age < 30) {
-            this.dx = this.direction * 1.15 / 2;
+            this.dx = this.direction * 1.15 * baseSpeed;
         } else {
-            this.dx = this.direction * 1 / 2;
+            this.dx = this.direction * baseSpeed;
         }
         this.ApplyInertia();
         this.ReactToWater();
@@ -35,8 +37,6 @@ class RollingSnailShell extends Enemy {
         } else {
             this.rotation -= this.GetTotalDx() / 2
         }
-
-        this.MoveByVelocity();
     }
 
     OnBounce(): void {

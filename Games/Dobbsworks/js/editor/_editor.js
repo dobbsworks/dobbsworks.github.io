@@ -107,11 +107,11 @@ var EditorHandler = /** @class */ (function () {
         tilePanelButtons.push(new EditorButtonSlopePen(new SlopeFill("Cave", TileType.CaveGround)));
         var tilePanel = this.CreateFloatingButtonPanel(tilePanelButtons, 5, 9);
         /* ENEMY PANEL */
-        var enemyTypes = [Piggle, Hoggle, Biggle, PorcoRosso, PorcoBlu, Snail, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish,
+        var enemyTypes = [Piggle, Hoggle, Biggle, PorcoRosso, PorcoBlu, Snail, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
             Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, Shrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Yufo];
         var enemyButtons = enemyTypes.map(function (a) { return new EditorButtonSprite(a); });
         enemyButtons.filter(function (a) { return a.spriteType == Piggle || a.spriteType == Snail; }).forEach(function (a) { return hotbarDefaults.push(a); });
-        var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 4, 6);
+        var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 4, 7);
         var gizmoTypes = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform,
             Checkpoint, Baseball, Battery, Door, Fan, Key, Umbrella, SnailShell, Propeller, RedCannon, BlueCannon, Ring, Rocket, RedBalloon, BlueBalloon, YellowBalloon,

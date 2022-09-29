@@ -122,11 +122,11 @@ class EditorHandler {
 
 
         /* ENEMY PANEL */
-        let enemyTypes: SpriteType[] = [Piggle, Hoggle,  Biggle, PorcoRosso, PorcoBlu, Snail, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, 
+        let enemyTypes: SpriteType[] = [Piggle, Hoggle,  Biggle, PorcoRosso, PorcoBlu, Snail, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
             Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, Shrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Yufo];
         let enemyButtons = enemyTypes.map(a => new EditorButtonSprite(a));
         enemyButtons.filter(a => a.spriteType == Piggle || a.spriteType == Snail).forEach(a => hotbarDefaults.push(a));
-        let enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 4, 6);
+        let enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 4, 7);
 
         let gizmoTypes: (SpriteType)[] = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform,

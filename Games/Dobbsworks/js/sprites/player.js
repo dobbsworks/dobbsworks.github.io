@@ -500,8 +500,9 @@ var Player = /** @class */ (function (_super) {
         var sprites = this.layer.sprites;
         for (var _i = 0, sprites_1 = sprites; _i < sprites_1.length; _i++) {
             var sprite = sprites_1[_i];
-            var landingOnTop = sprite.canBeBouncedOn && this.xRight > sprite.x &&
+            var aboutToOverlapFromAbove = this.xRight > sprite.x &&
                 this.x < sprite.xRight && this.yBottom > sprite.y && this.yBottom - 3 < sprite.y;
+            var landingOnTop = sprite.canBeBouncedOn && aboutToOverlapFromAbove;
             if (sprite instanceof Enemy) {
                 if (sprite.framesSinceThrown > 0 && sprite.framesSinceThrown < 25)
                     continue; // can't bounce on items that have just been thrown
@@ -510,6 +511,8 @@ var Player = /** @class */ (function (_super) {
                     sprite.OnBounce();
                     sprite.SharedOnBounce(); //enemy-specific method
                 }
+                else if (sprite.canStandOn && aboutToOverlapFromAbove) {
+                }
                 else if (!sprite.isInDeathAnimation && this.xRight > sprite.x && this.x < sprite.xRight && this.yBottom > sprite.y && this.y < sprite.yBottom) {
                     if (this.isSliding) {
                         sprite.isActive = false;
@@ -517,7 +520,9 @@ var Player = /** @class */ (function (_super) {
                         this.layer.sprites.push(deadSprite);
                     }
                     else {
-                        this.OnPlayerHurt();
+                        if (sprite.damagesPlayer) {
+                            this.OnPlayerHurt();
+                        }
                     }
                 }
             }

@@ -12,7 +12,7 @@ class Player extends Sprite {
     public isClimbing: boolean = false;
     public isHanging: boolean = false;
     public isSliding: boolean = false;
-    public slideDirection: -1|1 = 1;
+    public slideDirection: -1 | 1 = 1;
     private currentSlope = 0;
     private climbCooldownTimer: number = -1; // how long since climbing (to avoid regrabbing ladder while climbing up)
     respectsSolidTiles = true;
@@ -175,7 +175,7 @@ class Player extends Sprite {
         }
         if (this.dy > this.maxDY) this.dy = this.maxDY;
 
-        let isJumpInitialPressed = KeyboardHandler.IsKeyPressed(KeyAction.Action1, true) /*&& this.forcedJumpTimer <= 0*/ ;
+        let isJumpInitialPressed = KeyboardHandler.IsKeyPressed(KeyAction.Action1, true) /*&& this.forcedJumpTimer <= 0*/;
         if (this.jumpBufferTimer >= 0) this.jumpBufferTimer++;
         if (isJumpInitialPressed) this.jumpBufferTimer = 0;
         if (this.jumpBufferTimer > 3) this.jumpBufferTimer = -1;
@@ -334,7 +334,7 @@ class Player extends Sprite {
             } else {
                 if (Math.abs(this.dx) < 2) {
                     this.dx += this.slideDirection * 0.05 * slopeDown;
-                    this.dy += 0.05 * slopeDown; 
+                    this.dy += 0.05 * slopeDown;
                 }
             }
         }
@@ -473,8 +473,9 @@ class Player extends Sprite {
     HandleEnemies(): void {
         let sprites = this.layer.sprites;
         for (let sprite of sprites) {
-            let landingOnTop = sprite.canBeBouncedOn && this.xRight > sprite.x &&
+            let aboutToOverlapFromAbove = this.xRight > sprite.x &&
                 this.x < sprite.xRight && this.yBottom > sprite.y && this.yBottom - 3 < sprite.y;
+            let landingOnTop = sprite.canBeBouncedOn && aboutToOverlapFromAbove;
 
             if (sprite instanceof Enemy) {
                 if (sprite.framesSinceThrown > 0 && sprite.framesSinceThrown < 25) continue; // can't bounce on items that have just been thrown
@@ -482,13 +483,17 @@ class Player extends Sprite {
                     this.Bounce();
                     sprite.OnBounce();
                     sprite.SharedOnBounce(); //enemy-specific method
+                } else if (sprite.canStandOn && aboutToOverlapFromAbove) {
+
                 } else if (!sprite.isInDeathAnimation && this.xRight > sprite.x && this.x < sprite.xRight && this.yBottom > sprite.y && this.y < sprite.yBottom) {
                     if (this.isSliding) {
                         sprite.isActive = false;
                         let deadSprite = new DeadEnemy(sprite);
                         this.layer.sprites.push(deadSprite);
                     } else {
-                        this.OnPlayerHurt();
+                        if (sprite.damagesPlayer) {
+                            this.OnPlayerHurt();
+                        }
                     }
                 }
             } else {

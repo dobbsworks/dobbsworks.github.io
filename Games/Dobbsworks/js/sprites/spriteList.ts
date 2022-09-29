@@ -75,4 +75,8 @@ var spriteTypes: SpriteType[] = [
 
     CameraZoomOut,
     CameraZoomIn,
+
+    Clammy,
+    Lurchin,
+    Pufferfish,
 ];

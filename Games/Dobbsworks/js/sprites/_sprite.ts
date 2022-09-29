@@ -423,9 +423,12 @@ abstract class Sprite {
                     let nextTileYPixel = Math.floor((sprite.y + sprite.height + sprite.GetTotalDy()) / sprite.layer.tileHeight) * sprite.layer.tileHeight;
                     let heightToNextTile = sprite.y + sprite.height - nextTileYPixel;
                     let wallLocationIfALittleHigher = sprite.GetDistanceOfWall(sprite.GetTotalDy() - sprite.ledgeGrabDistance, direction).x;
-                    if (sprite.GetTotalDy() >= 0 && heightToNextTile <= sprite.ledgeGrabDistance && wallLocationIfALittleHigher !== wallLocation) {
+
+                    let isHigherWallFarther = (wallLocationIfALittleHigher < wallLocation && direction == -1) || (wallLocationIfALittleHigher > wallLocation && direction == 1);
+
+                    if (sprite.GetTotalDy() >= 0 && heightToNextTile <= sprite.ledgeGrabDistance && isHigherWallFarther) {
                         // ledge grab!
-                        //console.log("LEDGE GRAB", heightToNextTile);
+                        //console.log("LEDGE GRAB", wallLocationIfALittleHigher < wallLocation);
                         sprite.y -= heightToNextTile;
                         sprite.dy = 0;
                     } else {

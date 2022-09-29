@@ -6,7 +6,7 @@ class Shrubbert extends Enemy {
     canBeBouncedOn = true;
     state: "normal" | "stunned" | "running" = "normal";
     stunTimer = 0;
-    maxStun = 48;
+    maxStun = 32;
 
     Update(): void {
         if (!this.WaitForOnScreen()) return;

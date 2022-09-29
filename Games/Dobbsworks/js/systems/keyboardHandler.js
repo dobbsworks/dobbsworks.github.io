@@ -184,8 +184,13 @@ var KeyboardHandler = /** @class */ (function () {
             if (gamepad.buttons) {
                 KeyboardHandler.SetActionState(KeyAction.Action1, gamepad.buttons[0].pressed);
                 KeyboardHandler.SetActionState(KeyAction.Action2, gamepad.buttons[2].pressed);
+                if (editorHandler.isEditorAllowed) {
+                    KeyboardHandler.SetActionState(KeyAction.EditToggle, gamepad.buttons[8].pressed);
+                }
+                else {
+                    KeyboardHandler.SetActionState(KeyAction.Reset, gamepad.buttons[8].pressed);
+                }
                 KeyboardHandler.SetActionState(KeyAction.Pause, gamepad.buttons[9].pressed);
-                KeyboardHandler.SetActionState(KeyAction.Reset, gamepad.buttons[8].pressed);
             }
         }
         // dead zone

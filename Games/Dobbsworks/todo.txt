@@ -1,6 +1,13 @@
 SEPTEMBER 28th   TRAILER DROP
 OCTOBER 12th     FULL RELEASE 1.0.0
 
+
+FINAL TO-DOs 
+    GDB Level collection 
+    Create account
+    Re-submit website/trailer to igdb 
+    
+
 BUGS
     Physics engine does not like things being inside walls
         Throwing right while under center of pair of ceilings, item goes FLYING right

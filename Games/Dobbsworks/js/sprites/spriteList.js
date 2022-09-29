@@ -73,4 +73,7 @@ var spriteTypes = [
     Yufo,
     CameraZoomOut,
     CameraZoomIn,
+    Clammy,
+    Lurchin,
+    Pufferfish,
 ];

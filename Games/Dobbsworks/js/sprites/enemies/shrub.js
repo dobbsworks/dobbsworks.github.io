@@ -22,7 +22,7 @@ var Shrubbert = /** @class */ (function (_super) {
         _this.canBeBouncedOn = true;
         _this.state = "normal";
         _this.stunTimer = 0;
-        _this.maxStun = 48;
+        _this.maxStun = 32;
         return _this;
     }
     Shrubbert.prototype.Update = function () {

@@ -24,6 +24,8 @@ var Enemy = /** @class */ (function (_super) {
         _this.stackIndex = 0;
         _this.destackForgiveness = -1;
         _this.killedByProjectiles = true;
+        _this.canStandOn = false;
+        _this.damagesPlayer = true;
         _this.bounceSoundId = "bop";
         return _this;
     }

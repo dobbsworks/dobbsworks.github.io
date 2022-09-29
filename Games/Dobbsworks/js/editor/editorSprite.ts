@@ -144,7 +144,9 @@ class EditorSprite {
     }
 
     Copy(): EditorSprite {
-        return new EditorSprite(this.spriteType, { ...this.tileCoord });
+        let spr = new EditorSprite(this.spriteType, { ...this.tileCoord });
+        spr.editorProps = [...this.editorProps]; // include props
+        return spr;
     }
 }
 
