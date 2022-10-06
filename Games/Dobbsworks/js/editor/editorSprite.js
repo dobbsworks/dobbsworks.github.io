@@ -10,6 +10,13 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 var EditorSprite = /** @class */ (function () {
     function EditorSprite(spriteType, tileCoord) {
         this.spriteType = spriteType;
@@ -152,7 +159,9 @@ var EditorSprite = /** @class */ (function () {
         //     12 * camera.scale, 12 * camera.scale);
     };
     EditorSprite.prototype.Copy = function () {
-        return new EditorSprite(this.spriteType, __assign({}, this.tileCoord));
+        var spr = new EditorSprite(this.spriteType, __assign({}, this.tileCoord));
+        spr.editorProps = __spreadArrays(this.editorProps); // include props
+        return spr;
     };
     return EditorSprite;
 }());

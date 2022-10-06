@@ -35,16 +35,15 @@ var InitialMenu = /** @class */ (function (_super) {
         mutedText.xOffset = playMutedButton.width / 2 - 5;
         mutedText.yOffset = -75;
         var playDemoButton = new Button(50, camera.canvas.height / 4 + 50, camera.canvas.width - 100, camera.canvas.height / 2 - 100);
-        var playDemoText = new UIText(0, 0, "Click to try the demo", 40, "white");
+        var playDemoText = new UIText(0, 0, "Start Race", 40, "white");
         playDemoButton.AddChild(playDemoText);
         playDemoText.xOffset = playDemoButton.width / 2 - 5;
         playDemoText.yOffset = -75;
-        if (isDemoMode) {
-            ret.push(playDemoButton);
-        }
-        else {
-            ret.push(playWithAudioButton, playMutedButton);
-        }
+        // if (isDemoMode) {
+        //     ret.push(playDemoButton);
+        // } else {
+        ret.push(playWithAudioButton, playMutedButton);
+        //}
         playDemoButton.onClickEvents.push(function () {
             _this.GoToMainMenu();
         });

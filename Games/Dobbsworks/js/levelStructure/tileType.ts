@@ -278,6 +278,13 @@ class TileType {
         TileType.RegisterSlope("Cave", 8);
 
         TileType.Ice;
+
+        TileType.OneWayRight;
+        TileType.OneWayDown;
+        TileType.OneWayLeft;
+        TileType.OneWayUp;
+
+        TileType.IceTop;
     }
 
 
@@ -351,7 +358,7 @@ class TileType {
     public static get ScaleBack(): TileType { return TileType.GetTileType("ScaleBack", "terrain", 4, 3, Solidity.None, TargetLayer.backdrop); }
     public static get MetalLadder(): TileType { return TileType.GetTileType("MetalLadder", "terrain", 5, 3, Solidity.None, TargetLayer.main, tileType => { tileType.isClimbable = true; }); }
     public static get WaterZap(): TileType {
-        return TileType.GetTileType("WaterZap", "terrain", 6, 3, Solidity.None, TargetLayer.main, tileType => {
+        return TileType.GetAnimatedTileType("WaterZap", "terrain", [{x:6, y:3},{x:0,y:19}], 15, Solidity.None, TargetLayer.main, tileType => {
             tileType.hurtOnOverlap = true;
         });
     }
@@ -379,6 +386,7 @@ class TileType {
     public static get Icicles(): TileType {
         return TileType.GetTileType("Icicles", "terrain", 6, 5, Solidity.Block, TargetLayer.main, tileType => {
             tileType.hurtOnBottom = true; tileType.hurtOnSides = true;
+            tileType.isSlippery = true;
         });
     }
     public static get DangerSign(): TileType { return TileType.GetTileType("DangerSign", "terrain", 7, 5, Solidity.None, TargetLayer.main); }
@@ -1062,6 +1070,29 @@ class TileType {
             tileType.trackCrossedEquation = (x1, y1, x2, y2) => ((x1 >= 0.5 && x2 <= 0.5) || (x1 <= 0.5 && x2 >= 0.5)) && y1 <= 0.5 && y2 <= 0.5;
             tileType.trackDirectionEquation = (x, y) => ({ dx: 0, dy: -1 });
             tileType.isTrackCap = true;
+        })
+    }
+
+
+    private static OneWay(direction: Direction): TileType {
+        let y = [Direction.Right, Direction.Down, Direction.Left, Direction.Up].indexOf(direction);
+        let frames = [
+            {x: 0, y: y},
+            {x: 1, y: y},
+            {x: 2, y: y},
+        ]
+        let solidity = [Solidity.LeftWall, Solidity.Bottom, Solidity.RightWall, Solidity.Top][y];
+        return TileType.GetAnimatedTileType("OneWay" + direction.name, "oneway", frames, 4, solidity, TargetLayer.semisolid, tileType => {});
+    }
+
+    public static get OneWayRight(): TileType { return this.OneWay(Direction.Right)};
+    public static get OneWayDown(): TileType { return this.OneWay(Direction.Down)};
+    public static get OneWayLeft(): TileType { return this.OneWay(Direction.Left)};
+    public static get OneWayUp(): TileType { return this.OneWay(Direction.Up)};
+    
+    public static get IceTop(): TileType {
+        return TileType.GetTileType("IceTop", "misc", 0, 4, Solidity.Top, TargetLayer.semisolid, (tileType: TileType) => {
+            tileType.isSlippery = true;
         })
     }
 

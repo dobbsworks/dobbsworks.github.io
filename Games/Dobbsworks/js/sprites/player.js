@@ -624,7 +624,7 @@ var Player = /** @class */ (function (_super) {
         camera.autoscrollY = 0;
     };
     Player.prototype.IsOnIce = function () {
-        return this.standingOn.length > 0 && this.standingOn.every(function (a) { return a.tileType.isSlippery; });
+        return this.standingOn.length > 0 && this.standingOn.some(function (a) { return a.tileType.isSlippery; });
     };
     Player.prototype.PlayerInertia = function () {
         if (this.isSliding)

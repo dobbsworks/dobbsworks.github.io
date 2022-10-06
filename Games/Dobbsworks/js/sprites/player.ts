@@ -587,7 +587,7 @@ class Player extends Sprite {
     }
 
     IsOnIce(): boolean {
-        return this.standingOn.length > 0 && this.standingOn.every(a => a.tileType.isSlippery);
+        return this.standingOn.length > 0 && this.standingOn.some(a => a.tileType.isSlippery);
     }
 
     PlayerInertia(): void {

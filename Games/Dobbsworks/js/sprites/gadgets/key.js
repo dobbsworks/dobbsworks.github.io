@@ -28,6 +28,7 @@ var Key = /** @class */ (function (_super) {
         _this.respectsSolidTiles = true;
         _this.canBeHeld = true;
         _this.poofTimer = -1;
+        _this.frameRow = 0;
         return _this;
     }
     Key.prototype.Update = function () {
@@ -97,7 +98,7 @@ var Key = /** @class */ (function (_super) {
             frame = Math.floor(this.poofTimer / 20 * 4);
         }
         return {
-            imageTile: tiles["key"][frame][0],
+            imageTile: tiles["key"][frame][this.frameRow],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
@@ -106,3 +107,13 @@ var Key = /** @class */ (function (_super) {
     };
     return Key;
 }(Sprite));
+var FlatKey = /** @class */ (function (_super) {
+    __extends(FlatKey, _super);
+    function FlatKey() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.isPlatform = true;
+        _this.frameRow = 1;
+        return _this;
+    }
+    return FlatKey;
+}(Key));

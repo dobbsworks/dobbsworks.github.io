@@ -76,4 +76,5 @@ var spriteTypes = [
     Clammy,
     Lurchin,
     Pufferfish,
+    FlatKey,
 ];

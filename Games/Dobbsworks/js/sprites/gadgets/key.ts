@@ -5,6 +5,7 @@ class Key extends Sprite {
     respectsSolidTiles = true;
     canBeHeld = true;
     poofTimer = -1;
+    frameRow = 0;
 
     Update(): void {
         if (this.poofTimer >= 0) {
@@ -73,11 +74,16 @@ class Key extends Sprite {
             frame = Math.floor(this.poofTimer / 20 * 4);
         }
         return {
-            imageTile: tiles["key"][frame][0],
+            imageTile: tiles["key"][frame][this.frameRow],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
             yOffset: 1
         };
     }
+}
+
+class FlatKey extends Key {
+    public isPlatform: boolean = true;
+    frameRow   = 1;
 }

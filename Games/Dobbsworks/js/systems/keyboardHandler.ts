@@ -73,7 +73,7 @@ class KeyboardHandler {
         {k: "Esc", v: KeyAction.Pause},
         {k: "Escape", v: KeyAction.Pause},
         {k: "KeyP", v: KeyAction.Pause},
-        {k: "KeyR", v: KeyAction.EditorPlayerHotkey},
+        {k: "KeyF", v: KeyAction.EditorPlayerHotkey},
 
         {k: "Esc", v: KeyAction.Cancel},
         {k: "Escape", v: KeyAction.Cancel},

@@ -29,7 +29,7 @@ class RedBalloon extends Motor {
         }
 
         this.Movement();
-        this.horizontalDirection = this.dx < 0 ? -1 : 1;
+        this.horizontalDirection = this.dx <= 0 ? -1 : 1;
         this.MoveByVelocity();
         this.MoveConnectedSprite();
     }

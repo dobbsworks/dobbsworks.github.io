@@ -374,8 +374,9 @@ var Sprite = /** @class */ (function () {
         this.touchedCeilings = [];
         this.touchedLeftWalls = [];
         this.touchedRightWalls = [];
-        this.ReactToSolids();
+        // recently swapped below lines to fix issue where you can't jump when being pulled into a wall by a platform
         this.ReactToPlatforms();
+        this.ReactToSolids();
     };
     Sprite.prototype.ReactToSolids = function () {
         var _a;

@@ -254,6 +254,11 @@ var TileType = /** @class */ (function () {
         TileType.DecorCave;
         TileType.RegisterSlope("Cave", 8);
         TileType.Ice;
+        TileType.OneWayRight;
+        TileType.OneWayDown;
+        TileType.OneWayLeft;
+        TileType.OneWayUp;
+        TileType.IceTop;
     };
     TileType.RegisterSlope = function (keyBase, tileRow) {
         var colIter = 8;
@@ -446,7 +451,7 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "WaterZap", {
         get: function () {
-            return TileType.GetTileType("WaterZap", "terrain", 6, 3, Solidity.None, TargetLayer.main, function (tileType) {
+            return TileType.GetAnimatedTileType("WaterZap", "terrain", [{ x: 6, y: 3 }, { x: 0, y: 19 }], 15, Solidity.None, TargetLayer.main, function (tileType) {
                 tileType.hurtOnOverlap = true;
             });
         },
@@ -537,6 +542,7 @@ var TileType = /** @class */ (function () {
             return TileType.GetTileType("Icicles", "terrain", 6, 5, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.hurtOnBottom = true;
                 tileType.hurtOnSides = true;
+                tileType.isSlippery = true;
             });
         },
         enumerable: false,
@@ -1646,6 +1652,49 @@ var TileType = /** @class */ (function () {
                 tileType.trackCrossedEquation = function (x1, y1, x2, y2) { return ((x1 >= 0.5 && x2 <= 0.5) || (x1 <= 0.5 && x2 >= 0.5)) && y1 <= 0.5 && y2 <= 0.5; };
                 tileType.trackDirectionEquation = function (x, y) { return ({ dx: 0, dy: -1 }); };
                 tileType.isTrackCap = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    TileType.OneWay = function (direction) {
+        var y = [Direction.Right, Direction.Down, Direction.Left, Direction.Up].indexOf(direction);
+        var frames = [
+            { x: 0, y: y },
+            { x: 1, y: y },
+            { x: 2, y: y },
+        ];
+        var solidity = [Solidity.LeftWall, Solidity.Bottom, Solidity.RightWall, Solidity.Top][y];
+        return TileType.GetAnimatedTileType("OneWay" + direction.name, "oneway", frames, 4, solidity, TargetLayer.semisolid, function (tileType) { });
+    };
+    Object.defineProperty(TileType, "OneWayRight", {
+        get: function () { return this.OneWay(Direction.Right); },
+        enumerable: false,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(TileType, "OneWayDown", {
+        get: function () { return this.OneWay(Direction.Down); },
+        enumerable: false,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(TileType, "OneWayLeft", {
+        get: function () { return this.OneWay(Direction.Left); },
+        enumerable: false,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(TileType, "OneWayUp", {
+        get: function () { return this.OneWay(Direction.Up); },
+        enumerable: false,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(TileType, "IceTop", {
+        get: function () {
+            return TileType.GetTileType("IceTop", "misc", 0, 4, Solidity.Top, TargetLayer.semisolid, function (tileType) {
+                tileType.isSlippery = true;
             });
         },
         enumerable: false,

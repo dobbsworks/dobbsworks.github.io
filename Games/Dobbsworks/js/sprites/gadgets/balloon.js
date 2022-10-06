@@ -43,7 +43,7 @@ var RedBalloon = /** @class */ (function (_super) {
                 this.isActive = false;
         }
         this.Movement();
-        this.horizontalDirection = this.dx < 0 ? -1 : 1;
+        this.horizontalDirection = this.dx <= 0 ? -1 : 1;
         this.MoveByVelocity();
         this.MoveConnectedSprite();
     };

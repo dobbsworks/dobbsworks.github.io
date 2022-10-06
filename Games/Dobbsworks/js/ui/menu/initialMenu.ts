@@ -19,16 +19,16 @@ class InitialMenu extends Menu {
         mutedText.yOffset = -75;
         
         let playDemoButton = new Button(50, camera.canvas.height / 4 + 50, camera.canvas.width - 100, camera.canvas.height / 2 - 100);
-        let playDemoText = new UIText(0,0, "Click to try the demo", 40, "white");
+        let playDemoText = new UIText(0,0, "Start Race", 40, "white");
         playDemoButton.AddChild(playDemoText);
         playDemoText.xOffset = playDemoButton.width / 2 - 5;
         playDemoText.yOffset = -75;
 
-        if (isDemoMode) {
-            ret.push(playDemoButton);
-        } else {
+        // if (isDemoMode) {
+        //     ret.push(playDemoButton);
+        // } else {
             ret.push(playWithAudioButton, playMutedButton);
-        }
+        //}
         
         playDemoButton.onClickEvents.push(() => {
             this.GoToMainMenu();

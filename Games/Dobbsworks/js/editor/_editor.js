@@ -38,6 +38,7 @@ var EditorHandler = /** @class */ (function () {
         this.grabbedCheckpointLocation = null;
         this.bankedCheckpointTime = 0;
         this.initialized = false;
+        this.cameraMoveTimer = 0;
     }
     EditorHandler.prototype.Initialize = function () {
         var _a;
@@ -114,10 +115,10 @@ var EditorHandler = /** @class */ (function () {
         var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 4, 7);
         var gizmoTypes = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform,
-            Checkpoint, Baseball, Battery, Door, Fan, Key, Umbrella, SnailShell, Propeller, RedCannon, BlueCannon, Ring, Rocket, RedBalloon, BlueBalloon, YellowBalloon,
+            Checkpoint, Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, Propeller, RedCannon, BlueCannon, Ring, Rocket, RedBalloon, BlueBalloon, YellowBalloon,
         ];
         var gizmoButtons = gizmoTypes.map(function (a) { return new EditorButtonSprite(a); });
-        var keyIndex = gizmoButtons.findIndex(function (a) { return a instanceof EditorButtonSprite && a.spriteType == Key; });
+        var keyIndex = gizmoButtons.findIndex(function (a) { return a instanceof EditorButtonSprite && a.spriteType == FlatKey; });
         gizmoButtons.splice(keyIndex + 1, 0, new EditorButtonTile(TileType.Lock, "Lock block"));
         gizmoButtons.push(new EditorButtonTile(TileType.ConveyorLeft, "Conveyor (left)").AppendImage(tiles["editor"][0][2]));
         gizmoButtons.push(new EditorButtonTile(TileType.ConveyorRight, "Conveyor (right)").AppendImage(tiles["editor"][2][2]));
@@ -128,7 +129,12 @@ var EditorHandler = /** @class */ (function () {
         gizmoButtons.push(new EditorButtonTile(TileType.BubbleBlock1, "Bubble block"));
         gizmoButtons.push(new EditorButtonTile(TileType.HangingVine, "Hanging vines"));
         gizmoButtons.push(new EditorButtonTile(TileType.HangingBars, "Hanging bars"));
-        gizmoButtons.push(new EditorButtonTile(TileType.Ice, "Ice"));
+        gizmoButtons.push(new EditorButtonTile(TileType.Ice, "Ice Block"));
+        gizmoButtons.push(new EditorButtonTile(TileType.IceTop, "Ice Top"));
+        gizmoButtons.push(new EditorButtonTile(TileType.OneWayRight, "One-way (right)"));
+        gizmoButtons.push(new EditorButtonTile(TileType.OneWayDown, "One-way (down)"));
+        gizmoButtons.push(new EditorButtonTile(TileType.OneWayLeft, "One-way (left)"));
+        gizmoButtons.push(new EditorButtonTile(TileType.OneWayUp, "One-way (up)"));
         var gizmoPanel = this.CreateFloatingButtonPanel(gizmoButtons, 5, 6);
         var brushTypeHandle = new EditorButtonDrawerHandle(tiles["editor"][4][0], "Brush types", []);
         this.brushPanel = new EditorButtonDrawer(this.mainPanel.x - 160, this.mainPanel.y, 70, 70, brushTypeHandle, [
@@ -464,7 +470,12 @@ var EditorHandler = /** @class */ (function () {
         if (!this.isInEditMode)
             return;
         this.frameNum++;
+        this.cameraMoveTimer++;
         var cameraSpeed = 6 / camera.scale;
+        if (this.cameraMoveTimer > 60)
+            cameraSpeed = 12 / camera.scale;
+        if (this.cameraMoveTimer > 120)
+            cameraSpeed = 24 / camera.scale;
         if (KeyboardHandler.IsKeyPressed(KeyAction.Left, false))
             camera.targetX -= cameraSpeed;
         if (KeyboardHandler.IsKeyPressed(KeyAction.Right, false))
@@ -473,6 +484,12 @@ var EditorHandler = /** @class */ (function () {
             camera.targetY -= cameraSpeed;
         if (KeyboardHandler.IsKeyPressed(KeyAction.Down, false))
             camera.targetY += cameraSpeed;
+        if (!KeyboardHandler.IsKeyPressed(KeyAction.Left, false) &&
+            !KeyboardHandler.IsKeyPressed(KeyAction.Right, false) &&
+            !KeyboardHandler.IsKeyPressed(KeyAction.Up, false) &&
+            !KeyboardHandler.IsKeyPressed(KeyAction.Down, false)) {
+            this.cameraMoveTimer = 0;
+        }
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorMinimize, true))
             this.ToggleMinimizeMode();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true))
