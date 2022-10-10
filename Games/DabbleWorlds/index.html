@@ -12,7 +12,9 @@
     </a>
     <div id="logo"></div>
 
-    <img id="locked" src="siteImages/locked.png" style="margin:10px;" />
+    <a href="#" id="lockedLink">
+        <img id="locked" src="siteImages/locked.png" style="margin:10px;" />
+    </a>
     <div id="countdown" style="cursor:pointer">
         <span>Releases in...</span>
         <br />
@@ -44,11 +46,12 @@
     document.body.onload = Initialize;
 
     function Initialize() {
+        Loop();
         setInterval(Loop, 1000);
     }
 
     function Loop() {
-        var msUntilRelease = (new Date("Mon, 12 Oct 2022 14:00:00 GMT")) - new Date();
+        var msUntilRelease = (new Date("Wed, 12 Oct 2022 14:00:00 GMT")) - new Date();
 
         var fullDays = Math.floor(msUntilRelease / (1000 * 60 * 60 * 24));
         var fullHours = Math.floor(msUntilRelease / (1000 * 60 * 60)) % 24;
@@ -61,15 +64,20 @@
         var secondsText = fullSeconds.toFixed(0).padStart(2, '0');
 
         var timeString = dayText + ":" + hoursText + ":" + minutesText + ":" + secondsText;
-        var textEl = document.getElementById("timer");
 
-        
         if (msUntilRelease <= 0) {
-            timeString = "REFRESH PAGE!"
-        }
+            var countdownDiv = document.getElementById("countdown");
+            countdownDiv.innerHTML = "";
+            var lockedImage = document.getElementById("locked");
+            lockedImage.src = "siteImages/unlocked.png";
+            var lockedLink = document.getElementById("lockedLink");
+            lockedLink.href = "https://dabbleworlds1.azurewebsites.net/";
+        } else {
+            var textEl = document.getElementById("timer");
 
-        if (textEl) {
-            textEl.innerHTML = timeString;
+            if (textEl) {
+                textEl.innerHTML = timeString;
+            }
         }
     }
 
