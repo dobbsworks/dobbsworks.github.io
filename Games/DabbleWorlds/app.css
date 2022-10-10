@@ -37,8 +37,8 @@ p {
     background: linear-gradient(90deg, #0000 0%, #483075dd 15%, #303775dd 85%, #0000 100%);
 }
 
-#logo {
-    margin: 30px;
+#logo {    
+    margin: 30px 30px 3px 30px;
     width: 452px;
     height: 244px;
     background-image: url("./siteImages/logo.png");
