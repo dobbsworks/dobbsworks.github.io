@@ -18,7 +18,7 @@ class MainMenu extends Menu {
         playText.xOffset = playButtonWidth / 2 - 5;
         playText.yOffset = -15;
         playButton.isNoisy = true;
-        ret.push(playButton);
+        if (!isDemoMode) ret.push(playButton);
 
         let myLevelsButton = new Button(playButtonX, playButtonY + playButtonHeight + 10, playButtonWidth, playButtonHeight);
         let myLevelsText = new UIText(centerX, playButtonY + 40, "My Levels", 30, "#000");
@@ -29,7 +29,7 @@ class MainMenu extends Menu {
         if (!isDemoMode) ret.push(myLevelsButton);
 
         let demoLevelsButton = new Button(playButtonX, playButtonY + playButtonHeight + 10, playButtonWidth, playButtonHeight);
-        let demoLevelsText = new UIText(centerX, playButtonY + 40, "Demo Levels", 30, "#000");
+        let demoLevelsText = new UIText(centerX, playButtonY + 40, "GDB Levels", 30, "#000");
         demoLevelsButton.AddChild(demoLevelsText);
         demoLevelsText.xOffset = playButtonWidth / 2 - 5;
         demoLevelsText.yOffset = -15;
@@ -67,6 +67,7 @@ class MainMenu extends Menu {
         });
         
         demoLevelsButton.onClickEvents.push(() => {
+            currentDemoIndex = 0;
             currentMap = LevelMap.FromImportString(allDemoLevels[0]);
             editorHandler.SwitchToPlayMode();
             MenuHandler.SubMenu(BlankMenu);

@@ -34,7 +34,8 @@ var MainMenu = /** @class */ (function (_super) {
         playText.xOffset = playButtonWidth / 2 - 5;
         playText.yOffset = -15;
         playButton.isNoisy = true;
-        ret.push(playButton);
+        if (!isDemoMode)
+            ret.push(playButton);
         var myLevelsButton = new Button(playButtonX, playButtonY + playButtonHeight + 10, playButtonWidth, playButtonHeight);
         var myLevelsText = new UIText(centerX, playButtonY + 40, "My Levels", 30, "#000");
         myLevelsButton.AddChild(myLevelsText);
@@ -44,7 +45,7 @@ var MainMenu = /** @class */ (function (_super) {
         if (!isDemoMode)
             ret.push(myLevelsButton);
         var demoLevelsButton = new Button(playButtonX, playButtonY + playButtonHeight + 10, playButtonWidth, playButtonHeight);
-        var demoLevelsText = new UIText(centerX, playButtonY + 40, "Demo Levels", 30, "#000");
+        var demoLevelsText = new UIText(centerX, playButtonY + 40, "GDB Levels", 30, "#000");
         demoLevelsButton.AddChild(demoLevelsText);
         demoLevelsText.xOffset = playButtonWidth / 2 - 5;
         demoLevelsText.yOffset = -15;
@@ -78,6 +79,7 @@ var MainMenu = /** @class */ (function (_super) {
             audioHandler.SetBackgroundMusic("menuJazz");
         });
         demoLevelsButton.onClickEvents.push(function () {
+            currentDemoIndex = 0;
             currentMap = LevelMap.FromImportString(allDemoLevels[0]);
             editorHandler.SwitchToPlayMode();
             MenuHandler.SubMenu(BlankMenu);

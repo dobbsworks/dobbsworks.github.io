@@ -95,3 +95,11 @@ textarea {
     background-color: #181628;
     color: #FFF3;
 }
+
+#countdown {
+    color: white;
+    font-size: 50px;
+    position: absolute;
+    top: 390px;
+    filter: drop-shadow(2px 4px 6px black);
+}

@@ -15,7 +15,8 @@ var Camera = /** @class */ (function () {
         this.targetScale = 4;
         this.defaultScale = 4;
         this.transitionTimer = 0;
-        this.isAutoscrolling = false;
+        this.isAutoscrollingHorizontally = false;
+        this.isAutoscrollingVertically = false;
         this.autoscrollX = 0;
         this.autoscrollY = 0;
         this.autoscrollTriggers = [];
@@ -40,7 +41,10 @@ var Camera = /** @class */ (function () {
                 a.yBottom <= _this.GetBottomCameraEdge();
         });
         if (onScreenScrollTriggers.length) {
-            this.isAutoscrolling = true;
+            if (onScreenScrollTriggers.some(function (a) { return a instanceof CameraScrollLeft || a instanceof CameraScrollRight; }))
+                this.isAutoscrollingHorizontally = true;
+            if (onScreenScrollTriggers.some(function (a) { return a instanceof CameraScrollUp || a instanceof CameraScrollDown; }))
+                this.isAutoscrollingVertically = true;
             var _loop_1 = function (trigger) {
                 this_1.autoscrollX += trigger.direction.x * .25;
                 this_1.autoscrollY += trigger.direction.y * .25;
@@ -80,13 +84,19 @@ var Camera = /** @class */ (function () {
                 _loop_2(trigger);
             }
         }
-        if (this.isAutoscrolling) {
+        if (this.isAutoscrollingHorizontally) {
             this.targetX += this.autoscrollX;
-            this.targetY += this.autoscrollY;
         }
         else {
             if (this.target) {
                 this.targetX = this.target.xMid;
+            }
+        }
+        if (this.isAutoscrollingVertically) {
+            this.targetY += this.autoscrollY;
+        }
+        else {
+            if (this.target) {
                 this.targetY = this.target.yBottom - 12;
             }
         }
@@ -151,7 +161,8 @@ var Camera = /** @class */ (function () {
     Camera.prototype.Reset = function () {
         this.autoscrollX = 0;
         this.autoscrollY = 0;
-        this.isAutoscrolling = false;
+        this.isAutoscrollingHorizontally = false;
+        this.isAutoscrollingVertically = false;
         this.targetScale = this.defaultScale;
         if (currentMap) {
             this.autoscrollTriggers = currentMap.mainLayer.sprites.filter(function (a) { return a instanceof CameraScrollTrigger; });

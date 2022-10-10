@@ -28,7 +28,9 @@ class UiHandler {
             el.Update();
         }
 
-        document.body.style.cursor = "unset";
+        if (document.body.style.cursor == "pointer") {
+            document.body.style.cursor = "unset";
+        }
         for (let el of this.mousedOverElements) {
             if (el instanceof Button) {
                 document.body.style.cursor = "pointer";

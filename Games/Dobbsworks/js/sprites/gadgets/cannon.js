@@ -16,8 +16,8 @@ var RedCannon = /** @class */ (function (_super) {
     __extends(RedCannon, _super);
     function RedCannon() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.height = 12;
-        _this.width = 12;
+        _this.height = 10;
+        _this.width = 10;
         _this.respectsSolidTiles = false;
         _this.holdingPlayer = false;
         _this.shootTimer = 0;
@@ -69,8 +69,8 @@ var RedCannon = /** @class */ (function (_super) {
             imageTile: tiles["cannon"][col][(this.bigTimer > 0 ? 1 : 0) + this.frameRow],
             xFlip: false,
             yFlip: false,
-            xOffset: 2,
-            yOffset: 2
+            xOffset: 3,
+            yOffset: 3
         };
     };
     return RedCannon;

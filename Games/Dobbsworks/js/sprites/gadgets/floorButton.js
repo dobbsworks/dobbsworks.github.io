@@ -30,6 +30,8 @@ var FloorButton = /** @class */ (function (_super) {
         var _this = this;
         var spritesOnTop = this.layer.sprites.filter(function (a) { return a.parentSprite == _this; });
         if (spritesOnTop.length > 0) {
+            if (this.onTimer != 30)
+                audioHandler.PlaySound("erase", true);
             this.onTimer = 30;
         }
         else {

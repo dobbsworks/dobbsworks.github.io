@@ -22,13 +22,15 @@ var Sparky = /** @class */ (function (_super) {
         _this.dir = Direction.Right;
         _this.anchor = null;
         _this.killedByProjectiles = false;
+        _this.timer = 0;
         return _this;
     }
     Sparky.prototype.Update = function () {
-        if (!this.WaitForOnScreen())
+        if (!this.WaitForOnScreen()) {
             return;
+        }
         var speed = 0.5;
-        if (this.age % 24 === 0) {
+        if (this.timer % 24 === 0) {
             // check upcoming tile
             var prioritizedDirections = [this.dir.Clockwise(), this.dir, this.dir.CounterClockwise()];
             this.dir = this.dir.Opposite();
@@ -43,6 +45,7 @@ var Sparky = /** @class */ (function (_super) {
                 }
             }
         }
+        this.timer++;
         // let targetX = +((this.x + this.dir.x * speed).toFixed(3));
         // let targetY = +((this.y + this.dir.y * speed).toFixed(3));
         // let currentTileX = Math.floor((this.x + this.width/2 + this.dir.x * 3) / 12);

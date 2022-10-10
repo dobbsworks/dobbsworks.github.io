@@ -26,6 +26,7 @@ class Biggle extends Enemy {
             this.layer.sprites.push(pig);
             pig.dx = dir * 2;
             pig.dy = -1;
+            pig.direction = dir == -1 ? -1 : 1;
         });
     }
 

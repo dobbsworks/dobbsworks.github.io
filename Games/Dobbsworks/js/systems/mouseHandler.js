@@ -79,6 +79,9 @@ var MouseHandler = /** @class */ (function () {
     MouseHandler.prototype.OnMouseMove = function (e) {
         mouseHandler.mouseX = e.offsetX;
         mouseHandler.mouseY = e.offsetY;
+        if (document.body.style.cursor == "none") {
+            document.body.style.cursor = "unset";
+        }
     };
     MouseHandler.prototype.OnMouseOut = function (e) {
         mouseHandler.isMouseOver = false;

@@ -45,6 +45,7 @@ class LevelSuccessMenu extends Menu {
         if (isDemoMode) {
             this.likeButton.isHidden = true;
             this.dislikeButton.isHidden = true;
+            restartButton.isHidden = true;
         }
 
         let restartText = new UIText(camera.canvas.width / 2, continueButton.y + 20, "Start Over", 20, "#FFF");
@@ -90,6 +91,10 @@ class LevelSuccessMenu extends Menu {
             this.gear.fixedPosition = true;
             this.gear.deathCount = this.deathCount;
             this.minigameContainer.AddChild(this.gear);
+        }
+
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true) && this.timer > 60) {
+            this.gear?.DoneWithLevel();
         }
     }
 

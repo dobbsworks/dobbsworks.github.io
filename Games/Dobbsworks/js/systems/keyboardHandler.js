@@ -161,6 +161,7 @@ var KeyboardHandler = /** @class */ (function () {
                 continue;
             if (gp.axes.some(function (a) { return Math.abs(a) > 0.1; }) || gp.buttons.some(function (a) { return a.pressed; })) {
                 KeyboardHandler.gamepadIndex = i;
+                document.body.style.cursor = "none";
             }
         }
         if (KeyboardHandler.gamepadIndex === -1)
@@ -191,6 +192,14 @@ var KeyboardHandler = /** @class */ (function () {
                     KeyboardHandler.SetActionState(KeyAction.Reset, gamepad.buttons[8].pressed);
                 }
                 KeyboardHandler.SetActionState(KeyAction.Pause, gamepad.buttons[9].pressed);
+                if (gamepad.buttons[12].pressed)
+                    dy = -1;
+                if (gamepad.buttons[13].pressed)
+                    dy = 1;
+                if (gamepad.buttons[14].pressed)
+                    dx = -1;
+                if (gamepad.buttons[15].pressed)
+                    dx = 1;
             }
         }
         // dead zone
@@ -236,7 +245,7 @@ var KeyboardHandler = /** @class */ (function () {
         { k: "KeyQ", v: KeyAction.Cancel },
         { k: "Backslash", v: KeyAction.Debug1 },
         { k: "Enter", v: KeyAction.Debug2 },
-        { k: "Backspace", v: KeyAction.Debug3 },
+        //{k: "Backspace", v: KeyAction.Debug3},
         { k: "F11", v: KeyAction.Fullscreen },
         { k: "Tab", v: KeyAction.EditToggle },
         { k: "KeyX", v: KeyAction.EditorMinimize },

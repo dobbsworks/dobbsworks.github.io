@@ -36,7 +36,9 @@ var UiHandler = /** @class */ (function () {
             el.CheckAndUpdateMousedOver();
             el.Update();
         }
-        document.body.style.cursor = "unset";
+        if (document.body.style.cursor == "pointer") {
+            document.body.style.cursor = "unset";
+        }
         for (var _b = 0, _c = this.mousedOverElements; _b < _c.length; _b++) {
             var el = _c[_b];
             if (el instanceof Button) {

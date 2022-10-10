@@ -425,7 +425,7 @@ class Player extends Sprite {
     }
 
     PushByAutoscroll(): void {
-        if (camera.isAutoscrolling) {
+        if (camera.isAutoscrollingHorizontally) {
             if (this.x < camera.GetLeftCameraEdge() && this.dx < camera.autoscrollX) this.dx = camera.autoscrollX
             if (this.xRight > camera.GetRightCameraEdge() && this.dx > camera.autoscrollX) this.dx = camera.autoscrollX
         }
@@ -442,7 +442,7 @@ class Player extends Sprite {
             if (this.dx > 0) this.dx = 0;
         }
 
-        if (camera.isAutoscrolling) {
+        if (camera.isAutoscrollingHorizontally || camera.isAutoscrollingVertically) {
             let leftEdge = camera.GetLeftCameraEdge();
             if (this.x < leftEdge) {
                 if (this.isTouchingRightWall && camera.autoscrollX > 0) this.OnPlayerDead();
@@ -773,6 +773,18 @@ class Player extends Sprite {
             if (Math.floor(this.iFrames / 4) % 2 == 0) sourceImage = "dobbsGhost";
         }
 
+        
+        let isInCannon = this.layer.sprites.some(a => a instanceof RedCannon && a.holdingPlayer);
+        if (isInCannon) {
+            return {
+                imageTile: tiles["empty"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            };
+        }
+
         let xFlip = this.direction == -1;
         let actualFrame = Math.floor(this.frameNum) % 2;
 
@@ -864,6 +876,12 @@ class DeadPlayer extends Sprite {
             } else {
                 editorHandler.SwitchToEditMode();
                 editorHandler.SwitchToPlayMode();
+                if (camera.target) {
+                    camera.x = camera.target.xMid;
+                    camera.y = camera.target.yMid;
+                }
+                camera.targetX = camera.x;
+                camera.targetY = camera.y;
             }
         }
     }

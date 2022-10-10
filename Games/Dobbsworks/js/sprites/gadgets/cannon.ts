@@ -1,6 +1,6 @@
 class RedCannon extends Sprite {
-    public height: number = 12;
-    public width: number = 12;
+    public height: number = 10;
+    public width: number = 10;
     public respectsSolidTiles: boolean = false;
 
     public holdingPlayer: boolean = false;
@@ -57,8 +57,8 @@ class RedCannon extends Sprite {
             imageTile: tiles["cannon"][col][(this.bigTimer > 0 ? 1 : 0) + this.frameRow],
             xFlip: false,
             yFlip: false,
-            xOffset: 2,
-            yOffset: 2
+            xOffset: 3,
+            yOffset: 3
         };
     }
 }

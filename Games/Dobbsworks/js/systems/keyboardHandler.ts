@@ -80,7 +80,7 @@ class KeyboardHandler {
         {k: "KeyQ", v: KeyAction.Cancel},
         {k: "Backslash", v: KeyAction.Debug1},
         {k: "Enter", v: KeyAction.Debug2},
-        {k: "Backspace", v: KeyAction.Debug3},
+        //{k: "Backspace", v: KeyAction.Debug3},
         
         {k: "F11", v: KeyAction.Fullscreen},
         {k: "Tab", v: KeyAction.EditToggle},
@@ -211,6 +211,7 @@ class KeyboardHandler {
             if (!gp) continue;
             if (gp.axes.some(a => Math.abs(a) > 0.1) || gp.buttons.some(a => a.pressed)) {
                 KeyboardHandler.gamepadIndex = i;
+                document.body.style.cursor = "none";
             }
         }
         if (KeyboardHandler.gamepadIndex === -1) return;
@@ -235,11 +236,17 @@ class KeyboardHandler {
                     KeyboardHandler.SetActionState(KeyAction.Reset, gamepad.buttons[8].pressed);
                 }
                 KeyboardHandler.SetActionState(KeyAction.Pause, gamepad.buttons[9].pressed);
+                
+                if (gamepad.buttons[12].pressed) dy = -1;
+                if (gamepad.buttons[13].pressed) dy = 1;
+                if (gamepad.buttons[14].pressed) dx = -1;
+                if (gamepad.buttons[15].pressed) dx = 1;
             }
         }
+
         // dead zone
-        if (Math.abs(dx) < 0.05) dx = 0;
-        if (Math.abs(dy) < 0.05) dy = 0;
+        if (Math.abs(dx) < 0.30) dx = 0;
+        if (Math.abs(dy) < 0.30) dy = 0;
 
         if (dx < 0) KeyboardHandler.SetActionState(KeyAction.Left, true);
         if (dx > 0) KeyboardHandler.SetActionState(KeyAction.Right, true);

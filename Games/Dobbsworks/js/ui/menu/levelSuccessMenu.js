@@ -57,6 +57,7 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
         if (isDemoMode) {
             this.likeButton.isHidden = true;
             this.dislikeButton.isHidden = true;
+            restartButton.isHidden = true;
         }
         var restartText = new UIText(camera.canvas.width / 2, continueButton.y + 20, "Start Over", 20, "#FFF");
         restartButton.AddChild(restartText);
@@ -97,6 +98,7 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
         return ret;
     };
     LevelSuccessMenu.prototype.Update = function () {
+        var _a;
         this.timer++;
         if (this.timer == 1 && this.minigameContainer) {
             if (!this.collectedGear)
@@ -105,6 +107,9 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
             this.gear.fixedPosition = true;
             this.gear.deathCount = this.deathCount;
             this.minigameContainer.AddChild(this.gear);
+        }
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true) && this.timer > 60) {
+            (_a = this.gear) === null || _a === void 0 ? void 0 : _a.DoneWithLevel();
         }
     };
     LevelSuccessMenu.prototype.SetLevelCompletionTime = function (frameCount) {

@@ -449,7 +449,7 @@ var Player = /** @class */ (function (_super) {
         }
     };
     Player.prototype.PushByAutoscroll = function () {
-        if (camera.isAutoscrolling) {
+        if (camera.isAutoscrollingHorizontally) {
             if (this.x < camera.GetLeftCameraEdge() && this.dx < camera.autoscrollX)
                 this.dx = camera.autoscrollX;
             if (this.xRight > camera.GetRightCameraEdge() && this.dx > camera.autoscrollX)
@@ -468,7 +468,7 @@ var Player = /** @class */ (function (_super) {
             if (this.dx > 0)
                 this.dx = 0;
         }
-        if (camera.isAutoscrolling) {
+        if (camera.isAutoscrollingHorizontally || camera.isAutoscrollingVertically) {
             var leftEdge = camera.GetLeftCameraEdge();
             if (this.x < leftEdge) {
                 if (this.isTouchingRightWall && camera.autoscrollX > 0)
@@ -816,6 +816,16 @@ var Player = /** @class */ (function (_super) {
             if (Math.floor(this.iFrames / 4) % 2 == 0)
                 sourceImage = "dobbsGhost";
         }
+        var isInCannon = this.layer.sprites.some(function (a) { return a instanceof RedCannon && a.holdingPlayer; });
+        if (isInCannon) {
+            return {
+                imageTile: tiles["empty"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            };
+        }
         var xFlip = this.direction == -1;
         var actualFrame = Math.floor(this.frameNum) % 2;
         var row = this.heldItem ? 1 : 0;
@@ -904,6 +914,12 @@ var DeadPlayer = /** @class */ (function (_super) {
             else {
                 editorHandler.SwitchToEditMode();
                 editorHandler.SwitchToPlayMode();
+                if (camera.target) {
+                    camera.x = camera.target.xMid;
+                    camera.y = camera.target.yMid;
+                }
+                camera.targetX = camera.x;
+                camera.targetY = camera.y;
             }
         }
     };

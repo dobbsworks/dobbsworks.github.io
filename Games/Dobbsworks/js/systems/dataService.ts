@@ -131,4 +131,10 @@ class DataService {
             DataService.BasePost("Levels/LogLevelPlayDone", progress, resolve, reject);
         })
     }
+
+    static GetGdbSetting(): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            DataService.BaseGet("Settings/GetGdbSetting", resolve, reject);
+        })
+    }
 }

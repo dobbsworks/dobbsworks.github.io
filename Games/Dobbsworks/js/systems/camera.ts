@@ -21,7 +21,8 @@ class Camera {
     public defaultScale: number = 4;
     public transitionTimer: number = 0;
 
-    public isAutoscrolling: boolean = false;
+    public isAutoscrollingHorizontally: boolean = false;
+    public isAutoscrollingVertically: boolean = false;
     public autoscrollX: number = 0;
     public autoscrollY: number = 0;
     public autoscrollTriggers: CameraScrollTrigger[] = [];
@@ -47,7 +48,8 @@ class Camera {
             a.yBottom <= this.GetBottomCameraEdge()
         );
         if (onScreenScrollTriggers.length) {
-            this.isAutoscrolling = true;
+            if (onScreenScrollTriggers.some(a => a instanceof CameraScrollLeft || a instanceof CameraScrollRight)) this.isAutoscrollingHorizontally = true;
+            if (onScreenScrollTriggers.some(a => a instanceof CameraScrollUp || a instanceof CameraScrollDown)) this.isAutoscrollingVertically = true;
             for (let trigger of onScreenScrollTriggers) {
                 this.autoscrollX += trigger.direction.x * .25;
                 this.autoscrollY += trigger.direction.y * .25;
@@ -77,12 +79,18 @@ class Camera {
             }            
         }
 
-        if (this.isAutoscrolling) {
+        if (this.isAutoscrollingHorizontally) {
             this.targetX += this.autoscrollX;
-            this.targetY += this.autoscrollY;
         } else {
             if (this.target) {
                 this.targetX = this.target.xMid;
+            }
+        }
+
+        if (this.isAutoscrollingVertically) {
+            this.targetY += this.autoscrollY;
+        } else {
+            if (this.target) {
                 this.targetY = this.target.yBottom - 12;
             }
         }
@@ -145,7 +153,8 @@ class Camera {
     public Reset(): void {
         this.autoscrollX = 0;
         this.autoscrollY = 0;
-        this.isAutoscrolling = false;
+        this.isAutoscrollingHorizontally = false;
+        this.isAutoscrollingVertically = false;
         this.targetScale = this.defaultScale;
         if (currentMap) {
             this.autoscrollTriggers = <CameraScrollTrigger[]>currentMap.mainLayer.sprites.filter(a => a instanceof CameraScrollTrigger);

@@ -15,6 +15,7 @@ class LeftSideButton extends Sprite {
             return (a.x == this.xRight && a.y < this.yBottom && a.yBottom > this.y);
         })
         if (spritesAtRight.length > 0) {
+            if (this.onTimer != 30) audioHandler.PlaySound("erase", true);
             this.onTimer = 30;
         } else {
             if (this.onTimer > 0) this.onTimer--;

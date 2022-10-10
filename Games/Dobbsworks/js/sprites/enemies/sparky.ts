@@ -7,12 +7,15 @@ class Sparky extends Enemy {
     dir: Direction = Direction.Right;
     anchor = null;
     killedByProjectiles = false;
+    timer = 0;
 
     Update(): void {
-        if (!this.WaitForOnScreen()) return;
+        if (!this.WaitForOnScreen()) {
+            return;
+        }
         let speed = 0.5;
 
-        if (this.age % 24 === 0) {
+        if (this.timer % 24 === 0) {
             // check upcoming tile
             let prioritizedDirections = [this.dir.Clockwise(), this.dir, this.dir.CounterClockwise()];
             this.dir = this.dir.Opposite();
@@ -26,6 +29,7 @@ class Sparky extends Enemy {
                 }
             }
         }
+        this.timer++;
 
         // let targetX = +((this.x + this.dir.x * speed).toFixed(3));
         // let targetY = +((this.y + this.dir.y * speed).toFixed(3));

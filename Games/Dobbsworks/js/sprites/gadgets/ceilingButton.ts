@@ -15,6 +15,7 @@ class CeilingButton extends Sprite {
             return (a.y == this.yBottom && a.x < this.xRight && a.xRight > this.x);
         })
         if (spritesAtBottom.length > 0) {
+            if (this.onTimer != 30) audioHandler.PlaySound("erase", true);
             this.onTimer = 30;
         } else {
             if (this.onTimer > 0) this.onTimer--;

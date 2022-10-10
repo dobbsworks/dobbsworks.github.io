@@ -115,7 +115,7 @@ var EditorHandler = /** @class */ (function () {
         var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 4, 7);
         var gizmoTypes = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform,
-            Checkpoint, Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, Propeller, RedCannon, BlueCannon, Ring, Rocket, RedBalloon, BlueBalloon, YellowBalloon,
+            Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, Propeller, RedCannon, BlueCannon, Ring, Rocket, RedBalloon, BlueBalloon, YellowBalloon,
         ];
         var gizmoButtons = gizmoTypes.map(function (a) { return new EditorButtonSprite(a); });
         var keyIndex = gizmoButtons.findIndex(function (a) { return a instanceof EditorButtonSprite && a.spriteType == FlatKey; });
@@ -179,7 +179,7 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonTile(TileType.PowerBlock, "Power source"),
             new EditorButtonTile(TileType.CircuitHurtOff, "Zappy wire"),
             new EditorButtonTile(TileType.CircuitHurtSolidOff, "Zappy block"),
-            new EditorButtonTile(TileType.CircuitMusicOff, "Music block"),
+            //new EditorButtonTile(TileType.CircuitMusicOff, "Music block"),
             new EditorButtonSprite(SlowMotor),
             new EditorButtonSprite(Motor),
             new EditorButtonSprite(FastMotor),
@@ -245,6 +245,7 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonSprite(Coin),
             new EditorButtonSprite(Dobbloon),
             new EditorButtonSprite(ExtraHitHeart),
+            new EditorButtonSprite(Checkpoint),
             new EditorButtonSprite(CameraLockHorizontal),
             new EditorButtonSprite(CameraScrollRight),
             new EditorButtonSprite(CameraScrollUp),

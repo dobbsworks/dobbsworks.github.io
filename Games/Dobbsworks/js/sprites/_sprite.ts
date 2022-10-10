@@ -370,9 +370,8 @@ abstract class Sprite {
         this.touchedLeftWalls = [];
         this.touchedRightWalls = [];
 
-        // recently swapped below lines to fix issue where you can't jump when being pulled into a wall by a platform
-        this.ReactToPlatforms();
         this.ReactToSolids();
+        this.ReactToPlatforms();
     }
 
     private ReactToSolids(): void {

@@ -89,6 +89,9 @@ class MouseHandler {
     OnMouseMove(e: MouseEvent) {
         mouseHandler.mouseX = e.offsetX;
         mouseHandler.mouseY = e.offsetY;
+        if (document.body.style.cursor == "none") {
+            document.body.style.cursor = "unset";
+        }
     }
 
     OnMouseOut(e: MouseEvent) {

@@ -111,5 +111,10 @@ var DataService = /** @class */ (function () {
             DataService.BasePost("Levels/LogLevelPlayDone", progress, resolve, reject);
         });
     };
+    DataService.GetGdbSetting = function () {
+        return new Promise(function (resolve, reject) {
+            DataService.BaseGet("Settings/GetGdbSetting", resolve, reject);
+        });
+    };
     return DataService;
 }());

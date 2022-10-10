@@ -130,7 +130,7 @@ class EditorHandler {
 
         let gizmoTypes: (SpriteType)[] = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform,
-            Checkpoint, Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, Propeller, RedCannon, BlueCannon, Ring, Rocket, RedBalloon, BlueBalloon, YellowBalloon,
+            Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, Propeller, RedCannon, BlueCannon, Ring, Rocket, RedBalloon, BlueBalloon, YellowBalloon,
         ];
         let gizmoButtons: EditorButton[] = gizmoTypes.map(a => new EditorButtonSprite(a));
         let keyIndex = gizmoButtons.findIndex(a => a instanceof EditorButtonSprite && a.spriteType == FlatKey);
@@ -198,7 +198,7 @@ class EditorHandler {
             new EditorButtonTile(TileType.PowerBlock, "Power source"),
             new EditorButtonTile(TileType.CircuitHurtOff, "Zappy wire"),
             new EditorButtonTile(TileType.CircuitHurtSolidOff, "Zappy block"),
-            new EditorButtonTile(TileType.CircuitMusicOff, "Music block"),
+            //new EditorButtonTile(TileType.CircuitMusicOff, "Music block"),
 
             new EditorButtonSprite(SlowMotor),
             new EditorButtonSprite(Motor),
@@ -268,6 +268,7 @@ class EditorHandler {
             new EditorButtonSprite(Coin),
             new EditorButtonSprite(Dobbloon),
             new EditorButtonSprite(ExtraHitHeart),
+            new EditorButtonSprite(Checkpoint), 
 
             new EditorButtonSprite(CameraLockHorizontal),
             new EditorButtonSprite(CameraScrollRight),
