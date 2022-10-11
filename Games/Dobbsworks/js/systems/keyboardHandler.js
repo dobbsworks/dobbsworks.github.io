@@ -203,9 +203,9 @@ var KeyboardHandler = /** @class */ (function () {
             }
         }
         // dead zone
-        if (Math.abs(dx) < 0.05)
+        if (Math.abs(dx) < 0.30)
             dx = 0;
-        if (Math.abs(dy) < 0.05)
+        if (Math.abs(dy) < 0.30)
             dy = 0;
         if (dx < 0)
             KeyboardHandler.SetActionState(KeyAction.Left, true);

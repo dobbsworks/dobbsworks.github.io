@@ -210,6 +210,24 @@ class MyLevelsMenu extends Menu {
         return ret;
     }
 
+    static GetListing(levelCode: string): LevelDT | undefined {
+        let menu = <MyLevelsMenu>MenuHandler.MenuStack.find(a => a instanceof MyLevelsMenu);
+        if (menu) {
+            return menu.myLevelsData?.myLevels.find(a => a.code == levelCode);
+        }
+        return undefined;
+    }
+    static Reset(): void {
+        let menu = <MyLevelsMenu>MenuHandler.MenuStack.find(a => a instanceof MyLevelsMenu);
+        if (menu) {
+            setTimeout(() => {
+                menu.ResetCloudSavesPanel();
+                menu.ResetLocalSavesPanel();
+            }, 500)
+        }
+        return undefined;
+    }
+
     CreateActionButton(text: string, action: () => void): Button {
         let button = new Button(0, 0, this.basePanelWidth - 10, 70);
         button.borderRadius = 10;

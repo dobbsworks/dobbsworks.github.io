@@ -262,6 +262,11 @@ class EndOfLevelMinigameGear extends UIElement {
             if (listing) {
                 listing.isCleared = true;
             }
+            let listing2 = MyLevelsMenu.GetListing(currentLevelCode);
+            if (listing2) {
+                listing2.levelState = LevelState.cleared;
+                MyLevelsMenu.Reset();
+            }
             RecentLevelsMenu.Reset();
             MenuHandler.GoBack();
             currentLevelCode = "";

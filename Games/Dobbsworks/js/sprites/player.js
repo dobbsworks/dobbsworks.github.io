@@ -681,7 +681,7 @@ var Player = /** @class */ (function (_super) {
             // try to grab item?
             for (var _i = 0, _b = this.layer.sprites.filter(function (a) { return a.canBeHeld; }); _i < _b.length; _i++) {
                 var sprite = _b[_i];
-                if (sprite.age < 30)
+                if (sprite.age < 10)
                     continue; // can't grab items that just spawned (prevent grabbing shell after shell jump)
                 if (this.IsGoingToOverlapSprite(sprite)) {
                     this.heldItem = sprite;

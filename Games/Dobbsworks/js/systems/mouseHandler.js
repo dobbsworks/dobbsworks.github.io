@@ -98,16 +98,19 @@ var MouseHandler = /** @class */ (function () {
         e.preventDefault();
     };
     MouseHandler.prototype.OnTouchStart = function (e) {
-        // //TODO - account for canvas position
-        // mouseHandler.mouseX = e.touches[0].pageX - e.target.offsetLeft;
-        // mouseHandler.mouseY = e.touches[0].pageY - e.target.offsetTop;
-        // mouseHandler.isMouseDown = true;
-        // mouseHandler.isMouseChanged = true;
-        // e.preventDefault();
+        mouseHandler.mouseX = e.touches[0].pageX;
+        mouseHandler.mouseY = e.touches[0].pageY;
+        mouseHandler.isMouseOver = true;
+        mouseHandler.hasUserInteracted = true;
+        if (e.button === 0) {
+            mouseHandler.isMouseDown = true;
+            mouseHandler.isMouseChanged = true;
+        }
+        e.preventDefault();
     };
     MouseHandler.prototype.OnTouchEnd = function (e) {
-        // mouseHandler.isMouseDown = false;
-        // mouseHandler.isMouseChanged = true;
+        mouseHandler.isMouseDown = false;
+        mouseHandler.isMouseChanged = true;
     };
     MouseHandler.prototype.OnTouchMove = function (e) {
         mouseHandler.mouseX = e.touches[0].pageX;

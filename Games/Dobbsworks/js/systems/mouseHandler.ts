@@ -109,17 +109,20 @@ class MouseHandler {
     }
 
     OnTouchStart(e: any) {
-        // //TODO - account for canvas position
-        // mouseHandler.mouseX = e.touches[0].pageX - e.target.offsetLeft;
-        // mouseHandler.mouseY = e.touches[0].pageY - e.target.offsetTop;
-        // mouseHandler.isMouseDown = true;
-        // mouseHandler.isMouseChanged = true;
-        // e.preventDefault();
+        mouseHandler.mouseX = e.touches[0].pageX;
+        mouseHandler.mouseY = e.touches[0].pageY;
+        mouseHandler.isMouseOver = true;
+        mouseHandler.hasUserInteracted = true;
+        if (e.button === 0) {
+            mouseHandler.isMouseDown = true;
+            mouseHandler.isMouseChanged = true;
+        }
+        e.preventDefault();
     }
 
     OnTouchEnd(e: TouchEvent) {
-        // mouseHandler.isMouseDown = false;
-        // mouseHandler.isMouseChanged = true;
+        mouseHandler.isMouseDown = false;
+        mouseHandler.isMouseChanged = true;
     }
 
     OnTouchMove(e: TouchEvent) {

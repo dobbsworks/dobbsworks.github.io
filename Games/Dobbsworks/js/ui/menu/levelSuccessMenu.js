@@ -266,6 +266,11 @@ var EndOfLevelMinigameGear = /** @class */ (function (_super) {
             if (listing) {
                 listing.isCleared = true;
             }
+            var listing2 = MyLevelsMenu.GetListing(currentLevelCode);
+            if (listing2) {
+                listing2.levelState = LevelState.cleared;
+                MyLevelsMenu.Reset();
+            }
             RecentLevelsMenu.Reset();
             MenuHandler.GoBack();
             currentLevelCode = "";

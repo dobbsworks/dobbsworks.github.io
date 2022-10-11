@@ -192,6 +192,24 @@ var MyLevelsMenu = /** @class */ (function (_super) {
         ret.push(this.cloudSavesOptionsPanel, this.localSavesOptionsPanel, this.localSavesTitlePanel, this.cloudSavesTitlePanel);
         return ret;
     };
+    MyLevelsMenu.GetListing = function (levelCode) {
+        var _a;
+        var menu = MenuHandler.MenuStack.find(function (a) { return a instanceof MyLevelsMenu; });
+        if (menu) {
+            return (_a = menu.myLevelsData) === null || _a === void 0 ? void 0 : _a.myLevels.find(function (a) { return a.code == levelCode; });
+        }
+        return undefined;
+    };
+    MyLevelsMenu.Reset = function () {
+        var menu = MenuHandler.MenuStack.find(function (a) { return a instanceof MyLevelsMenu; });
+        if (menu) {
+            setTimeout(function () {
+                menu.ResetCloudSavesPanel();
+                menu.ResetLocalSavesPanel();
+            }, 500);
+        }
+        return undefined;
+    };
     MyLevelsMenu.prototype.CreateActionButton = function (text, action) {
         var button = new Button(0, 0, this.basePanelWidth - 10, 70);
         button.borderRadius = 10;
