@@ -1,6 +1,7 @@
 html {
     background: linear-gradient(#00dddd, #eeeeff);
     min-width: 1020px;;
+    min-height: 100vh;
 }
 
 body {
@@ -9,7 +10,7 @@ body {
     flex-direction: column;
     flex-wrap: nowrap;
     align-content: center;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     /* background: linear-gradient(0deg, #272441 0%, #0e0d18 100%); */
     background: linear-gradient(#00dddd, #eeeeff);
@@ -17,6 +18,7 @@ body {
     font-family: Geneva, Verdana, sans-serif;
     background-image: url("./siteImages/grid.png");
     background-position: top 0px;
+    min-height: 100%;
 }
 
 #banner {

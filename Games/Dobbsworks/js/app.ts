@@ -96,7 +96,9 @@ function Update() {
     let doesMenuBlockMapUpdate = MenuHandler.CurrentMenu?.stopsMapUpdate;
 
     if (KeyboardHandler.IsKeyPressed(KeyAction.Fullscreen, true)) document.getElementById("canvas")?.requestFullscreen();
-    if (KeyboardHandler.IsKeyPressed(KeyAction.Debug1, true)) debugMode = !debugMode;
+    if (window.location.href.indexOf("localhost") > -1 ) {
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Debug1, true)) debugMode = !debugMode;
+    }
     //if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true)) window.location.reload();
     if (KeyboardHandler.IsKeyPressed(KeyAction.EditToggle, true)) {
         if (editorHandler.isInEditMode) editorHandler.SwitchToPlayMode();
@@ -119,19 +121,6 @@ function Update() {
                 currentMap.mainLayer.Update();
             } else {
                 currentMap.Update();
-                if (KeyboardHandler.IsKeyPressed(KeyAction.EditorHotkey9, true)) {
-                    // gdb level skip
-                    currentDemoIndex++;
-                    if (currentDemoIndex < allDemoLevels.length) {
-                        currentMap = LevelMap.FromImportString(allDemoLevels[currentDemoIndex]);
-                        editorHandler.SwitchToPlayMode();
-                        MenuHandler.GoBack();
-                        MenuHandler.SubMenu(BlankMenu);
-                    } else {
-                        // done with demo
-                        MenuHandler.GoBack();
-                    }
-                }
             }
         }
 
