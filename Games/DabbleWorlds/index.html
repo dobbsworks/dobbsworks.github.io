@@ -3,6 +3,7 @@
 <head>
     <title>Dabble Worlds</title>
     <link rel="stylesheet" href="app.css">
+    <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
 </head>
 
 
@@ -12,13 +13,13 @@
     </a>
     <div id="logo"></div>
 
-    <a href="#" id="lockedLink">
-        <img id="locked" src="siteImages/locked.png" style="margin:10px;" />
-    </a>
-    <div id="countdown" style="cursor:pointer">
-        <span>Releases in...</span>
-        <br />
-        <span id="timer"></span>
+    <div>
+        <a href="https://dabbleworlds1.azurewebsites.net/" >
+            <img src="siteImages/unlocked.png" style="margin:10px;" />
+        </a>
+        <a href="https://dobbsworks.github.io/Games/Dobbsworks/" >
+            <img src="siteImages/editor.png" style="margin:10px;" />
+        </a>
     </div>
 
     <div class="p-section">
@@ -41,44 +42,3 @@
 
     <div id="footer"></div>
 </body>
-
-<script type="text/javascript">
-    document.body.onload = Initialize;
-
-    function Initialize() {
-        Loop();
-        setInterval(Loop, 1000);
-    }
-
-    function Loop() {
-        var msUntilRelease = (new Date("Wed, 12 Oct 2022 14:00:00 GMT")) - new Date();
-
-        var fullDays = Math.floor(msUntilRelease / (1000 * 60 * 60 * 24));
-        var fullHours = Math.floor(msUntilRelease / (1000 * 60 * 60)) % 24;
-        var fullMinutes = Math.floor(msUntilRelease / (1000 * 60)) % 60;
-        var fullSeconds = Math.floor(msUntilRelease / (1000)) % 60;
-
-        var dayText = fullDays.toFixed(0).padStart(2, '0');
-        var hoursText = fullHours.toFixed(0).padStart(2, '0');
-        var minutesText = fullMinutes.toFixed(0).padStart(2, '0');
-        var secondsText = fullSeconds.toFixed(0).padStart(2, '0');
-
-        var timeString = dayText + ":" + hoursText + ":" + minutesText + ":" + secondsText;
-
-        if (msUntilRelease <= 0) {
-            var countdownDiv = document.getElementById("countdown");
-            countdownDiv.innerHTML = "";
-            var lockedImage = document.getElementById("locked");
-            lockedImage.src = "siteImages/unlocked.png";
-            var lockedLink = document.getElementById("lockedLink");
-            lockedLink.href = "https://dabbleworlds1.azurewebsites.net/";
-        } else {
-            var textEl = document.getElementById("timer");
-
-            if (textEl) {
-                textEl.innerHTML = timeString;
-            }
-        }
-    }
-
-</script>

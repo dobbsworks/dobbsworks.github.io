@@ -45,6 +45,7 @@ class RedBalloon extends Motor {
     OnBounce(): void { 
         this.connectedSprite = null;
         this.popTimer = 1;
+        this.canBeBouncedOn = false;
         audioHandler.PlaySound("pop", true);
     }
 
