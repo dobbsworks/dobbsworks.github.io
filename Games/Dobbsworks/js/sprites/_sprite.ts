@@ -425,7 +425,8 @@ abstract class Sprite {
                     let heightToNextTile = sprite.y + sprite.height - nextTileYPixel;
                     let wallLocationIfALittleHigher = sprite.GetDistanceOfWall(sprite.GetTotalDy() - sprite.ledgeGrabDistance, direction).x;
 
-                    let isHigherWallFarther = (wallLocationIfALittleHigher < wallLocation && direction == -1) || (wallLocationIfALittleHigher > wallLocation && direction == 1);
+                    let isHigherWallFarther = (wallLocationIfALittleHigher < wallLocation && direction == -1) ||
+                        ((wallLocationIfALittleHigher == -1 || wallLocationIfALittleHigher > wallLocation) && direction == 1);
 
                     if (sprite.GetTotalDy() >= 0 && heightToNextTile <= sprite.ledgeGrabDistance && isHigherWallFarther) {
                         // ledge grab!

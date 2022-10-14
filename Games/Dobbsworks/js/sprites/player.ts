@@ -7,7 +7,7 @@ class Player extends Sprite {
     public coyoteTimer: number = 999; // how long since not on ground // start this value above threshold so that player cannot immediately jump if starting in air, must hit ground first
     private frameNum: number = 0;
     public jumpTimer: number = -1; // how long have we been ascending for current jump
-    private throwTimer: number = -1; // how long since throwing something
+    private throwTimer: number = 999; // how long since throwing something
     private swimTimer: number = -1; // how long since last swim
     public isClimbing: boolean = false;
     public isHanging: boolean = false;

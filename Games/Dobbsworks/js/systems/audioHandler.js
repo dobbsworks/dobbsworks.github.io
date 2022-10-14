@@ -84,7 +84,7 @@ var AudioHandler = /** @class */ (function () {
         }
         var bgm = this.audioObjects.find(function (a) { return a.id === id; });
         if (bgm) {
-            bgm.src.play().then(function (a) { return console.log(a); }).catch(function (e) { return console.error(e); });
+            bgm.src.play().then().catch(function (e) { return console.error(e); });
         }
         this.currentBgm = id;
     };

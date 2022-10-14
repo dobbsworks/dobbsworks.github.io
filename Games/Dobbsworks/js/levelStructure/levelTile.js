@@ -73,7 +73,9 @@ var LevelTile = /** @class */ (function () {
     };
     LevelTile.prototype.Neighbors = function () {
         var _this = this;
-        return Direction.All.map(function (d) { return ({ dir: d, tile: _this.layer.GetTileByIndex(_this.tileX + d.x, _this.tileY + d.y) }); });
+        return Direction.All.map(function (d) { return ({ dir: d, tile: _this.layer.GetTileByIndex(_this.tileX + d.x, _this.tileY + d.y) }); }).filter(function (a) {
+            return a.tile.tileX >= 0 && a.tile.tileY >= 0 && a.tile.tileX < _this.layer.tiles.length && a.tile.tileY < _this.layer.tiles[0].length;
+        });
     };
     LevelTile.prototype.Neighbor = function (dir) {
         return this.layer.GetTileByIndex(this.tileX + dir.x, this.tileY + dir.y);

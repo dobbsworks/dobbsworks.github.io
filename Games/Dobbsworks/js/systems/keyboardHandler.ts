@@ -26,6 +26,8 @@ class KeyAction {
     static EditorPasteDrag = new KeyAction("EditorPasteDrag");
     static Cancel = new KeyAction("Cancel");
     static Pause = new KeyAction("Pause");
+    static ScrollDown = new KeyAction("ScrollDown");
+    static ScrollUp = new KeyAction("ScrollUp");
     
     static EditorHotkey1 = new KeyAction("EditorHotkey1");
     static EditorHotkey2 = new KeyAction("EditorHotkey2");
@@ -91,6 +93,9 @@ class KeyboardHandler {
         {k: "Delete", v: KeyAction.EditorDelete},
         {k: "ControlLeft", v: KeyAction.EditorPasteDrag},
         {k: "ControlRight", v: KeyAction.EditorPasteDrag},
+
+        {k: "Period", v: KeyAction.ScrollDown},
+        {k: "Comma", v: KeyAction.ScrollUp},
 
         {k: "Digit1", v: KeyAction.EditorHotkey1},
         {k: "Numpad1", v: KeyAction.EditorHotkey1},

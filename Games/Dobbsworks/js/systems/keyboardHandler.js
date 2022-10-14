@@ -45,6 +45,8 @@ var KeyAction = /** @class */ (function () {
     KeyAction.EditorPasteDrag = new KeyAction("EditorPasteDrag");
     KeyAction.Cancel = new KeyAction("Cancel");
     KeyAction.Pause = new KeyAction("Pause");
+    KeyAction.ScrollDown = new KeyAction("ScrollDown");
+    KeyAction.ScrollUp = new KeyAction("ScrollUp");
     KeyAction.EditorHotkey1 = new KeyAction("EditorHotkey1");
     KeyAction.EditorHotkey2 = new KeyAction("EditorHotkey2");
     KeyAction.EditorHotkey3 = new KeyAction("EditorHotkey3");
@@ -255,6 +257,8 @@ var KeyboardHandler = /** @class */ (function () {
         { k: "Delete", v: KeyAction.EditorDelete },
         { k: "ControlLeft", v: KeyAction.EditorPasteDrag },
         { k: "ControlRight", v: KeyAction.EditorPasteDrag },
+        { k: "Period", v: KeyAction.ScrollDown },
+        { k: "Comma", v: KeyAction.ScrollUp },
         { k: "Digit1", v: KeyAction.EditorHotkey1 },
         { k: "Numpad1", v: KeyAction.EditorHotkey1 },
         { k: "Digit2", v: KeyAction.EditorHotkey2 },

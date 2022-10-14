@@ -25,6 +25,7 @@ class EditorHandler {
     mainToolPanel!: EditorButtonDrawer;
     brushPanel!: EditorButtonDrawer;
     backgroundPanel!: EditorButtonDrawer;
+    saveDrawer!: EditorSaveDrawer;
     enableEraseSprites: boolean = true;
     enableEraseTiles: boolean = true;
     enableEraseWires: boolean = true;
@@ -256,7 +257,7 @@ class EditorHandler {
         backgroundLoadPanel.AddChild(backgroundLoadHandle);
 
 
-        let saveButton = new EditorSaveDrawer(this.mainPanel.x + this.mainPanel.width + 10, 10);
+        this.saveDrawer = new EditorSaveDrawer(this.mainPanel.x + this.mainPanel.width + 10, 10);
         let mapSizeHandle = new EditorButtonDrawerHandle(tiles["editor"][4][4], "Edit map size", [new MapSizeEditor()]);
         let mapSizePanel = new Panel(backgroundLoadPanel.x + 80, backgroundLoadPanel.y, 70, 70);
         mapSizePanel.AddChild(mapSizeHandle);
@@ -307,7 +308,7 @@ class EditorHandler {
         // let optionsPanel = OptionsMenu.CreateOptionsButton();
         // optionsPanel.targetX -= 80;
 
-        this.editorParentElementsTop.push(this.backgroundPanel, backgroundLoadPanel, levelFlowHandlePanel, saveButton, mapSizePanel, musicHandlePanel, exitPanel);
+        this.editorParentElementsTop.push(this.backgroundPanel, backgroundLoadPanel, levelFlowHandlePanel, this.saveDrawer, mapSizePanel, musicHandlePanel, exitPanel);
         this.editorParentElementsBottom.push(this.mainPanel, this.eraserPanel, this.mainToolPanel, this.brushPanel, resetPanel);
         uiHandler.elements.push(...this.editorParentElementsTop, ...this.editorParentElementsBottom);
         this.editorParentElementsTop.forEach(a => a.backColor = "#1138");

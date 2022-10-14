@@ -234,7 +234,7 @@ var EditorHandler = /** @class */ (function () {
         //let backgroundLoadPanel = new EditorButtonDrawer(this.brushPanel.x + 70 + 10, 10, 70, 70, backgroundLoadHandle, );
         var backgroundLoadPanel = new Panel(this.brushPanel.x + 70 + 10, 10, 70, 70);
         backgroundLoadPanel.AddChild(backgroundLoadHandle);
-        var saveButton = new EditorSaveDrawer(this.mainPanel.x + this.mainPanel.width + 10, 10);
+        this.saveDrawer = new EditorSaveDrawer(this.mainPanel.x + this.mainPanel.width + 10, 10);
         var mapSizeHandle = new EditorButtonDrawerHandle(tiles["editor"][4][4], "Edit map size", [new MapSizeEditor()]);
         var mapSizePanel = new Panel(backgroundLoadPanel.x + 80, backgroundLoadPanel.y, 70, 70);
         mapSizePanel.AddChild(mapSizeHandle);
@@ -276,7 +276,7 @@ var EditorHandler = /** @class */ (function () {
         // TODO - prevent other buttons from being used while options is open
         // let optionsPanel = OptionsMenu.CreateOptionsButton();
         // optionsPanel.targetX -= 80;
-        this.editorParentElementsTop.push(this.backgroundPanel, backgroundLoadPanel, levelFlowHandlePanel, saveButton, mapSizePanel, musicHandlePanel, exitPanel);
+        this.editorParentElementsTop.push(this.backgroundPanel, backgroundLoadPanel, levelFlowHandlePanel, this.saveDrawer, mapSizePanel, musicHandlePanel, exitPanel);
         this.editorParentElementsBottom.push(this.mainPanel, this.eraserPanel, this.mainToolPanel, this.brushPanel, resetPanel);
         (_a = uiHandler.elements).push.apply(_a, __spreadArrays(this.editorParentElementsTop, this.editorParentElementsBottom));
         this.editorParentElementsTop.forEach(function (a) { return a.backColor = "#1138"; });

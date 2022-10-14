@@ -430,7 +430,8 @@ var Sprite = /** @class */ (function () {
                     var nextTileYPixel = Math.floor((sprite.y + sprite.height + sprite.GetTotalDy()) / sprite.layer.tileHeight) * sprite.layer.tileHeight;
                     var heightToNextTile = sprite.y + sprite.height - nextTileYPixel;
                     var wallLocationIfALittleHigher = sprite.GetDistanceOfWall(sprite.GetTotalDy() - sprite.ledgeGrabDistance, direction).x;
-                    var isHigherWallFarther = (wallLocationIfALittleHigher < wallLocation && direction == -1) || (wallLocationIfALittleHigher > wallLocation && direction == 1);
+                    var isHigherWallFarther = (wallLocationIfALittleHigher < wallLocation && direction == -1) ||
+                        ((wallLocationIfALittleHigher == -1 || wallLocationIfALittleHigher > wallLocation) && direction == 1);
                     if (sprite.GetTotalDy() >= 0 && heightToNextTile <= sprite.ledgeGrabDistance && isHigherWallFarther) {
                         // ledge grab!
                         //console.log("LEDGE GRAB", wallLocationIfALittleHigher < wallLocation);

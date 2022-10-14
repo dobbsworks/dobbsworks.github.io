@@ -54,6 +54,7 @@ class LevelSuccessMenu extends Menu {
         restartText.yOffset = -15;
         restartButton.onClickEvents.push(() => {
             this.Dispose();
+            editorHandler.SwitchToEditMode();
             editorHandler.SwitchToPlayMode();
         })
         

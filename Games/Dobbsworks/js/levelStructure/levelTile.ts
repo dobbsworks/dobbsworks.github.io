@@ -79,7 +79,9 @@ class LevelTile {
     }
 
     public Neighbors(): {dir: Direction, tile: LevelTile}[] {
-        return Direction.All.map(d => ({dir: d, tile: this.layer.GetTileByIndex(this.tileX + d.x, this.tileY + d.y)}))
+        return Direction.All.map(d => ({dir: d, tile: this.layer.GetTileByIndex(this.tileX + d.x, this.tileY + d.y)})).filter(a => 
+            a.tile.tileX >= 0 && a.tile.tileY >= 0 && a.tile.tileX < this.layer.tiles.length && a.tile.tileY < this.layer.tiles[0].length
+        )
     }
 
     public Neighbor(dir: Direction): LevelTile {

@@ -105,3 +105,13 @@ textarea {
     top: 370px;
     filter: drop-shadow(2px 4px 6px black);
 }
+
+.version-history {
+    width: 100%;
+    color: white;
+}
+
+.version-header {
+    border-bottom: solid white 1px;
+    padding: 10px;
+}

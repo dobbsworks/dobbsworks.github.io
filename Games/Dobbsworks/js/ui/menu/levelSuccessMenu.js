@@ -65,6 +65,7 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
         restartText.yOffset = -15;
         restartButton.onClickEvents.push(function () {
             _this.Dispose();
+            editorHandler.SwitchToEditMode();
             editorHandler.SwitchToPlayMode();
         });
         var likeImage = new ImageFromTile(0, 0, 110, 110, tiles["menuButtons"][0][0]);

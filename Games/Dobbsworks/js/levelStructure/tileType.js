@@ -995,7 +995,6 @@ var TileType = /** @class */ (function () {
                     var _a;
                     var overlapped = ((_a = tile.GetMainNeighbor()) === null || _a === void 0 ? void 0 : _a.tileType) || TileType.Air;
                     // TODO - different overlap tiles map to different music sounds
-                    console.log(tile.tileY);
                     var instrumentSegments = 25;
                     var segmentIndex = instrumentSegments - tile.tileY % instrumentSegments;
                     audioHandler.PlaySegment("instrument-square", segmentIndex);

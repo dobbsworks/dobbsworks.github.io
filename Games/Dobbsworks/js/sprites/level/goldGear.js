@@ -16,8 +16,8 @@ var GoldGear = /** @class */ (function (_super) {
     __extends(GoldGear, _super);
     function GoldGear() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.height = 24;
-        _this.width = 24;
+        _this.height = 22;
+        _this.width = 22;
         _this.respectsSolidTiles = false;
         _this.isRequired = true;
         _this.maxAllowed = 1;
@@ -121,8 +121,8 @@ var GoldGear = /** @class */ (function (_super) {
             imageTile: tiles["gears"][Math.floor(this.frame / 20) % 6][this.frameRow],
             xFlip: false,
             yFlip: false,
-            xOffset: 2,
-            yOffset: 2
+            xOffset: 3,
+            yOffset: 3
         };
     };
     return GoldGear;

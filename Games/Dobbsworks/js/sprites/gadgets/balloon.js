@@ -57,6 +57,7 @@ var RedBalloon = /** @class */ (function (_super) {
     RedBalloon.prototype.OnBounce = function () {
         this.connectedSprite = null;
         this.popTimer = 1;
+        this.canBeBouncedOn = false;
         audioHandler.PlaySound("pop", true);
     };
     RedBalloon.prototype.GetFrameData = function (frameNum) {

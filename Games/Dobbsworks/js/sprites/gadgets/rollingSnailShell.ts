@@ -6,6 +6,7 @@ class RollingSnailShell extends Enemy {
     rolls = true;
     canBeBouncedOn = true;
     public direction: -1 | 1 = 1;
+    wallBounceTimer = 0;
     floatsInWater = true;
     hurtsEnemies = true;
 
@@ -14,8 +15,16 @@ class RollingSnailShell extends Enemy {
         this.ReactToPlatformsAndSolids();
         if (this.isTouchingLeftWall) {
             this.direction = 1;
+            this.ledgeGrabDistance = 1;
+            this.wallBounceTimer = 0;
         } else if (this.isTouchingRightWall) {
             this.direction = -1;
+            this.ledgeGrabDistance = 1;
+            this.wallBounceTimer = 0;
+        }
+        this.wallBounceTimer++;
+        if (this.wallBounceTimer > 3) {
+            this.ledgeGrabDistance = 3;
         }
 
         let baseSpeed = 1.2; //should be equal to player run speed

@@ -22,6 +22,7 @@ var RollingSnailShell = /** @class */ (function (_super) {
         _this.rolls = true;
         _this.canBeBouncedOn = true;
         _this.direction = 1;
+        _this.wallBounceTimer = 0;
         _this.floatsInWater = true;
         _this.hurtsEnemies = true;
         return _this;
@@ -31,9 +32,17 @@ var RollingSnailShell = /** @class */ (function (_super) {
         this.ReactToPlatformsAndSolids();
         if (this.isTouchingLeftWall) {
             this.direction = 1;
+            this.ledgeGrabDistance = 1;
+            this.wallBounceTimer = 0;
         }
         else if (this.isTouchingRightWall) {
             this.direction = -1;
+            this.ledgeGrabDistance = 1;
+            this.wallBounceTimer = 0;
+        }
+        this.wallBounceTimer++;
+        if (this.wallBounceTimer > 3) {
+            this.ledgeGrabDistance = 3;
         }
         var baseSpeed = 1.2; //should be equal to player run speed
         if (this.age < 12) {

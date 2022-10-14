@@ -20,6 +20,8 @@ var Door = /** @class */ (function (_super) {
         _this.width = 12;
         _this.respectsSolidTiles = false;
         _this.frame = 0;
+        _this.originalX = -1;
+        _this.originalY = -1;
         return _this;
     }
     Door.prototype.GetPairedDoor = function () {
@@ -29,23 +31,28 @@ var Door = /** @class */ (function (_super) {
             return null;
         if (allDoors.length == 1)
             return allDoors[0];
-        var doorHorizontalDistances = allDoors.map(function (a) { return Math.abs(a.x - _this.x); });
+        var doorHorizontalDistances = allDoors.map(function (a) { return Math.abs(a.originalX - _this.originalX); });
         doorHorizontalDistances.sort();
         var minHorizontalDistance = doorHorizontalDistances[0];
         // grab all doors that are tied for closest horizontally
-        var closestDoorsHorizontally = allDoors.filter(function (a) { return Math.abs(a.x - _this.x) == minHorizontalDistance; });
+        var closestDoorsHorizontally = allDoors.filter(function (a) { return Math.abs(a.originalX - _this.originalX) == minHorizontalDistance; });
         if (closestDoorsHorizontally.length == 1)
             return closestDoorsHorizontally[0];
-        var doorVerticalDistances = allDoors.map(function (a) { return Math.abs(a.y - _this.y); });
+        var doorVerticalDistances = allDoors.map(function (a) { return Math.abs(a.originalY - _this.originalY); });
+        doorVerticalDistances.sort();
         var minVerticalDistance = doorVerticalDistances[0];
         // grab all doors that are tied for closest vertically AND horizontally
-        var closestDoors = closestDoorsHorizontally.filter(function (a) { return Math.abs(a.y - _this.y) == minVerticalDistance; });
+        var closestDoors = closestDoorsHorizontally.filter(function (a) { return Math.abs(a.originalY - _this.originalY) == minVerticalDistance; });
         if (closestDoors.length == 1)
             return closestDoors[0];
-        closestDoors.sort(function (a, b) { return (a.x - b.x) * 100000 + (a.y - b.y); });
+        closestDoors.sort(function (a, b) { return (a.originalX - b.originalX) * 100000 + (a.originalY - b.originalY); });
         return closestDoors[0];
     };
     Door.prototype.Update = function () {
+        if (this.originalX == -1) {
+            this.originalX = this.x;
+            this.originalY = this.y;
+        }
     };
     Door.prototype.GetFrameData = function (frameNum) {
         return {

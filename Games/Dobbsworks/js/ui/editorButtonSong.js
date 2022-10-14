@@ -21,7 +21,6 @@ var EditorButtonSong = /** @class */ (function (_super) {
             currentMap.songId = songId;
             var songName = audioHandler.levelSongList[_this.songId];
             audioHandler.SetBackgroundMusic(songName);
-            console.log(_this);
         });
         return _this;
     }

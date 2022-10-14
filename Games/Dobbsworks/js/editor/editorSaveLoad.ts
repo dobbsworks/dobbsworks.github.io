@@ -121,6 +121,13 @@ class EditorSaveSlotButton extends EditorButton {
         EditorSaveSlotButton.Buttons[slotNumber] = this;
     }
 
+    ClearThumbnail(): void {
+        this.children.filter(a => a instanceof ImageFromTile).forEach(a => {
+            let image = <ImageFromTile>a;
+            image.imageTile = tiles["empty"][0][0];
+        })
+    }
+
     SaveToSlot(): void {
         let levelString = currentMap.GetExportString();
         let thumbnail = currentMap.GenerateThumbnail();
@@ -142,6 +149,9 @@ class EditorSaveSlotButton extends EditorButton {
 }
 
 class EditorSaveDrawer extends Panel {
+
+    saveButtons: EditorSaveSlotButton[] = [];
+
     constructor(x: number, y: number) {
         super(x, y, 70, 70);
 
@@ -152,7 +162,9 @@ class EditorSaveDrawer extends Panel {
 
         for (let row = saveRowCount - 1; row >= 0; row--) {
             for (let i = (row * savesPerRow + 1); i <= (row + 1) * savesPerRow; i++) {
-                buttons.push(new EditorSaveSlotButton(i));
+                let saveButton = new EditorSaveSlotButton(i);
+                buttons.push(saveButton);
+                this.saveButtons.push(saveButton)
             }
         }
 

@@ -131,6 +131,12 @@ var EditorSaveSlotButton = /** @class */ (function (_super) {
         EditorSaveSlotButton.Buttons[slotNumber] = _this;
         return _this;
     }
+    EditorSaveSlotButton.prototype.ClearThumbnail = function () {
+        this.children.filter(function (a) { return a instanceof ImageFromTile; }).forEach(function (a) {
+            var image = a;
+            image.imageTile = tiles["empty"][0][0];
+        });
+    };
     EditorSaveSlotButton.prototype.SaveToSlot = function () {
         var levelString = currentMap.GetExportString();
         var thumbnail = currentMap.GenerateThumbnail();
@@ -155,12 +161,15 @@ var EditorSaveDrawer = /** @class */ (function (_super) {
     __extends(EditorSaveDrawer, _super);
     function EditorSaveDrawer(x, y) {
         var _this = _super.call(this, x, y, 70, 70) || this;
+        _this.saveButtons = [];
         var buttons = [];
         var saveRowCount = 3;
         var savesPerRow = 5;
         for (var row = saveRowCount - 1; row >= 0; row--) {
             for (var i = (row * savesPerRow + 1); i <= (row + 1) * savesPerRow; i++) {
-                buttons.push(new EditorSaveSlotButton(i));
+                var saveButton_1 = new EditorSaveSlotButton(i);
+                buttons.push(saveButton_1);
+                _this.saveButtons.push(saveButton_1);
             }
         }
         var saveButton = new EditorSaveToCurrentSlotButton();

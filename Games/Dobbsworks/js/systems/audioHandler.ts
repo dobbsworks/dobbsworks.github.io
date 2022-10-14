@@ -74,7 +74,7 @@ class AudioHandler {
         }
         let bgm = this.audioObjects.find(a => a.id === id);
         if (bgm) {
-            bgm.src.play().then(a => console.log(a)).catch(e => console.error(e));
+            bgm.src.play().then().catch(e => console.error(e));
         }
         this.currentBgm = id;
     }

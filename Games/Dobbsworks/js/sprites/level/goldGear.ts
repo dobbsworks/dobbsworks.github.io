@@ -1,6 +1,6 @@
 class GoldGear extends Sprite {
-    public height = 24;
-    public width = 24;
+    public height = 22;
+    public width = 22;
     public respectsSolidTiles = false;
 
     isRequired = true;
@@ -114,8 +114,8 @@ class GoldGear extends Sprite {
             imageTile: tiles["gears"][Math.floor(this.frame / 20) % 6][this.frameRow],
             xFlip: false,
             yFlip: false,
-            xOffset: 2,
-            yOffset: 2
+            xOffset: 3,
+            yOffset: 3
         };
     }
 

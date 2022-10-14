@@ -64,8 +64,8 @@ class Panel extends UIElement {
 
     Update(): void {
         if (uiHandler.mousedOverElements.indexOf(this) > -1) {
-            if (mouseHandler.mouseScroll > 0) this.Scroll(-1);
-            if (mouseHandler.mouseScroll < 0) this.Scroll(1);
+            if (mouseHandler.mouseScroll > 0 || KeyboardHandler.IsKeyPressed(KeyAction.ScrollDown, true)) this.Scroll(-1);
+            if (mouseHandler.mouseScroll < 0 || KeyboardHandler.IsKeyPressed(KeyAction.ScrollUp, true)) this.Scroll(1);
         }
         super.Update();
         let children = this.children.filter(a => !a.isHidden);

@@ -163,6 +163,7 @@ var MyLevelsMenu = /** @class */ (function (_super) {
             var confirmed = confirm("Are you sure you want to delete this local save file?");
             if (confirmed) {
                 StorageService.SetSavedLevel(MyLevelsMenu.selectedLocalSlot, "", "");
+                EditorSaveSlotButton.Buttons[MyLevelsMenu.selectedLocalSlot].ClearThumbnail();
                 _this.ResetLocalSavesPanel();
             }
         });
@@ -285,6 +286,9 @@ var MyLevelsMenu = /** @class */ (function (_super) {
                     var levelDt = (_a = this.myLevelsData) === null || _a === void 0 ? void 0 : _a.myLevels.find(function (a) { return a.code == MyLevelsMenu.selectedCloudCode; });
                     if (levelDt) {
                         this.publishButton.isHidden = (levelDt.levelState != LevelState.cleared);
+                    }
+                    else {
+                        this.publishButton.isHidden = true;
                     }
                 }
             }

@@ -6,7 +6,6 @@ class EditorButtonSong extends EditorButton {
             currentMap.songId = songId;
             let songName = audioHandler.levelSongList[this.songId];
             audioHandler.SetBackgroundMusic(songName);
-            console.log(this);
         })
     }
 

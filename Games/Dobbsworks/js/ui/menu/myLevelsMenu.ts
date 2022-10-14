@@ -174,6 +174,7 @@ class MyLevelsMenu extends Menu {
             let confirmed = confirm("Are you sure you want to delete this local save file?");
             if (confirmed) {
                 StorageService.SetSavedLevel(MyLevelsMenu.selectedLocalSlot, "", "");
+                EditorSaveSlotButton.Buttons[MyLevelsMenu.selectedLocalSlot].ClearThumbnail();
                 this.ResetLocalSavesPanel();
             }
         });
@@ -308,6 +309,8 @@ class MyLevelsMenu extends Menu {
                     let levelDt = this.myLevelsData?.myLevels.find(a => a.code == MyLevelsMenu.selectedCloudCode);
                     if (levelDt) {
                         this.publishButton.isHidden = (levelDt.levelState != LevelState.cleared);
+                    } else {
+                        this.publishButton.isHidden = true;
                     }
                 }
             }

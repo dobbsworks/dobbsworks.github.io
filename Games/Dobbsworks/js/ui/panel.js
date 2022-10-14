@@ -78,9 +78,9 @@ var Panel = /** @class */ (function (_super) {
     };
     Panel.prototype.Update = function () {
         if (uiHandler.mousedOverElements.indexOf(this) > -1) {
-            if (mouseHandler.mouseScroll > 0)
+            if (mouseHandler.mouseScroll > 0 || KeyboardHandler.IsKeyPressed(KeyAction.ScrollDown, true))
                 this.Scroll(-1);
-            if (mouseHandler.mouseScroll < 0)
+            if (mouseHandler.mouseScroll < 0 || KeyboardHandler.IsKeyPressed(KeyAction.ScrollUp, true))
                 this.Scroll(1);
         }
         _super.prototype.Update.call(this);
