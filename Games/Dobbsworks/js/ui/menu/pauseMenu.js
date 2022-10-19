@@ -56,6 +56,7 @@ var PauseMenu = /** @class */ (function (_super) {
                 audioHandler.SetBackgroundMusic("menuJazz");
                 editorHandler.grabbedCheckpointLocation = null;
                 DeathLogService.LogDeathCounts();
+                currentDemoIndex = -1;
             });
         }
         if (!editorHandler.grabbedCheckpointLocation) {
@@ -80,7 +81,7 @@ var PauseMenu = /** @class */ (function (_super) {
                 PauseMenu.UnpauseTime = new Date();
                 audioHandler.SetLowPass(false);
                 PauseMenu.IsPaused = false;
-                player.OnPlayerHurt();
+                player.OnPlayerDead();
             });
             var retryFromStartButton = this.CreateButton("Retry From Start", 0.45);
             row.AddChild(retryFromStartButton);
@@ -90,7 +91,7 @@ var PauseMenu = /** @class */ (function (_super) {
                 PauseMenu.UnpauseTime = new Date();
                 audioHandler.SetLowPass(false);
                 PauseMenu.IsPaused = false;
-                player.OnPlayerHurt();
+                player.OnPlayerDead();
             });
         }
         // editorHandler.grabbedCheckpointLocation = null;

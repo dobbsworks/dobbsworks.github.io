@@ -42,6 +42,7 @@ class PauseMenu extends Menu {
                 audioHandler.SetBackgroundMusic("menuJazz");
                 editorHandler.grabbedCheckpointLocation = null;
                 DeathLogService.LogDeathCounts();
+                currentDemoIndex = -1;
             });
         }
 

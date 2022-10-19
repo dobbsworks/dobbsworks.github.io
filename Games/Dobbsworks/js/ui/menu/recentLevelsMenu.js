@@ -68,7 +68,6 @@ var RecentLevelsMenu = /** @class */ (function (_super) {
     RecentLevelsMenu.prototype.PopulateLevelPanel = function () {
         var _this = this;
         if (this.levelPanel) {
-            console.log(this.levelPanel);
             var scrollIndex = this.levelPanel.scrollIndex;
             this.levelPanel.scrollIndex = 0;
             this.levelPanel.children = [];
