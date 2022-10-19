@@ -5,13 +5,13 @@ class EditorButtonDrawer extends Panel {
         public containedButtons: Panel[]
         ) {
         super(x, y, width, height);
-        this.AddChild(containerButton);
         this.spacer = new Spacer(x, y, width - this.margin*2, 2);
-        this.drawerElements = [this.spacer, ...this.containedButtons];
+        this.drawerElements = [...this.containedButtons, this.spacer];
         this.drawerElements.forEach(a => {
             this.AddChild(a);
             a.isHidden = true;
         });
+        this.AddChild(containerButton);
         containerButton.onClickEvents.push(() => {
             if (containerButton.isSelected || this.expandOnFirstClick) {
                 if (this.isExpanded) this.Collapse();

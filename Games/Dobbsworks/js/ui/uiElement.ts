@@ -45,6 +45,7 @@ abstract class UIElement {
                 for (let el of this.children) {
                     if (el) el.CheckAndUpdateMousedOver();
                 }
+                if (this.scrollBar) this.scrollBar.CheckAndUpdateMousedOver();
             }
         }
     }
@@ -57,7 +58,8 @@ abstract class UIElement {
         if (ratioDiff < 0.0005) {
             this[rawProperty] = target;
         } else {
-            this[rawProperty] += (target - value) * 0.15;
+            this[rawProperty] += (target - value) * 0.25;
+            // previously 0.15
         }
     }
 }

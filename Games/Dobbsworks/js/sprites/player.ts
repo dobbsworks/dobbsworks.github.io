@@ -611,7 +611,7 @@ class Player extends Sprite {
                 this.dyFromPlatform *= 0.90;
                 if (Math.abs(this.dyFromPlatform) < 0.015) this.dyFromPlatform = 0;
             }
-            if (this.dxFromPlatform > 0) {
+            if (Math.abs(this.dxFromPlatform) > 0) {
                 if ((this.targetDirection == -1 && this.dxFromPlatform > 0)
                     || (this.targetDirection == 1 && this.dxFromPlatform < 0)) {
                     this.dxFromPlatform *= 0.9;
@@ -755,10 +755,14 @@ class Player extends Sprite {
     HandleDoors(): void {
         if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false) && this.isOnGround) {
             // find overlap door
-            let door = <Door>this.layer.sprites.find(a => a instanceof Door && a.IsGoingToOverlapSprite(this));
+            let door = <Door>this.layer.sprites.find(a => a instanceof Door &&
+                a.IsGoingToOverlapSprite(this) &&
+                Math.abs(a.yBottom - this.yBottom) < 2
+            );
             if (door) {
                 let doorExit = door.GetPairedDoor();
                 if (doorExit) {
+                    this.parentSprite = null;
                     this.layer.map?.StartDoorTransition(this, door, doorExit);
                 }
             }
@@ -773,7 +777,7 @@ class Player extends Sprite {
             if (Math.floor(this.iFrames / 4) % 2 == 0) sourceImage = "dobbsGhost";
         }
 
-        
+
         let isInCannon = this.layer.sprites.some(a => a instanceof RedCannon && a.holdingPlayer);
         if (isInCannon) {
             return {
@@ -871,18 +875,14 @@ class DeadPlayer extends Sprite {
         this.ApplyGravity();
         this.MoveByVelocity();
         if (this.age > 60) {
-            if (editorHandler.isEditorAllowed) {
-                editorHandler.SwitchToEditMode();
-            } else {
-                editorHandler.SwitchToEditMode();
-                editorHandler.SwitchToPlayMode();
-                if (camera.target) {
-                    camera.x = camera.target.xMid;
-                    camera.y = camera.target.yMid;
-                }
-                camera.targetX = camera.x;
-                camera.targetY = camera.y;
+            editorHandler.SwitchToEditMode();
+            editorHandler.SwitchToPlayMode();
+            if (camera.target) {
+                camera.x = camera.target.xMid;
+                camera.y = camera.target.yMid;
             }
+            camera.targetX = camera.x;
+            camera.targetY = camera.y;
         }
     }
     GetFrameData(frameNum: number): FrameData | FrameData[] {

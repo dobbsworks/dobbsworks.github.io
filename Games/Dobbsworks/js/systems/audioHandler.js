@@ -19,7 +19,10 @@ var AudioHandler = /** @class */ (function () {
             "chill",
             "crunch",
             "frost",
-            "forest"
+            "forest",
+            "waltz",
+            "faire",
+            "choir",
         ];
     }
     AudioHandler.prototype.Initialize = function () {

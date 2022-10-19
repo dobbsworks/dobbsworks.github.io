@@ -77,10 +77,24 @@ class GoldGear extends Sprite {
                 editorHandler.SwitchToEditMode();
             }
             else if (editorHandler.isEditorAllowed) {
-                this.collectTimer++;
-                if (this.collectTimer > 30) {
-                    editorHandler.SwitchToEditMode();
-                }
+                editorHandler.SwitchToEditMode();
+
+                let clearTimeText = new UIText(40 - 250, 165, Utility.FramesToTimeText(this.playerAge), 22, "white");
+                clearTimeText.textAlign = "left";
+                let clearTimePanel = new Panel(20 - 250, 130, 200, 50);
+                clearTimePanel.backColor = "#0008";
+
+                uiHandler.elements.push(clearTimePanel, clearTimeText);
+                setTimeout(() => {
+                    [clearTimeText, clearTimePanel].forEach(a => a.targetX += 250);
+                }, 10);
+                setTimeout(() => {
+                    [clearTimeText, clearTimePanel].forEach(a => a.targetX -= 250);
+                }, 3000);
+                setTimeout(() => {
+                    uiHandler.elements = uiHandler.elements.filter(a => a != clearTimeText && a != clearTimePanel);
+                }, 4000);
+
             } else {
                 // level done
                 if (!this.hasProcessedLevelComplete) {
@@ -106,8 +120,8 @@ class GoldGear extends Sprite {
             camera.ctx.strokeStyle = "black";
             camera.ctx.lineWidth = 10;
             camera.ctx.font = `70px grobold`;
-            camera.ctx.strokeText("Mash JUMP", camera.canvas.width/2, 450);
-            camera.ctx.fillText("Mash JUMP", camera.canvas.width/2, 450);
+            camera.ctx.strokeText("Mash JUMP", camera.canvas.width / 2, 450);
+            camera.ctx.fillText("Mash JUMP", camera.canvas.width / 2, 450);
         }
 
         return {

@@ -285,6 +285,30 @@ class TileType {
         TileType.OneWayUp;
 
         TileType.IceTop;
+        TileType.ArrowRight;
+        TileType.ArrowUpRight;
+        TileType.ArrowUp;
+        TileType.ArrowUpLeft;
+        TileType.ArrowLeft;
+        TileType.ArrowDownLeft;
+        TileType.ArrowDown;
+        TileType.ArrowDownRight;
+
+        TileType.SolidForPlayer;
+        TileType.SolidForNonplayer;
+        TileType.SpriteKiller;
+
+        TileType.WhiteGround;
+        TileType.WhiteBrick;
+        TileType.WhiteBlock;
+        TileType.WhiteTop;
+        TileType.WhiteBack;
+        TileType.WhiteLadder;
+        TileType.WhiteSpikes;
+        TileType.DecorWhite;
+        TileType.RegisterSlope("White", 9);
+
+        TileType.SteelBarrel;
     }
 
 
@@ -430,6 +454,20 @@ class TileType {
         });
     }
     public static get DecorCave(): TileType { return TileType.GetTileType("DecorCave", "terrain", 7, 8, Solidity.None, TargetLayer.main); }
+
+
+    public static get WhiteGround(): TileType { return TileType.GetTileType("WhiteGround", "terrain", 0, 9, Solidity.Block, TargetLayer.main); }
+    public static get WhiteBrick(): TileType { return TileType.GetTileType("WhiteBrick", "terrain", 1, 9, Solidity.Block, TargetLayer.main); }
+    public static get WhiteBlock(): TileType { return TileType.GetTileType("WhiteBlock", "terrain", 2, 9, Solidity.Block, TargetLayer.main); }
+    public static get WhiteTop(): TileType { return TileType.GetTileType("WhiteTop", "terrain", 3, 9, Solidity.Top, TargetLayer.semisolid); }
+    public static get WhiteBack(): TileType { return TileType.GetTileType("WhiteBack", "terrain", 4, 9, Solidity.None, TargetLayer.backdrop); }
+    public static get WhiteLadder(): TileType { return TileType.GetTileType("WhiteLadder", "terrain", 5, 9, Solidity.None, TargetLayer.main, tileType => { tileType.isClimbable = true; }); }
+    public static get WhiteSpikes(): TileType {
+        return TileType.GetAnimatedTileType("WhiteSpikes", "terrain", [{x:6, y:9},{x:1,y:19},{x:2,y:19},{x:3,y:19}], 5, Solidity.Block, TargetLayer.main, tileType => {
+            tileType.hurtOnBottom = true; tileType.hurtOnTop = true;
+        });
+    }
+    public static get DecorWhite(): TileType { return TileType.GetTileType("DecorWhite", "terrain", 7, 9, Solidity.None, TargetLayer.wire); }
 
 
 
@@ -865,6 +903,20 @@ class TileType {
         });
     }
 
+    public static get SteelBarrel(): AnimatedTileType {
+        let frames = [];
+        for (let i = 0; i < 120; i++) {
+            frames.push({ x: 0, y: 2 });
+        }
+        for (let i = 1; i <= 7; i++) {
+            frames.push({ x: i, y: 2 }, { x: i, y: 2 });
+        }
+        frames.push({ x: 0, y: 2 });
+        return TileType.GetAnimatedTileType("SteelBarrel", "barrel", frames, 1, Solidity.Block, TargetLayer.main, tileType => {
+            tileType.pickUpSprite = SteelBarrel;
+        });
+    }
+
     public static get Pumpkin(): AnimatedTileType {
         let frames = [];
         for (let i = 0; i < 120; i++) {
@@ -1094,6 +1146,23 @@ class TileType {
             tileType.isSlippery = true;
         })
     }
+
+
+    public static get ArrowRight(): TileType { return TileType.GetTileType("ArrowRight", "arrows", 0, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {}) }
+    public static get ArrowUpRight(): TileType { return TileType.GetTileType("ArrowUpRight", "arrows", 1, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {}) }
+    public static get ArrowUp(): TileType { return TileType.GetTileType("ArrowUp", "arrows", 2, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {}) }
+    public static get ArrowUpLeft(): TileType { return TileType.GetTileType("ArrowUpLeft", "arrows", 3, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {}) }
+    public static get ArrowLeft(): TileType { return TileType.GetTileType("ArrowLeft", "arrows", 4, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {}) }
+    public static get ArrowDownLeft(): TileType { return TileType.GetTileType("ArrowDownLeft", "arrows", 5, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {}) }
+    public static get ArrowDown(): TileType { return TileType.GetTileType("ArrowDown", "arrows", 6, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {}) }
+    public static get ArrowDownRight(): TileType { return TileType.GetTileType("ArrowDownRight", "arrows", 7, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {}) }
+
+
+    public static get SolidForPlayer(): TileType { return TileType.GetTileType("SolidForPlayer", "misc", 1, 4, Solidity.SolidForPlayer, TargetLayer.main, (tileType: TileType) => {}) }
+    public static get SolidForNonplayer(): TileType { return TileType.GetTileType("SolidForNonplayer", "misc", 2, 4, Solidity.SolidForNonplayer, TargetLayer.main, (tileType: TileType) => {}) }
+    public static get SpriteKiller(): TileType { return TileType.GetTileType("SpriteKiller", "misc", 3, 4, Solidity.None, TargetLayer.main, (tileType: TileType) => {}) }
+
+
 
 
     private static GetTileType(key: string, imageName: string, x: number, y: number, solidity: BaseSolidity, targetLayer: TargetLayer, extraRules: (tileType: TileType) => void = () => { }): TileType {

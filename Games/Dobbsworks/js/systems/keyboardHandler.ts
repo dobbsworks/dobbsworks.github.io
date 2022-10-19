@@ -23,6 +23,7 @@ class KeyAction {
     static EditorUndo = new KeyAction("EditorUndo");
     static EditorRedo = new KeyAction("EditorRedo");
     static EditorDelete = new KeyAction("EditorDelete");
+    static EditorSelectWithoutClosingDrawers = new KeyAction("EditorSelectWithoutClosingDrawers");
     static EditorPasteDrag = new KeyAction("EditorPasteDrag");
     static Cancel = new KeyAction("Cancel");
     static Pause = new KeyAction("Pause");
@@ -90,9 +91,12 @@ class KeyboardHandler {
         {k: "KeyE", v: KeyAction.EditorEraseHotkey},
         {k: "KeyZ", v: KeyAction.EditorUndo},
         {k: "KeyY", v: KeyAction.EditorRedo},
+        {k: "KeyT", v: KeyAction.Reset},
         {k: "Delete", v: KeyAction.EditorDelete},
         {k: "ControlLeft", v: KeyAction.EditorPasteDrag},
         {k: "ControlRight", v: KeyAction.EditorPasteDrag},
+        {k: "ShiftRight", v: KeyAction.EditorSelectWithoutClosingDrawers},
+        {k: "ShiftLeft", v: KeyAction.EditorSelectWithoutClosingDrawers},
 
         {k: "Period", v: KeyAction.ScrollDown},
         {k: "Comma", v: KeyAction.ScrollUp},
@@ -123,10 +127,12 @@ class KeyboardHandler {
     public static OnKeyDown(e: KeyboardEvent) {
         KeyboardHandler.gamepadIndex = -1;
         let keyCode = e.code;
-        let mappedAction = KeyboardHandler.keyMap.find(a => a.k === keyCode);
-        if (mappedAction) {
-            KeyboardHandler.SetActionState(mappedAction?.v, true);
-            e.preventDefault();
+        let mappedActions = KeyboardHandler.keyMap.filter(a => a.k === keyCode);
+        if (mappedActions.length) {
+            for (let mappedAction of mappedActions) {
+                KeyboardHandler.SetActionState(mappedAction?.v, true);
+            }
+            if (document.activeElement == document.body) e.preventDefault();
         } else {
             // console.log(keyCode);
             // e.preventDefault();
@@ -135,8 +141,8 @@ class KeyboardHandler {
 
     public static OnKeyUp(e: KeyboardEvent) {
         let keyCode = e.code;
-        let mappedAction = KeyboardHandler.keyMap.find(a => a.k === keyCode);
-        if (mappedAction) {
+        let mappedActions = KeyboardHandler.keyMap.filter(a => a.k === keyCode);
+        for (let mappedAction of mappedActions) {
             KeyboardHandler.SetActionState(mappedAction?.v, false);
             KeyboardHandler.recentlyReleasedKeys.push(mappedAction?.v);
         }

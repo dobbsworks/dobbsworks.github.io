@@ -22,6 +22,9 @@ var UiHandler = /** @class */ (function () {
         if (editorHandler.isInEditMode && editorHandler.mouseOverButton) {
             editorHandler.mouseOverButton.DrawTooltip(ctx);
         }
+        if (MenuHandler.Dialog) {
+            MenuHandler.Dialog.Draw(camera.ctx);
+        }
     };
     UiHandler.prototype.Initialize = function () {
         if (this.initialized)
@@ -48,6 +51,8 @@ var UiHandler = /** @class */ (function () {
                 }
             }
         }
+        if (MenuHandler.Dialog)
+            MenuHandler.Dialog.Update();
         if (!mouseHandler.isMouseDown) {
             this.dragSource = null;
         }

@@ -29,7 +29,6 @@ var RollingSnailShell = /** @class */ (function (_super) {
     }
     RollingSnailShell.prototype.Update = function () {
         this.ApplyGravity();
-        this.ReactToPlatformsAndSolids();
         if (this.isTouchingLeftWall) {
             this.direction = 1;
             this.ledgeGrabDistance = 1;
@@ -77,8 +76,9 @@ var RollingSnailShell = /** @class */ (function (_super) {
         var frame = 9 - Math.floor(rot / (Math.PI * 2) * totalFrames) || 1;
         if (frame < 0)
             frame = 0;
+        var row = this.framesSinceThrown < 25 ? 1 : 0;
         return {
-            imageTile: tiles["snail"][frame][0],
+            imageTile: tiles["snail"][frame][row],
             xFlip: false,
             yFlip: false,
             xOffset: 1,

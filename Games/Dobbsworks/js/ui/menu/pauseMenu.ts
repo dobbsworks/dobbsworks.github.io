@@ -3,10 +3,12 @@ class PauseMenu extends Menu {
     backgroundColor = "#0005";
 
     static UnpauseTime = new Date();
+    static IsPaused = false;
 
     CreateElements(): UIElement[] {
         let ret: UIElement[] = [];
         audioHandler.SetLowPass(true);
+        PauseMenu.IsPaused = true;
 
         ret.push(OptionsMenu.CreateOptionsButton());
 
@@ -16,7 +18,16 @@ class PauseMenu extends Menu {
         ret.push(container);
 
         if (editorHandler.isEditorAllowed) {
-            container.AddChild(new Spacer(0, 0, 0, 60));
+            // edit button
+            let editButton = this.CreateButton("Edit Level");
+            container.AddChild(editButton);
+            editButton.onClickEvents.push(() => {
+                this.Dispose();
+                audioHandler.SetLowPass(false);
+                PauseMenu.IsPaused = false;
+                editorHandler.SwitchToEditMode();
+                editorHandler.grabbedCheckpointLocation = null;
+            });
         } else {
             // exit button
             let exitButton = this.CreateButton("Exit Level");
@@ -25,10 +36,12 @@ class PauseMenu extends Menu {
                 this.Dispose();
                 PauseMenu.UnpauseTime = new Date();
                 audioHandler.SetLowPass(false);
+                PauseMenu.IsPaused = false;
                 MenuHandler.GoBack();
                 currentLevelCode = "";
                 audioHandler.SetBackgroundMusic("menuJazz");
                 editorHandler.grabbedCheckpointLocation = null;
+                DeathLogService.LogDeathCounts();
             });
         }
 
@@ -39,7 +52,8 @@ class PauseMenu extends Menu {
                 this.Dispose();
                 PauseMenu.UnpauseTime = new Date();
                 audioHandler.SetLowPass(false);
-                player.OnPlayerHurt();
+                PauseMenu.IsPaused = false;
+                player.OnPlayerDead();
             });
         } else {
             let row = new Panel(0,0, container.width, 60);
@@ -51,6 +65,7 @@ class PauseMenu extends Menu {
                 this.Dispose();
                 PauseMenu.UnpauseTime = new Date();
                 audioHandler.SetLowPass(false);
+                PauseMenu.IsPaused = false;
                 player.OnPlayerHurt();
             });
             let retryFromStartButton = this.CreateButton("Retry From Start", 0.45);
@@ -60,6 +75,7 @@ class PauseMenu extends Menu {
                 editorHandler.grabbedCheckpointLocation = null;
                 PauseMenu.UnpauseTime = new Date();
                 audioHandler.SetLowPass(false);
+                PauseMenu.IsPaused = false;
                 player.OnPlayerHurt();
             });
         }
@@ -72,6 +88,7 @@ class PauseMenu extends Menu {
             this.Dispose();
             PauseMenu.UnpauseTime = new Date();
             audioHandler.SetLowPass(false);
+            PauseMenu.IsPaused = false;
         })
 
         return ret;
@@ -84,7 +101,7 @@ class PauseMenu extends Menu {
         button.isNoisy = true;
         button.AddChild(buttonText);
         buttonText.xOffset = button.width / 2;
-        buttonText.yOffset = -15;
+        buttonText.yOffset = 40;
         buttonText.textAlign = "center";
         button.normalBackColor = "#fff8";
         button.mouseoverBackColor = "#f73738";
@@ -98,6 +115,7 @@ class PauseMenu extends Menu {
             this.Dispose();
             PauseMenu.UnpauseTime = new Date();
             audioHandler.SetLowPass(false);
+            PauseMenu.IsPaused = false;
         }
     }
 }

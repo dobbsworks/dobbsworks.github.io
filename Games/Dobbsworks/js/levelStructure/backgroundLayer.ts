@@ -45,6 +45,7 @@ class BackgroundSource {
                 new BackgroundSource(tiles["bg_chains1"][0], "top", true, true, { h: 0, s: 0, l: 0.7 }, 0.4),
                 new BackgroundSource(tiles["bg_chains2"][0], "top", true, false, { h: 0, s: 0, l: 0.7 }, 0.4),
                 new BackgroundSource(tiles["bg_gears"][0], "top", true, true, { h: 0, s: 0, l: 0.7 }, 0.4),
+                new BackgroundSource(tiles["bg_stripes"][0], "bottom", true, true, { h: 60, s: 1, l: 1 }, 0.5),
             )
         }
         return this.sources;
@@ -81,8 +82,8 @@ class BackgroundLayer {
         let initialX = (camera.minX - camera.x) * this.cameraScrollSpeed * 4;
         if (this.backgroundSource.xLoop) {
             initialX += frameNum * this.autoHorizontalScrollSpeed;
+            initialX %= dx;
         }
-        initialX %= dx;
         if (initialX > 0) initialX -= dx;
 
         let initialY = 0;
@@ -168,7 +169,8 @@ var BackgroundDefaults = [
     '#190000,#0c0c26,0.00,1.00,0.00;AL,#5eeded,0,0,0.1,-4,1,0;AK,#5eeded,0,0,0.3,8,0,0;AU,#bcd8db,0,0,0.200,-2,1,0;AK,#5eeded,0,0,0.400,5,1,0',
     '#19ffff,#eeeeff,0.00,0.70,0.40;AJ,#5eeded,-0.250,0,0.7,0,1,0;AJ,#5eeded,-0.5,0,0.6,-1,1,0;AJ,#5eeded,-0.750,0,0.8,-3,1,0;AJ,#5eeded,-1,0,0.9,-5,1,0',
     '#528a85,#b2bfff,0.00,1.00,0.60;AA,#ffffff,-0.250,0,0.050,0,0,0;AX,#191919,0,0,0.100,-2,1,0;AX,#3f3f3f,0,0,0.200,-1,1,1;AX,#595959,0,0,0.300,0,1,0',
-    '#00ff15,#000000,0.00,1.00,0.35;AW,#000000,-0.250,-0.250,0.000,-10,1,1;AF,#000000,-0.500,0.500,0.000,-10,0,0;AV,#000000,-10.000,-10.000,0.200,-5,1,0;AV,#000000,10.000,10.000,0.000,-3,1,1',
+    '#00ff15,#000000,0.00,1.00,0.35;AW,#000000,-0.250,-0.250,0,-10,1,1;AF,#000000,-0.5,0.500,0,-10,0,0;AV,#000000,-10,-10.000,0.2,-5,1,0;AV,#000000,10,10,0,-3,1,1',
+    '#000000,#157f00,0.05,1.00,0.40;Ab,#385f38,0,0,0.4,-4,0,0;AL,#10a029,1,-3.75,0.5,7,0,0;AM,#25a300,-6.25,0,0,0,1,0;AM,#2bb200,-4,-10,0,-1,1,0'
 ]
 
 // currentMap.backgroundLayers.map(a => a.ExportToString()).join(";")

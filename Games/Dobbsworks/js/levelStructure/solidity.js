@@ -23,6 +23,8 @@ var BaseSolidity = /** @class */ (function () {
             return true;
         if (this == Solidity.Block)
             return true;
+        if (this == Solidity.SolidForNonplayer)
+            return true;
         if (this instanceof SlopeSolidity) {
             if (spriteDirection == 0)
                 return this.verticalSolidDirection == -1;
@@ -65,6 +67,8 @@ var Solidity = /** @class */ (function () {
     function Solidity() {
     }
     Solidity.Block = new BaseSolidity();
+    Solidity.SolidForPlayer = new BaseSolidity();
+    Solidity.SolidForNonplayer = new BaseSolidity();
     Solidity.None = new BaseSolidity();
     Solidity.Top = new BaseSolidity();
     Solidity.Bottom = new BaseSolidity();

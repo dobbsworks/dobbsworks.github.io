@@ -37,6 +37,15 @@ class StorageService {
         return thisLevelCounter ? thisLevelCounter.deathCount : 0;
     }
 
+    public static PopNextDeathCounter(): DeathCounter | null {
+        let allDeathCounts = <DeathCounter[]>JSON.parse(localStorage.getItem("deaths") || "[]");
+        if (allDeathCounts.length == 0) return null;
+        let levelCounter = allDeathCounts[0];
+        allDeathCounts = allDeathCounts.filter(a => a.levelCode != levelCounter.levelCode);
+        localStorage.setItem("deaths", JSON.stringify(allDeathCounts));
+        return levelCounter;
+    }
+
     public static GetMusicVolume(): number {
         return +(localStorage.getItem("musicVol") || "75");
     }

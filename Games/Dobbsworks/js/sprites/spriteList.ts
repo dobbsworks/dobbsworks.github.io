@@ -81,4 +81,7 @@ var spriteTypes: SpriteType[] = [
     Pufferfish,
 
     FlatKey,
+    SapphireSnail,
+    
+    OrangeShrubbert,
 ];

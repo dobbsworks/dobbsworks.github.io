@@ -4,8 +4,9 @@ abstract class CameraScrollTrigger extends Sprite {
     public respectsSolidTiles: boolean = false;
     canMotorHold = false;
     abstract frameCol: number;
+    frameRow: number = 1;
 
-    abstract direction: Direction;
+    abstract direction: Direction | null;
 
     Update(): void {
     }
@@ -13,7 +14,7 @@ abstract class CameraScrollTrigger extends Sprite {
     GetFrameData(frameNum: number): FrameData {
         if (editorHandler.isInEditMode) {
             return {
-                imageTile: tiles["camera"][this.frameCol][1],
+                imageTile: tiles["camera"][this.frameCol][this.frameRow],
                 xFlip: false,
                 yFlip: false,
                 xOffset: 0,
@@ -50,6 +51,12 @@ class CameraScrollLeft extends CameraScrollTrigger {
 class CameraScrollRight extends CameraScrollTrigger {
     direction = Direction.Right;
     frameCol = 3;
+}
+
+class CameraScrollReset extends CameraScrollTrigger {
+    direction = null;
+    frameCol = 0;
+    frameRow = 2;
 }
 
 

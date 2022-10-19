@@ -8,6 +8,7 @@ let editorHandler = new EditorHandler();
 let uiHandler = new UiHandler();
 let audioHandler: AudioHandler;
 let currentLevelCode = "";
+let gameLoadedState = -1;
 
 function Initialize() {
     LoadImageSources();
@@ -19,7 +20,9 @@ function Initialize() {
     audioHandler.Initialize();
     KeyboardHandler.InitKeyHandlers();
     CreateTestMap();
+    DeathLogService.LogDeathCounts();
     setInterval(MainLoop, 1000 / 60);
+    camera.canvas.style.opacity = "0";
 }
 
 function LoadImageSources() {
@@ -55,19 +58,26 @@ function MainLoop() {
     if (perf) {
         perf.innerHTML = BenchmarkService.GetReports();
         let otherData = <HTMLElement>document.getElementById("data");
-        otherData.innerHTML = "Version: " + version;
+        otherData.innerHTML = "Version: " + Version.Current;
         BenchmarkService.Log("IDLE")
     }
 }
 
 function Draw() {
+    if (gameLoadedState < 0) {
+        gameLoadedState++;
+        return;
+    } else if (gameLoadedState == 0) {
+        gameLoadedState++;
+        camera.canvas.style.opacity = "1";
+    }
     if (currentMap) currentMap.Draw(camera);
     MenuHandler.Draw(camera);
     BenchmarkService.Log("DrawEditor");
     if (editorHandler.isInEditMode) editorHandler.Draw(camera);
     BenchmarkService.Log("DrawUI");
     uiHandler.Draw(camera.ctx);
-    
+
     if (currentDemoIndex > -1) {
         let ctx = camera.ctx;
         let fontsize = 24;
@@ -96,52 +106,58 @@ function Update() {
     let doesMenuBlockMapUpdate = MenuHandler.CurrentMenu?.stopsMapUpdate;
 
     if (KeyboardHandler.IsKeyPressed(KeyAction.Fullscreen, true)) document.getElementById("canvas")?.requestFullscreen();
-    if (window.location.href.indexOf("localhost") > -1 ) {
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Debug1, true)) debugMode = !debugMode;
-    }
-    //if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true)) window.location.reload();
-    if (KeyboardHandler.IsKeyPressed(KeyAction.EditToggle, true)) {
-        if (editorHandler.isInEditMode) editorHandler.SwitchToPlayMode();
-        else if (editorHandler.isEditorAllowed) editorHandler.SwitchToEditMode();
-    }
-    if (debugMode) {
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Debug2, true)) {
-            if (currentMap && !editorHandler.isInEditMode && !doesMenuBlockMapUpdate) currentMap.Update();
-        }
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Debug3, true)) {
-            let player = <Player>currentMap.mainLayer.sprites[0];
-            player.LoadHistory();
-        }
-    } else {
-        //replayHandler.StoreFrame();
 
-        if (currentMap && !doesMenuBlockMapUpdate) {
+    if (!MenuHandler.Dialog) {
+        if (window.location.href.indexOf("localhost") > -1 || window.location.href.startsWith("http://127.0.0.1:5500")) {
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Debug1, true)) debugMode = !debugMode;
+        }
+        //if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true)) window.location.reload();
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditToggle, true) && !PauseMenu.IsPaused) {
             if (editorHandler.isInEditMode) {
-                currentMap.frameNum++;
-                currentMap.mainLayer.Update();
-            } else {
-                currentMap.Update();
+                editorHandler.SwitchToPlayMode();
+            } else if (editorHandler.isEditorAllowed) {
+                editorHandler.SwitchToEditMode();
+                editorHandler.grabbedCheckpointLocation = null;
             }
         }
-
-        if (currentMap && !doesMenuBlockMapUpdate && !editorHandler.isInEditMode && currentMap.CanPause() && !MenuHandler.CurrentMenu?.blocksPause) {
-            let isOnMainMenu = MenuHandler.CurrentMenu instanceof MainMenu;
-            if (KeyboardHandler.IsKeyPressed(KeyAction.Pause, true) && !isOnMainMenu) {
-                let msSinceUnpause = (+(new Date()) - +PauseMenu.UnpauseTime);
-                if (msSinceUnpause > 100) MenuHandler.SubMenu(PauseMenu);
+        if (debugMode) {
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Debug2, true)) {
+                if (currentMap && !editorHandler.isInEditMode && !doesMenuBlockMapUpdate) currentMap.Update();
             }
-        }
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Debug3, true)) {
+                let player = <Player>currentMap.mainLayer.sprites[0];
+                player.LoadHistory();
+            }
+        } else {
+            //replayHandler.StoreFrame();
 
+            if (currentMap && !doesMenuBlockMapUpdate) {
+                if (editorHandler.isInEditMode) {
+                    currentMap.frameNum++;
+                    currentMap.mainLayer.Update();
+                } else {
+                    currentMap.Update();
+                }
+            }
+
+            if (currentMap && !doesMenuBlockMapUpdate && !editorHandler.isInEditMode && currentMap.CanPause() && !MenuHandler.CurrentMenu?.blocksPause) {
+                let isOnMainMenu = MenuHandler.CurrentMenu instanceof MainMenu;
+                if (KeyboardHandler.IsKeyPressed(KeyAction.Pause, true) && !isOnMainMenu) {
+                    let msSinceUnpause = (+(new Date()) - +PauseMenu.UnpauseTime);
+                    if (msSinceUnpause > 100) MenuHandler.SubMenu(PauseMenu);
+                }
+            }
+
+        }
+        uiHandler.Update();
+        editorHandler.Update();
     }
-    uiHandler.Update();
-    editorHandler.Update();
     mouseHandler.UpdateMouseChanged();
     KeyboardHandler.AfterUpdate();
 }
 
 
 function CreateTestMap() {
-
     let mainLayer = new LevelLayer(TargetLayer.main);
     let wireLayer = new LevelLayer(TargetLayer.wire);
     let waterLayer = new LevelLayer(TargetLayer.water);

@@ -11,6 +11,6 @@ class EditorButtonToggle extends EditorButton {
 
     Update(): void {
         super.Update();
-        this.borderColor = this.isSelected ? "#2F2E" : "#444E";
+        this.borderColor = this.isSelected ? "#2F2E" : "#F2FE";
     }
 }

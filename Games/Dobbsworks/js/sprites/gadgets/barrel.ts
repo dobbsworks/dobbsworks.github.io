@@ -9,6 +9,8 @@ class Barrel extends Sprite {
     isPlatform = true;
 
     hurtsEnemies = false;
+    frameRow = 0;
+    rollingBarrelType: SpriteType = RollingBarrel;
 
     OnThrow(thrower: Sprite, direction: -1|1) {
         super.OnThrow(thrower, direction);
@@ -24,11 +26,7 @@ class Barrel extends Sprite {
     }
 
     ReplaceWithRollingBarrel(): void {
-        let rollingBarrel = new RollingBarrel(this.x, this.y, this.layer, []);
-        this.isActive = false;
-        rollingBarrel.dx = this.dx;
-        rollingBarrel.dy = this.dy;
-        this.layer.sprites.push(rollingBarrel);
+        this.ReplaceWithSpriteType(this.rollingBarrelType);
     }
 
     Update(): void {
@@ -41,7 +39,7 @@ class Barrel extends Sprite {
     
     GetFrameData(frameNum: number): FrameData {
         return {
-            imageTile: tiles["barrel"][0][0],
+            imageTile: tiles["barrel"][0][this.frameRow],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
@@ -61,6 +59,7 @@ class RollingBarrel extends Sprite {
     isPlatform = true;
 
     hurtsEnemies = true;
+    frameRow = 1;
 
     OnStrikeEnemy(enemy: Enemy): void {
         this.Break();
@@ -97,7 +96,7 @@ class RollingBarrel extends Sprite {
         if (frame < 0) frame = 0;
 
         return {
-            imageTile: tiles["barrel"][frame][1],
+            imageTile: tiles["barrel"][frame][this.frameRow],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
@@ -130,4 +129,19 @@ class BreakingBarrel extends Sprite {
         };
     }
 
+}
+
+class SteelBarrel extends Barrel {
+    frameRow = 2;
+    rollingBarrelType: SpriteType = RollingSteelBarrel;
+}
+
+class RollingSteelBarrel extends RollingBarrel {
+    frameRow = 3;
+    OnStrikeEnemy(enemy: Enemy): void { }
+    Break(): void {
+        this.dx = 0;
+        this.dy = -1;
+        this.ReplaceWithSpriteType(SteelBarrel);
+    }
 }

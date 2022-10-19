@@ -87,10 +87,21 @@ var GoldGear = /** @class */ (function (_super) {
                 editorHandler.SwitchToEditMode();
             }
             else if (editorHandler.isEditorAllowed) {
-                this.collectTimer++;
-                if (this.collectTimer > 30) {
-                    editorHandler.SwitchToEditMode();
-                }
+                editorHandler.SwitchToEditMode();
+                var clearTimeText_1 = new UIText(40 - 250, 165, Utility.FramesToTimeText(this.playerAge), 22, "white");
+                clearTimeText_1.textAlign = "left";
+                var clearTimePanel_1 = new Panel(20 - 250, 130, 200, 50);
+                clearTimePanel_1.backColor = "#0008";
+                uiHandler.elements.push(clearTimePanel_1, clearTimeText_1);
+                setTimeout(function () {
+                    [clearTimeText_1, clearTimePanel_1].forEach(function (a) { return a.targetX += 250; });
+                }, 10);
+                setTimeout(function () {
+                    [clearTimeText_1, clearTimePanel_1].forEach(function (a) { return a.targetX -= 250; });
+                }, 3000);
+                setTimeout(function () {
+                    uiHandler.elements = uiHandler.elements.filter(function (a) { return a != clearTimeText_1 && a != clearTimePanel_1; });
+                }, 4000);
             }
             else {
                 // level done

@@ -12,6 +12,9 @@ class UiHandler {
         if (editorHandler.isInEditMode && editorHandler.mouseOverButton) {
             editorHandler.mouseOverButton.DrawTooltip(ctx);
         }
+        if (MenuHandler.Dialog) {
+            MenuHandler.Dialog.Draw(camera.ctx);
+        }
     }
 
     initialized = false;
@@ -40,6 +43,7 @@ class UiHandler {
             }
         }
 
+        if (MenuHandler.Dialog) MenuHandler.Dialog.Update();
         if (!mouseHandler.isMouseDown) {
             this.dragSource = null;
         }
@@ -48,7 +52,7 @@ class UiHandler {
 
     GetAllElements(): UIElement[] {
         let list = [...this.elements];
-        for (let i=0; i<list.length; i++) {
+        for (let i = 0; i < list.length; i++) {
             if (list[i] instanceof Panel) {
                 list.push(...(<Panel>list[i]).children);
             }

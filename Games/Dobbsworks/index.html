@@ -2,168 +2,174 @@
 
 <head>
     <title>Dabble Worlds</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
     <link rel="stylesheet" href="css/app.css?v=0.5.0">
 
-    <script src="js/utility/utility.js?v=1.0.1"></script>
-    <script src="js/systems/version.js?v=1.0.1"></script>
-    <script src="js/utility/direction.js?v=1.0.1"></script>
-    <script src="js/utility/tileCoord.js?v=1.0.1"></script>
-    <script src="js/utility/levelState.js?v=1.0.1"></script>
-    <script src="js/systems/storageService.js?v=1.0.1"></script>
-    <script src="js/systems/keyboardHandler.js?v=1.0.1"></script>
-    <script src="js/systems/mouseHandler.js?v=1.0.1"></script>
-    <script src="js/systems/replayHandler.js?v=1.0.1"></script>
-    <script src="js/systems/camera.js?v=1.0.1"></script>
-    <script src="js/systems/audioHandler.js?v=1.0.1"></script>
-    <script src="js/levelStructure/frameData.js?v=1.0.1"></script>
-    <script src="js/levelStructure/imageTile.js?v=1.0.1"></script>
-    <script src="js/sprites/_sprite.js?v=1.0.1"></script>
-    <script src="js/sprites/_enemy.js?v=1.0.1"></script>
-    <script src="js/sprites/hazard.js?v=1.0.1"></script>
+    <script src="js/utility/utility.js?v=1.1.0"></script>
+    <script src="js/systems/version.js?v=1.1.0"></script>
+    <script src="js/utility/direction.js?v=1.1.0"></script>
+    <script src="js/utility/tileCoord.js?v=1.1.0"></script>
+    <script src="js/utility/levelState.js?v=1.1.0"></script>
+    <script src="js/systems/storageService.js?v=1.1.0"></script>
+    <script src="js/systems/keyboardHandler.js?v=1.1.0"></script>
+    <script src="js/systems/mouseHandler.js?v=1.1.0"></script>
+    <script src="js/systems/replayHandler.js?v=1.1.0"></script>
+    <script src="js/systems/camera.js?v=1.1.0"></script>
+    <script src="js/systems/audioHandler.js?v=1.1.0"></script>
+    <script src="js/levelStructure/frameData.js?v=1.1.0"></script>
+    <script src="js/levelStructure/imageTile.js?v=1.1.0"></script>
+    <script src="js/sprites/_sprite.js?v=1.1.0"></script>
+    <script src="js/sprites/_enemy.js?v=1.1.0"></script>
+    <script src="js/sprites/hazard.js?v=1.1.0"></script>
     
-    <script src="js/levelStructure/solidity.js?v=1.0.1"></script>
-    <script src="js/levelStructure/tileType.js?v=1.0.1"></script>
-    <script src="js/levelStructure/levelTile.js?v=1.0.1"></script>
-    <script src="js/levelStructure/levelLayer.js?v=1.0.1"></script>
-    <script src="js/levelStructure/levelMap.js?v=1.0.1"></script>
-    <script src="js/levelStructure/backgroundLayer.js?v=1.0.1"></script>
-    <script src="js/systems/circuitHandler.js?v=1.0.1"></script>
+    <script src="js/levelStructure/solidity.js?v=1.1.0"></script>
+    <script src="js/levelStructure/tileType.js?v=1.1.0"></script>
+    <script src="js/levelStructure/levelTile.js?v=1.1.0"></script>
+    <script src="js/levelStructure/levelLayer.js?v=1.1.0"></script>
+    <script src="js/levelStructure/levelMap.js?v=1.1.0"></script>
+    <script src="js/levelStructure/backgroundLayer.js?v=1.1.0"></script>
+    <script src="js/systems/circuitHandler.js?v=1.1.0"></script>
 
-    <script src="js/sprites/enemies/deadEnemy.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/snail.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/pig.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/bigPig.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/prickle.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/prickleEgg.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/crab.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/shrub.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/spider.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/snouter.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/snowman.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/snowmanWorm.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/pricklySnouter.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/snouterBullet.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/fish.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/bee.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/porco.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/sparky.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/ufo.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/clam.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/pufferfish.js?v=1.0.1"></script>
-    <script src="js/sprites/enemies/seaurchin.js?v=1.0.1"></script>
+    <script src="js/sprites/enemies/deadEnemy.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/snail.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/pig.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/bigPig.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/prickle.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/prickleEgg.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/crab.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/shrub.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/spider.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/snouter.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/snowman.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/snowmanWorm.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/pricklySnouter.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/snouterBullet.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/fish.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/bee.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/porco.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/sparky.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/ufo.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/clam.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/pufferfish.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/seaurchin.js?v=1.1.0"></script>
+    <script src="js/sprites/enemies/sapphireSnail.js?v=1.1.0"></script>
 
-    <script src="js/sprites/player.js?v=1.0.1"></script>
+    <script src="js/sprites/player.js?v=1.1.0"></script>
 
-    <script src="js/sprites/gadgets/airBubble.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/lightbulb.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/umbrella.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/dice.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/floorButton.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/rightSideButton.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/leftSideButton.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/ceilingButton.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/lever.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/barrel.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/pumpkin.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/testBox.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/baseball.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/cannon.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/rollingSnailShell.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/snailShell.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/gust.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/fan.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/door.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/doorAnimation.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/key.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/keyDomino.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/gift.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/chest.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/battery.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/ring.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/motor.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/rocket.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/balloon.js?v=1.0.1"></script>
-    <script src="js/sprites/gadgets/flag.js?v=1.0.1"></script>
+    <script src="js/sprites/gadgets/airBubble.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/lightbulb.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/umbrella.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/dice.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/floorButton.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/rightSideButton.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/leftSideButton.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/ceilingButton.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/lever.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/barrel.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/pumpkin.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/testBox.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/baseball.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/cannon.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/rollingSnailShell.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/snailShell.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/gust.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/fan.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/door.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/doorAnimation.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/key.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/keyDomino.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/gift.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/chest.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/battery.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/ring.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/motor.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/rocket.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/balloon.js?v=1.1.0"></script>
+    <script src="js/sprites/gadgets/flag.js?v=1.1.0"></script>
     
-    <script src="js/sprites/level/goldGear.js?v=1.0.1"></script>
-    <script src="js/sprites/level/redGear.js?v=1.0.1"></script>
-    <script src="js/sprites/level/silverGear.js?v=1.0.1"></script>
-    <script src="js/sprites/level/coin.js?v=1.0.1"></script>
-    <script src="js/sprites/level/points.js?v=1.0.1"></script>
-    <script src="js/sprites/level/heart.js?v=1.0.1"></script>
-    <script src="js/sprites/level/cameraLock.js?v=1.0.1"></script>
-    <script src="js/sprites/level/cameraScrollTrigger.js?v=1.0.1"></script>
+    <script src="js/sprites/level/goldGear.js?v=1.1.0"></script>
+    <script src="js/sprites/level/redGear.js?v=1.1.0"></script>
+    <script src="js/sprites/level/silverGear.js?v=1.1.0"></script>
+    <script src="js/sprites/level/coin.js?v=1.1.0"></script>
+    <script src="js/sprites/level/points.js?v=1.1.0"></script>
+    <script src="js/sprites/level/heart.js?v=1.1.0"></script>
+    <script src="js/sprites/level/cameraLock.js?v=1.1.0"></script>
+    <script src="js/sprites/level/cameraScrollTrigger.js?v=1.1.0"></script>
     
-    <script src="js/sprites/hazards/propeller.js?v=1.0.1"></script>
+    <script src="js/sprites/hazards/propeller.js?v=1.1.0"></script>
+
+    <script src="js/sprites/particles/poof.js?v=1.1.0"></script>
+
+    <script src="js/ui/uiHandler.js?v=1.1.0"></script>
+    <script src="js/ui/uiElement.js?v=1.1.0"></script>
+    <script src="js/ui/panel.js?v=1.1.0"></script>
+    <script src="js/ui/panelScroll.js?v=1.1.0"></script>
+    <script src="js/ui/spacer.js?v=1.1.0"></script>
+    <script src="js/ui/button.js?v=1.1.0"></script>
+    <script src="js/ui/slider.js?v=1.1.0"></script>
+    <script src="js/ui/editorButton.js?v=1.1.0"></script>
+    <script src="js/ui/editorButtonSprite.js?v=1.1.0"></script>
+    <script src="js/ui/editorButtonTile.js?v=1.1.0"></script>
+    <script src="js/ui/editorButtonFillBrush.js?v=1.1.0"></script>
+    <script src="js/ui/editorButtonSlopePen.js?v=1.1.0"></script>
+    <script src="js/ui/editorButtonDrawer.js?v=1.1.0"></script>
+    <script src="js/ui/editorButtonDrawerHandle.js?v=1.1.0"></script>
+    <script src="js/ui/editorButtonEraser.js?v=1.1.0"></script>
+    <script src="js/ui/editorButtonToggle.js?v=1.1.0"></script>
+    <script src="js/ui/editorButtonBackgroundSource.js?v=1.1.0"></script>
+    <script src="js/ui/editorButtonBackgroundLoad.js?v=1.1.0"></script>
+    <script src="js/ui/editorButtonSong.js?v=1.1.0"></script>
+    <script src="js/ui/imageFromTile.js?v=1.1.0"></script>
+    <script src="js/ui/uiText.js?v=1.1.0"></script>
+    <script src="js/ui/saveSlotChart.js?v=1.1.0"></script>
 
 
-    <script src="js/ui/uiHandler.js?v=1.0.1"></script>
-    <script src="js/ui/uiElement.js?v=1.0.1"></script>
-    <script src="js/ui/panel.js?v=1.0.1"></script>
-    <script src="js/ui/spacer.js?v=1.0.1"></script>
-    <script src="js/ui/button.js?v=1.0.1"></script>
-    <script src="js/ui/slider.js?v=1.0.1"></script>
-    <script src="js/ui/editorButton.js?v=1.0.1"></script>
-    <script src="js/ui/editorButtonSprite.js?v=1.0.1"></script>
-    <script src="js/ui/editorButtonTile.js?v=1.0.1"></script>
-    <script src="js/ui/editorButtonFillBrush.js?v=1.0.1"></script>
-    <script src="js/ui/editorButtonSlopePen.js?v=1.0.1"></script>
-    <script src="js/ui/editorButtonDrawer.js?v=1.0.1"></script>
-    <script src="js/ui/editorButtonDrawerHandle.js?v=1.0.1"></script>
-    <script src="js/ui/editorButtonEraser.js?v=1.0.1"></script>
-    <script src="js/ui/editorButtonToggle.js?v=1.0.1"></script>
-    <script src="js/ui/editorButtonBackgroundSource.js?v=1.0.1"></script>
-    <script src="js/ui/editorButtonBackgroundLoad.js?v=1.0.1"></script>
-    <script src="js/ui/editorButtonSong.js?v=1.0.1"></script>
-    <script src="js/ui/imageFromTile.js?v=1.0.1"></script>
-    <script src="js/ui/uiText.js?v=1.0.1"></script>
-    <script src="js/ui/saveSlotChart.js?v=1.0.1"></script>
+    <script src="js/ui/menu/_menu.js?v=1.1.0"></script>
+    <script src="js/ui/menu/_menuHandler.js?v=1.1.0"></script>
+    <script src="js/ui/menu/initialMenu.js?v=1.1.0"></script>
+    <script src="js/ui/menu/mainMenu.js?v=1.1.0"></script>
+    <script src="js/ui/menu/myLevelsMenu.js?v=1.1.0"></script>
+    <script src="js/ui/menu/recentLevelsMenu.js?v=1.1.0"></script>
+    <script src="js/ui/menu/blankMenu.js?v=1.1.0"></script>
+    <script src="js/ui/menu/levelSuccessMenu.js?v=1.1.0"></script>
+    <script src="js/ui/menu/pauseMenu.js?v=1.1.0"></script>
+    <script src="js/ui/menu/optionsMenu.js?v=1.1.0"></script>
+    <script src="js/ui/uiDialog.js?v=1.1.0"></script>
+
+    <script src="js/models/levelUploadDt.js?v=1.1.0"></script>
+    <script src="js/models/userDT.js?v=1.1.0"></script>
+    <script src="js/models/levelListing.js?v=1.1.0"></script>
+    <script src="js/models/levelProgressModel.js?v=1.1.0"></script>
 
 
-    <script src="js/ui/menu/_menu.js?v=1.0.1"></script>
-    <script src="js/ui/menu/_menuHandler.js?v=1.0.1"></script>
-    <script src="js/ui/menu/initialMenu.js?v=1.0.1"></script>
-    <script src="js/ui/menu/mainMenu.js?v=1.0.1"></script>
-    <script src="js/ui/menu/myLevelsMenu.js?v=1.0.1"></script>
-    <script src="js/ui/menu/recentLevelsMenu.js?v=1.0.1"></script>
-    <script src="js/ui/menu/blankMenu.js?v=1.0.1"></script>
-    <script src="js/ui/menu/levelSuccessMenu.js?v=1.0.1"></script>
-    <script src="js/ui/menu/pauseMenu.js?v=1.0.1"></script>
-    <script src="js/ui/menu/optionsMenu.js?v=1.0.1"></script>
-
-    <script src="js/models/levelUploadDt.js?v=1.0.1"></script>
-    <script src="js/models/userDT.js?v=1.0.1"></script>
-    <script src="js/models/levelListing.js?v=1.0.1"></script>
-    <script src="js/models/levelProgressModel.js?v=1.0.1"></script>
+    <script src="js/editor/_editor.js?v=1.1.0"></script>
+    <script src="js/editor/editorHotbar.js?v=1.1.0"></script>
+    <script src="js/editor/editorSprite.js?v=1.1.0"></script>
+    <script src="js/editor/editorTool.js?v=1.1.0"></script>
+    <script src="js/editor/editorSelectTool.js?v=1.1.0"></script>
+    <script src="js/editor/editorUI.js?v=1.1.0"></script>
+    <script src="js/editor/skyEditor.js?v=1.1.0"></script>
+    <script src="js/editor/backgroundLayerEditor.js?v=1.1.0"></script>
+    <script src="js/editor/editorHistory.js?v=1.1.0"></script>
+    <script src="js/editor/editorSaveLoad.js?v=1.1.0"></script>
+    <script src="js/editor/mapSizeEditor.js?v=1.1.0"></script>
 
 
-    <script src="js/editor/_editor.js?v=1.0.1"></script>
-    <script src="js/editor/editorHotbar.js?v=1.0.1"></script>
-    <script src="js/editor/editorSprite.js?v=1.0.1"></script>
-    <script src="js/editor/editorTool.js?v=1.0.1"></script>
-    <script src="js/editor/editorSelectTool.js?v=1.0.1"></script>
-    <script src="js/editor/editorUI.js?v=1.0.1"></script>
-    <script src="js/editor/skyEditor.js?v=1.0.1"></script>
-    <script src="js/editor/backgroundLayerEditor.js?v=1.0.1"></script>
-    <script src="js/editor/editorHistory.js?v=1.0.1"></script>
-    <script src="js/editor/editorSaveLoad.js?v=1.0.1"></script>
-    <script src="js/editor/mapSizeEditor.js?v=1.0.1"></script>
-
-
-    <script src="js/sprites/platforms/_basePlatform.js?v=1.0.1"></script>
-    <script src="js/sprites/platforms/shakyPlatform.js?v=1.0.1"></script>
-    <script src="js/sprites/platforms/weightedPlatform.js?v=1.0.1"></script>
-    <script src="js/sprites/platforms/floatingPlatform.js?v=1.0.1"></script>
-    <script src="js/sprites/platforms/risingPlatform.js?v=1.0.1"></script>
-    <script src="js/sprites/platforms/cloudPlatform.js?v=1.0.1"></script>
-    <script src="js/sprites/platforms/bouncePlatform.js?v=1.0.1"></script>
-    <script src="js/sprites/platforms/mushroomPlatform.js?v=1.0.1"></script>
+    <script src="js/sprites/platforms/_basePlatform.js?v=1.1.0"></script>
+    <script src="js/sprites/platforms/shakyPlatform.js?v=1.1.0"></script>
+    <script src="js/sprites/platforms/weightedPlatform.js?v=1.1.0"></script>
+    <script src="js/sprites/platforms/floatingPlatform.js?v=1.1.0"></script>
+    <script src="js/sprites/platforms/risingPlatform.js?v=1.1.0"></script>
+    <script src="js/sprites/platforms/cloudPlatform.js?v=1.1.0"></script>
+    <script src="js/sprites/platforms/bouncePlatform.js?v=1.1.0"></script>
+    <script src="js/sprites/platforms/mushroomPlatform.js?v=1.1.0"></script>
     
-    <script src="js/systems/benchmarkService.js?v=1.0.1"></script>
-    <script src="js/systems/dataService.js?v=1.0.1"></script>
-    <script src="js/sprites/spriteList.js?v=1.0.1"></script>
-    <script src="js/app.js?v=1.0.1"></script>
+    <script src="js/systems/benchmarkService.js?v=1.1.0"></script>
+    <script src="js/systems/deathLogService.js?v=1.1.0"></script>
+    <script src="js/systems/dataService.js?v=1.1.0"></script>
+    <script src="js/sprites/spriteList.js?v=1.1.0"></script>
+    <script src="js/app.js?v=1.1.0"></script>
     
     <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
 </head>
@@ -197,12 +203,12 @@
         <img src="images/dead.png?v=1.0.0" data-cols="4" data-rows="1" />
         <img src="images/misc.png?v=1.0.0" data-cols="5" data-rows="5" />
         <img src="images/baseball.png?v=1.0.0" data-cols="12" data-rows="1" />
-        <img src="images/snail.png?v=1.0.0" data-cols="10" data-rows="1" />
+        <img src="images/snail.png?v=1.0.0" data-cols="10" data-rows="2" />
         <img src="images/wire.png?v=1.0.0" data-cols="10" data-rows="10" />
         <img src="images/water.png?v=1.0.0" data-cols="8" data-rows="9" />
         <img src="images/gust.png?v=1.0.0" data-cols="12" data-rows="2" />
         <img src="images/dice.png?v=1.0.0" data-cols="6" data-rows="6" />
-        <img src="images/barrel.png?v=1.0.0" data-cols="8" data-rows="2" />
+        <img src="images/barrel.png?v=1.0.0" data-cols="8" data-rows="4" />
         <img src="images/pumpkin.png?v=1.0.0" data-cols="8" data-rows="2" />
         <img src="images/door.png?v=1.0.0" data-cols="6" data-rows="2" />
         <img src="images/lockpoof.png?v=1.0.0" data-cols="10" data-rows="1" />
@@ -212,7 +218,7 @@
         <img src="images/prickle-egg.png?v=1.0.0" data-cols="4" data-rows="5" />
         <img src="images/snouter.png?v=1.0.0" data-cols="2" data-rows="5" />
         <img src="images/snowman.png?v=1.0.0" data-cols="4" data-rows="2" />
-        <img src="images/shrub.png?v=1.0.0" data-cols="8" data-rows="4" />
+        <img src="images/shrub.png?v=1.0.0" data-cols="8" data-rows="6" />
         <img src="images/spider.png?v=1.0.0" data-cols="4" data-rows="2" />
         <img src="images/slime.png?v=1.0.0" data-cols="5" data-rows="1" />
         <img src="images/crab.png?v=1.0.0" data-cols="2" data-rows="2" />
@@ -245,12 +251,16 @@
         <img src="images/flag.png?v=1.0.0" data-cols="5" data-rows="2" />
         <img src="images/heart.png?v=1.0.0" data-cols="3" data-rows="1" />
         <img src="images/heartSmall.png?v=1.0.0" data-cols="3" data-rows="1" />
-        <img src="images/camera.png?v=1.0.0" data-cols="4" data-rows="2" />
+        <img src="images/camera.png?v=1.0.0" data-cols="4" data-rows="3" />
         <img src="images/ufo.png?v=1.0.0" data-cols="8" data-rows="3" />
         <img src="images/prickle-egg-big.png?v=1.0.0" data-cols="2" data-rows="1" />
         <img src="images/clam.png?v=1.0.0" data-cols="4" data-rows="1" />
         <img src="images/pufferfish.png?v=1.0.0" data-cols="2" data-rows="1" />
         <img src="images/oneway.png?v=1.0.0" data-cols="3" data-rows="4" />
+
+        <img src="images/arrows.png?v=1.0.0" data-cols="8" data-rows="1" />
+        <img src="images/sapphireSnail.png?v=1.0.0" data-cols="2" data-rows="1" />
+        <img src="images/poof.png?v=1.0.0" data-cols="8" data-rows="1" />
 
         <img src="images/bgThumbs.png?v=1.0.0" data-cols="4" data-rows="4" />
         <img src="images/bg/clouds1.png?v=1.0.0" data-cols="1" data-rows="1" />
@@ -282,6 +292,7 @@
         <img src="images/bg/chains1.png?v=1.0.0" data-cols="1" data-rows="1" />
         <img src="images/bg/chains2.png?v=1.0.0" data-cols="1" data-rows="1" />
         <img src="images/bg/gears.png?v=1.0.0" data-cols="1" data-rows="3" />
+        <img src="images/bg/stripes.png?v=1.0.0" data-cols="1" data-rows="1" />
     </div>
 
     <div id="audioResources" style="display:none;">
@@ -303,6 +314,9 @@
             <audio id="crunch" controls src="audio/music/Crunch.mp3" data-bpm="150" data-intro-beats="0" data-loop-beats="160"></audio>
             <audio id="frost" controls src="audio/music/Frost.mp3" data-bpm="130" data-intro-beats="0" data-loop-beats="192"></audio>
             <audio id="forest" controls src="audio/music/Forest.mp3" data-bpm="156" data-intro-beats="24" data-loop-beats="48"></audio>
+            <audio id="waltz" controls src="audio/music/Waltz.mp3" data-bpm="158" data-intro-beats="12" data-loop-beats="240"></audio>
+            <audio id="faire" controls src="audio/music/Faire.mp3" data-bpm="172" data-intro-beats="54" data-loop-beats="144"></audio>
+            <audio id="choir" controls src="audio/music/Choir.mp3" data-bpm="164" data-intro-beats="16" data-loop-beats="96"></audio>
         </div>
         <div id="sfx">
             <audio src="audio/sfx/pick-up.mp3?v=0"></audio>
@@ -310,6 +324,7 @@
             <audio src="audio/sfx/jump.mp3?v=0"></audio>
             <audio src="audio/sfx/swim.mp3"></audio>
             <audio src="audio/sfx/dead.mp3"></audio>
+            <audio src="audio/sfx/hurt.mp3"></audio>
             <audio src="audio/sfx/oink.mp3"></audio>
             <audio src="audio/sfx/bop.mp3"></audio>
             <audio src="audio/sfx/confirm.mp3"></audio>
@@ -337,3 +352,5 @@
         </div>
     </div>
 </body>
+
+</html>

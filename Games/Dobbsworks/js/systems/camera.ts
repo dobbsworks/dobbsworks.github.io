@@ -51,8 +51,12 @@ class Camera {
             if (onScreenScrollTriggers.some(a => a instanceof CameraScrollLeft || a instanceof CameraScrollRight)) this.isAutoscrollingHorizontally = true;
             if (onScreenScrollTriggers.some(a => a instanceof CameraScrollUp || a instanceof CameraScrollDown)) this.isAutoscrollingVertically = true;
             for (let trigger of onScreenScrollTriggers) {
-                this.autoscrollX += trigger.direction.x * .25;
-                this.autoscrollY += trigger.direction.y * .25;
+                if (trigger.direction) {
+                    this.autoscrollX += trigger.direction.x * .25;
+                    this.autoscrollY += trigger.direction.y * .25;
+                } else {
+                    this.Reset();
+                }
 
                 // remove from list of available triggers
                 this.autoscrollTriggers = this.autoscrollTriggers.filter(a => a != trigger);

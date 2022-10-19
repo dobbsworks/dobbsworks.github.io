@@ -26,28 +26,24 @@ var OptionsMenu = /** @class */ (function (_super) {
         container.margin = 0;
         container.layout = "vertical";
         ret.push(container);
+        var musicVol = this.CreateSlider("Music Volume", StorageService.GetMusicVolume(), function (newVal) {
+            audioHandler.SetMusicVolume(newVal);
+        });
+        container.AddChild(musicVol);
+        var sfxVol = this.CreateSlider("SFX Volume", StorageService.GetSfxVolume(), function (newVal) {
+            audioHandler.SetSfxVolume(newVal);
+        });
+        container.AddChild(sfxVol);
         var backButton = this.CreateButton("Back");
         container.AddChild(backButton);
         backButton.onClickEvents.push(function () {
             MenuHandler.GoBack();
         });
-        var sfxVol = this.CreateSlider("SFX Volume", StorageService.GetSfxVolume(), function (newVal) {
-            audioHandler.SetSfxVolume(newVal);
-        });
-        container.AddChild(sfxVol);
-        var musicVol = this.CreateSlider("Music Volume", StorageService.GetMusicVolume(), function (newVal) {
-            audioHandler.SetMusicVolume(newVal);
-        });
-        container.AddChild(musicVol);
         return ret;
     };
     OptionsMenu.prototype.CreateSlider = function (header, initialValue, onChange) {
         var panel = new Panel(0, 0, camera.canvas.width / 2, 150);
         panel.margin = 15;
-        panel.AddChild(new Spacer(0, 0, 0, 0));
-        var slider = new Slider(0, 0, camera.canvas.width / 2 - 30, 40, onChange);
-        slider.value = initialValue;
-        panel.AddChild(slider);
         panel.AddChild(new Spacer(0, 0, 0, 0));
         var buttonText = new UIText(0, 0, header, 30, "#000");
         panel.layout = "vertical";
@@ -59,6 +55,10 @@ var OptionsMenu = /** @class */ (function (_super) {
         panel.borderColor = "#000";
         panel.borderRadius = 9;
         panel.AddChild(new Spacer(0, 0, 0, 0));
+        var slider = new Slider(0, 0, camera.canvas.width / 2 - 30, 40, onChange);
+        slider.value = initialValue;
+        panel.AddChild(slider);
+        panel.AddChild(new Spacer(0, 0, 0, 0));
         return panel;
     };
     OptionsMenu.prototype.CreateButton = function (text) {
@@ -67,7 +67,7 @@ var OptionsMenu = /** @class */ (function (_super) {
         button.margin = 0;
         button.AddChild(buttonText);
         buttonText.xOffset = camera.canvas.width / 4;
-        buttonText.yOffset = -15;
+        buttonText.yOffset = 40;
         buttonText.textAlign = "center";
         button.normalBackColor = "#fff8";
         button.mouseoverBackColor = "#f73738";

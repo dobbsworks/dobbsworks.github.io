@@ -6,6 +6,7 @@ class BaseSolidity {
         if (this == Solidity.None) return false;
         if (this == Solidity.Top) return true;
         if (this == Solidity.Block) return true;
+        if (this == Solidity.SolidForNonplayer) return true;
         if (this instanceof SlopeSolidity) {
             if (spriteDirection == 0) return this.verticalSolidDirection == -1;
             return this.verticalSolidDirection == -1 || this.horizontalSolidDirection == -spriteDirection;
@@ -41,6 +42,8 @@ class SlopeSolidity extends BaseSolidity {
 
 class Solidity {
     public static Block = new BaseSolidity();
+    public static SolidForPlayer = new BaseSolidity();
+    public static SolidForNonplayer = new BaseSolidity();
     public static None = new BaseSolidity();
     public static Top = new BaseSolidity();
     public static Bottom = new BaseSolidity();

@@ -1,6 +1,6 @@
 "use strict";
 var LevelDT = /** @class */ (function () {
-    function LevelDT(code, userId, timestamp, name, description, levelData, thumbnail, recordFrames, recordUserId, firstClearUserId, numberOfClears, numberOfAttempts, numberOfUniquePlayers, numberOfLikes, numberOfDislikes, levelState, username) {
+    function LevelDT(code, userId, timestamp, name, description, levelData, thumbnail, recordFrames, recordUserId, firstClearUserId, numberOfClears, numberOfAttempts, numberOfUniquePlayers, numberOfLikes, numberOfDislikes, levelState, username, isGlitch) {
         this.code = code;
         this.userId = userId;
         this.timestamp = timestamp;
@@ -18,6 +18,7 @@ var LevelDT = /** @class */ (function () {
         this.numberOfDislikes = numberOfDislikes;
         this.levelState = levelState;
         this.username = username;
+        this.isGlitch = isGlitch;
     }
     return LevelDT;
 }());

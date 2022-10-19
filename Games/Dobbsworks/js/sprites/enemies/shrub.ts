@@ -8,6 +8,10 @@ class Shrubbert extends Enemy {
     stunTimer = 0;
     maxStun = 32;
 
+    stunFrameRow = 3;
+    runFrameColStart = 0;
+    turnAtLedges = true;
+
     Update(): void {
         if (!this.WaitForOnScreen()) return;
         if (this.state == "stunned") {
@@ -19,7 +23,7 @@ class Shrubbert extends Enemy {
         } else {
             let speed = this.state == "normal" ? 0.3 : 0.6;
             if (this.stackedOn) speed = 0.3;
-            this.Patrol(speed, true);
+            this.Patrol(speed, this.turnAtLedges);
         }
         this.ApplyGravity();
         this.ApplyInertia();
@@ -40,11 +44,11 @@ class Shrubbert extends Enemy {
     
     GetFrameData(frameNum: number): FrameData {
         let frameRow = 0;
-        if (this.state == "stunned") frameRow = 3;
+        if (this.state == "stunned") frameRow = this.stunFrameRow;
         if (this.state == "running") frameRow = 1;
 
         let framesPerTile = this.state == "normal" ? 5 : 3;
-        let frame = Math.floor(frameNum / framesPerTile) % 4;
+        let frame = Math.floor(frameNum / framesPerTile) % 4 + this.runFrameColStart;
 
         if (this.state == "stunned") {
             frame = Math.floor(this.stunTimer / (this.maxStun / 8)) % 8;
@@ -58,4 +62,10 @@ class Shrubbert extends Enemy {
             yOffset: this.state == "normal" ? 0 : 4
         };
     }
+}
+
+class OrangeShrubbert extends Shrubbert {
+    stunFrameRow = 5;
+    runFrameColStart = 4;
+    turnAtLedges = false;
 }

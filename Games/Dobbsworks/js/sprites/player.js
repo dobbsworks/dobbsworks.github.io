@@ -654,7 +654,7 @@ var Player = /** @class */ (function (_super) {
                 if (Math.abs(this.dyFromPlatform) < 0.015)
                     this.dyFromPlatform = 0;
             }
-            if (this.dxFromPlatform > 0) {
+            if (Math.abs(this.dxFromPlatform) > 0) {
                 if ((this.targetDirection == -1 && this.dxFromPlatform > 0)
                     || (this.targetDirection == 1 && this.dxFromPlatform < 0)) {
                     this.dxFromPlatform *= 0.9;
@@ -797,10 +797,13 @@ var Player = /** @class */ (function (_super) {
         var _a;
         if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false) && this.isOnGround) {
             // find overlap door
-            var door = this.layer.sprites.find(function (a) { return a instanceof Door && a.IsGoingToOverlapSprite(_this); });
+            var door = this.layer.sprites.find(function (a) { return a instanceof Door &&
+                a.IsGoingToOverlapSprite(_this) &&
+                Math.abs(a.yBottom - _this.yBottom) < 2; });
             if (door) {
                 var doorExit = door.GetPairedDoor();
                 if (doorExit) {
+                    this.parentSprite = null;
                     (_a = this.layer.map) === null || _a === void 0 ? void 0 : _a.StartDoorTransition(this, door, doorExit);
                 }
             }
@@ -908,19 +911,14 @@ var DeadPlayer = /** @class */ (function (_super) {
         this.ApplyGravity();
         this.MoveByVelocity();
         if (this.age > 60) {
-            if (editorHandler.isEditorAllowed) {
-                editorHandler.SwitchToEditMode();
+            editorHandler.SwitchToEditMode();
+            editorHandler.SwitchToPlayMode();
+            if (camera.target) {
+                camera.x = camera.target.xMid;
+                camera.y = camera.target.yMid;
             }
-            else {
-                editorHandler.SwitchToEditMode();
-                editorHandler.SwitchToPlayMode();
-                if (camera.target) {
-                    camera.x = camera.target.xMid;
-                    camera.y = camera.target.yMid;
-                }
-                camera.targetX = camera.x;
-                camera.targetY = camera.y;
-            }
+            camera.targetX = camera.x;
+            camera.targetY = camera.y;
         }
     };
     DeadPlayer.prototype.GetFrameData = function (frameNum) {

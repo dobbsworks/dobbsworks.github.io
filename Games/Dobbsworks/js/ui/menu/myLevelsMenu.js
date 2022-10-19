@@ -87,7 +87,7 @@ var MyLevelsMenu = /** @class */ (function (_super) {
         this.cloudSavesTitlePanel.AddChild(cloudSavesTitle);
         [localSavesTitle, cloudSavesTitle].forEach(function (a) {
             a.xOffset = (_this.basePanelWidth - 10) / 2;
-            a.yOffset = -8;
+            a.yOffset = 20;
         });
         [this.cloudSavesOptionsPanel, this.localSavesOptionsPanel, this.localSavesTitlePanel, this.cloudSavesTitlePanel].forEach(function (a) {
             a.backColor = "#1138";
@@ -98,17 +98,14 @@ var MyLevelsMenu = /** @class */ (function (_super) {
         });
         this.cloudSavesOptionsPanel.AddChild(cloudBackButton);
         var cloudDeleteButton = this.CreateActionButton("Delete", function () {
-            var confirmed = confirm("Are you sure you want to delete this level? This cannot be undone.");
-            if (confirmed) {
+            UIDialog.Confirm("Are you sure you want to delete this level? This cannot be undone.", "Delete it", "Cancel", function () {
                 var deletePromise = DataService.RemoveLevel(MyLevelsMenu.selectedCloudCode);
                 deletePromise.then(function () {
                     _this.ResetCloudSavesPanel();
                 }).catch(function () {
                 });
                 MyLevelsMenu.selectedCloudCode = "";
-                //TODO!!
-                // loading circle?
-            }
+            });
         });
         this.cloudSavesOptionsPanel.AddChild(cloudDeleteButton);
         var cloudEditButton = this.CreateActionButton("Open in Editor", function () {
@@ -133,7 +130,7 @@ var MyLevelsMenu = /** @class */ (function (_super) {
                     var publishPromise = DataService.PublishLevel(MyLevelsMenu.selectedCloudCode);
                     publishPromise.then(function () {
                         _this.ResetCloudSavesPanel();
-                        alert("Your level is now live!");
+                        UIDialog.Alert("Your level is now live!", "Nice!");
                     }).catch(function () {
                     });
                     //TODO!!
@@ -160,27 +157,27 @@ var MyLevelsMenu = /** @class */ (function (_super) {
         });
         this.localSavesOptionsPanel.AddChild(localBackButton);
         this.buttonLocalDelete = this.CreateActionButton("Delete", function () {
-            var confirmed = confirm("Are you sure you want to delete this local save file?");
-            if (confirmed) {
+            UIDialog.Confirm("Are you sure you want to delete this local save file? This cannot be undone.", "Delete it", "Cancel", function () {
                 StorageService.SetSavedLevel(MyLevelsMenu.selectedLocalSlot, "", "");
                 EditorSaveSlotButton.Buttons[MyLevelsMenu.selectedLocalSlot].ClearThumbnail();
                 _this.ResetLocalSavesPanel();
-            }
+            });
         });
         this.buttonLocalDelete.mouseoverBackColor = "#922d";
         this.localSavesOptionsPanel.AddChild(this.buttonLocalDelete);
         this.buttonLocalUpload = this.CreateActionButton("Upload", function () {
-            var name = prompt("After uploading this level, you'll still need to beat it from the cloud saves list before other people can play it. What do you want to name this level?");
-            if (name) {
-                var buttonSlotData = StorageService.GetSavedLevel(MyLevelsMenu.selectedLocalSlot);
-                var levelDt = new LevelUploadDT(name, buttonSlotData.level, buttonSlotData.thumb);
-                var uploadPromise = DataService.UploadLevel(levelDt);
-                uploadPromise.then(function (data) {
-                    _this.ResetCloudSavesPanel();
-                    _this.ResetLocalSavesPanel();
-                    MyLevelsMenu.selectedCloudCode = data;
-                });
-            }
+            UIDialog.SmallPrompt("After uploading this level, you'll still need to beat it from the cloud saves list before other people can play it. What do you want to name this level?", "OK", 42, function (name) {
+                if (name) {
+                    var buttonSlotData = StorageService.GetSavedLevel(MyLevelsMenu.selectedLocalSlot);
+                    var levelDt = new LevelUploadDT(name, buttonSlotData.level, buttonSlotData.thumb);
+                    var uploadPromise = DataService.UploadLevel(levelDt);
+                    uploadPromise.then(function (data) {
+                        _this.ResetCloudSavesPanel();
+                        _this.ResetLocalSavesPanel();
+                        MyLevelsMenu.selectedCloudCode = data;
+                    });
+                }
+            });
         });
         this.localSavesOptionsPanel.AddChild(this.buttonLocalUpload);
         this.buttonLocalEdit = this.CreateActionButton("Edit", function () {
@@ -216,7 +213,7 @@ var MyLevelsMenu = /** @class */ (function (_super) {
         button.borderRadius = 10;
         var buttonText = new UIText(0, 0, text, 20, "white");
         buttonText.xOffset = (this.basePanelWidth - 10) / 2;
-        buttonText.yOffset = -20;
+        buttonText.yOffset = 40;
         button.AddChild(buttonText);
         button.onClickEvents.push(action);
         return button;
@@ -230,7 +227,8 @@ var MyLevelsMenu = /** @class */ (function (_super) {
         var newPanel = this.CreateSavesPanel(this.baseLeftX, this.basePanelWidth, myCloudLevelButtons);
         if (this.cloudSavesPanel) {
             this.cloudSavesPanel.children = newPanel.children;
-            this.cloudSavesPanel.scrollableChildren = newPanel.scrollableChildren;
+            this.cloudSavesPanel.scrollableChildrenDown = newPanel.scrollableChildrenDown;
+            this.cloudSavesPanel.scrollableChildrenUp = newPanel.scrollableChildrenUp;
         }
     };
     MyLevelsMenu.prototype.CreateLocalSavesPanel = function () {
@@ -260,7 +258,7 @@ var MyLevelsMenu = /** @class */ (function (_super) {
         while (buttons.length > 3) {
             var slotButton = buttons.pop();
             if (slotButton)
-                myLevelsPanel.scrollableChildren.push(slotButton);
+                myLevelsPanel.scrollableChildrenDown.push(slotButton);
         }
         while (buttons.length > 0) {
             var slotButton = buttons.pop();

@@ -36,6 +36,8 @@ var UIElement = /** @class */ (function () {
                     if (el)
                         el.CheckAndUpdateMousedOver();
                 }
+                if (this.scrollBar)
+                    this.scrollBar.CheckAndUpdateMousedOver();
             }
         }
     };
@@ -47,7 +49,8 @@ var UIElement = /** @class */ (function () {
             this[rawProperty] = target;
         }
         else {
-            this[rawProperty] += (target - value) * 0.15;
+            this[rawProperty] += (target - value) * 0.25;
+            // previously 0.15
         }
     };
     return UIElement;

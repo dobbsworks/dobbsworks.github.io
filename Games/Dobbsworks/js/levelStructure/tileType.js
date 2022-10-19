@@ -259,6 +259,27 @@ var TileType = /** @class */ (function () {
         TileType.OneWayLeft;
         TileType.OneWayUp;
         TileType.IceTop;
+        TileType.ArrowRight;
+        TileType.ArrowUpRight;
+        TileType.ArrowUp;
+        TileType.ArrowUpLeft;
+        TileType.ArrowLeft;
+        TileType.ArrowDownLeft;
+        TileType.ArrowDown;
+        TileType.ArrowDownRight;
+        TileType.SolidForPlayer;
+        TileType.SolidForNonplayer;
+        TileType.SpriteKiller;
+        TileType.WhiteGround;
+        TileType.WhiteBrick;
+        TileType.WhiteBlock;
+        TileType.WhiteTop;
+        TileType.WhiteBack;
+        TileType.WhiteLadder;
+        TileType.WhiteSpikes;
+        TileType.DecorWhite;
+        TileType.RegisterSlope("White", 9);
+        TileType.SteelBarrel;
     };
     TileType.RegisterSlope = function (keyBase, tileRow) {
         var colIter = 8;
@@ -687,6 +708,51 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "DecorCave", {
         get: function () { return TileType.GetTileType("DecorCave", "terrain", 7, 8, Solidity.None, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "WhiteGround", {
+        get: function () { return TileType.GetTileType("WhiteGround", "terrain", 0, 9, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "WhiteBrick", {
+        get: function () { return TileType.GetTileType("WhiteBrick", "terrain", 1, 9, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "WhiteBlock", {
+        get: function () { return TileType.GetTileType("WhiteBlock", "terrain", 2, 9, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "WhiteTop", {
+        get: function () { return TileType.GetTileType("WhiteTop", "terrain", 3, 9, Solidity.Top, TargetLayer.semisolid); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "WhiteBack", {
+        get: function () { return TileType.GetTileType("WhiteBack", "terrain", 4, 9, Solidity.None, TargetLayer.backdrop); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "WhiteLadder", {
+        get: function () { return TileType.GetTileType("WhiteLadder", "terrain", 5, 9, Solidity.None, TargetLayer.main, function (tileType) { tileType.isClimbable = true; }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "WhiteSpikes", {
+        get: function () {
+            return TileType.GetAnimatedTileType("WhiteSpikes", "terrain", [{ x: 6, y: 9 }, { x: 1, y: 19 }, { x: 2, y: 19 }, { x: 3, y: 19 }], 5, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.hurtOnBottom = true;
+                tileType.hurtOnTop = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DecorWhite", {
+        get: function () { return TileType.GetTileType("DecorWhite", "terrain", 7, 9, Solidity.None, TargetLayer.wire); },
         enumerable: false,
         configurable: true
     });
@@ -1380,6 +1446,23 @@ var TileType = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(TileType, "SteelBarrel", {
+        get: function () {
+            var frames = [];
+            for (var i = 0; i < 120; i++) {
+                frames.push({ x: 0, y: 2 });
+            }
+            for (var i = 1; i <= 7; i++) {
+                frames.push({ x: i, y: 2 }, { x: i, y: 2 });
+            }
+            frames.push({ x: 0, y: 2 });
+            return TileType.GetAnimatedTileType("SteelBarrel", "barrel", frames, 1, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.pickUpSprite = SteelBarrel;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(TileType, "Pumpkin", {
         get: function () {
             var frames = [];
@@ -1696,6 +1779,61 @@ var TileType = /** @class */ (function () {
                 tileType.isSlippery = true;
             });
         },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "ArrowRight", {
+        get: function () { return TileType.GetTileType("ArrowRight", "arrows", 0, 0, Solidity.None, TargetLayer.wire, function (tileType) { }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "ArrowUpRight", {
+        get: function () { return TileType.GetTileType("ArrowUpRight", "arrows", 1, 0, Solidity.None, TargetLayer.wire, function (tileType) { }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "ArrowUp", {
+        get: function () { return TileType.GetTileType("ArrowUp", "arrows", 2, 0, Solidity.None, TargetLayer.wire, function (tileType) { }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "ArrowUpLeft", {
+        get: function () { return TileType.GetTileType("ArrowUpLeft", "arrows", 3, 0, Solidity.None, TargetLayer.wire, function (tileType) { }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "ArrowLeft", {
+        get: function () { return TileType.GetTileType("ArrowLeft", "arrows", 4, 0, Solidity.None, TargetLayer.wire, function (tileType) { }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "ArrowDownLeft", {
+        get: function () { return TileType.GetTileType("ArrowDownLeft", "arrows", 5, 0, Solidity.None, TargetLayer.wire, function (tileType) { }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "ArrowDown", {
+        get: function () { return TileType.GetTileType("ArrowDown", "arrows", 6, 0, Solidity.None, TargetLayer.wire, function (tileType) { }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "ArrowDownRight", {
+        get: function () { return TileType.GetTileType("ArrowDownRight", "arrows", 7, 0, Solidity.None, TargetLayer.wire, function (tileType) { }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "SolidForPlayer", {
+        get: function () { return TileType.GetTileType("SolidForPlayer", "misc", 1, 4, Solidity.SolidForPlayer, TargetLayer.main, function (tileType) { }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "SolidForNonplayer", {
+        get: function () { return TileType.GetTileType("SolidForNonplayer", "misc", 2, 4, Solidity.SolidForNonplayer, TargetLayer.main, function (tileType) { }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "SpriteKiller", {
+        get: function () { return TileType.GetTileType("SpriteKiller", "misc", 3, 4, Solidity.None, TargetLayer.main, function (tileType) { }); },
         enumerable: false,
         configurable: true
     });

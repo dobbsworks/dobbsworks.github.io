@@ -68,26 +68,25 @@ var RecentLevelsMenu = /** @class */ (function (_super) {
     RecentLevelsMenu.prototype.PopulateLevelPanel = function () {
         var _this = this;
         if (this.levelPanel) {
+            console.log(this.levelPanel);
             var scrollIndex = this.levelPanel.scrollIndex;
+            this.levelPanel.scrollIndex = 0;
             this.levelPanel.children = [];
-            this.levelPanel.scrollableChildren = [];
+            this.levelPanel.scrollableChildrenUp = [];
+            this.levelPanel.scrollableChildrenDown = [];
             var buttons = this.levels.map(function (a) { return new CloudLevelButton(a, _this); });
-            if (buttons.length == 1)
-                this.levelPanel.AddChild(new Spacer(0, 0, 88 * 2 + 10, 50 * 2 + 10));
-            if (buttons.length == 2)
-                this.levelPanel.AddChild(new Spacer(0, 0, 88 * 2 + 10, 50 * 2 + 10));
-            while (buttons.length > 3) {
-                var button = buttons.pop();
-                if (button)
-                    this.levelPanel.scrollableChildren.push(button);
-            }
-            while (buttons.length > 0) {
-                var button = buttons.pop();
-                if (button)
+            for (var _i = 0, buttons_1 = buttons; _i < buttons_1.length; _i++) {
+                var button = buttons_1[_i];
+                if (this.levelPanel.children.length >= 3) {
+                    this.levelPanel.scrollableChildrenDown.push(button);
+                    button.parentElement = this.levelPanel;
+                }
+                else {
                     this.levelPanel.AddChild(button);
+                }
             }
             for (var i = 0; i < Math.abs(scrollIndex); i++) {
-                this.levelPanel.Scroll(scrollIndex > 0 ? -1 : 1);
+                this.levelPanel.Scroll(scrollIndex < 0 ? -1 : 1);
             }
         }
     };
@@ -108,7 +107,6 @@ var RecentLevelsMenu = /** @class */ (function (_super) {
             this.levelOptionsPanel.children = [];
             var buttons = new Panel(0, 0, this.levelOptionsPanel.width, 50);
             buttons.margin = 0;
-            this.levelOptionsPanel.AddChild(buttons);
             var backButton = new Button(0, 0, 200, 50);
             backButton.onClickEvents.push(function () {
                 _this.selectedCloudCode = "";
@@ -117,12 +115,12 @@ var RecentLevelsMenu = /** @class */ (function (_super) {
             var backButtonText = new UIText(0, 0, "Back", 20, "white");
             backButton.AddChild(backButtonText);
             backButtonText.xOffset = backButton.width / 2;
-            backButtonText.yOffset = -10;
+            backButtonText.yOffset = 30;
             buttons.AddChild(backButton);
             var codeText = new UIText(0, 0, levelListing.level.code, 20, "#BBB");
             codeText.textAlign = "left";
             codeText.xOffset = -190;
-            codeText.yOffset = -8;
+            codeText.yOffset = -10;
             buttons.AddChild(codeText);
             buttons.AddChild(new Spacer(0, 0, 200, 10));
             var editButton = new Button(0, 0, 200, 50);
@@ -138,7 +136,7 @@ var RecentLevelsMenu = /** @class */ (function (_super) {
             var editButtonText = new UIText(0, 0, "Open in Editor", 20, "white");
             editButton.AddChild(editButtonText);
             editButtonText.xOffset = editButton.width / 2;
-            editButtonText.yOffset = -10;
+            editButtonText.yOffset = 30;
             buttons.AddChild(editButton);
             var playButton = new Button(0, 0, 200, 80);
             playButton.normalBackColor = "#020b";
@@ -146,24 +144,31 @@ var RecentLevelsMenu = /** @class */ (function (_super) {
             playButton.yOffset = -30;
             playButton.onClickEvents.push(function () {
                 if (levelListing) {
-                    currentMap = LevelMap.FromImportString(levelListing.level.levelData);
-                    editorHandler.SwitchToPlayMode();
-                    MenuHandler.SubMenu(BlankMenu);
-                    DataService.LogLevelPlayStarted(levelListing.level.code);
-                    currentLevelCode = levelListing.level.code;
-                    levelListing.isStarted = true;
-                    _this.PopulateLevelPanel();
+                    var map = LevelMap.FromImportString(levelListing.level.levelData);
+                    var isLevelVersionNewer = Version.IsLevelVersionNewerThanClient(map.mapVersion);
+                    if (isLevelVersionNewer) {
+                        UIDialog.Confirm("This level was made on a newer version of the game. To update your version, you just need to refresh this page. " +
+                            "Do you want me to do that for you real quick? (Level editor contents will be lost)", "Yeah, refresh now", "Not yet", function () { window.location.reload(); });
+                    }
+                    else {
+                        currentMap = map;
+                        editorHandler.SwitchToPlayMode();
+                        MenuHandler.SubMenu(BlankMenu);
+                        DataService.LogLevelPlayStarted(levelListing.level.code);
+                        currentLevelCode = levelListing.level.code;
+                        levelListing.isStarted = true;
+                        _this.PopulateLevelPanel();
+                    }
                 }
             });
             var playButtonText = new UIText(0, 0, "Play", 40, "white");
             playButton.AddChild(playButtonText);
             playButtonText.xOffset = playButton.width / 2;
-            playButtonText.yOffset = -20;
+            playButtonText.yOffset = 50;
             buttons.AddChild(playButton);
             // MID PANEL
             var midPanel = new Panel(0, 0, this.levelOptionsPanel.width, 250);
             midPanel.margin = 0;
-            this.levelOptionsPanel.AddChild(midPanel);
             var thumbnail = new Image;
             thumbnail.src = levelListing.level.thumbnail;
             thumbnail.width = camera.canvas.width / 24;
@@ -200,10 +205,14 @@ var RecentLevelsMenu = /** @class */ (function (_super) {
             var statsPanel = new Panel(0, 0, 125, 180);
             statsPanel.layout = "vertical";
             statsPanel.xOffset = -75;
-            statsPanel.AddChild(CreateStatsRow(tiles["menuButtons"][0][0], levelListing.level.numberOfLikes.toString(), ""));
-            statsPanel.AddChild(CreateStatsRow(tiles["menuButtons"][1][1], levelListing.level.numberOfUniquePlayers.toString(), ""));
             var clearRate = ((levelListing.level.numberOfClears / levelListing.level.numberOfAttempts) * 100).toFixed(1) + "%";
             statsPanel.AddChild(CreateStatsRow(tiles["menuButtons"][0][1], levelListing.level.numberOfClears + " / " + levelListing.level.numberOfAttempts, clearRate));
+            statsPanel.AddChild(CreateStatsRow(tiles["menuButtons"][1][1], levelListing.level.numberOfUniquePlayers.toString(), ""));
+            statsPanel.AddChild(CreateStatsRow(tiles["menuButtons"][0][0], levelListing.level.numberOfLikes.toString(), ""));
+            if (levelListing.level.isGlitch) {
+                statsPanel.targetHeight += 60;
+                statsPanel.AddChild(CreateStatsRow(tiles["spider"][0][0], "Glitch level", ""));
+            }
             midPanel.AddChild(statsPanel);
             var rightPanelWidth_1 = 200;
             var rightPanel = new Panel(0, 0, rightPanelWidth_1 + 10, 220);
@@ -214,48 +223,50 @@ var RecentLevelsMenu = /** @class */ (function (_super) {
                 var panel = new Panel(0, 0, rightPanelWidth_1, frames == 0 ? 50 : 100);
                 panel.layout = "vertical";
                 panel.backColor = "#0008";
-                var wrHolderText = new UIText(0, 0, holder ? holder.username : "Me", 20, "white");
-                wrHolderText.xOffset = rightPanelWidth_1 / 2;
-                wrHolderText.yOffset = -5;
-                panel.AddChild(wrHolderText);
+                var wrText = new UIText(0, 0, labelText, 14, "white");
+                wrText.xOffset = rightPanelWidth_1 / 2;
+                wrText.yOffset = 18 + (frames == 0 ? -3 : 0);
+                wrText.font = "arial";
+                panel.AddChild(wrText);
                 if (frames > 0) {
                     var wrTimeText = new UIText(0, 0, Utility.FramesToTimeText(frames), 28, "white");
                     wrTimeText.xOffset = rightPanelWidth_1 / 2;
                     wrTimeText.yOffset = 6;
                     panel.AddChild(wrTimeText);
                 }
-                var wrText = new UIText(0, 0, labelText, 14, "white");
-                wrText.xOffset = rightPanelWidth_1 / 2;
-                wrText.yOffset = 18 + (frames == 0 ? -3 : 0);
-                wrText.font = "arial";
-                panel.AddChild(wrText);
+                var wrHolderText = new UIText(0, 0, holder ? holder.username : "Me", 20, "white");
+                wrHolderText.xOffset = rightPanelWidth_1 / 2;
+                wrHolderText.yOffset = -5;
+                panel.AddChild(wrHolderText);
                 return panel;
             };
             //rightPanel.AddChild(new Spacer(0, 0, 10, 5));
-            if (levelListing.personalBestFrames > 0) {
-                var timePanel = CreateTimePanel("Personal Best", levelListing.personalBestFrames, null);
-                rightPanel.AddChild(timePanel);
-            }
+            rightPanel.AddChild(new Spacer(0, 0, 10, 5));
             if (levelListing.wrHolder) {
                 var timePanel = CreateTimePanel("World Record", levelListing.level.recordFrames, levelListing.wrHolder);
                 rightPanel.AddChild(timePanel);
             }
-            rightPanel.AddChild(new Spacer(0, 0, 10, 5));
+            if (levelListing.personalBestFrames > 0) {
+                var timePanel = CreateTimePanel("Personal Best", levelListing.personalBestFrames, null);
+                rightPanel.AddChild(timePanel);
+            }
             // TOP PANEL
             var topPanel = new Panel(0, 0, this.levelOptionsPanel.width, 30);
             topPanel.margin = 0;
-            this.levelOptionsPanel.AddChild(topPanel);
             var titleText = new UIText(0, 0, levelListing.level.name, 30, "white");
             topPanel.AddChild(titleText);
             titleText.textAlign = "left";
             titleText.xOffset = 10;
-            titleText.yOffset = 10;
+            titleText.yOffset = 40;
             var authorContainer = new Panel(0, 0, rightPanelWidth_1 + 10, 30);
             authorContainer.margin = 0;
             topPanel.AddChild(authorContainer);
             authorContainer.layout = "vertical";
             var authorPanel = CreateTimePanel("Created by", 0, levelListing.author);
             authorContainer.AddChild(authorPanel);
+            this.levelOptionsPanel.AddChild(topPanel);
+            this.levelOptionsPanel.AddChild(midPanel);
+            this.levelOptionsPanel.AddChild(buttons);
         }
     };
     return RecentLevelsMenu;
@@ -290,20 +301,21 @@ var CloudLevelButton = /** @class */ (function (_super) {
             var likeImage = new ImageFromTile(0, 0, 110, 110, tiles["menuButtons"][col][0]);
             likeImage.zoom = 2;
             likeImage.xOffset = -25;
-            likeImage.yOffset = -39;
+            likeImage.yOffset = -30;
             _this.AddChild(likeImage);
         }
         var texts = new Panel(0, 0, 230, 80);
         texts.layout = "vertical";
-        var fontSize = 14;
+        var fontSize = 20;
         for (var _i = 0, _a = [
             levelDt.name,
             "by " + levelListing.author.username,
-        ].reverse(); _i < _a.length; _i++) {
+        ]; _i < _a.length; _i++) {
             var text = _a[_i];
             var textLine = new UIText(0, 0, text, fontSize, "white");
-            fontSize = 20;
+            fontSize = 14;
             textLine.textAlign = "left";
+            textLine.yOffset = 20;
             texts.AddChild(textLine);
         }
         texts.AddChild(new Spacer(0, 0, 0, 0));

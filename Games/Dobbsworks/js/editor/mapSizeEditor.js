@@ -22,7 +22,7 @@ var MapSizeEditor = /** @class */ (function (_super) {
         var topPanel = new Panel(0, 0, _this.width, 70);
         var midPanel = new Panel(0, 0, _this.width, 210);
         var bottomPanel = new Panel(0, 0, _this.width, 70);
-        [bottomPanel, midPanel, topPanel].forEach(function (x) {
+        [topPanel, midPanel, bottomPanel,].forEach(function (x) {
             _this.AddChild(x);
         });
         var leftPanel = new Panel(0, 0, 70, midPanel.height);
@@ -46,9 +46,9 @@ var MapSizeEditor = /** @class */ (function (_super) {
             panel.layout = "vertical";
             var xSide = panel == leftPanel ? -1 : 1;
             var tileRowIndex = panel == leftPanel ? 6 : 5;
-            panel.AddChild(new EditorMapSizeButton(tiles["editor"][5][1], xSide, 0, -1, _this));
-            panel.AddChild(new SpacedImagePanel(tiles["editor"][4][tileRowIndex]));
             panel.AddChild(new EditorMapSizeButton(tiles["editor"][5][0], xSide, 0, 1, _this));
+            panel.AddChild(new SpacedImagePanel(tiles["editor"][4][tileRowIndex]));
+            panel.AddChild(new EditorMapSizeButton(tiles["editor"][5][1], xSide, 0, -1, _this));
         });
         return _this;
     }

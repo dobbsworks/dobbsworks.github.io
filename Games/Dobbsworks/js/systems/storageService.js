@@ -37,6 +37,15 @@ var StorageService = /** @class */ (function () {
         localStorage.setItem("deaths", JSON.stringify(allDeathCounts));
         return thisLevelCounter ? thisLevelCounter.deathCount : 0;
     };
+    StorageService.PopNextDeathCounter = function () {
+        var allDeathCounts = JSON.parse(localStorage.getItem("deaths") || "[]");
+        if (allDeathCounts.length == 0)
+            return null;
+        var levelCounter = allDeathCounts[0];
+        allDeathCounts = allDeathCounts.filter(function (a) { return a.levelCode != levelCounter.levelCode; });
+        localStorage.setItem("deaths", JSON.stringify(allDeathCounts));
+        return levelCounter;
+    };
     StorageService.GetMusicVolume = function () {
         return +(localStorage.getItem("musicVol") || "75");
     };

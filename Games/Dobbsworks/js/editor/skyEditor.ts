@@ -1,13 +1,10 @@
 class SkyEditor extends Panel {
-
     fixedPosition = true;
     backColor = "#1138";
-
     topRgb: string = "";
     topColorPanel!: RgbPanel;
     bottomRgb: string = "";
     bottomColorPanel!: RgbPanel;
-
 
     constructor(x: number, y: number, width: number, height: number) {
         super(x, y, width, height);
@@ -75,7 +72,6 @@ class SkyEditor extends Panel {
             camera.ctx.fillRect(this.x + this.width * 0.4, this.y + this.margin * 2, this.width * 0.1, this.height - this.margin * 4);
         }
     }
-
 }
 
 class RgbPanel extends Panel {
@@ -94,9 +90,9 @@ class RgbPanel extends Panel {
         this.hueSlider = new HueSlider(0, 0, width, height / 5, (newValue: number) => { this.hue = newValue; this.OnChange(); });
         this.lumSlider = new GradientSlider(0, 0, width, height / 5, (newValue: number) => { this.lum = newValue; this.OnChange(); });
         this.satSlider = new GradientSlider(0, 0, width, height / 5, (newValue: number) => { this.sat = newValue; this.OnChange(); });
-        this.AddChild(this.lumSlider);
-        this.AddChild(this.satSlider);
         this.AddChild(this.hueSlider);
+        this.AddChild(this.satSlider);
+        this.AddChild(this.lumSlider);
         this.OnChange();
     }
 

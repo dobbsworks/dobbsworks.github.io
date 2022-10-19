@@ -20,6 +20,8 @@ class LevelDT
 
     public levelState: number,
 
-    public username: string
+    public username: string,
+
+    public isGlitch: string
     ){}
 }

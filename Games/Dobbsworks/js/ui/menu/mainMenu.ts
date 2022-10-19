@@ -16,7 +16,7 @@ class MainMenu extends Menu {
         let playText = new UIText(centerX, playButtonY + 40, "Start Making", 30, "#000");
         playButton.AddChild(playText);
         playText.xOffset = playButtonWidth / 2 - 5;
-        playText.yOffset = -15;
+        playText.yOffset = 40;
         playButton.isNoisy = true;
         if (!isDemoMode) ret.push(playButton);
 
@@ -24,7 +24,7 @@ class MainMenu extends Menu {
         let myLevelsText = new UIText(centerX, playButtonY + 40, "My Levels", 30, "#000");
         myLevelsButton.AddChild(myLevelsText);
         myLevelsText.xOffset = playButtonWidth / 2 - 5;
-        myLevelsText.yOffset = -15;
+        myLevelsText.yOffset = 40;
         myLevelsButton.isNoisy = true;
         if (!isDemoMode) ret.push(myLevelsButton);
 
@@ -32,7 +32,7 @@ class MainMenu extends Menu {
         let demoLevelsText = new UIText(centerX, playButtonY + 40, "GDB Levels", 30, "#000");
         demoLevelsButton.AddChild(demoLevelsText);
         demoLevelsText.xOffset = playButtonWidth / 2 - 5;
-        demoLevelsText.yOffset = -15;
+        demoLevelsText.yOffset = 40;
         demoLevelsButton.isNoisy = true;
         if (isDemoMode) ret.push(demoLevelsButton);
 
@@ -40,7 +40,7 @@ class MainMenu extends Menu {
         let recentLevelsText = new UIText(centerX, playButtonY + 40, "Recent Levels", 30, "#000");
         recentLevelsButton.AddChild(recentLevelsText);
         recentLevelsText.xOffset = playButtonWidth / 2 - 5;
-        recentLevelsText.yOffset = -15;
+        recentLevelsText.yOffset = 40;
         recentLevelsButton.isNoisy = true;
         if (!isDemoMode) ret.push(recentLevelsButton);
 

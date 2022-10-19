@@ -35,6 +35,9 @@ var EditorHotbar = /** @class */ (function () {
         }
         if (!existingButton || isValidHotkey) {
             this.AddHotbarButton(editorButton, chosenHotkey);
+            if (!KeyboardHandler.IsKeyPressed(KeyAction.EditorSelectWithoutClosingDrawers, false)) {
+                editorHandler.CloseDrawers();
+            }
         }
     };
     EditorHotbar.prototype.AddHotbarButton = function (button, chosenHotkey) {
@@ -87,6 +90,9 @@ var EditorHotbar = /** @class */ (function () {
                 a.button.normalBackColor = "#002b";
                 a.button.mouseoverBackColor = "#224b";
             }
+        }
+        if (this.hotbarElements.length === 0) {
+            editorHandler.currentTool = editorHandler.selectionTool;
         }
     };
     EditorHotbar.prototype.KeyboardSelectNum = function (slotNumber) {

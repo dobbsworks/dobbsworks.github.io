@@ -13,6 +13,7 @@ var LevelMap = /** @class */ (function () {
         this.waterLayer = waterLayer;
         this.semisolidLayer = semisolidLayer;
         this.backdropLayer = backdropLayer;
+        this.mapVersion = "";
         this.backgroundLayers = [];
         this.frameNum = 0;
         this.doorTransition = null;
@@ -109,6 +110,28 @@ var LevelMap = /** @class */ (function () {
                 var autoChangeTile = _e[_d];
                 _loop_3(autoChangeTile);
             }
+            var onScreenSprites = this.mainLayer.sprites.filter(function (a) { return a.onScreenTimer > 2; });
+            var deletedSprite = false;
+            for (var _f = 0, onScreenSprites_1 = onScreenSprites; _f < onScreenSprites_1.length; _f++) {
+                var sprite = onScreenSprites_1[_f];
+                if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof)
+                    continue;
+                var xs = [sprite.x, sprite.xRight, sprite.xMid].map(function (a) { return Math.floor(a / _this.mainLayer.tileWidth); }).filter(Utility.OnlyUnique);
+                var ys = [sprite.y, sprite.yBottom, sprite.yMid].map(function (a) { return Math.floor(a / _this.mainLayer.tileHeight); }).filter(Utility.OnlyUnique);
+                for (var _g = 0, xs_1 = xs; _g < xs_1.length; _g++) {
+                    var tileX = xs_1[_g];
+                    for (var _h = 0, ys_1 = ys; _h < ys_1.length; _h++) {
+                        var tileY = ys_1[_h];
+                        var tile = this.mainLayer.GetTileByIndex(tileX, tileY);
+                        if (tile.tileType == TileType.SpriteKiller) {
+                            sprite.ReplaceWithSpriteType(Poof);
+                            deletedSprite = true;
+                        }
+                    }
+                }
+            }
+            if (deletedSprite)
+                audioHandler.PlaySound("erase", true);
         }
         if (camera.transitionTimer > 0) {
             // do not process any updates
@@ -259,7 +282,7 @@ var LevelMap = /** @class */ (function () {
         }
         var layers = this.GetLayerList().map(function (a) { return a.ExportToString(); });
         var properties = [
-            version,
+            Version.Current,
             this.mapHeight,
             this.playerWaterMode ? 1 : 0,
             this.spriteWaterMode ? 1 : 0,
@@ -330,6 +353,7 @@ var LevelMap = /** @class */ (function () {
         var properties = importSegments[0].split(";");
         var dummyLayer = new LevelLayer(TargetLayer.main);
         var ret = new LevelMap(dummyLayer, dummyLayer, dummyLayer, dummyLayer, dummyLayer);
+        ret.mapVersion = properties[0];
         var mapHeight = parseInt(properties[1]);
         ret.mapHeight = mapHeight;
         ret.LoadBackgroundsFromImportString(importSegments[1]);

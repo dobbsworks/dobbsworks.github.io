@@ -77,4 +77,6 @@ var spriteTypes = [
     Lurchin,
     Pufferfish,
     FlatKey,
+    SapphireSnail,
+    OrangeShrubbert,
 ];

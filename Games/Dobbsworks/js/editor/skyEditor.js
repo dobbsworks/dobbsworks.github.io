@@ -90,9 +90,9 @@ var RgbPanel = /** @class */ (function (_super) {
         _this.hueSlider = new HueSlider(0, 0, width, height / 5, function (newValue) { _this.hue = newValue; _this.OnChange(); });
         _this.lumSlider = new GradientSlider(0, 0, width, height / 5, function (newValue) { _this.lum = newValue; _this.OnChange(); });
         _this.satSlider = new GradientSlider(0, 0, width, height / 5, function (newValue) { _this.sat = newValue; _this.OnChange(); });
-        _this.AddChild(_this.lumSlider);
-        _this.AddChild(_this.satSlider);
         _this.AddChild(_this.hueSlider);
+        _this.AddChild(_this.satSlider);
+        _this.AddChild(_this.lumSlider);
         _this.OnChange();
         return _this;
     }

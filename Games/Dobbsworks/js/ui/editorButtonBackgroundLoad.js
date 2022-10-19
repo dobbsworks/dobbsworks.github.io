@@ -52,7 +52,7 @@ var EditorButtonBackgroundLoad = /** @class */ (function (_super) {
         grd2.addColorStop(parseFloat(skyElements[3] || "0"), skyElements[1] + opacityHex);
         dummyCamera.ctx.fillStyle = grd2;
         dummyCamera.ctx.fillRect(0, 0, canvas.width, canvas.height);
-        //document.body.appendChild(canvas)
+        document.body.appendChild(canvas);
         return new ImageTile(canvas, 0, 0, canvas.width, canvas.height).Scale(50 / canvas.width / 4, false, false);
     };
     return EditorButtonBackgroundLoad;

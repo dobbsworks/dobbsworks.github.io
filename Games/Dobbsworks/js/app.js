@@ -15,6 +15,7 @@ var editorHandler = new EditorHandler();
 var uiHandler = new UiHandler();
 var audioHandler;
 var currentLevelCode = "";
+var gameLoadedState = -1;
 function Initialize() {
     LoadImageSources();
     var canvas = document.getElementById("canvas");
@@ -24,7 +25,9 @@ function Initialize() {
     audioHandler.Initialize();
     KeyboardHandler.InitKeyHandlers();
     CreateTestMap();
+    DeathLogService.LogDeathCounts();
     setInterval(MainLoop, 1000 / 60);
+    camera.canvas.style.opacity = "0";
 }
 function LoadImageSources() {
     var _a, _b;
@@ -61,11 +64,19 @@ function MainLoop() {
     if (perf) {
         perf.innerHTML = BenchmarkService.GetReports();
         var otherData = document.getElementById("data");
-        otherData.innerHTML = "Version: " + version;
+        otherData.innerHTML = "Version: " + Version.Current;
         BenchmarkService.Log("IDLE");
     }
 }
 function Draw() {
+    if (gameLoadedState < 0) {
+        gameLoadedState++;
+        return;
+    }
+    else if (gameLoadedState == 0) {
+        gameLoadedState++;
+        camera.canvas.style.opacity = "1";
+    }
     if (currentMap)
         currentMap.Draw(camera);
     MenuHandler.Draw(camera);
@@ -99,49 +110,54 @@ function Update() {
     var doesMenuBlockMapUpdate = (_a = MenuHandler.CurrentMenu) === null || _a === void 0 ? void 0 : _a.stopsMapUpdate;
     if (KeyboardHandler.IsKeyPressed(KeyAction.Fullscreen, true))
         (_b = document.getElementById("canvas")) === null || _b === void 0 ? void 0 : _b.requestFullscreen();
-    if (window.location.href.indexOf("localhost") > -1) {
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Debug1, true))
-            debugMode = !debugMode;
-    }
-    //if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true)) window.location.reload();
-    if (KeyboardHandler.IsKeyPressed(KeyAction.EditToggle, true)) {
-        if (editorHandler.isInEditMode)
-            editorHandler.SwitchToPlayMode();
-        else if (editorHandler.isEditorAllowed)
-            editorHandler.SwitchToEditMode();
-    }
-    if (debugMode) {
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Debug2, true)) {
-            if (currentMap && !editorHandler.isInEditMode && !doesMenuBlockMapUpdate)
-                currentMap.Update();
+    if (!MenuHandler.Dialog) {
+        if (window.location.href.indexOf("localhost") > -1 || window.location.href.startsWith("http://127.0.0.1:5500")) {
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Debug1, true))
+                debugMode = !debugMode;
         }
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Debug3, true)) {
-            var player_1 = currentMap.mainLayer.sprites[0];
-            player_1.LoadHistory();
-        }
-    }
-    else {
-        //replayHandler.StoreFrame();
-        if (currentMap && !doesMenuBlockMapUpdate) {
+        //if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true)) window.location.reload();
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditToggle, true) && !PauseMenu.IsPaused) {
             if (editorHandler.isInEditMode) {
-                currentMap.frameNum++;
-                currentMap.mainLayer.Update();
+                editorHandler.SwitchToPlayMode();
             }
-            else {
-                currentMap.Update();
-            }
-        }
-        if (currentMap && !doesMenuBlockMapUpdate && !editorHandler.isInEditMode && currentMap.CanPause() && !((_c = MenuHandler.CurrentMenu) === null || _c === void 0 ? void 0 : _c.blocksPause)) {
-            var isOnMainMenu = MenuHandler.CurrentMenu instanceof MainMenu;
-            if (KeyboardHandler.IsKeyPressed(KeyAction.Pause, true) && !isOnMainMenu) {
-                var msSinceUnpause = (+(new Date()) - +PauseMenu.UnpauseTime);
-                if (msSinceUnpause > 100)
-                    MenuHandler.SubMenu(PauseMenu);
+            else if (editorHandler.isEditorAllowed) {
+                editorHandler.SwitchToEditMode();
+                editorHandler.grabbedCheckpointLocation = null;
             }
         }
+        if (debugMode) {
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Debug2, true)) {
+                if (currentMap && !editorHandler.isInEditMode && !doesMenuBlockMapUpdate)
+                    currentMap.Update();
+            }
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Debug3, true)) {
+                var player_1 = currentMap.mainLayer.sprites[0];
+                player_1.LoadHistory();
+            }
+        }
+        else {
+            //replayHandler.StoreFrame();
+            if (currentMap && !doesMenuBlockMapUpdate) {
+                if (editorHandler.isInEditMode) {
+                    currentMap.frameNum++;
+                    currentMap.mainLayer.Update();
+                }
+                else {
+                    currentMap.Update();
+                }
+            }
+            if (currentMap && !doesMenuBlockMapUpdate && !editorHandler.isInEditMode && currentMap.CanPause() && !((_c = MenuHandler.CurrentMenu) === null || _c === void 0 ? void 0 : _c.blocksPause)) {
+                var isOnMainMenu = MenuHandler.CurrentMenu instanceof MainMenu;
+                if (KeyboardHandler.IsKeyPressed(KeyAction.Pause, true) && !isOnMainMenu) {
+                    var msSinceUnpause = (+(new Date()) - +PauseMenu.UnpauseTime);
+                    if (msSinceUnpause > 100)
+                        MenuHandler.SubMenu(PauseMenu);
+                }
+            }
+        }
+        uiHandler.Update();
+        editorHandler.Update();
     }
-    uiHandler.Update();
-    editorHandler.Update();
     mouseHandler.UpdateMouseChanged();
     KeyboardHandler.AfterUpdate();
 }

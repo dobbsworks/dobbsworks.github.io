@@ -49,7 +49,7 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
         var continueText = new UIText(camera.canvas.width / 2, continueButton.y + 20, "Continue", 20, "#FFF");
         continueButton.AddChild(continueText);
         continueText.xOffset = buttonWidth / 2 - 5;
-        continueText.yOffset = -15;
+        continueText.yOffset = 30;
         continueButton.onClickEvents.push(function () {
             var _a;
             (_a = _this.gear) === null || _a === void 0 ? void 0 : _a.DoneWithLevel();
@@ -62,7 +62,7 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
         var restartText = new UIText(camera.canvas.width / 2, continueButton.y + 20, "Start Over", 20, "#FFF");
         restartButton.AddChild(restartText);
         restartText.xOffset = buttonWidth / 2 - 5;
-        restartText.yOffset = -15;
+        restartText.yOffset = 30;
         restartButton.onClickEvents.push(function () {
             _this.Dispose();
             editorHandler.SwitchToEditMode();
@@ -111,6 +111,11 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
         }
         if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true) && this.timer > 60) {
             (_a = this.gear) === null || _a === void 0 ? void 0 : _a.DoneWithLevel();
+        }
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, false) && this.timer > 60) {
+            this.Dispose();
+            editorHandler.SwitchToEditMode();
+            editorHandler.SwitchToPlayMode();
         }
     };
     LevelSuccessMenu.prototype.SetLevelCompletionTime = function (frameCount) {

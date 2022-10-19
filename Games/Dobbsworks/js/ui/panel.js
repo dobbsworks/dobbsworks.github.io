@@ -18,8 +18,10 @@ var Panel = /** @class */ (function (_super) {
         var _this = _super.call(this, x, y) || this;
         _this.width = width;
         _this.height = height;
+        _this.scrollBar = null;
         _this.children = [];
-        _this.scrollableChildren = [];
+        _this.scrollableChildrenUp = [];
+        _this.scrollableChildrenDown = [];
         _this.margin = 5;
         _this.backColor = "#0000";
         _this.borderColor = "#0000";
@@ -59,19 +61,20 @@ var Panel = /** @class */ (function (_super) {
     };
     Panel.prototype.Scroll = function (direction) {
         var _this = this;
-        if (this.scrollableChildren.length == 0)
-            return;
-        audioHandler.PlaySound("scroll", true);
-        if (direction == 1) {
-            this.scrollIndex--;
-            this.scrollableChildren.push(this.children.splice(0, 1)[0]);
-            this.children.push(this.scrollableChildren.splice(0, 1)[0]);
-        }
-        else {
+        if (direction == 1 && this.scrollableChildrenDown.length != 0) {
+            // scroll down
+            audioHandler.PlaySound("scroll", true);
             this.scrollIndex++;
+            this.scrollableChildrenUp.push(this.children.splice(0, 1)[0]);
+            this.children.push(this.scrollableChildrenDown.splice(0, 1)[0]);
+        }
+        else if (direction == -1 && this.scrollableChildrenUp.length != 0) {
+            // scroll up
+            audioHandler.PlaySound("scroll", true);
+            this.scrollIndex--;
             var el1 = this.children.splice(this.children.length - 1, 1)[0];
-            this.scrollableChildren.unshift(el1);
-            var el2 = this.scrollableChildren.splice(this.scrollableChildren.length - 1, 1)[0];
+            this.scrollableChildrenDown.unshift(el1);
+            var el2 = this.scrollableChildrenUp.splice(this.scrollableChildrenUp.length - 1, 1)[0];
             this.children.unshift(el2);
         }
         this.children.forEach(function (a) { return a.parentElement = _this; });
@@ -79,9 +82,9 @@ var Panel = /** @class */ (function (_super) {
     Panel.prototype.Update = function () {
         if (uiHandler.mousedOverElements.indexOf(this) > -1) {
             if (mouseHandler.mouseScroll > 0 || KeyboardHandler.IsKeyPressed(KeyAction.ScrollDown, true))
-                this.Scroll(-1);
-            if (mouseHandler.mouseScroll < 0 || KeyboardHandler.IsKeyPressed(KeyAction.ScrollUp, true))
                 this.Scroll(1);
+            if (mouseHandler.mouseScroll < 0 || KeyboardHandler.IsKeyPressed(KeyAction.ScrollUp, true))
+                this.Scroll(-1);
         }
         _super.prototype.Update.call(this);
         var children = this.children.filter(function (a) { return !a.isHidden; });
@@ -99,7 +102,7 @@ var Panel = /** @class */ (function (_super) {
             var marginWidth = availableMarginWidth / (children.length - 1);
             var marginHeight = availableMarginHeight / (children.length - 1);
             var x = this.x + this.margin;
-            var y = this.y + this.height - this.margin - children[0].height;
+            var y = this.y + this.margin;
             for (var _i = 0, children_1 = children; _i < children_1.length; _i++) {
                 var child = children_1[_i];
                 if (!child.fixedPosition) {
@@ -107,10 +110,10 @@ var Panel = /** @class */ (function (_super) {
                     child.x = x;
                     if (this.layout == "horizontal")
                         x += Math.max(child.width + marginWidth, 0);
-                    if (this.layout == "vertical" && children.filter(function (a) { return !a.isHidden; })[0] !== child)
-                        y -= Math.max(child.height + marginHeight, 0);
                     child.targetY = y;
                     child.y = y;
+                    if (this.layout == "vertical")
+                        y += Math.max(child.height + marginHeight, 0);
                     if (child instanceof Panel) {
                         if (this.layout == "vertical")
                             child.targetWidth = this.width - this.margin * 2;
@@ -119,10 +122,17 @@ var Panel = /** @class */ (function (_super) {
             }
             this.children.forEach(function (a) { return a.Update(); });
         }
+        if (this.scrollableChildrenUp.length + this.scrollableChildrenDown.length > 0 && this.scrollBar == null) {
+            this.scrollBar = new PanelScroll(this);
+        }
+        if (this.scrollBar)
+            this.scrollBar.Update();
     };
     Panel.prototype.Draw = function (ctx) {
         if (this.isHidden)
             return;
+        if (this.scrollBar)
+            this.scrollBar.Draw(ctx);
         var radius = this.borderRadius;
         var x = this.x;
         var y = this.y;
@@ -130,6 +140,7 @@ var Panel = /** @class */ (function (_super) {
         var height = this.height;
         ctx.fillStyle = this.backColor;
         ctx.strokeStyle = this.borderColor;
+        //ctx.strokeStyle = "#FFF";
         ctx.lineWidth = 3;
         ctx.translate(this.xOffset, this.yOffset);
         ctx.beginPath();
@@ -145,38 +156,6 @@ var Panel = /** @class */ (function (_super) {
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
-        if (this.scrollableChildren.length > 0) {
-            var x1 = x + width + 2;
-            var DrawScroll = function (x, y, width, height, radius, inset) {
-                ctx.beginPath();
-                ctx.moveTo(x + inset, y + height - radius);
-                ctx.lineTo(x + inset, y + radius);
-                ctx.lineTo(x + radius, y + inset);
-                ctx.lineTo(x + radius * 2 - inset, y + radius);
-                ctx.lineTo(x + radius * 2 - inset, y + height - radius);
-                ctx.lineTo(x + radius, y + height - inset);
-                ctx.lineTo(x + inset, y + height - radius);
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
-            };
-            DrawScroll(x1, y, width, height, radius, 0);
-            ctx.fillStyle = "#FFF8";
-            var totalElements = (this.children.length + this.scrollableChildren.length);
-            var displayedRatio = this.children.length / totalElements;
-            var scrollOffset = (this.scrollIndex % totalElements);
-            if (scrollOffset < 0)
-                scrollOffset += totalElements;
-            var scrollOffsetRatio = scrollOffset / totalElements;
-            y += (height - 2 * radius - 4) * scrollOffsetRatio;
-            var innerHeight_1 = height * displayedRatio;
-            if (y + innerHeight_1 > this.y + this.height) {
-                innerHeight_1 = this.y + this.height - y;
-                var leftover = height * displayedRatio - innerHeight_1;
-                DrawScroll(x1, this.y, width, leftover, radius, 4);
-            }
-            DrawScroll(x1, y, width, innerHeight_1, radius, 4);
-        }
         this.children.forEach(function (a) { return a.Draw(ctx); });
         ctx.translate(-this.xOffset, -this.yOffset);
     };

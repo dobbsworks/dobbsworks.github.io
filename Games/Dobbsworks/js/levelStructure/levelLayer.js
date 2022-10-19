@@ -16,6 +16,8 @@ var LevelLayer = /** @class */ (function () {
         this.sprites = [];
         this.tileHeight = 0;
         this.tileWidth = 0;
+        this.isAnimatedTileListInitialized = false;
+        this.animatedTileList = [];
         this.tileHeight = TileType.Air.imageTile.height;
         this.tileWidth = TileType.Air.imageTile.width;
     }
@@ -36,7 +38,7 @@ var LevelLayer = /** @class */ (function () {
                 this.DrawSectionToCanvas(this.cachedCanvas, 0, 0, this.tiles.length - 1, this.tiles[0].length - 1);
         }
         this.isDirty = false;
-        for (var _i = 0, _a = this.tiles.flatMap(function (a) { return a; }).filter(function (a) { return a.tileType instanceof AnimatedTileType; }); _i < _a.length; _i++) {
+        for (var _i = 0, _a = this.animatedTileList; _i < _a.length; _i++) {
             var tile = _a[_i];
             var tileType = tile.tileType;
             var imageTiles = tileType.imageTiles;
@@ -91,7 +93,7 @@ var LevelLayer = /** @class */ (function () {
                             imageTile = tiles["water"][4][1 + baseRow];
                     }
                 }
-                imageTile.Draw(ctx, x * imageTile.width, y * imageTile.height, 1);
+                imageTile.Draw(ctx, x * this.tileWidth, y * this.tileHeight, 1);
             }
         }
     };
@@ -117,6 +119,11 @@ var LevelLayer = /** @class */ (function () {
             if (tileType.autoChange) {
                 currentMap.autoChangeTiles.push({ tile: existingTile, standDuration: 0 });
             }
+            var existingAnimatedEntry_1 = this.animatedTileList.find(function (a) { return a.tileX == xIndex && a.tileY == yIndex; });
+            if (existingAnimatedEntry_1)
+                this.animatedTileList = this.animatedTileList.filter(function (a) { return a != existingAnimatedEntry_1; });
+            if (tileType instanceof AnimatedTileType)
+                this.animatedTileList.push(existingTile);
             return true;
         }
         return false;
@@ -143,18 +150,22 @@ var LevelLayer = /** @class */ (function () {
     };
     LevelLayer.prototype.RedrawTile = function (xIndex, yIndex, imageTile) {
         var cachedCtx = this.cachedCanvas.getContext("2d");
-        cachedCtx.clearRect(xIndex * imageTile.width, yIndex * imageTile.height, imageTile.width, imageTile.height);
-        imageTile.Draw(cachedCtx, xIndex * imageTile.width, yIndex * imageTile.height, 1);
+        cachedCtx.clearRect(xIndex * this.tileWidth, yIndex * this.tileHeight, this.tileWidth, this.tileHeight);
+        imageTile.Draw(cachedCtx, xIndex * this.tileWidth, yIndex * this.tileHeight, 1);
         if (imageTile.yOffset != 0) {
             this.isDirty = true;
         }
     };
     LevelLayer.prototype.Update = function () {
+        if (!this.isAnimatedTileListInitialized) {
+            this.animatedTileList = this.tiles.flatMap(function (a) { return a; }).filter(function (a) { return a.tileType instanceof AnimatedTileType; });
+        }
         this.sprites.forEach(function (a) { return a.updatedThisFrame = false; });
         var platforms = this.sprites.filter(function (a) { return a.isPlatform; });
         var motors = this.sprites.filter(function (a) { return a instanceof Motor; });
+        var players = this.sprites.filter(function (a) { return a instanceof Player; });
         platforms.sort(function (a, b) { return a.y - b.y; });
-        var orderedSprites = __spreadArrays(motors, platforms, this.sprites.filter(function (a) { return !a.isPlatform && !(a instanceof Motor); }));
+        var orderedSprites = __spreadArrays(motors, platforms, players, this.sprites.filter(function (a) { return !a.isPlatform && !(a instanceof Motor) && !(a instanceof Player); }));
         this.sprites = orderedSprites;
         for (var _i = 0, orderedSprites_1 = orderedSprites; _i < orderedSprites_1.length; _i++) {
             var sprite = orderedSprites_1[_i];

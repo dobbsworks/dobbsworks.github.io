@@ -19,7 +19,7 @@ var ExtraHitHeart = /** @class */ (function (_super) {
         _this.height = 9;
         _this.width = 9;
         _this.respectsSolidTiles = true;
-        _this.canBeHeld = true;
+        _this.canBeHeld = false;
         _this.slowFall = true;
         return _this;
     }

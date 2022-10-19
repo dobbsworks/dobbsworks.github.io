@@ -3,7 +3,7 @@ class ExtraHitHeart extends Sprite {
     public height: number = 9;
     public width: number = 9;
     respectsSolidTiles = true;
-    canBeHeld = true;
+    canBeHeld = false;
     slowFall = true;
 
     Update(): void {

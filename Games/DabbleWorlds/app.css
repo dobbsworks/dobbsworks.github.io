@@ -115,3 +115,7 @@ textarea {
     border-bottom: solid white 1px;
     padding: 10px;
 }
+
+#playNow {
+    margin: 10px;
+}

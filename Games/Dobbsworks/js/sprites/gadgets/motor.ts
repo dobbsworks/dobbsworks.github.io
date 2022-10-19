@@ -129,6 +129,9 @@ class Motor extends Sprite {
         if (!this.connectedSprite.updatedThisFrame) {
             this.connectedSprite.SharedUpdate();
             this.connectedSprite.Update();
+            if (this.connectedSprite instanceof Enemy) {
+                this.connectedSprite.EnemyUpdate();
+            }
             this.connectedSprite.updatedThisFrame = true;
         }
 

@@ -20,6 +20,7 @@ var CameraScrollTrigger = /** @class */ (function (_super) {
         _this.width = 12;
         _this.respectsSolidTiles = false;
         _this.canMotorHold = false;
+        _this.frameRow = 1;
         return _this;
     }
     CameraScrollTrigger.prototype.Update = function () {
@@ -27,7 +28,7 @@ var CameraScrollTrigger = /** @class */ (function (_super) {
     CameraScrollTrigger.prototype.GetFrameData = function (frameNum) {
         if (editorHandler.isInEditMode) {
             return {
-                imageTile: tiles["camera"][this.frameCol][1],
+                imageTile: tiles["camera"][this.frameCol][this.frameRow],
                 xFlip: false,
                 yFlip: false,
                 xOffset: 0,
@@ -85,6 +86,17 @@ var CameraScrollRight = /** @class */ (function (_super) {
         return _this;
     }
     return CameraScrollRight;
+}(CameraScrollTrigger));
+var CameraScrollReset = /** @class */ (function (_super) {
+    __extends(CameraScrollReset, _super);
+    function CameraScrollReset() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.direction = null;
+        _this.frameCol = 0;
+        _this.frameRow = 2;
+        return _this;
+    }
+    return CameraScrollReset;
 }(CameraScrollTrigger));
 var CameraZoomTrigger = /** @class */ (function (_super) {
     __extends(CameraZoomTrigger, _super);

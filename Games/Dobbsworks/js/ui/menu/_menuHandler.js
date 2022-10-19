@@ -15,6 +15,15 @@ var MenuHandler = /** @class */ (function () {
         }
         return MenuHandler.CreateMenu(menuType);
     };
+    MenuHandler.SubMenuInstance = function (menu) {
+        if (MenuHandler.CurrentMenu) {
+            MenuHandler.MenuStack.push(MenuHandler.CurrentMenu);
+            MenuHandler.CurrentMenu.Hide(-1);
+        }
+        menu.InitialDisplay();
+        MenuHandler.CurrentMenu = menu;
+        return menu;
+    };
     MenuHandler.GoBack = function () {
         var menu = MenuHandler.MenuStack.pop();
         if (MenuHandler.CurrentMenu) {
@@ -32,7 +41,12 @@ var MenuHandler = /** @class */ (function () {
     };
     MenuHandler.Update = function () {
         var _a;
-        (_a = MenuHandler.CurrentMenu) === null || _a === void 0 ? void 0 : _a.Update();
+        if (MenuHandler.Dialog) {
+            MenuHandler.Dialog.Update();
+        }
+        else {
+            (_a = MenuHandler.CurrentMenu) === null || _a === void 0 ? void 0 : _a.Update();
+        }
     };
     MenuHandler.Draw = function (camera) {
         if (MenuHandler.CurrentMenu) {
@@ -41,6 +55,7 @@ var MenuHandler = /** @class */ (function () {
         }
     };
     MenuHandler.MenuStack = [];
+    MenuHandler.Dialog = null;
     MenuHandler.CurrentMenu = null;
     return MenuHandler;
 }());

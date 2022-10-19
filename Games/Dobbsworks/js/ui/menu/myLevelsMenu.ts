@@ -85,7 +85,7 @@ class MyLevelsMenu extends Menu {
         this.cloudSavesTitlePanel.AddChild(cloudSavesTitle);
         [localSavesTitle, cloudSavesTitle].forEach(a => {
             a.xOffset = (this.basePanelWidth - 10) / 2;
-            a.yOffset = -8;
+            a.yOffset = 20;
         });
 
         [this.cloudSavesOptionsPanel, this.localSavesOptionsPanel, this.localSavesTitlePanel, this.cloudSavesTitlePanel].forEach(a => {
@@ -100,8 +100,8 @@ class MyLevelsMenu extends Menu {
         this.cloudSavesOptionsPanel.AddChild(cloudBackButton);
 
         let cloudDeleteButton = this.CreateActionButton("Delete", () => {
-            let confirmed = confirm("Are you sure you want to delete this level? This cannot be undone.");
-            if (confirmed) {
+            UIDialog.Confirm("Are you sure you want to delete this level? This cannot be undone.", "Delete it", "Cancel", () => {
+
                 let deletePromise = DataService.RemoveLevel(MyLevelsMenu.selectedCloudCode);
                 deletePromise.then(() => {
                     this.ResetCloudSavesPanel();
@@ -110,9 +110,7 @@ class MyLevelsMenu extends Menu {
 
                 })
                 MyLevelsMenu.selectedCloudCode = "";
-                //TODO!!
-                // loading circle?
-            }
+            })
         });
         this.cloudSavesOptionsPanel.AddChild(cloudDeleteButton);
 
@@ -137,7 +135,7 @@ class MyLevelsMenu extends Menu {
                     let publishPromise = DataService.PublishLevel(MyLevelsMenu.selectedCloudCode);
                     publishPromise.then(() => {
                         this.ResetCloudSavesPanel();
-                        alert("Your level is now live!");
+                        UIDialog.Alert("Your level is now live!", "Nice!");
                     }).catch(() => {
     
                     });
@@ -171,29 +169,29 @@ class MyLevelsMenu extends Menu {
 
 
         this.buttonLocalDelete = this.CreateActionButton("Delete", () => {
-            let confirmed = confirm("Are you sure you want to delete this local save file?");
-            if (confirmed) {
+            UIDialog.Confirm("Are you sure you want to delete this local save file? This cannot be undone.", "Delete it", "Cancel", () => {
                 StorageService.SetSavedLevel(MyLevelsMenu.selectedLocalSlot, "", "");
                 EditorSaveSlotButton.Buttons[MyLevelsMenu.selectedLocalSlot].ClearThumbnail();
                 this.ResetLocalSavesPanel();
-            }
+            });
         });
         this.buttonLocalDelete.mouseoverBackColor = "#922d";
         this.localSavesOptionsPanel.AddChild(this.buttonLocalDelete);
 
 
         this.buttonLocalUpload = this.CreateActionButton("Upload", () => {
-            let name = prompt("After uploading this level, you'll still need to beat it from the cloud saves list before other people can play it. What do you want to name this level?");
-            if (name) {
-                let buttonSlotData = StorageService.GetSavedLevel(MyLevelsMenu.selectedLocalSlot);
-                let levelDt = new LevelUploadDT(name, buttonSlotData.level, buttonSlotData.thumb);
-                let uploadPromise = DataService.UploadLevel(levelDt);
-                uploadPromise.then((data) => {
-                    this.ResetCloudSavesPanel();
-                    this.ResetLocalSavesPanel();
-                    MyLevelsMenu.selectedCloudCode = data;
-                })
-            }
+            UIDialog.SmallPrompt("After uploading this level, you'll still need to beat it from the cloud saves list before other people can play it. What do you want to name this level?", "OK", 42, (name) => {
+                if (name) {
+                    let buttonSlotData = StorageService.GetSavedLevel(MyLevelsMenu.selectedLocalSlot);
+                    let levelDt = new LevelUploadDT(name, buttonSlotData.level, buttonSlotData.thumb);
+                    let uploadPromise = DataService.UploadLevel(levelDt);
+                    uploadPromise.then((data) => {
+                        this.ResetCloudSavesPanel();
+                        this.ResetLocalSavesPanel();
+                        MyLevelsMenu.selectedCloudCode = data;
+                    })
+                }
+            });
         });
         this.localSavesOptionsPanel.AddChild(this.buttonLocalUpload);
 
@@ -235,7 +233,7 @@ class MyLevelsMenu extends Menu {
 
         let buttonText = new UIText(0, 0, text, 20, "white");
         buttonText.xOffset = (this.basePanelWidth - 10) / 2;
-        buttonText.yOffset = -20;
+        buttonText.yOffset = 40;
         button.AddChild(buttonText);
         button.onClickEvents.push(action);
         return button;
@@ -251,7 +249,8 @@ class MyLevelsMenu extends Menu {
         let newPanel = this.CreateSavesPanel(this.baseLeftX, this.basePanelWidth, myCloudLevelButtons);
         if (this.cloudSavesPanel) {
             this.cloudSavesPanel.children = newPanel.children;
-            this.cloudSavesPanel.scrollableChildren = newPanel.scrollableChildren;
+            this.cloudSavesPanel.scrollableChildrenDown = newPanel.scrollableChildrenDown;
+            this.cloudSavesPanel.scrollableChildrenUp = newPanel.scrollableChildrenUp;
         }
     }
 
@@ -282,7 +281,7 @@ class MyLevelsMenu extends Menu {
 
         while (buttons.length > 3) {
             let slotButton = buttons.pop();
-            if (slotButton) myLevelsPanel.scrollableChildren.push(slotButton);
+            if (slotButton) myLevelsPanel.scrollableChildrenDown.push(slotButton);
         }
         while (buttons.length > 0) {
             let slotButton = buttons.pop();

@@ -92,6 +92,11 @@ abstract class Enemy extends Sprite {
             this.stackStun.frames--;
             if (this.stackStun.frames <= 0) this.stackStun = null;
         }
+
+        if (this.y < 12 * -4) {
+            // went too far, delete
+            this.isActive = false;
+        }
     }
 
     private ApplyStackStun(): void {

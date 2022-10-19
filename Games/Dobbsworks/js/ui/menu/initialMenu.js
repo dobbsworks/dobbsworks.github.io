@@ -28,22 +28,18 @@ var InitialMenu = /** @class */ (function (_super) {
         var withSoundText = new UIText(0, 0, "Play with sound", 40, "white");
         playWithAudioButton.AddChild(withSoundText);
         withSoundText.xOffset = playWithAudioButton.width / 2 - 5;
-        withSoundText.yOffset = -75;
+        withSoundText.yOffset = 110;
         var playMutedButton = new Button(50, camera.canvas.height / 2 + 50, camera.canvas.width - 100, camera.canvas.height / 2 - 100);
         var mutedText = new UIText(0, 0, "Play muted", 40, "white");
         playMutedButton.AddChild(mutedText);
         mutedText.xOffset = playMutedButton.width / 2 - 5;
-        mutedText.yOffset = -75;
+        mutedText.yOffset = 110;
         var playDemoButton = new Button(50, camera.canvas.height / 4 + 50, camera.canvas.width - 100, camera.canvas.height / 2 - 100);
         var playDemoText = new UIText(0, 0, "Start Race", 40, "white");
         playDemoButton.AddChild(playDemoText);
         playDemoText.xOffset = playDemoButton.width / 2 - 5;
-        playDemoText.yOffset = -75;
-        // if (isDemoMode) {
-        //     ret.push(playDemoButton);
-        // } else {
+        playDemoText.yOffset = 110;
         ret.push(playWithAudioButton, playMutedButton);
-        //}
         playDemoButton.onClickEvents.push(function () {
             _this.GoToMainMenu();
         });
@@ -55,6 +51,7 @@ var InitialMenu = /** @class */ (function (_super) {
             audioHandler.Mute();
             _this.GoToMainMenu();
         });
+        gameLoadedState = 0;
         return ret;
     };
     InitialMenu.prototype.GoToMainMenu = function () {

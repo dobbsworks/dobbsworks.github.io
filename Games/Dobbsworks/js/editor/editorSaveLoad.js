@@ -30,7 +30,7 @@ var EditorSaveToClipboardButton = /** @class */ (function (_super) {
         _this.onClickEvents.push(function () {
             var exportText = currentMap.GetExportString();
             navigator.clipboard.writeText(exportText);
-            alert("You level export code has been copied to your clipboard, paste it somewhere safe :D");
+            UIDialog.Alert("Your level export code has been successfully copied to your clipboard.", "Cool!");
         });
         return _this;
     }
@@ -49,17 +49,49 @@ var EditorSaveToCurrentSlotButton = /** @class */ (function (_super) {
     }
     return EditorSaveToCurrentSlotButton;
 }(EditorButton));
+var EditorLoadCurrentSlotButton = /** @class */ (function (_super) {
+    __extends(EditorLoadCurrentSlotButton, _super);
+    function EditorLoadCurrentSlotButton() {
+        var _this = _super.call(this, tiles["editor"][6][6], "Load from selected slot") || this;
+        _this.onClickEvents.push(function () {
+            if (editorHandler.currentSaveSlot > 0) {
+                var buttonSlotData = StorageService.GetSavedLevel(editorHandler.currentSaveSlot);
+                currentMap = LevelMap.FromImportString(buttonSlotData.level);
+                editorHandler.history.RecordHistory();
+            }
+        });
+        return _this;
+    }
+    return EditorLoadCurrentSlotButton;
+}(EditorButton));
+var EditorDeleteCurrentSlotButton = /** @class */ (function (_super) {
+    __extends(EditorDeleteCurrentSlotButton, _super);
+    function EditorDeleteCurrentSlotButton() {
+        var _this = _super.call(this, tiles["editor"][0][0], "Delete selected slot") || this;
+        _this.onClickEvents.push(function () {
+            if (editorHandler.currentSaveSlot > 0) {
+                UIDialog.Confirm("Are you sure you want to delete this local save file? This cannot be undone.", "Delete it", "Cancel", function () {
+                    StorageService.SetSavedLevel(MyLevelsMenu.selectedLocalSlot, "", "");
+                    EditorSaveSlotButton.Buttons[MyLevelsMenu.selectedLocalSlot].ClearThumbnail();
+                });
+            }
+        });
+        return _this;
+    }
+    return EditorDeleteCurrentSlotButton;
+}(EditorButton));
 var EditorLoadButton = /** @class */ (function (_super) {
     __extends(EditorLoadButton, _super);
     function EditorLoadButton() {
         var _this = _super.call(this, tiles["editor"][5][8], "Load from export code") || this;
         _this.AddChild(new ImageFromTile(0, 0, 50, 50, tiles["editor"][0][8]));
         _this.onClickEvents.push(function () {
-            var code = prompt("Please enter your level code");
-            if (code) {
-                currentMap = LevelMap.FromImportString(code);
-                editorHandler.history.RecordHistory();
-            }
+            UIDialog.SmallPrompt("Please enter your level code", "OK", 0, function (code) {
+                if (code) {
+                    currentMap = LevelMap.FromImportString(code);
+                    editorHandler.history.RecordHistory();
+                }
+            });
         });
         return _this;
     }
@@ -86,47 +118,9 @@ var EditorSaveSlotButton = /** @class */ (function (_super) {
         _this.targetWidth = 98;
         _this.AddChild(new UIText(0, 0, slotNumber.toString(), 12, "white"));
         _this.onClickEvents.push(function () {
-            //possible paths: 
-            //  slot 1 active, click slot 1     - Nothing
-            //  slot 1 active, click slot 2
-            //      slot 2 has data             
-            //          Current data matches slot 1 - Load slot 2, set selected slot to 2
-            //          Current data mismatch   - Prompt: you have unsaved changes. Discard changes and load slot 2?
-            //      slot 2 has no data          - Save to slot 2, set selected slot to 2
-            //  no slot active, click slot 1
-            //      slot 1 has data             - Prompt: you have unsaved changes. Discard changes and load slot 1?
-            //      slot 1 has no data          - Save to slot 1, set selected slot to 1
             if (_this.slotNumber == editorHandler.currentSaveSlot)
                 return;
-            var buttonSlotData = StorageService.GetSavedLevel(_this.slotNumber);
-            if (buttonSlotData.level.length) {
-                // selected slot already has data
-                var currentMapData = currentMap.GetExportString();
-                var previouslySelectedSlotData = StorageService.GetSavedLevel(editorHandler.currentSaveSlot);
-                if (previouslySelectedSlotData.level == currentMapData) {
-                    // leaving slot 1, but slot 1 changes are already saved to storage
-                    editorHandler.currentSaveSlot = _this.slotNumber;
-                    currentMap = LevelMap.FromImportString(buttonSlotData.level);
-                    editorHandler.history.RecordHistory();
-                }
-                else {
-                    // There are unsaved changes in the current slot!
-                    var confirmed = confirm("You have unsaved changes in the editor. Discard changes and load slot " + _this.slotNumber + "?");
-                    if (confirmed) {
-                        editorHandler.currentSaveSlot = _this.slotNumber;
-                        currentMap = LevelMap.FromImportString(buttonSlotData.level);
-                        editorHandler.history.RecordHistory();
-                    }
-                    else {
-                        return;
-                    }
-                }
-            }
-            else {
-                // selected slot has no data
-                _this.SaveToSlot();
-                editorHandler.currentSaveSlot = _this.slotNumber;
-            }
+            editorHandler.currentSaveSlot = _this.slotNumber;
         });
         EditorSaveSlotButton.Buttons[slotNumber] = _this;
         return _this;
@@ -163,19 +157,23 @@ var EditorSaveDrawer = /** @class */ (function (_super) {
         var _this = _super.call(this, x, y, 70, 70) || this;
         _this.saveButtons = [];
         var buttons = [];
+        var saveButton = new EditorSaveToCurrentSlotButton();
+        var loadButton = new EditorLoadCurrentSlotButton();
+        var deleteButton = new EditorDeleteCurrentSlotButton();
+        buttons.push(saveButton);
+        buttons.push(loadButton);
+        buttons.push(deleteButton);
+        buttons.push(new EditorSaveToClipboardButton());
+        buttons.push(new EditorLoadButton());
         var saveRowCount = 3;
         var savesPerRow = 5;
-        for (var row = saveRowCount - 1; row >= 0; row--) {
+        for (var row = 0; row < saveRowCount; row++) {
             for (var i = (row * savesPerRow + 1); i <= (row + 1) * savesPerRow; i++) {
                 var saveButton_1 = new EditorSaveSlotButton(i);
                 buttons.push(saveButton_1);
                 _this.saveButtons.push(saveButton_1);
             }
         }
-        var saveButton = new EditorSaveToCurrentSlotButton();
-        buttons.push(new EditorSaveToClipboardButton());
-        buttons.push(saveButton);
-        buttons.push(new EditorLoadButton());
         var tilesPerRow = savesPerRow;
         var floatingPanel = editorHandler.CreateFloatingButtonPanel(buttons, saveRowCount + 1, tilesPerRow);
         floatingPanel.initialWidth = (70 + 38) * tilesPerRow;

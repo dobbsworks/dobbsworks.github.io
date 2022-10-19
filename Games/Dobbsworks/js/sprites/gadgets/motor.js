@@ -142,6 +142,9 @@ var Motor = /** @class */ (function (_super) {
         if (!this.connectedSprite.updatedThisFrame) {
             this.connectedSprite.SharedUpdate();
             this.connectedSprite.Update();
+            if (this.connectedSprite instanceof Enemy) {
+                this.connectedSprite.EnemyUpdate();
+            }
             this.connectedSprite.updatedThisFrame = true;
         }
         var player = this.layer.sprites.find(function (a) { return a instanceof Player; });

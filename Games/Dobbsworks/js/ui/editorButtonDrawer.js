@@ -30,13 +30,13 @@ var EditorButtonDrawer = /** @class */ (function (_super) {
         _this.initialY = 0;
         _this.isExpanded = false;
         _this.expandDirection = "up";
-        _this.AddChild(containerButton);
         _this.spacer = new Spacer(x, y, width - _this.margin * 2, 2);
-        _this.drawerElements = __spreadArrays([_this.spacer], _this.containedButtons);
+        _this.drawerElements = __spreadArrays(_this.containedButtons, [_this.spacer]);
         _this.drawerElements.forEach(function (a) {
             _this.AddChild(a);
             a.isHidden = true;
         });
+        _this.AddChild(containerButton);
         containerButton.onClickEvents.push(function () {
             if (containerButton.isSelected || _this.expandOnFirstClick) {
                 if (_this.isExpanded)

@@ -23,6 +23,9 @@ var Shrubbert = /** @class */ (function (_super) {
         _this.state = "normal";
         _this.stunTimer = 0;
         _this.maxStun = 32;
+        _this.stunFrameRow = 3;
+        _this.runFrameColStart = 0;
+        _this.turnAtLedges = true;
         return _this;
     }
     Shrubbert.prototype.Update = function () {
@@ -39,7 +42,7 @@ var Shrubbert = /** @class */ (function (_super) {
             var speed = this.state == "normal" ? 0.3 : 0.6;
             if (this.stackedOn)
                 speed = 0.3;
-            this.Patrol(speed, true);
+            this.Patrol(speed, this.turnAtLedges);
         }
         this.ApplyGravity();
         this.ApplyInertia();
@@ -60,11 +63,11 @@ var Shrubbert = /** @class */ (function (_super) {
     Shrubbert.prototype.GetFrameData = function (frameNum) {
         var frameRow = 0;
         if (this.state == "stunned")
-            frameRow = 3;
+            frameRow = this.stunFrameRow;
         if (this.state == "running")
             frameRow = 1;
         var framesPerTile = this.state == "normal" ? 5 : 3;
-        var frame = Math.floor(frameNum / framesPerTile) % 4;
+        var frame = Math.floor(frameNum / framesPerTile) % 4 + this.runFrameColStart;
         if (this.state == "stunned") {
             frame = Math.floor(this.stunTimer / (this.maxStun / 8)) % 8;
         }
@@ -78,3 +81,14 @@ var Shrubbert = /** @class */ (function (_super) {
     };
     return Shrubbert;
 }(Enemy));
+var OrangeShrubbert = /** @class */ (function (_super) {
+    __extends(OrangeShrubbert, _super);
+    function OrangeShrubbert() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.stunFrameRow = 5;
+        _this.runFrameColStart = 4;
+        _this.turnAtLedges = false;
+        return _this;
+    }
+    return OrangeShrubbert;
+}(Shrubbert));

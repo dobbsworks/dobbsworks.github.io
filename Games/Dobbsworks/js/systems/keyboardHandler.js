@@ -42,6 +42,7 @@ var KeyAction = /** @class */ (function () {
     KeyAction.EditorUndo = new KeyAction("EditorUndo");
     KeyAction.EditorRedo = new KeyAction("EditorRedo");
     KeyAction.EditorDelete = new KeyAction("EditorDelete");
+    KeyAction.EditorSelectWithoutClosingDrawers = new KeyAction("EditorSelectWithoutClosingDrawers");
     KeyAction.EditorPasteDrag = new KeyAction("EditorPasteDrag");
     KeyAction.Cancel = new KeyAction("Cancel");
     KeyAction.Pause = new KeyAction("Pause");
@@ -68,10 +69,14 @@ var KeyboardHandler = /** @class */ (function () {
     KeyboardHandler.OnKeyDown = function (e) {
         KeyboardHandler.gamepadIndex = -1;
         var keyCode = e.code;
-        var mappedAction = KeyboardHandler.keyMap.find(function (a) { return a.k === keyCode; });
-        if (mappedAction) {
-            KeyboardHandler.SetActionState(mappedAction === null || mappedAction === void 0 ? void 0 : mappedAction.v, true);
-            e.preventDefault();
+        var mappedActions = KeyboardHandler.keyMap.filter(function (a) { return a.k === keyCode; });
+        if (mappedActions.length) {
+            for (var _i = 0, mappedActions_1 = mappedActions; _i < mappedActions_1.length; _i++) {
+                var mappedAction = mappedActions_1[_i];
+                KeyboardHandler.SetActionState(mappedAction === null || mappedAction === void 0 ? void 0 : mappedAction.v, true);
+            }
+            if (document.activeElement == document.body)
+                e.preventDefault();
         }
         else {
             // console.log(keyCode);
@@ -80,8 +85,9 @@ var KeyboardHandler = /** @class */ (function () {
     };
     KeyboardHandler.OnKeyUp = function (e) {
         var keyCode = e.code;
-        var mappedAction = KeyboardHandler.keyMap.find(function (a) { return a.k === keyCode; });
-        if (mappedAction) {
+        var mappedActions = KeyboardHandler.keyMap.filter(function (a) { return a.k === keyCode; });
+        for (var _i = 0, mappedActions_2 = mappedActions; _i < mappedActions_2.length; _i++) {
+            var mappedAction = mappedActions_2[_i];
             KeyboardHandler.SetActionState(mappedAction === null || mappedAction === void 0 ? void 0 : mappedAction.v, false);
             KeyboardHandler.recentlyReleasedKeys.push(mappedAction === null || mappedAction === void 0 ? void 0 : mappedAction.v);
         }
@@ -254,9 +260,12 @@ var KeyboardHandler = /** @class */ (function () {
         { k: "KeyE", v: KeyAction.EditorEraseHotkey },
         { k: "KeyZ", v: KeyAction.EditorUndo },
         { k: "KeyY", v: KeyAction.EditorRedo },
+        { k: "KeyT", v: KeyAction.Reset },
         { k: "Delete", v: KeyAction.EditorDelete },
         { k: "ControlLeft", v: KeyAction.EditorPasteDrag },
         { k: "ControlRight", v: KeyAction.EditorPasteDrag },
+        { k: "ShiftRight", v: KeyAction.EditorSelectWithoutClosingDrawers },
+        { k: "ShiftLeft", v: KeyAction.EditorSelectWithoutClosingDrawers },
         { k: "Period", v: KeyAction.ScrollDown },
         { k: "Comma", v: KeyAction.ScrollUp },
         { k: "Digit1", v: KeyAction.EditorHotkey1 },

@@ -17,6 +17,7 @@ class LevelMap {
         this.backgroundLayers[0].autoHorizontalScrollSpeed = -0.25;
     }
 
+    mapVersion: string = "";
     backgroundLayers: BackgroundLayer[] = [];
     frameNum: number = 0;
     doorTransition: DoorTransition | null = null;
@@ -95,6 +96,21 @@ class LevelMap {
                 }
             }
 
+            let onScreenSprites = this.mainLayer.sprites.filter(a => a.onScreenTimer > 2);
+            let deletedSprite = false;
+            for (let sprite of onScreenSprites) {
+                if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof) continue;
+                let xs = [sprite.x, sprite.xRight, sprite.xMid].map(a => Math.floor(a / this.mainLayer.tileWidth)).filter(Utility.OnlyUnique);
+                let ys = [sprite.y, sprite.yBottom, sprite.yMid].map(a => Math.floor(a / this.mainLayer.tileHeight)).filter(Utility.OnlyUnique);
+                for (let tileX of xs) for (let tileY of ys) {
+                    let tile = this.mainLayer.GetTileByIndex(tileX, tileY);
+                    if (tile.tileType == TileType.SpriteKiller) {
+                        sprite.ReplaceWithSpriteType(Poof);
+                        deletedSprite = true;
+                    }
+                }
+            }
+            if (deletedSprite) audioHandler.PlaySound("erase", true);
         }
 
         if (camera.transitionTimer > 0) {
@@ -252,7 +268,7 @@ class LevelMap {
         let layers = this.GetLayerList().map(a => a.ExportToString());
 
         let properties = [
-            version,
+            Version.Current,
             this.mapHeight,
             this.playerWaterMode ? 1 : 0,
             this.spriteWaterMode ? 1 : 0,
@@ -329,6 +345,7 @@ class LevelMap {
 
         let dummyLayer = new LevelLayer(TargetLayer.main);
         let ret = new LevelMap(dummyLayer, dummyLayer, dummyLayer, dummyLayer, dummyLayer);
+        ret.mapVersion = properties[0];
         let mapHeight = parseInt(properties[1]);
         ret.mapHeight = mapHeight;
         ret.LoadBackgroundsFromImportString(importSegments[1]);

@@ -24,13 +24,23 @@ var PauseMenu = /** @class */ (function (_super) {
         var _this = this;
         var ret = [];
         audioHandler.SetLowPass(true);
+        PauseMenu.IsPaused = true;
         ret.push(OptionsMenu.CreateOptionsButton());
         var container = new Panel(camera.canvas.width * 0.15, camera.canvas.height / 2 - 150, camera.canvas.width * 0.7, 300);
         container.margin = 0;
         container.layout = "vertical";
         ret.push(container);
         if (editorHandler.isEditorAllowed) {
-            container.AddChild(new Spacer(0, 0, 0, 60));
+            // edit button
+            var editButton = this.CreateButton("Edit Level");
+            container.AddChild(editButton);
+            editButton.onClickEvents.push(function () {
+                _this.Dispose();
+                audioHandler.SetLowPass(false);
+                PauseMenu.IsPaused = false;
+                editorHandler.SwitchToEditMode();
+                editorHandler.grabbedCheckpointLocation = null;
+            });
         }
         else {
             // exit button
@@ -40,10 +50,12 @@ var PauseMenu = /** @class */ (function (_super) {
                 _this.Dispose();
                 PauseMenu.UnpauseTime = new Date();
                 audioHandler.SetLowPass(false);
+                PauseMenu.IsPaused = false;
                 MenuHandler.GoBack();
                 currentLevelCode = "";
                 audioHandler.SetBackgroundMusic("menuJazz");
                 editorHandler.grabbedCheckpointLocation = null;
+                DeathLogService.LogDeathCounts();
             });
         }
         if (!editorHandler.grabbedCheckpointLocation) {
@@ -53,7 +65,8 @@ var PauseMenu = /** @class */ (function (_super) {
                 _this.Dispose();
                 PauseMenu.UnpauseTime = new Date();
                 audioHandler.SetLowPass(false);
-                player.OnPlayerHurt();
+                PauseMenu.IsPaused = false;
+                player.OnPlayerDead();
             });
         }
         else {
@@ -66,6 +79,7 @@ var PauseMenu = /** @class */ (function (_super) {
                 _this.Dispose();
                 PauseMenu.UnpauseTime = new Date();
                 audioHandler.SetLowPass(false);
+                PauseMenu.IsPaused = false;
                 player.OnPlayerHurt();
             });
             var retryFromStartButton = this.CreateButton("Retry From Start", 0.45);
@@ -75,6 +89,7 @@ var PauseMenu = /** @class */ (function (_super) {
                 editorHandler.grabbedCheckpointLocation = null;
                 PauseMenu.UnpauseTime = new Date();
                 audioHandler.SetLowPass(false);
+                PauseMenu.IsPaused = false;
                 player.OnPlayerHurt();
             });
         }
@@ -85,6 +100,7 @@ var PauseMenu = /** @class */ (function (_super) {
             _this.Dispose();
             PauseMenu.UnpauseTime = new Date();
             audioHandler.SetLowPass(false);
+            PauseMenu.IsPaused = false;
         });
         return ret;
     };
@@ -96,7 +112,7 @@ var PauseMenu = /** @class */ (function (_super) {
         button.isNoisy = true;
         button.AddChild(buttonText);
         buttonText.xOffset = button.width / 2;
-        buttonText.yOffset = -15;
+        buttonText.yOffset = 40;
         buttonText.textAlign = "center";
         button.normalBackColor = "#fff8";
         button.mouseoverBackColor = "#f73738";
@@ -109,8 +125,10 @@ var PauseMenu = /** @class */ (function (_super) {
             this.Dispose();
             PauseMenu.UnpauseTime = new Date();
             audioHandler.SetLowPass(false);
+            PauseMenu.IsPaused = false;
         }
     };
     PauseMenu.UnpauseTime = new Date();
+    PauseMenu.IsPaused = false;
     return PauseMenu;
 }(Menu));

@@ -14,6 +14,9 @@ class LevelLayer {
     public tileHeight: number = 0;
     public tileWidth: number = 0;
 
+    private isAnimatedTileListInitialized = false;
+    private animatedTileList: LevelTile[] = [];
+
     GetMaxX(): number {
         return this.tiles.length * this.tileWidth;
     }
@@ -31,7 +34,7 @@ class LevelLayer {
         }
         this.isDirty = false;
 
-        for (let tile of this.tiles.flatMap(a => a).filter(a => a.tileType instanceof AnimatedTileType)) {
+        for (let tile of this.animatedTileList) {
             let tileType = <AnimatedTileType>tile.tileType;
             let imageTiles = tileType.imageTiles;
             let index = Math.floor(frameNum / tileType.framesPerTile) % imageTiles.length;
@@ -76,7 +79,7 @@ class LevelLayer {
                     }
                 }
 
-                imageTile.Draw(ctx, x * imageTile.width, y * imageTile.height, 1);
+                imageTile.Draw(ctx, x * this.tileWidth, y * this.tileHeight, 1);
             }
         }
     }
@@ -102,6 +105,11 @@ class LevelLayer {
             if (tileType.autoChange) {
                 currentMap.autoChangeTiles.push({ tile: existingTile, standDuration: 0 });
             }
+
+            let existingAnimatedEntry = this.animatedTileList.find(a => a.tileX == xIndex && a.tileY == yIndex);
+            if (existingAnimatedEntry) this.animatedTileList = this.animatedTileList.filter(a => a != existingAnimatedEntry);
+            if (tileType instanceof AnimatedTileType) this.animatedTileList.push(existingTile);
+
             return true;
         }
         return false;
@@ -130,23 +138,28 @@ class LevelLayer {
 
     RedrawTile(xIndex: number, yIndex: number, imageTile: ImageTile) {
         let cachedCtx = <CanvasRenderingContext2D>this.cachedCanvas.getContext("2d");
-        cachedCtx.clearRect(xIndex * imageTile.width, yIndex * imageTile.height, imageTile.width, imageTile.height);
-        imageTile.Draw(cachedCtx, xIndex * imageTile.width, yIndex * imageTile.height, 1);
+        cachedCtx.clearRect(xIndex * this.tileWidth, yIndex * this.tileHeight, this.tileWidth, this.tileHeight);
+        imageTile.Draw(cachedCtx, xIndex * this.tileWidth, yIndex * this.tileHeight, 1);
         if (imageTile.yOffset != 0) {
             this.isDirty = true;
         }
     }
 
     Update(): void {
+        if (!this.isAnimatedTileListInitialized) {
+            this.animatedTileList = this.tiles.flatMap(a => a).filter(a => a.tileType instanceof AnimatedTileType);
+        }
         this.sprites.forEach(a => a.updatedThisFrame = false);
         let platforms = this.sprites.filter(a => a.isPlatform);
         let motors = this.sprites.filter(a => a instanceof Motor);
+        let players = this.sprites.filter(a => a instanceof Player);
         platforms.sort((a, b) => a.y - b.y)
         let orderedSprites = [
             ...motors,
             ...platforms,
-            ...this.sprites.filter(a => !a.isPlatform && !(a instanceof Motor)),
-        ]
+            ...players,
+            ...this.sprites.filter(a => !a.isPlatform && !(a instanceof Motor) && !(a instanceof Player)),
+        ];
         this.sprites = orderedSprites;
 
         for (let sprite of orderedSprites) {

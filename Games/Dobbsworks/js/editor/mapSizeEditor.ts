@@ -5,7 +5,7 @@ class MapSizeEditor extends Panel {
         let topPanel = new Panel(0, 0, this.width, 70);
         let midPanel = new Panel(0, 0, this.width, 210);
         let bottomPanel = new Panel(0, 0, this.width, 70);
-        [bottomPanel, midPanel, topPanel].forEach(x => {
+        [topPanel, midPanel, bottomPanel,].forEach(x => {
             this.AddChild(x);
         });
         let leftPanel = new Panel(0, 0, 70, midPanel.height);
@@ -29,9 +29,9 @@ class MapSizeEditor extends Panel {
             panel.layout = "vertical";
             let xSide: -1 | 1 = panel == leftPanel ? -1 : 1;
             let tileRowIndex = panel == leftPanel ? 6 : 5;
-            panel.AddChild(new EditorMapSizeButton(tiles["editor"][5][1], xSide, 0, -1, this));
-            panel.AddChild(new SpacedImagePanel(tiles["editor"][4][tileRowIndex]));
             panel.AddChild(new EditorMapSizeButton(tiles["editor"][5][0], xSide, 0, 1, this));
+            panel.AddChild(new SpacedImagePanel(tiles["editor"][4][tileRowIndex]));
+            panel.AddChild(new EditorMapSizeButton(tiles["editor"][5][1], xSide, 0, -1, this));
         });
     }
 

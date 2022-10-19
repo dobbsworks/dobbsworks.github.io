@@ -62,7 +62,20 @@ var BackgroundLayerEditor = /** @class */ (function (_super) {
         _this.scaleSlider.step = 1;
         var colorAndAnchorPanel = new Panel(0, 0, 180, 340);
         colorAndAnchorPanel.backColor = "#1138";
-        var anchorPanel = new Panel(0, 0, 140, 90);
+        colorAndAnchorPanel.layout = "vertical";
+        var hsl = __assign({}, _this.hslOffset);
+        _this.colorEdit = new RgbPanel(140, 250, function (rgb) {
+            var hsl = rgbStringToHSL(rgb);
+            _this.hslOffset = { h: hsl.h, s: hsl.s * 1, l: hsl.l * 2 };
+            _this.OnChange();
+        });
+        _this.colorEdit.SetColor(hslToRGB({
+            h: hsl.h,
+            s: hsl.s,
+            l: hsl.l / 2
+        }));
+        colorAndAnchorPanel.AddChild(_this.colorEdit);
+        var anchorPanel = new Panel(0, 0, 140, 70);
         var anchorButton1 = new EditorButtonToggle(tiles["editor"][2][3], "Toggle vertical flip", false, function (newSelectedState) {
             _this.verticalFlip = newSelectedState;
             _this.OnChange();
@@ -74,19 +87,6 @@ var BackgroundLayerEditor = /** @class */ (function (_super) {
         });
         anchorPanel.AddChild(anchorButton2);
         colorAndAnchorPanel.AddChild(anchorPanel);
-        colorAndAnchorPanel.layout = "vertical";
-        var hsl = __assign({}, _this.hslOffset);
-        _this.colorEdit = new RgbPanel(140, 280, function (rgb) {
-            var hsl = rgbStringToHSL(rgb);
-            _this.hslOffset = { h: hsl.h, s: hsl.s * 1, l: hsl.l * 2 };
-            _this.OnChange();
-        });
-        _this.colorEdit.SetColor(hslToRGB({
-            h: hsl.h,
-            s: hsl.s,
-            l: hsl.l / 2
-        }));
-        colorAndAnchorPanel.AddChild(_this.colorEdit);
         _this.AddChild(colorAndAnchorPanel);
         _this.AddChild(_this.scrollPanel);
         _this.targetWidth = 440 + _this.scrollPanel.width;
@@ -104,9 +104,9 @@ var BackgroundLayerEditor = /** @class */ (function (_super) {
         slider.value = defaultVal;
         container.layout = "vertical";
         container.AddChild(new Spacer(0, 0, 1, 1));
-        container.AddChild(new ImageFromTile(0, 0, 50, 50, bottomTileImage));
-        container.AddChild(slider);
         container.AddChild(new ImageFromTile(0, 0, 50, 50, topTileImage));
+        container.AddChild(slider);
+        container.AddChild(new ImageFromTile(0, 0, 50, 50, bottomTileImage));
         container.AddChild(new Spacer(0, 0, 1, 1));
         this.scrollPanel.AddChild(container);
         this.scrollPanel.targetWidth += 70;

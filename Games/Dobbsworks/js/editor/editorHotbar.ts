@@ -36,6 +36,10 @@ class EditorHotbar {
         
         if (!existingButton || isValidHotkey) {
             this.AddHotbarButton(editorButton, chosenHotkey);
+
+            if (!KeyboardHandler.IsKeyPressed(KeyAction.EditorSelectWithoutClosingDrawers, false)) {
+                editorHandler.CloseDrawers();
+            }
         }
     }
 
@@ -83,6 +87,10 @@ class EditorHotbar {
                 a.button.normalBackColor = "#002b";
                 a.button.mouseoverBackColor = "#224b";
             }
+        }
+
+        if (this.hotbarElements.length === 0) {
+            editorHandler.currentTool = editorHandler.selectionTool;
         }
     }
 

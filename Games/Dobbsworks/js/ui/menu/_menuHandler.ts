@@ -1,6 +1,7 @@
 class MenuHandler {
 
     static MenuStack: Menu[] = [];
+    static Dialog: UIDialog | null = null;
 
     static CreateMenu(menuType: MenuType): Menu {
         let menu = new menuType();
@@ -15,6 +16,16 @@ class MenuHandler {
             MenuHandler.CurrentMenu.Hide(-1);
         }
         return MenuHandler.CreateMenu(menuType);
+    }
+
+    static SubMenuInstance(menu: Menu): Menu {
+        if (MenuHandler.CurrentMenu) {
+            MenuHandler.MenuStack.push(MenuHandler.CurrentMenu);
+            MenuHandler.CurrentMenu.Hide(-1);
+        }
+        menu.InitialDisplay();
+        MenuHandler.CurrentMenu = menu;
+        return menu;
     }
     
     static CurrentMenu: Menu | null = null;
@@ -39,7 +50,11 @@ class MenuHandler {
     
 
     static Update(): void {
-        MenuHandler.CurrentMenu?.Update();
+        if (MenuHandler.Dialog) {
+            MenuHandler.Dialog.Update();
+        } else {
+            MenuHandler.CurrentMenu?.Update();
+        }
     }
     
     static Draw(camera: Camera): void {

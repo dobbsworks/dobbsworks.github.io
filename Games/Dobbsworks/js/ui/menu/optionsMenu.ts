@@ -10,21 +10,21 @@ class OptionsMenu extends Menu {
         container.layout = "vertical";
         ret.push(container);
 
-        let backButton = this.CreateButton("Back");
-        container.AddChild(backButton);
-        backButton.onClickEvents.push(() => {
-            MenuHandler.GoBack();
-        })
+        let musicVol = this.CreateSlider("Music Volume",  StorageService.GetMusicVolume(), (newVal) => {
+            audioHandler.SetMusicVolume(newVal);
+        });
+        container.AddChild(musicVol);
 
         let sfxVol = this.CreateSlider("SFX Volume", StorageService.GetSfxVolume(), (newVal) => {
             audioHandler.SetSfxVolume(newVal);
         });
         container.AddChild(sfxVol);
 
-        let musicVol = this.CreateSlider("Music Volume",  StorageService.GetMusicVolume(), (newVal) => {
-            audioHandler.SetMusicVolume(newVal);
-        });
-        container.AddChild(musicVol);
+        let backButton = this.CreateButton("Back");
+        container.AddChild(backButton);
+        backButton.onClickEvents.push(() => {
+            MenuHandler.GoBack();
+        })
 
         return ret;
     }
@@ -32,12 +32,6 @@ class OptionsMenu extends Menu {
     CreateSlider(header: string, initialValue: number, onChange: (newValue: number) => void): Panel {
         let panel = new Panel(0, 0, camera.canvas.width / 2, 150);
         panel.margin = 15;
-
-        panel.AddChild(new Spacer(0,0,0,0));
-
-        let slider = new Slider(0, 0, camera.canvas.width / 2 - 30, 40, onChange);
-        slider.value = initialValue;
-        panel.AddChild(slider);
 
         panel.AddChild(new Spacer(0,0,0,0));
 
@@ -52,6 +46,12 @@ class OptionsMenu extends Menu {
         panel.borderRadius = 9;
 
         panel.AddChild(new Spacer(0,0,0,0));
+
+        let slider = new Slider(0, 0, camera.canvas.width / 2 - 30, 40, onChange);
+        slider.value = initialValue;
+        panel.AddChild(slider);
+
+        panel.AddChild(new Spacer(0,0,0,0));
         return panel;
     }
 
@@ -61,7 +61,7 @@ class OptionsMenu extends Menu {
         button.margin = 0;
         button.AddChild(buttonText);
         buttonText.xOffset = camera.canvas.width / 4;
-        buttonText.yOffset = -15;
+        buttonText.yOffset = 40;
         buttonText.textAlign = "center";
         button.normalBackColor = "#fff8";
         button.mouseoverBackColor = "#f73738";

@@ -24,7 +24,7 @@ var Menu = /** @class */ (function () {
         var backButton = new Button(0, camera.canvas.height - 40, 70, 40);
         var backButtonText = new UIText(0, 0, "Back", 16, "white");
         backButtonText.xOffset = 25;
-        backButtonText.yOffset = -10;
+        backButtonText.yOffset = 20;
         backButton.AddChild(backButtonText);
         backButton.onClickEvents.push(function () {
             MenuHandler.GoBack();

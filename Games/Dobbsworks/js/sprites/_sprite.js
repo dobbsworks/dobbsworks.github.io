@@ -97,6 +97,8 @@ var Sprite = /** @class */ (function () {
         this.age++;
         this.framesSinceThrown++;
         this.gustUpTimer--;
+        if (!this.respectsSolidTiles)
+            this.isOnGround = false;
         // if (this.isPlatform) {
         //     let riders = this.layer.sprites.filter(a => a.parentSprite == this);
         //     for (let rider of riders) {
@@ -397,7 +399,7 @@ var Sprite = /** @class */ (function () {
                         this.dy = 0;
                     this.dyFromPlatform = 0;
                     if (this.rolls) {
-                        var solidTile = this.layer.GetTileByPixel(this.xMid, this.yBottom);
+                        var solidTile = this.layer.GetTileByPixel(this.xMid, this.yBottom + 0.1);
                         var solidity = solidTile.tileType.solidity;
                         if (solidity instanceof SlopeSolidity) {
                             this.dx -= solidity.horizontalSolidDirection * 0.02;
@@ -482,6 +484,7 @@ var Sprite = /** @class */ (function () {
                     }
                     if (this.rolls) {
                         this.dy = -heightToScootUp;
+                        this.dx -= solidity.horizontalSolidDirection * 0.02;
                     }
                     else {
                         this.y -= heightToScootUp;
@@ -592,7 +595,7 @@ var Sprite = /** @class */ (function () {
         }
     };
     Sprite.prototype.GetHeightOfSolid = function (xOffset, direction) {
-        var _a;
+        var _a, _b;
         var bottomY = this.y + (direction == 1 ? this.height : 0);
         var pixelsToCheck = [this.xMid, this.x, this.xRight - 0.01];
         var tileIndexContainingYOfInterest = Math.floor(bottomY / this.layer.tileHeight);
@@ -615,28 +618,37 @@ var Sprite = /** @class */ (function () {
                 }
                 var tile = this_1.layer.tiles[colIndex][rowIndex];
                 var yPixelOfEdge = (rowIndex + (direction == 1 ? 0 : 1)) * this_1.layer.tileHeight;
-                var semisolidTile = (_a = this_1.layer.map) === null || _a === void 0 ? void 0 : _a.semisolidLayer.tiles[colIndex][rowIndex];
-                [semisolidTile, tile].forEach(function (t) {
-                    if (t && t.tileType.solidity == Solidity.Top) {
-                        if (direction === 1 && bottomY <= yPixelOfEdge) {
-                            grounds.push({ tile: t, yPixel: yPixelOfEdge });
+                if ((_a = this_1.layer.map) === null || _a === void 0 ? void 0 : _a.semisolidLayer.tiles[colIndex]) {
+                    var semisolidTile = (_b = this_1.layer.map) === null || _b === void 0 ? void 0 : _b.semisolidLayer.tiles[colIndex][rowIndex];
+                    [semisolidTile, tile].forEach(function (t) {
+                        if (t && t.tileType.solidity == Solidity.Top) {
+                            if (direction === 1 && bottomY <= yPixelOfEdge) {
+                                grounds.push({ tile: t, yPixel: yPixelOfEdge });
+                            }
                         }
-                    }
-                    if (t && t.tileType.solidity == Solidity.Bottom) {
-                        if (direction === -1 && bottomY >= yPixelOfEdge) {
-                            grounds.push({ tile: t, yPixel: yPixelOfEdge });
+                        if (t && t.tileType.solidity == Solidity.Bottom) {
+                            if (direction === -1 && bottomY >= yPixelOfEdge) {
+                                grounds.push({ tile: t, yPixel: yPixelOfEdge });
+                            }
                         }
+                    });
+                }
+                if (tile) {
+                    var isSolid = tile.tileType.solidity == Solidity.Block;
+                    if (!isSolid && this_1 instanceof Player)
+                        isSolid = tile.tileType.solidity == Solidity.SolidForPlayer;
+                    if (!isSolid && !(this_1 instanceof Player))
+                        isSolid = tile.tileType.solidity == Solidity.SolidForNonplayer;
+                    if (isSolid) {
+                        var preceedingNeighbor = this_1.layer.GetTileByIndex(colIndex, rowIndex - direction);
+                        var preceedingSolidity = preceedingNeighbor.tileType.solidity;
+                        if (preceedingSolidity instanceof SlopeSolidity &&
+                            preceedingSolidity.verticalSolidDirection == direction) {
+                            return "continue";
+                        }
+                        // Bumped floor/ceil
+                        grounds.push({ tile: tile, yPixel: yPixelOfEdge });
                     }
-                });
-                if (tile && tile.tileType.solidity == Solidity.Block) {
-                    var preceedingNeighbor = this_1.layer.GetTileByIndex(colIndex, rowIndex - direction);
-                    var preceedingSolidity = preceedingNeighbor.tileType.solidity;
-                    if (preceedingSolidity instanceof SlopeSolidity &&
-                        preceedingSolidity.verticalSolidDirection == direction) {
-                        return "continue";
-                    }
-                    // Bumped floor/ceil
-                    grounds.push({ tile: tile, yPixel: yPixelOfEdge });
                 }
                 if (tile && xPixel === this_1.xMid && tile.tileType.solidity instanceof SlopeSolidity) {
                     var hitSolidSlope = tile.tileType.solidity.verticalSolidDirection == direction;
@@ -669,7 +681,7 @@ var Sprite = /** @class */ (function () {
         return { tiles: [], yPixel: -999999 };
     };
     Sprite.prototype.GetDistanceOfWall = function (yOffset, direction) {
-        var _a;
+        var _a, _b;
         var startingX = this.xMid;
         var spriteSidePixel = direction == 1 ? this.xRight : this.x;
         var footHeight = this.yBottom - 0.01;
@@ -692,9 +704,12 @@ var Sprite = /** @class */ (function () {
                 if (!this_2.layer.tiles[colIndex])
                     return "continue";
                 var tile = this_2.layer.GetTileByIndex(colIndex, rowIndex);
-                var semisolidTile = (_a = this_2.layer.map) === null || _a === void 0 ? void 0 : _a.semisolidLayer.tiles[colIndex][rowIndex];
+                var semisolidTile = null;
+                if ((_a = this_2.layer.map) === null || _a === void 0 ? void 0 : _a.semisolidLayer.tiles[colIndex]) {
+                    semisolidTile = (_b = this_2.layer.map) === null || _b === void 0 ? void 0 : _b.semisolidLayer.tiles[colIndex][rowIndex];
+                }
                 var pixel = (colIndex + (direction == 1 ? 0 : 1)) * this_2.layer.tileWidth;
-                [semisolidTile, tile].forEach(function (t) {
+                [semisolidTile, tile].filter(function (a) { return a; }).forEach(function (t) {
                     if (t && t.tileType.solidity == Solidity.LeftWall) {
                         if (direction === -1 && spriteSidePixel >= pixel) {
                             wallPixels.push({ tile: t, x: pixel });
@@ -706,15 +721,22 @@ var Sprite = /** @class */ (function () {
                         }
                     }
                 });
-                if (tile && tile.tileType.solidity == Solidity.Block) {
-                    var preceedingNeighbor = this_2.layer.GetTileByIndex(colIndex - direction, rowIndex);
-                    var preceedingSolidity = preceedingNeighbor.tileType.solidity;
-                    if (preceedingSolidity instanceof SlopeSolidity &&
-                        preceedingSolidity.horizontalSolidDirection == direction) {
-                        return "continue";
+                if (tile) {
+                    var isSolid = tile.tileType.solidity == Solidity.Block;
+                    if (!isSolid && this_2 instanceof Player)
+                        isSolid = tile.tileType.solidity == Solidity.SolidForPlayer;
+                    if (!isSolid && !(this_2 instanceof Player))
+                        isSolid = tile.tileType.solidity == Solidity.SolidForNonplayer;
+                    if (isSolid) {
+                        var preceedingNeighbor = this_2.layer.GetTileByIndex(colIndex - direction, rowIndex);
+                        var preceedingSolidity = preceedingNeighbor.tileType.solidity;
+                        if (preceedingSolidity instanceof SlopeSolidity &&
+                            preceedingSolidity.horizontalSolidDirection == direction) {
+                            return "continue";
+                        }
+                        // Bumped wall
+                        wallPixels.push({ tile: tile, x: pixel });
                     }
-                    // Bumped wall
-                    wallPixels.push({ tile: tile, x: pixel });
                 }
             };
             var this_2 = this;

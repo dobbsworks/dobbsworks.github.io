@@ -26,7 +26,7 @@ var EditorButtonToggle = /** @class */ (function (_super) {
     }
     EditorButtonToggle.prototype.Update = function () {
         _super.prototype.Update.call(this);
-        this.borderColor = this.isSelected ? "#2F2E" : "#444E";
+        this.borderColor = this.isSelected ? "#2F2E" : "#F2FE";
     };
     return EditorButtonToggle;
 }(EditorButton));

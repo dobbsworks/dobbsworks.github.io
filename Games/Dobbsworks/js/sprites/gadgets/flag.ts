@@ -24,12 +24,10 @@ class Checkpoint extends Sprite {
 
                 this.isCollected = true;
                 audioHandler.PlaySound("checkpoint", false);
-                if (!editorHandler.isEditorAllowed) {
-                    let originalPlace = editorHandler.sprites.find(a => a.spriteInstance == this);
-                    if (originalPlace) {
-                        // don't use flag's current location since could be changed by motors, etc
-                        editorHandler.grabbedCheckpointLocation = {...originalPlace.tileCoord};
-                    }
+                let originalPlace = editorHandler.sprites.find(a => a.spriteInstance == this);
+                if (originalPlace) {
+                    // don't use flag's current location since could be changed by motors, etc
+                    editorHandler.grabbedCheckpointLocation = {...originalPlace.tileCoord};
                 }
                 this.waveSpeed = this.waveSpeedInitial;
                 this.flagWaveTimer = 0;

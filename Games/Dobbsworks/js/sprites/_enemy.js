@@ -122,6 +122,10 @@ var Enemy = /** @class */ (function (_super) {
             if (this.stackStun.frames <= 0)
                 this.stackStun = null;
         }
+        if (this.y < 12 * -4) {
+            // went too far, delete
+            this.isActive = false;
+        }
     };
     Enemy.prototype.ApplyStackStun = function () {
         var enemyBelow = this.stackedOn;

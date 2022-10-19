@@ -21,7 +21,7 @@ class EditorHandler {
     editorParentElementsBottom: Panel[] = [];
 
     mainPanel!: Panel;
-    eraserPanel!: Panel;
+    eraserButton!: EditorButtonEraser;
     mainToolPanel!: EditorButtonDrawer;
     brushPanel!: EditorButtonDrawer;
     backgroundPanel!: EditorButtonDrawer;
@@ -56,24 +56,24 @@ class EditorHandler {
         this.hotbar = new EditorHotbar(this.mainPanel);
         let hotbarDefaults = [];
 
-        let eraserButton = new EditorButtonEraser();
-        this.eraserPanel = new EditorButtonDrawer(this.mainPanel.x + this.mainPanel.width + 10, this.mainPanel.y, 70, 70,
-            eraserButton, [
-            new EditorButtonToggle(tiles["editor"][3][6], "Toggle water eraser", this.enableEraseWater, (state) => { this.enableEraseWater = state }),
-            new EditorButtonToggle(tiles["editor"][3][2], "Toggle wire eraser", this.enableEraseWires, (state) => { this.enableEraseWires = state }),
-            new EditorButtonToggle(tiles["editor"][3][1], "Toggle tile eraser", this.enableEraseTiles, (state) => { this.enableEraseTiles = state }),
+        this.eraserButton = new EditorButtonEraser();
+        let eraserPanel = new EditorButtonDrawer(this.mainPanel.x + this.mainPanel.width + 10, this.mainPanel.y, 70, 70,
+            this.eraserButton, [
             new EditorButtonToggle(tiles["editor"][3][0], "Toggle sprite eraser", this.enableEraseSprites, (state) => { this.enableEraseSprites = state }),
+            new EditorButtonToggle(tiles["editor"][3][1], "Toggle tile eraser", this.enableEraseTiles, (state) => { this.enableEraseTiles = state }),
+            new EditorButtonToggle(tiles["editor"][3][2], "Toggle wire eraser", this.enableEraseWires, (state) => { this.enableEraseWires = state }),
+            new EditorButtonToggle(tiles["editor"][3][6], "Toggle water eraser", this.enableEraseWater, (state) => { this.enableEraseWater = state }),
         ]);
 
 
         let resetHandle = new EditorButtonDrawerHandle(tiles["editor"][5][4], "Reset level", []);
         let resetButton = new EditorButton(tiles["editor"][5][5], "Confirm reset");
         resetButton.onClickEvents.push(() => { LevelMap.BlankOutMap(); });
-        let resetPanel = new EditorButtonDrawer(this.eraserPanel.x + this.eraserPanel.width + 10, this.eraserPanel.y, 70, 70, resetHandle, [resetButton]);
+        let resetPanel = new EditorButtonDrawer(eraserPanel.x + eraserPanel.width + 10, eraserPanel.y, 70, 70, resetHandle, [resetButton]);
 
 
         let exitButton = new EditorButton(tiles["editor"][5][6], "Exit");
-        let exitPanel = new EditorSingleServePanel(this.eraserPanel.x + this.eraserPanel.width + 10, 10, exitButton);
+        let exitPanel = new EditorSingleServePanel(eraserPanel.x + eraserPanel.width + 10, 10, exitButton);
         exitButton.onClickEvents.push(() => {
             editorHandler.isEditorAllowed = false;
             editorHandler.SwitchToPlayMode();
@@ -82,7 +82,7 @@ class EditorHandler {
                 MenuHandler.CreateMenu(MainMenu);
             }
         });
-
+        
 
         /* TILE PANEL */
         let slopeFills: SlopeFill[] = [
@@ -93,13 +93,31 @@ class EditorHandler {
             new SlopeFill("Plank", TileType.WoodPlanks),
             new SlopeFill("Blue", TileType.BlueGround),
             new SlopeFill("Purple", TileType.PurpleBrick),
+            new SlopeFill("Metal", TileType.MetalBrick),
+            new SlopeFill("Cave", TileType.CaveGround),
+            new SlopeFill("White", TileType.WhiteGround),
+        ];
+        let tileRowBlocks: TileType[] = [
+            TileType.Dirt,
+            TileType.Tree,
+            TileType.SandyGround,
+            TileType.GreenStone,
+            TileType.WoodPlanks,
+            TileType.BlueGround,
+            TileType.PurpleGround,
+            TileType.MetalGround,
+            TileType.CaveGround,
+            TileType.WhiteGround,
         ]
         let tilePanelButtons: EditorButton[] = [];
         let tooltips = ["Solid ground", "Solid ground", "Solid ground", "Semisolid", "Backdrop", "Ladder", "Deadly block", "Decor"];
-        for (let i = 0; i < 7; i++) {
-            let tileTypeRow = <TileType[]>(Object.values(TileType.TileMap).slice(i * 28 + 1, i * 28 + 9));
+
+        for (let block of tileRowBlocks) {
+            let startIndex = Object.values(TileType.TileMap).indexOf(block);
+
+            let tileTypeRow = <TileType[]>(Object.values(TileType.TileMap).slice(startIndex, startIndex + 8));
             tilePanelButtons.push(...tileTypeRow.map((a, col) => new EditorButtonTile(a, tooltips[col])));
-            if (i == 0) {
+            if (block == TileType.Dirt) {
                 hotbarDefaults.push(<EditorButtonTile>tilePanelButtons[0]);
                 hotbarDefaults.push(<EditorButtonTile>tilePanelButtons[3]);
                 hotbarDefaults.push(<EditorButtonTile>tilePanelButtons[4]);
@@ -109,29 +127,42 @@ class EditorHandler {
             let fill = slopeFills.splice(0, 1)[0];
             if (fill) tilePanelButtons.push(new EditorButtonSlopePen(fill));
         }
-        tilePanelButtons.push(...[
-            TileType.MetalGround, TileType.MetalBrick, TileType.MetalBlock, TileType.MetalTop,
-            TileType.MetalBack, TileType.ChainLadder, TileType.MetalSpikes, TileType.DecorChain].map((a, col) => new EditorButtonTile(a, tooltips[col])));
-        tilePanelButtons.push(new EditorButtonSlopePen(new SlopeFill("Metal", TileType.MetalBrick)));
 
-        tilePanelButtons.push(...[
-            TileType.CaveGround, TileType.CaveBrick, TileType.CaveBlock, TileType.CaveTop,
-            TileType.CaveBack, TileType.CaveLadder, TileType.CaveSpikes, TileType.DecorCave].map((a, col) => new EditorButtonTile(a, tooltips[col])));
-        tilePanelButtons.push(new EditorButtonSlopePen(new SlopeFill("Cave", TileType.CaveGround)));
+        // for (let i = 0; i < 7; i++) {
+        //     let tileTypeRow = <TileType[]>(Object.values(TileType.TileMap).slice(i * 28 + 1, i * 28 + 9));
+        //     tilePanelButtons.push(...tileTypeRow.map((a, col) => new EditorButtonTile(a, tooltips[col])));
+        //     if (i == 0) {
+        //         hotbarDefaults.push(<EditorButtonTile>tilePanelButtons[0]);
+        //         hotbarDefaults.push(<EditorButtonTile>tilePanelButtons[3]);
+        //         hotbarDefaults.push(<EditorButtonTile>tilePanelButtons[4]);
+        //         hotbarDefaults.push(<EditorButtonTile>tilePanelButtons[5]);
+        //         hotbarDefaults.push(<EditorButtonTile>tilePanelButtons[6]);
+        //     }
+        //     let fill = slopeFills.splice(0, 1)[0];
+        //     if (fill) tilePanelButtons.push(new EditorButtonSlopePen(fill));
+        // }
+        // tilePanelButtons.push(...[
+        //     TileType.MetalGround, TileType.MetalBrick, TileType.MetalBlock, TileType.MetalTop,
+        //     TileType.MetalBack, TileType.ChainLadder, TileType.MetalSpikes, TileType.DecorChain].map((a, col) => new EditorButtonTile(a, tooltips[col])));
+        // tilePanelButtons.push(new EditorButtonSlopePen(new SlopeFill("Metal", TileType.MetalBrick)));
 
+        // tilePanelButtons.push(...[
+        //     TileType.CaveGround, TileType.CaveBrick, TileType.CaveBlock, TileType.CaveTop,
+        //     TileType.CaveBack, TileType.CaveLadder, TileType.CaveSpikes, TileType.DecorCave].map((a, col) => new EditorButtonTile(a, tooltips[col])));
+        // tilePanelButtons.push(new EditorButtonSlopePen(new SlopeFill("Cave", TileType.CaveGround)));
         let tilePanel = this.CreateFloatingButtonPanel(tilePanelButtons, 5, 9);
 
 
         /* ENEMY PANEL */
-        let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PorcoRosso, PorcoBlu, Snail, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
-            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, Shrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Yufo];
+        let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
+            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Yufo];
         let enemyButtons = enemyTypes.map(a => new EditorButtonSprite(a));
         enemyButtons.filter(a => a.spriteType == Piggle || a.spriteType == Snail).forEach(a => hotbarDefaults.push(a));
         let enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 4, 7);
 
         let gizmoTypes: (SpriteType)[] = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform,
-            Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, Propeller, RedCannon, BlueCannon, Ring, Rocket, RedBalloon, BlueBalloon, YellowBalloon,
+            Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, Propeller, RedCannon, BlueCannon, Ring, Rocket, RedBalloon, BlueBalloon, YellowBalloon
         ];
         let gizmoButtons: EditorButton[] = gizmoTypes.map(a => new EditorButtonSprite(a));
         let keyIndex = gizmoButtons.findIndex(a => a instanceof EditorButtonSprite && a.spriteType == FlatKey);
@@ -142,6 +173,7 @@ class EditorHandler {
         gizmoButtons.push(new EditorButtonTile(TileType.ConveyorLeftFast, "Fast conveyor (left)").AppendImage(tiles["editor"][5][2]));
         gizmoButtons.push(new EditorButtonTile(TileType.ConveyorRightFast, "Fast conveyor (right)").AppendImage(tiles["editor"][6][2]));
         gizmoButtons.push(new EditorButtonTile(TileType.Barrel, "Barrel"));
+        gizmoButtons.push(new EditorButtonTile(TileType.SteelBarrel, "Steel Barrel"));
         gizmoButtons.push(new EditorButtonTile(TileType.Pumpkin, "Pumpkin"));
         gizmoButtons.push(new EditorButtonTile(TileType.BubbleBlock1, "Bubble block"));
         gizmoButtons.push(new EditorButtonTile(TileType.HangingVine, "Hanging vines"));
@@ -153,14 +185,27 @@ class EditorHandler {
         gizmoButtons.push(new EditorButtonTile(TileType.OneWayLeft, "One-way (left)"));
         gizmoButtons.push(new EditorButtonTile(TileType.OneWayUp, "One-way (up)"));
 
+        gizmoButtons.push(new EditorButtonTile(TileType.ArrowRight, "Arrow (right)"));
+        gizmoButtons.push(new EditorButtonTile(TileType.ArrowUpRight, "Arrow (up-right)"));
+        gizmoButtons.push(new EditorButtonTile(TileType.ArrowUp, "Arrow (up)"));
+        gizmoButtons.push(new EditorButtonTile(TileType.ArrowUpLeft, "Arrow (up-left)"));
+        gizmoButtons.push(new EditorButtonTile(TileType.ArrowLeft, "Arrow (left)"));
+        gizmoButtons.push(new EditorButtonTile(TileType.ArrowDownLeft, "Arrow (down-left)"));
+        gizmoButtons.push(new EditorButtonTile(TileType.ArrowDown, "Arrow (down)"));
+        gizmoButtons.push(new EditorButtonTile(TileType.ArrowDownRight, "Arrow (down-right)"));
+
+        gizmoButtons.push(new EditorButtonTile(TileType.SolidForPlayer, "Player Blocker"));
+        gizmoButtons.push(new EditorButtonTile(TileType.SolidForNonplayer, "Sprite Blocker"));
+        gizmoButtons.push(new EditorButtonTile(TileType.SpriteKiller, "Sprite Killer"));
+
         let gizmoPanel = this.CreateFloatingButtonPanel(gizmoButtons, 5, 6);
 
         let brushTypeHandle = new EditorButtonDrawerHandle(tiles["editor"][4][0], "Brush types", []);
         this.brushPanel = new EditorButtonDrawer(this.mainPanel.x - 160, this.mainPanel.y, 70, 70, brushTypeHandle, [
-            new EditorButtonFillBrush(FreeformBrush, tiles["editor"][4][0]),
-            new EditorButtonFillBrush(LineBrush, tiles["editor"][4][1]),
+            new EditorButtonFillBrush(CircleBrush, tiles["editor"][4][3]),
             new EditorButtonFillBrush(RectangleBrush, tiles["editor"][4][2]),
-            new EditorButtonFillBrush(CircleBrush, tiles["editor"][4][3])
+            new EditorButtonFillBrush(LineBrush, tiles["editor"][4][1]),
+            new EditorButtonFillBrush(FreeformBrush, tiles["editor"][4][0]),
         ]);
         this.brushPanel.children.forEach(a => {
             if (a instanceof EditorButtonFillBrush) {
@@ -235,24 +280,24 @@ class EditorHandler {
         this.backgroundPanel.children.reverse();
 
         let backgroundButtons = [
-            new EditorButtonBackgroundLoad("digital", 10, BackgroundDefaults[10]),
-            new EditorButtonBackgroundLoad("city", 9, BackgroundDefaults[9]),
-            new EditorButtonBackgroundLoad("sky", 8, BackgroundDefaults[8]),
-            new EditorButtonBackgroundLoad("space", 7, BackgroundDefaults[7]),
-            new EditorButtonBackgroundLoad("ocean", 6, BackgroundDefaults[6]),
-            new EditorButtonBackgroundLoad("cave", 5, BackgroundDefaults[5]),
-            new EditorButtonBackgroundLoad("beach", 4, BackgroundDefaults[4]),
-            new EditorButtonBackgroundLoad("snow", 3, BackgroundDefaults[3]),
             new EditorButtonBackgroundLoad("grassland", 0, BackgroundDefaults[0]),
             new EditorButtonBackgroundLoad("desert", 1, BackgroundDefaults[1]),
             new EditorButtonBackgroundLoad("forest", 2, BackgroundDefaults[2]),
+            new EditorButtonBackgroundLoad("snow", 3, BackgroundDefaults[3]),
+            new EditorButtonBackgroundLoad("beach", 4, BackgroundDefaults[4]),
+            new EditorButtonBackgroundLoad("cave", 5, BackgroundDefaults[5]),
+            new EditorButtonBackgroundLoad("ocean", 6, BackgroundDefaults[6]),
+            new EditorButtonBackgroundLoad("space", 7, BackgroundDefaults[7]),
+            new EditorButtonBackgroundLoad("sky", 8, BackgroundDefaults[8]),
+            new EditorButtonBackgroundLoad("city", 9, BackgroundDefaults[9]),
+            new EditorButtonBackgroundLoad("digital", 10, BackgroundDefaults[10]),
+            new EditorButtonBackgroundLoad("toxic", 11, BackgroundDefaults[11]),
         ];
         let backgroundsPanel = this.CreateFloatingButtonPanel(backgroundButtons, 3, 4);
         backgroundsPanel.targetX -= 80;
         backgroundsPanel.targetY = 90;
         let backgroundLoadHandle = new EditorButtonDrawerHandle(tiles["editor"][0][3], "Load background preset", [backgroundsPanel]);
         backgroundLoadHandle.AddChild(new ImageFromTile(0, 0, 50, 50, tiles["editor"][0][8]));
-        //let backgroundLoadPanel = new EditorButtonDrawer(this.brushPanel.x + 70 + 10, 10, 70, 70, backgroundLoadHandle, );
         let backgroundLoadPanel = new Panel(this.brushPanel.x + 70 + 10, 10, 70, 70);
         backgroundLoadPanel.AddChild(backgroundLoadHandle);
 
@@ -269,7 +314,7 @@ class EditorHandler {
             new EditorButtonSprite(Coin),
             new EditorButtonSprite(Dobbloon),
             new EditorButtonSprite(ExtraHitHeart),
-            new EditorButtonSprite(Checkpoint), 
+            new EditorButtonSprite(Checkpoint),
 
             new EditorButtonSprite(CameraLockHorizontal),
             new EditorButtonSprite(CameraScrollRight),
@@ -299,7 +344,7 @@ class EditorHandler {
         let wireSelectionHandle = new EditorButtonDrawerHandle(tiles["editor"][3][2], "Wires and tracks", [wirePanel]);
         let gizmoSelectionHandle = new EditorButtonDrawerHandle(tiles["editor"][3][3], "Gadgets", [gizmoPanel]);
         let waterSelectionHandle = new EditorButtonDrawerHandle(tiles["editor"][3][6], "Fluids", [this.CreateWaterEditPanel()]);
-        this.toolMenus = [waterSelectionHandle, wireSelectionHandle, gizmoSelectionHandle, spriteSelectionHandle, tileSelectionHandle];
+        this.toolMenus = [tileSelectionHandle, spriteSelectionHandle, gizmoSelectionHandle, wireSelectionHandle, waterSelectionHandle,];
         this.toolMenus.forEach(a => a.radioKey = "toolMenu")
         this.mainToolPanel = new EditorButtonDrawer(this.mainPanel.x - 70 - 10, this.mainPanel.y, 70, 70, selectionMenuHandle, this.toolMenus);
 
@@ -309,7 +354,7 @@ class EditorHandler {
         // optionsPanel.targetX -= 80;
 
         this.editorParentElementsTop.push(this.backgroundPanel, backgroundLoadPanel, levelFlowHandlePanel, this.saveDrawer, mapSizePanel, musicHandlePanel, exitPanel);
-        this.editorParentElementsBottom.push(this.mainPanel, this.eraserPanel, this.mainToolPanel, this.brushPanel, resetPanel);
+        this.editorParentElementsBottom.push(this.mainPanel, eraserPanel, this.mainToolPanel, this.brushPanel, resetPanel);
         uiHandler.elements.push(...this.editorParentElementsTop, ...this.editorParentElementsBottom);
         this.editorParentElementsTop.forEach(a => a.backColor = "#1138");
         this.editorParentElementsBottom.forEach(a => a.backColor = "#1138");
@@ -326,10 +371,14 @@ class EditorHandler {
             let rowButtons = buttons.splice(0, tilesPerRow);
             let rowPanel = new Panel(0, 0, panel.width, 70);
             rowButtons.forEach(a => rowPanel.AddChild(a));
+            let remainingSpaces = tilesPerRow - rowButtons.length;
+            for (let i = 0; i < remainingSpaces; i++) { 
+                rowPanel.AddChild(new Spacer(0, 0, 60, 60))
+            }
             if (panel.children.length < maxDisplayedRows) {
                 panel.AddChild(rowPanel);
             } else {
-                panel.scrollableChildren.push(rowPanel);
+                panel.scrollableChildrenDown.push(rowPanel);
             }
         }
         panel.fixedPosition = true;
@@ -382,7 +431,7 @@ class EditorHandler {
             new EditorButtonTile(TileType.PurpleWaterTapOff, "Purple water tap"),
             new EditorButtonTile(TileType.LavaTapOff, "Lava tap"),
             this.playerWaterModeToggle, this.spriteWaterModeToggle], 3, 6);
-        ret.y = this.mainPanel.y - 290;
+        //ret.y = this.mainPanel.y - ret.height -;
         ret.targetY = ret.y;
         return ret;
     }
@@ -528,11 +577,11 @@ class EditorHandler {
             !KeyboardHandler.IsKeyPressed(KeyAction.Right, false) &&
             !KeyboardHandler.IsKeyPressed(KeyAction.Up, false) &&
             !KeyboardHandler.IsKeyPressed(KeyAction.Down, false)) {
-                this.cameraMoveTimer = 0;
+            this.cameraMoveTimer = 0;
         }
 
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorMinimize, true)) this.ToggleMinimizeMode();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true)) (<EditorButton>this.eraserPanel.children[0]).Click();
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true)) (<EditorButton>this.eraserButton).Click();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorPlayerHotkey, true)) (<EditorButton>this.playerButton).Click();
 
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorUndo, true)) this.history.Undo();

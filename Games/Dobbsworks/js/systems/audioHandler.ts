@@ -167,7 +167,10 @@ class AudioHandler {
         "chill",
         "crunch",
         "frost",
-        "forest"
+        "forest",
+        "waltz",
+        "faire",
+        "choir",
     ]
 }
 

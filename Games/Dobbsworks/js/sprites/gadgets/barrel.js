@@ -24,6 +24,8 @@ var Barrel = /** @class */ (function (_super) {
         _this.floatsInWater = true;
         _this.isPlatform = true;
         _this.hurtsEnemies = false;
+        _this.frameRow = 0;
+        _this.rollingBarrelType = RollingBarrel;
         return _this;
     }
     Barrel.prototype.OnThrow = function (thrower, direction) {
@@ -39,11 +41,7 @@ var Barrel = /** @class */ (function (_super) {
         this.ReplaceWithRollingBarrel();
     };
     Barrel.prototype.ReplaceWithRollingBarrel = function () {
-        var rollingBarrel = new RollingBarrel(this.x, this.y, this.layer, []);
-        this.isActive = false;
-        rollingBarrel.dx = this.dx;
-        rollingBarrel.dy = this.dy;
-        this.layer.sprites.push(rollingBarrel);
+        this.ReplaceWithSpriteType(this.rollingBarrelType);
     };
     Barrel.prototype.Update = function () {
         this.ApplyGravity();
@@ -54,7 +52,7 @@ var Barrel = /** @class */ (function (_super) {
     };
     Barrel.prototype.GetFrameData = function (frameNum) {
         return {
-            imageTile: tiles["barrel"][0][0],
+            imageTile: tiles["barrel"][0][this.frameRow],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
@@ -75,6 +73,7 @@ var RollingBarrel = /** @class */ (function (_super) {
         _this.floatsInWater = true;
         _this.isPlatform = true;
         _this.hurtsEnemies = true;
+        _this.frameRow = 1;
         return _this;
     }
     RollingBarrel.prototype.OnStrikeEnemy = function (enemy) {
@@ -109,7 +108,7 @@ var RollingBarrel = /** @class */ (function (_super) {
         if (frame < 0)
             frame = 0;
         return {
-            imageTile: tiles["barrel"][frame][1],
+            imageTile: tiles["barrel"][frame][this.frameRow],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
@@ -145,3 +144,28 @@ var BreakingBarrel = /** @class */ (function (_super) {
     };
     return BreakingBarrel;
 }(Sprite));
+var SteelBarrel = /** @class */ (function (_super) {
+    __extends(SteelBarrel, _super);
+    function SteelBarrel() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.frameRow = 2;
+        _this.rollingBarrelType = RollingSteelBarrel;
+        return _this;
+    }
+    return SteelBarrel;
+}(Barrel));
+var RollingSteelBarrel = /** @class */ (function (_super) {
+    __extends(RollingSteelBarrel, _super);
+    function RollingSteelBarrel() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.frameRow = 3;
+        return _this;
+    }
+    RollingSteelBarrel.prototype.OnStrikeEnemy = function (enemy) { };
+    RollingSteelBarrel.prototype.Break = function () {
+        this.dx = 0;
+        this.dy = -1;
+        this.ReplaceWithSpriteType(SteelBarrel);
+    };
+    return RollingSteelBarrel;
+}(RollingBarrel));

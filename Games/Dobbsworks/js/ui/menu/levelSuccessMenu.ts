@@ -37,7 +37,7 @@ class LevelSuccessMenu extends Menu {
         let continueText = new UIText(camera.canvas.width / 2, continueButton.y + 20, "Continue", 20, "#FFF");
         continueButton.AddChild(continueText);
         continueText.xOffset = buttonWidth / 2 - 5;
-        continueText.yOffset = -15;
+        continueText.yOffset = 30;
         continueButton.onClickEvents.push(() => {
             this.gear?.DoneWithLevel();
         })
@@ -51,7 +51,7 @@ class LevelSuccessMenu extends Menu {
         let restartText = new UIText(camera.canvas.width / 2, continueButton.y + 20, "Start Over", 20, "#FFF");
         restartButton.AddChild(restartText);
         restartText.xOffset = buttonWidth / 2 - 5;
-        restartText.yOffset = -15;
+        restartText.yOffset = 30;
         restartButton.onClickEvents.push(() => {
             this.Dispose();
             editorHandler.SwitchToEditMode();
@@ -96,6 +96,12 @@ class LevelSuccessMenu extends Menu {
 
         if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true) && this.timer > 60) {
             this.gear?.DoneWithLevel();
+        }
+
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, false) && this.timer > 60) {
+            this.Dispose();
+            editorHandler.SwitchToEditMode();
+            editorHandler.SwitchToPlayMode();
         }
     }
 

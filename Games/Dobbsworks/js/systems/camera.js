@@ -46,8 +46,13 @@ var Camera = /** @class */ (function () {
             if (onScreenScrollTriggers.some(function (a) { return a instanceof CameraScrollUp || a instanceof CameraScrollDown; }))
                 this.isAutoscrollingVertically = true;
             var _loop_1 = function (trigger) {
-                this_1.autoscrollX += trigger.direction.x * .25;
-                this_1.autoscrollY += trigger.direction.y * .25;
+                if (trigger.direction) {
+                    this_1.autoscrollX += trigger.direction.x * .25;
+                    this_1.autoscrollY += trigger.direction.y * .25;
+                }
+                else {
+                    this_1.Reset();
+                }
                 // remove from list of available triggers
                 this_1.autoscrollTriggers = this_1.autoscrollTriggers.filter(function (a) { return a != trigger; });
             };

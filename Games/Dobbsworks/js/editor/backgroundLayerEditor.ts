@@ -67,7 +67,21 @@ class BackgroundLayerEditor extends Panel {
 
         let colorAndAnchorPanel = new Panel(0, 0, 180, 340);
         colorAndAnchorPanel.backColor = "#1138";
-        let anchorPanel = new Panel(0, 0, 140, 90);
+        colorAndAnchorPanel.layout = "vertical";
+        let hsl = { ...this.hslOffset };
+        this.colorEdit = new RgbPanel(140, 250, (rgb: string) => {
+            let hsl = rgbStringToHSL(rgb);
+            this.hslOffset = { h: hsl.h, s: hsl.s * 1, l: hsl.l * 2 };
+            this.OnChange();
+        });
+        this.colorEdit.SetColor(hslToRGB({
+            h: hsl.h,
+            s: hsl.s,
+            l: hsl.l / 2
+        }))
+        colorAndAnchorPanel.AddChild(this.colorEdit);
+        
+        let anchorPanel = new Panel(0, 0, 140, 70);
         let anchorButton1 = new EditorButtonToggle(tiles["editor"][2][3], "Toggle vertical flip", false, (newSelectedState: boolean) => {
             this.verticalFlip = newSelectedState;
             this.OnChange();
@@ -79,19 +93,6 @@ class BackgroundLayerEditor extends Panel {
         });
         anchorPanel.AddChild(anchorButton2);
         colorAndAnchorPanel.AddChild(anchorPanel);
-        colorAndAnchorPanel.layout = "vertical";
-        let hsl = { ...this.hslOffset };
-        this.colorEdit = new RgbPanel(140, 280, (rgb: string) => {
-            let hsl = rgbStringToHSL(rgb);
-            this.hslOffset = { h: hsl.h, s: hsl.s * 1, l: hsl.l * 2 };
-            this.OnChange();
-        });
-        this.colorEdit.SetColor(hslToRGB({
-            h: hsl.h,
-            s: hsl.s,
-            l: hsl.l / 2
-        }))
-        colorAndAnchorPanel.AddChild(this.colorEdit);
         this.AddChild(colorAndAnchorPanel);
 
 
@@ -111,9 +112,9 @@ class BackgroundLayerEditor extends Panel {
         slider.value = defaultVal;
         container.layout = "vertical";
         container.AddChild(new Spacer(0, 0, 1, 1));
-        container.AddChild(new ImageFromTile(0, 0, 50, 50, bottomTileImage));
-        container.AddChild(slider);
         container.AddChild(new ImageFromTile(0, 0, 50, 50, topTileImage));
+        container.AddChild(slider);
+        container.AddChild(new ImageFromTile(0, 0, 50, 50, bottomTileImage));
         container.AddChild(new Spacer(0, 0, 1, 1));
         this.scrollPanel.AddChild(container);
         this.scrollPanel.targetWidth += 70;

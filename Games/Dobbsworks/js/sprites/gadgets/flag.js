@@ -51,12 +51,10 @@ var Checkpoint = /** @class */ (function (_super) {
                 });
                 this.isCollected = true;
                 audioHandler.PlaySound("checkpoint", false);
-                if (!editorHandler.isEditorAllowed) {
-                    var originalPlace = editorHandler.sprites.find(function (a) { return a.spriteInstance == _this; });
-                    if (originalPlace) {
-                        // don't use flag's current location since could be changed by motors, etc
-                        editorHandler.grabbedCheckpointLocation = __assign({}, originalPlace.tileCoord);
-                    }
+                var originalPlace = editorHandler.sprites.find(function (a) { return a.spriteInstance == _this; });
+                if (originalPlace) {
+                    // don't use flag's current location since could be changed by motors, etc
+                    editorHandler.grabbedCheckpointLocation = __assign({}, originalPlace.tileCoord);
                 }
                 this.waveSpeed = this.waveSpeedInitial;
                 this.flagWaveTimer = 0;
