@@ -66,7 +66,7 @@ class PauseMenu extends Menu {
                 PauseMenu.UnpauseTime = new Date();
                 audioHandler.SetLowPass(false);
                 PauseMenu.IsPaused = false;
-                player.OnPlayerHurt();
+                player.OnPlayerDead();
             });
             let retryFromStartButton = this.CreateButton("Retry From Start", 0.45);
             row.AddChild(retryFromStartButton);
@@ -76,7 +76,7 @@ class PauseMenu extends Menu {
                 PauseMenu.UnpauseTime = new Date();
                 audioHandler.SetLowPass(false);
                 PauseMenu.IsPaused = false;
-                player.OnPlayerHurt();
+                player.OnPlayerDead();
             });
         }
 

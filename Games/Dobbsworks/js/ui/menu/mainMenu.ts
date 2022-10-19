@@ -49,6 +49,10 @@ class MainMenu extends Menu {
             b.mouseoverBackColor = "#f73738";
             b.borderColor = "#000";
             b.borderRadius = 9;
+            b.onClickEvents.push(() => {
+                // don't save checkpoints from main menu
+                editorHandler.grabbedCheckpointLocation = null;
+            })
         });
 
         playButton.onClickEvents.push(() => {

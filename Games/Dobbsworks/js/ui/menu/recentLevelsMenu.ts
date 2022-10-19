@@ -60,7 +60,6 @@ class RecentLevelsMenu extends Menu {
 
     PopulateLevelPanel(): void {
         if (this.levelPanel) {
-            console.log(this.levelPanel)
             let scrollIndex = this.levelPanel.scrollIndex;
             this.levelPanel.scrollIndex = 0;
             this.levelPanel.children = [];
