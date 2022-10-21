@@ -122,3 +122,19 @@
 
     <div id="footer"></div>
 </body>
+
+
+
+<script type="text/javascript">
+    function Init() {
+        let queryString = window.location.search;
+        let urlParams = new URLSearchParams(queryString);
+        let jumpTo = urlParams.get('jump');
+        if (jumpTo) {
+            var top = document.getElementById(jumpTo).offsetTop; //Getting Y of target element
+            window.scrollTo(0, top);
+        }
+    }
+    window.onload = Init;
+
+</script>
