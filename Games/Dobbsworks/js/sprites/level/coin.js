@@ -19,6 +19,7 @@ var Coin = /** @class */ (function (_super) {
         _this.height = 8;
         _this.width = 8;
         _this.respectsSolidTiles = false;
+        _this.isExemptFromSilhoutte = true;
         _this.anchor = null;
         _this.imageSource = "coin";
         _this.border = 1;

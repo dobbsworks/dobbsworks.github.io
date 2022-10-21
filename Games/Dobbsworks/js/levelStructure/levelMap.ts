@@ -31,6 +31,7 @@ class LevelMap {
     playerWaterMode: boolean = false;
     mapHeight: number = 20;
     timerText: string = "";
+    silhoutteColor = "" //"#000E";
 
     bgDarknessRatio = 0;
     fullDarknessRatio = 0;
@@ -48,6 +49,7 @@ class LevelMap {
     cameraLocksHorizontal: CameraLockHorizontal[] = [];
 
     Update(): void {
+        BenchmarkService.Log("MapUpdate");
         if (!this.isInitialized && player) {
             this.isInitialized = true;
             camera.SnapCamera();
@@ -96,7 +98,7 @@ class LevelMap {
                 }
             }
 
-            let onScreenSprites = this.mainLayer.sprites.filter(a => a.onScreenTimer > 2);
+            let onScreenSprites = this.mainLayer.sprites.filter(a => a.IsOnScreen());
             let deletedSprite = false;
             for (let sprite of onScreenSprites) {
                 if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof) continue;

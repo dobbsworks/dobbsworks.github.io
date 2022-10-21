@@ -3,6 +3,7 @@ class Points extends Sprite {
     public width: number = 15;
     public respectsSolidTiles: boolean = false;
 
+    isExemptFromSilhoutte = true;
     public column = 0;
 
     Update(): void {

@@ -25,6 +25,7 @@ var Sprite = /** @class */ (function () {
         this.slowFall = false;
         this.gustUpTimer = 0; // number of frames remaining to assume is in updraft
         this.canMotorHold = true;
+        this.isExemptFromSilhoutte = false;
         this.age = 0;
         this.framesSinceThrown = 0;
         this.isPlatform = false;
@@ -253,9 +254,20 @@ var Sprite = /** @class */ (function () {
                         (this.x < sprite.xRight && this.xRight > sprite.x)) {
                         // block from bottom
                         if (this.standingOn.length == 0 && this instanceof Player && this.heldItem !== sprite) {
+                            var groundPixel = this.GetHeightOfSolid(0, 1).yPixel;
                             this.dyFromPlatform = sprite.GetTotalDy();
                             this.dy = 0;
                             this.y = sprite.yBottom;
+                            if (groundPixel == -1) {
+                                // far from ground
+                            }
+                            else {
+                                if (this.yBottom + this.GetTotalDy() > groundPixel) {
+                                    // don't allow fan to push through floor
+                                    this.y = groundPixel - this.height;
+                                    this.dyFromPlatform = 0;
+                                }
+                            }
                         }
                     }
                 }

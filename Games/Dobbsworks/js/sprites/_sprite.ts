@@ -44,6 +44,8 @@ abstract class Sprite {
     public gustUpTimer: number = 0; // number of frames remaining to assume is in updraft
     public canMotorHold: boolean = true;
 
+    public isExemptFromSilhoutte = false;
+
     public age: number = 0;
     public framesSinceThrown: number = 0;
     public isPlatform: boolean = false;
@@ -177,7 +179,7 @@ abstract class Sprite {
         this.dy = 0;
     }
 
-    private IsOnScreen(): boolean {
+    IsOnScreen(): boolean {
         return (this.xRight + 10 > camera.x - camera.canvas.width / 2 / camera.scale)
             && (this.x - 10 < camera.x + camera.canvas.width / 2 / camera.scale)
             && (this.yBottom + 10 > camera.y - camera.canvas.height / 2 / camera.scale)
@@ -248,9 +250,19 @@ abstract class Sprite {
                         (this.x < sprite.xRight && this.xRight > sprite.x)) {
                         // block from bottom
                         if (this.standingOn.length == 0 && this instanceof Player && this.heldItem !== sprite) {
+                            let groundPixel = this.GetHeightOfSolid(0, 1).yPixel;
                             this.dyFromPlatform = sprite.GetTotalDy();
                             this.dy = 0;
                             this.y = sprite.yBottom;
+                            if (groundPixel == -1) {
+                                // far from ground
+                            } else {
+                                if (this.yBottom + this.GetTotalDy() > groundPixel) {
+                                    // don't allow fan to push through floor
+                                    this.y = groundPixel - this.height;
+                                    this.dyFromPlatform = 0;
+                                }
+                            }
                         }
                     }
                 }

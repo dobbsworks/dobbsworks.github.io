@@ -3,6 +3,7 @@ class GoldGear extends Sprite {
     public width = 22;
     public respectsSolidTiles = false;
 
+    isExemptFromSilhoutte = true;
     isRequired = true;
     maxAllowed = 1;
     isTouched = false;

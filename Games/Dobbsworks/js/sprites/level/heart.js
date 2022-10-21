@@ -21,6 +21,7 @@ var ExtraHitHeart = /** @class */ (function (_super) {
         _this.respectsSolidTiles = true;
         _this.canBeHeld = false;
         _this.slowFall = true;
+        _this.isExemptFromSilhoutte = true;
         return _this;
     }
     ExtraHitHeart.prototype.Update = function () {

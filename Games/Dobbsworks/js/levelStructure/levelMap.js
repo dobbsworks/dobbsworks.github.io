@@ -27,6 +27,7 @@ var LevelMap = /** @class */ (function () {
         this.playerWaterMode = false;
         this.mapHeight = 20;
         this.timerText = "";
+        this.silhoutteColor = ""; //"#000E";
         this.bgDarknessRatio = 0;
         this.fullDarknessRatio = 0;
         this.standChangeTiles = [];
@@ -49,6 +50,7 @@ var LevelMap = /** @class */ (function () {
     }
     LevelMap.prototype.Update = function () {
         var _this = this;
+        BenchmarkService.Log("MapUpdate");
         if (!this.isInitialized && player) {
             this.isInitialized = true;
             camera.SnapCamera();
@@ -110,7 +112,7 @@ var LevelMap = /** @class */ (function () {
                 var autoChangeTile = _e[_d];
                 _loop_3(autoChangeTile);
             }
-            var onScreenSprites = this.mainLayer.sprites.filter(function (a) { return a.onScreenTimer > 2; });
+            var onScreenSprites = this.mainLayer.sprites.filter(function (a) { return a.IsOnScreen(); });
             var deletedSprite = false;
             for (var _f = 0, onScreenSprites_1 = onScreenSprites; _f < onScreenSprites_1.length; _f++) {
                 var sprite = onScreenSprites_1[_f];

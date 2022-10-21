@@ -87,10 +87,12 @@ var SpinningYoyo = /** @class */ (function (_super) {
         }
     };
     SpinningYoyo.prototype.OnBeforeDraw = function (camera) {
+        if (!player)
+            return;
         var theta = Math.atan2(this.yBottom - player.y, this.xMid - player.xMid);
         var distance = Math.sqrt(Math.pow((this.xMid - player.xMid), 2) + Math.pow((this.yBottom - player.y), 2));
         camera.ctx.fillStyle = "#000";
-        for (var r = 6; r < distance; r += 6) {
+        for (var r = 3; r < distance; r += 3) {
             var gameX = r * Math.cos(theta) + player.xMid;
             var gameY = r * Math.sin(theta) + player.y;
             var destX = (gameX - camera.x) * camera.scale + camera.canvas.width / 2;

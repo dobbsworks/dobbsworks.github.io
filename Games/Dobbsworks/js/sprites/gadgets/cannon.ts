@@ -22,7 +22,7 @@ class RedCannon extends Sprite {
         if (this.shootTimer > 0) this.shootTimer--;
 
         if (!this.holdingPlayer) {
-            if (this.IsGoingToOverlapSprite(player) && this.shootTimer <= 0) {
+            if (this.IsGoingToOverlapSprite(player) && this.shootTimer <= 0 && !player.yoyoTarget) {
                 this.holdingPlayer = true;
                 this.bigTimer = 10;
                 audioHandler.PlaySound("bwump", true);

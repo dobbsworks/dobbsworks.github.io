@@ -2,7 +2,8 @@ class Coin extends Sprite {
     public height: number = 8;
     public width: number = 8;
     public respectsSolidTiles: boolean = false;
-
+    
+    isExemptFromSilhoutte = true;
     anchor = null;
     imageSource = "coin";
     border = 1;

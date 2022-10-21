@@ -19,6 +19,7 @@ var Poof = /** @class */ (function (_super) {
         _this.height = 16;
         _this.width = 16;
         _this.respectsSolidTiles = false;
+        _this.isExemptFromSilhoutte = true;
         return _this;
     }
     Poof.prototype.Update = function () {

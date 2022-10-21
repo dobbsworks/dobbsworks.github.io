@@ -6,6 +6,7 @@ class ExtraHitHeart extends Sprite {
     canBeHeld = false;
     slowFall = true;
 
+    isExemptFromSilhoutte = true;
     Update(): void {
         this.ApplyGravity();
         this.ApplyInertia();

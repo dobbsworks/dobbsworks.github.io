@@ -9,6 +9,7 @@ class LevelLayer {
     public map: LevelMap | null = null;
     public tiles: LevelTile[][] = [];
     public cachedCanvas: HTMLCanvasElement = document.createElement("canvas");
+    public spriteCanvas: HTMLCanvasElement = document.createElement("canvas");
     public isDirty = true;
     public sprites: Sprite[] = [];
     public tileHeight: number = 0;
@@ -30,7 +31,9 @@ class LevelLayer {
             if (this.layerType == TargetLayer.water) this.UpdateWaterTiles();
             this.cachedCanvas = document.createElement("canvas");
             if (this.tiles.length) this.DrawSectionToCanvas(this.cachedCanvas,
-                0, 0, this.tiles.length - 1, this.tiles[0].length - 1)
+                0, 0, this.tiles.length - 1, this.tiles[0].length - 1);
+            this.spriteCanvas.width = camera.canvas.width;
+            this.spriteCanvas.height = camera.canvas.height;
         }
         this.isDirty = false;
 
@@ -85,6 +88,13 @@ class LevelLayer {
 
                 imageTile.Draw(ctx, x * this.tileWidth, y * this.tileHeight, 1);
             }
+        }
+
+        if (this.map && this.map.silhoutteColor) {
+            ctx.globalCompositeOperation = "source-atop";
+            ctx.fillStyle = this.map.silhoutteColor;
+            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.globalCompositeOperation = "source-over";
         }
     }
 
@@ -147,6 +157,13 @@ class LevelLayer {
         imageTile.Draw(cachedCtx, xIndex * this.tileWidth, yIndex * this.tileHeight, 1);
         if (imageTile.yOffset != 0) {
             this.isDirty = true;
+        }
+
+        if (this.map && this.map.silhoutteColor) {
+            cachedCtx.globalCompositeOperation = "source-atop";
+            cachedCtx.fillStyle = this.map.silhoutteColor;
+            cachedCtx.fillRect(xIndex * this.tileWidth, yIndex * this.tileHeight, this.tileWidth, this.tileHeight);
+            cachedCtx.globalCompositeOperation = "source-over";
         }
     }
 
@@ -230,24 +247,42 @@ class LevelLayer {
     }
 
     public DrawFrame(frameData: FrameData, scale: number, sprite: Sprite) {
+        let ctx = camera.ctx;
+        if (sprite.isExemptFromSilhoutte) {
+            ctx = camera.ctx;
+        } else {
+            ctx = <CanvasRenderingContext2D>this.spriteCanvas.getContext("2d");
+            ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+            ctx.imageSmoothingEnabled = false;
+        }
+
+        if (!ctx) return;
         let imgTile = frameData.imageTile;
-        imgTile.Draw(camera.ctx,
+        imgTile.Draw(ctx,
             (sprite.x - camera.x - frameData.xOffset) * scale + camera.canvas.width / 2,
             (sprite.y - camera.y - frameData.yOffset) * scale + camera.canvas.height / 2,
             scale, frameData.xFlip, frameData.yFlip);
 
         if (debugMode) {
-            camera.ctx.lineWidth = 1;
-            camera.ctx.strokeStyle = "#CCC";
-            camera.ctx.strokeRect(
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "#CCC";
+            ctx.strokeRect(
                 (sprite.x + sprite.dx - camera.x) * scale + camera.canvas.width / 2,
                 (sprite.y + sprite.dy - camera.y) * scale + camera.canvas.height / 2,
                 sprite.width * scale, sprite.height * scale);
-            camera.ctx.strokeRect(
+                ctx.strokeRect(
                 (sprite.x - camera.x) * scale + camera.canvas.width / 2,
                 (sprite.y - camera.y) * scale + camera.canvas.height / 2,
                 sprite.width * scale, sprite.height * scale);
         }
+        
+        if (this.map && this.map.silhoutteColor && !sprite.isExemptFromSilhoutte) {
+            ctx.globalCompositeOperation = "source-atop";
+            ctx.fillStyle = this.map.silhoutteColor;
+            ctx.fillRect(0, 0, this.spriteCanvas.width, this.spriteCanvas.height);
+            ctx.globalCompositeOperation = "source-over";
+        }
+        if (!sprite.isExemptFromSilhoutte) camera.ctx.drawImage(this.spriteCanvas, 0, 0);
     }
 
     ExportToString(): string {

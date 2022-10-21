@@ -19,6 +19,7 @@ var GoldGear = /** @class */ (function (_super) {
         _this.height = 22;
         _this.width = 22;
         _this.respectsSolidTiles = false;
+        _this.isExemptFromSilhoutte = true;
         _this.isRequired = true;
         _this.maxAllowed = 1;
         _this.isTouched = false;

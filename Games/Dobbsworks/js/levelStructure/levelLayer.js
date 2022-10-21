@@ -12,6 +12,7 @@ var LevelLayer = /** @class */ (function () {
         this.map = null;
         this.tiles = [];
         this.cachedCanvas = document.createElement("canvas");
+        this.spriteCanvas = document.createElement("canvas");
         this.isDirty = true;
         this.sprites = [];
         this.tileHeight = 0;
@@ -36,6 +37,8 @@ var LevelLayer = /** @class */ (function () {
             this.cachedCanvas = document.createElement("canvas");
             if (this.tiles.length)
                 this.DrawSectionToCanvas(this.cachedCanvas, 0, 0, this.tiles.length - 1, this.tiles[0].length - 1);
+            this.spriteCanvas.width = camera.canvas.width;
+            this.spriteCanvas.height = camera.canvas.height;
         }
         this.isDirty = false;
         for (var _i = 0, _a = this.animatedTileList; _i < _a.length; _i++) {
@@ -101,6 +104,12 @@ var LevelLayer = /** @class */ (function () {
                 imageTile.Draw(ctx, x * this.tileWidth, y * this.tileHeight, 1);
             }
         }
+        if (this.map && this.map.silhoutteColor) {
+            ctx.globalCompositeOperation = "source-atop";
+            ctx.fillStyle = this.map.silhoutteColor;
+            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.globalCompositeOperation = "source-over";
+        }
     };
     LevelLayer.prototype.SetTile = function (xIndex, yIndex, tileType) {
         var _a;
@@ -160,6 +169,12 @@ var LevelLayer = /** @class */ (function () {
         imageTile.Draw(cachedCtx, xIndex * this.tileWidth, yIndex * this.tileHeight, 1);
         if (imageTile.yOffset != 0) {
             this.isDirty = true;
+        }
+        if (this.map && this.map.silhoutteColor) {
+            cachedCtx.globalCompositeOperation = "source-atop";
+            cachedCtx.fillStyle = this.map.silhoutteColor;
+            cachedCtx.fillRect(xIndex * this.tileWidth, yIndex * this.tileHeight, this.tileWidth, this.tileHeight);
+            cachedCtx.globalCompositeOperation = "source-over";
         }
     };
     LevelLayer.prototype.Update = function () {
@@ -236,14 +251,33 @@ var LevelLayer = /** @class */ (function () {
         }
     };
     LevelLayer.prototype.DrawFrame = function (frameData, scale, sprite) {
-        var imgTile = frameData.imageTile;
-        imgTile.Draw(camera.ctx, (sprite.x - camera.x - frameData.xOffset) * scale + camera.canvas.width / 2, (sprite.y - camera.y - frameData.yOffset) * scale + camera.canvas.height / 2, scale, frameData.xFlip, frameData.yFlip);
-        if (debugMode) {
-            camera.ctx.lineWidth = 1;
-            camera.ctx.strokeStyle = "#CCC";
-            camera.ctx.strokeRect((sprite.x + sprite.dx - camera.x) * scale + camera.canvas.width / 2, (sprite.y + sprite.dy - camera.y) * scale + camera.canvas.height / 2, sprite.width * scale, sprite.height * scale);
-            camera.ctx.strokeRect((sprite.x - camera.x) * scale + camera.canvas.width / 2, (sprite.y - camera.y) * scale + camera.canvas.height / 2, sprite.width * scale, sprite.height * scale);
+        var ctx = camera.ctx;
+        if (sprite.isExemptFromSilhoutte) {
+            ctx = camera.ctx;
         }
+        else {
+            ctx = this.spriteCanvas.getContext("2d");
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.imageSmoothingEnabled = false;
+        }
+        if (!ctx)
+            return;
+        var imgTile = frameData.imageTile;
+        imgTile.Draw(ctx, (sprite.x - camera.x - frameData.xOffset) * scale + camera.canvas.width / 2, (sprite.y - camera.y - frameData.yOffset) * scale + camera.canvas.height / 2, scale, frameData.xFlip, frameData.yFlip);
+        if (debugMode) {
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "#CCC";
+            ctx.strokeRect((sprite.x + sprite.dx - camera.x) * scale + camera.canvas.width / 2, (sprite.y + sprite.dy - camera.y) * scale + camera.canvas.height / 2, sprite.width * scale, sprite.height * scale);
+            ctx.strokeRect((sprite.x - camera.x) * scale + camera.canvas.width / 2, (sprite.y - camera.y) * scale + camera.canvas.height / 2, sprite.width * scale, sprite.height * scale);
+        }
+        if (this.map && this.map.silhoutteColor && !sprite.isExemptFromSilhoutte) {
+            ctx.globalCompositeOperation = "source-atop";
+            ctx.fillStyle = this.map.silhoutteColor;
+            ctx.fillRect(0, 0, this.spriteCanvas.width, this.spriteCanvas.height);
+            ctx.globalCompositeOperation = "source-over";
+        }
+        if (!sprite.isExemptFromSilhoutte)
+            camera.ctx.drawImage(this.spriteCanvas, 0, 0);
     };
     LevelLayer.prototype.ExportToString = function () {
         var _this = this;

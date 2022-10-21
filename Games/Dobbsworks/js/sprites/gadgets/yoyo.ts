@@ -68,10 +68,11 @@ class SpinningYoyo extends Sprite {
     }
 
     OnBeforeDraw(camera: Camera): void {
+        if (!player) return
         let theta = Math.atan2(this.yBottom - player.y, this.xMid - player.xMid);
         let distance = Math.sqrt((this.xMid - player.xMid)**2 + (this.yBottom - player.y)**2 );
         camera.ctx.fillStyle = "#000";
-        for (let r = 6; r < distance; r += 6) {
+        for (let r = 3; r < distance; r += 3) {
 
             let gameX = r * Math.cos(theta) + player.xMid;
             let gameY = r * Math.sin(theta) + player.y;

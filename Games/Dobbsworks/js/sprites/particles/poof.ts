@@ -2,6 +2,7 @@ class Poof extends Sprite {
     public height: number = 16;
     public width: number  = 16;
     public respectsSolidTiles: boolean = false;
+    isExemptFromSilhoutte = true;
 
     Update(): void {
         if (this.age > 14) this.isActive = false;

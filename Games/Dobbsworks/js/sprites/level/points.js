@@ -19,6 +19,7 @@ var Points = /** @class */ (function (_super) {
         _this.height = 9;
         _this.width = 15;
         _this.respectsSolidTiles = false;
+        _this.isExemptFromSilhoutte = true;
         _this.column = 0;
         return _this;
     }
