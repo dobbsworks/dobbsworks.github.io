@@ -49,6 +49,8 @@ var Player = /** @class */ (function (_super) {
         _this.isRequired = true;
         _this.maxAllowed = 1;
         _this.heldItem = null;
+        _this.yoyoTarget = null;
+        _this.yoyoTimer = 0;
         _this.targetDirection = 0;
         _this.props = ["x", "y", "dx", "dy", "isOnGround"];
         _this.history = [];
@@ -76,7 +78,7 @@ var Player = /** @class */ (function (_super) {
         var oldY = this.y;
         this.LogProps();
         //this.x += 0.1;
-        this.HandleBumpers();
+        //this.HandleBumpers();
         if (this.iFrames > 0)
             this.iFrames--;
         this.PlayerMovement(); // includes gravity
@@ -85,7 +87,8 @@ var Player = /** @class */ (function (_super) {
         this.PushByAutoscroll();
         this.ReactToPlatformsAndSolids();
         this.SlideDownSlopes();
-        this.MoveByVelocity();
+        if (!this.yoyoTarget)
+            this.MoveByVelocity();
         this.ReactToSpikes();
         this.PlayerItem();
         this.KeepInBounds();
@@ -95,13 +98,18 @@ var Player = /** @class */ (function (_super) {
         //     //debugMode = true;
         //     this.dx *= 0.5;
         // }
-        this.HandleDoors();
+        if (!this.yoyoTarget)
+            this.HandleDoors();
         if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true))
             this.OnPlayerDead();
         this.replayHandler.StoreFrame();
     };
     Player.prototype.PlayerMovement = function () {
         var _a, _b, _c, _d, _e;
+        if (this.yoyoTimer > 0) {
+            this.yoyoTimer--;
+            return;
+        }
         if (this.neutralTimer > 0)
             this.neutralTimer--;
         if (this.forcedJumpTimer > 0)

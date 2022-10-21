@@ -38,6 +38,8 @@ class Player extends Sprite {
     maxAllowed = 1;
 
     public heldItem: Sprite | null = null;
+    public yoyoTarget: SpinningYoyo | null = null;
+    public yoyoTimer = 0;
 
     private targetDirection: -1 | 0 | 1 = 0;
 
@@ -66,7 +68,7 @@ class Player extends Sprite {
         let oldY = this.y;
         this.LogProps();
         //this.x += 0.1;
-        this.HandleBumpers();
+        //this.HandleBumpers();
         if (this.iFrames > 0) this.iFrames--;
         this.PlayerMovement(); // includes gravity
         this.HandleEnemies(); // includes gravity
@@ -74,7 +76,7 @@ class Player extends Sprite {
         this.PushByAutoscroll();
         this.ReactToPlatformsAndSolids();
         this.SlideDownSlopes();
-        this.MoveByVelocity();
+        if (!this.yoyoTarget) this.MoveByVelocity();
         this.ReactToSpikes();
         this.PlayerItem();
         this.KeepInBounds();
@@ -84,12 +86,16 @@ class Player extends Sprite {
         //     //debugMode = true;
         //     this.dx *= 0.5;
         // }
-        this.HandleDoors();
+        if (!this.yoyoTarget) this.HandleDoors();
         if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true)) this.OnPlayerDead();
         this.replayHandler.StoreFrame()
     }
 
     PlayerMovement(): void {
+        if (this.yoyoTimer > 0) {
+            this.yoyoTimer--;
+            return;
+        }
         if (this.neutralTimer > 0) this.neutralTimer--;
         if (this.forcedJumpTimer > 0) this.forcedJumpTimer--;
         if (this.touchedRightWalls.some(a => a instanceof LevelTile && a.tileType.isStickyWall)) {

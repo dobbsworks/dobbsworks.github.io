@@ -76,16 +76,16 @@ var BackgroundLayerEditor = /** @class */ (function (_super) {
         }));
         colorAndAnchorPanel.AddChild(_this.colorEdit);
         var anchorPanel = new Panel(0, 0, 140, 70);
-        var anchorButton1 = new EditorButtonToggle(tiles["editor"][2][3], "Toggle vertical flip", false, function (newSelectedState) {
+        _this.verticalFlipButton = new EditorButtonToggle(tiles["editor"][2][3], "Toggle vertical flip", false, function (newSelectedState) {
             _this.verticalFlip = newSelectedState;
             _this.OnChange();
         });
-        anchorPanel.AddChild(anchorButton1);
-        var anchorButton2 = new EditorButtonToggle(tiles["editor"][2][1], "Toggle horizontal flip", false, function (newSelectedState) {
+        anchorPanel.AddChild(_this.verticalFlipButton);
+        _this.horizontalFlipButton = new EditorButtonToggle(tiles["editor"][2][1], "Toggle horizontal flip", false, function (newSelectedState) {
             _this.horizontalFlip = newSelectedState;
             _this.OnChange();
         });
-        anchorPanel.AddChild(anchorButton2);
+        anchorPanel.AddChild(_this.horizontalFlipButton);
         colorAndAnchorPanel.AddChild(anchorPanel);
         _this.AddChild(colorAndAnchorPanel);
         _this.AddChild(_this.scrollPanel);

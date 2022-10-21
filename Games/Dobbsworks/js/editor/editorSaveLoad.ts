@@ -75,7 +75,8 @@ class EditorLoadButton extends EditorButton {
             () => {
                 UIDialog.SmallPrompt("Please enter your level code", "OK", 0, (code) => {
                     if (code) {
-                        currentMap = LevelMap.FromImportString(code);
+                        let newMap = LevelMap.FromImportString(code);
+                        currentMap = newMap;
                         editorHandler.history.RecordHistory();
                     }
                 });

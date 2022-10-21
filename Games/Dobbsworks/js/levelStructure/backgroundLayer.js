@@ -19,7 +19,8 @@ var BackgroundSource = /** @class */ (function () {
     return BackgroundSource;
 }());
 var BackgroundLayer = /** @class */ (function () {
-    function BackgroundLayer(backgroundSource, cameraScrollSpeed, hslOffset, verticalAnchor, autoHorizontalScrollSpeed, autoVerticalScrollSpeed, scale) {
+    function BackgroundLayer(backgroundSource, cameraScrollSpeed, hslOffset, verticalAnchor, autoHorizontalScrollSpeed, autoVerticalScrollSpeed, scale, horizontalFlip) {
+        if (horizontalFlip === void 0) { horizontalFlip = false; }
         this.backgroundSource = backgroundSource;
         this.cameraScrollSpeed = cameraScrollSpeed;
         this.hslOffset = hslOffset;
@@ -27,15 +28,14 @@ var BackgroundLayer = /** @class */ (function () {
         this.autoHorizontalScrollSpeed = autoHorizontalScrollSpeed;
         this.autoVerticalScrollSpeed = autoVerticalScrollSpeed;
         this.scale = scale;
-        this.horizontalFlip = false;
+        this.horizontalFlip = horizontalFlip;
         var scaleRatio = Math.pow(2, scale / 4);
-        this.imageTiles = Object.values(backgroundSource.imageTiles).map(function (a) { return a.GetRecolor(hslOffset.h, hslOffset.s, hslOffset.l).Scale(scaleRatio, false, verticalAnchor != backgroundSource.defaultVerticalAnchor); });
+        this.imageTiles = Object.values(backgroundSource.imageTiles).map(function (a) { return a.GetRecolor(hslOffset.h, hslOffset.s, hslOffset.l).Scale(scaleRatio, horizontalFlip, verticalAnchor != backgroundSource.defaultVerticalAnchor); });
     }
     BackgroundLayer.FromDefaults = function (backgroundSource) {
         return new BackgroundLayer(backgroundSource, backgroundSource.defaultScrollSpeed, backgroundSource.defaultRecolor, backgroundSource.defaultVerticalAnchor, 0, 0, 0);
     };
-    BackgroundLayer.prototype.Draw = function (camera, frameNum, test) {
-        if (test === void 0) { test = false; }
+    BackgroundLayer.prototype.Draw = function (camera, frameNum) {
         var scale = 4;
         var dx = this.imageTiles[0].width * scale;
         var dy = this.imageTiles[0].height * scale;
@@ -98,11 +98,14 @@ var BackgroundLayer = /** @class */ (function () {
         editorPanel.scaleSlider.value = parseFloat(importVals[5]);
         editorPanel.scalePower = parseFloat(importVals[5]);
         editorPanel.verticalFlip = (editorPanel.selectedSource.defaultVerticalAnchor !== (parseInt(importVals[6]) == 0 ? "top" : "bottom"));
+        editorPanel.verticalFlipButton.isSelected = editorPanel.verticalFlip;
         editorPanel.horizontalFlip = parseInt(importVals[7]) == 1;
+        editorPanel.horizontalFlipButton.isSelected = editorPanel.horizontalFlip;
         editorPanel.xScrollSlider.value = parseFloat(importVals[2]);
         editorPanel.yScrollSlider.value = parseFloat(importVals[3]);
+        editorPanel.depthSlider.value = parseFloat(importVals[4]);
         editorPanel.OnChange();
-        return new BackgroundLayer(BackgroundSource.GetSources()[sourceIndex], parseFloat(importVals[4]), { h: hslOffset.h, s: hslOffset.s, l: hslOffset.l * 2 }, parseInt(importVals[6]) == 0 ? "top" : "bottom", parseFloat(importVals[2]), parseFloat(importVals[3]), parseFloat(importVals[5]));
+        return new BackgroundLayer(BackgroundSource.GetSources()[sourceIndex], parseFloat(importVals[4]), { h: hslOffset.h, s: hslOffset.s, l: hslOffset.l * 2 }, parseInt(importVals[6]) == 0 ? "top" : "bottom", parseFloat(importVals[2]), parseFloat(importVals[3]), parseFloat(importVals[5]), editorPanel.horizontalFlip);
     };
     return BackgroundLayer;
 }());

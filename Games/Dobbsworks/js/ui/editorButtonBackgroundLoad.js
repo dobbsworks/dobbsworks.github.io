@@ -44,7 +44,7 @@ var EditorButtonBackgroundLoad = /** @class */ (function (_super) {
         dummyCamera.ctx.fillRect(0, 0, canvas.width, canvas.height);
         for (var i = 0; i < importedSections.length; i++) {
             var bgLayer = BackgroundLayer.FromImportString(i, importedSections[i]);
-            bgLayer.Draw(dummyCamera, 0, true);
+            bgLayer.Draw(dummyCamera, 0);
         }
         var opacityHex = parseFloat(skyElements[4] || "0").toString(16).substring(2, 4).padEnd(2, "0");
         var grd2 = dummyCamera.ctx.createLinearGradient(0, 0, 0, canvas.height);

@@ -37,6 +37,12 @@ p {
     padding: 0 180px;
     background-color: #0003;
     background: linear-gradient(90deg, #0000 0%, #483075dd 15%, #303775dd 85%, #0000 100%);
+    font-size: 12pt;
+}
+.p-section.minor {
+    background-color: #0002;
+    background: linear-gradient(90deg, #0000 0%, #483075aa 15%, #303775aa 85%, #0000 100%);
+    font-size: 10.5pt;
 }
 
 #logo {    

@@ -30,6 +30,14 @@ var PauseMenu = /** @class */ (function (_super) {
         container.margin = 0;
         container.layout = "vertical";
         ret.push(container);
+        var resumeButton = this.CreateButton("Resume");
+        container.AddChild(resumeButton);
+        resumeButton.onClickEvents.push(function () {
+            _this.Dispose();
+            PauseMenu.UnpauseTime = new Date();
+            audioHandler.SetLowPass(false);
+            PauseMenu.IsPaused = false;
+        });
         if (editorHandler.isEditorAllowed) {
             // edit button
             var editButton = this.CreateButton("Edit Level");
@@ -94,15 +102,6 @@ var PauseMenu = /** @class */ (function (_super) {
                 player.OnPlayerDead();
             });
         }
-        // editorHandler.grabbedCheckpointLocation = null;
-        var resumeButton = this.CreateButton("Resume");
-        container.AddChild(resumeButton);
-        resumeButton.onClickEvents.push(function () {
-            _this.Dispose();
-            PauseMenu.UnpauseTime = new Date();
-            audioHandler.SetLowPass(false);
-            PauseMenu.IsPaused = false;
-        });
         return ret;
     };
     PauseMenu.prototype.CreateButton = function (text, sizeRatio) {

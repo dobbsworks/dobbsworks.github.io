@@ -244,12 +244,14 @@ abstract class Sprite {
                             this.x = (this.x < sprite.x) ? (sprite.x - this.width) : (sprite.x + sprite.width);
                         }
                     }
-                    if (this.y > sprite.yBottom && this.GetTotalDy() < sprite.GetTotalDy() &&
+                    if (this.y > sprite.yMid && this.GetTotalDy() <= sprite.GetTotalDy() &&
                         (this.x < sprite.xRight && this.xRight > sprite.x)) {
                         // block from bottom
-                        this.dyFromPlatform = sprite.GetTotalDy();
-                        this.dy = 0;
-                        this.y = sprite.yBottom;
+                        if (this.standingOn.length == 0 && this instanceof Player && this.heldItem !== sprite) {
+                            this.dyFromPlatform = sprite.GetTotalDy();
+                            this.dy = 0;
+                            this.y = sprite.yBottom;
+                        }
                     }
                 }
                 if (sprite.isPlatform || sprite.isSolidBox) {
@@ -774,8 +776,8 @@ abstract class Sprite {
     ReplaceWithSprite(newSprite: Sprite): Sprite {
         this.layer.sprites.push(newSprite);
         this.layer.sprites = this.layer.sprites.filter(a => a != this);
-        newSprite.x = this.x;
-        newSprite.y = this.y;
+        newSprite.x = this.x + this.width / 2 - newSprite.width / 2;
+        newSprite.y = this.y + this.height / 2 - newSprite.height / 2;
         newSprite.dx = this.dx;
         newSprite.dy = this.dy;
         this.isActive = false;
@@ -787,5 +789,6 @@ abstract class Sprite {
         return this.ReplaceWithSprite(newSprite);
     }
 
+    OnBeforeDraw(camera: Camera): void { }
     OnAfterDraw(camera: Camera): void { }
 }

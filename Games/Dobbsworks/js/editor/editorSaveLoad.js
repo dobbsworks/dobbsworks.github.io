@@ -88,7 +88,8 @@ var EditorLoadButton = /** @class */ (function (_super) {
         _this.onClickEvents.push(function () {
             UIDialog.SmallPrompt("Please enter your level code", "OK", 0, function (code) {
                 if (code) {
-                    currentMap = LevelMap.FromImportString(code);
+                    var newMap = LevelMap.FromImportString(code);
+                    currentMap = newMap;
                     editorHandler.history.RecordHistory();
                 }
             });

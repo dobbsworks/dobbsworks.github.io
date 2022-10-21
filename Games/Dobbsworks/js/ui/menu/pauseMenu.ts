@@ -17,6 +17,15 @@ class PauseMenu extends Menu {
         container.layout = "vertical";
         ret.push(container);
 
+        let resumeButton = this.CreateButton("Resume");
+        container.AddChild(resumeButton);
+        resumeButton.onClickEvents.push(() => {
+            this.Dispose();
+            PauseMenu.UnpauseTime = new Date();
+            audioHandler.SetLowPass(false);
+            PauseMenu.IsPaused = false;
+        })
+
         if (editorHandler.isEditorAllowed) {
             // edit button
             let editButton = this.CreateButton("Edit Level");
@@ -81,16 +90,6 @@ class PauseMenu extends Menu {
             });
         }
 
-        // editorHandler.grabbedCheckpointLocation = null;
-
-        let resumeButton = this.CreateButton("Resume");
-        container.AddChild(resumeButton);
-        resumeButton.onClickEvents.push(() => {
-            this.Dispose();
-            PauseMenu.UnpauseTime = new Date();
-            audioHandler.SetLowPass(false);
-            PauseMenu.IsPaused = false;
-        })
 
         return ret;
     }

@@ -12,6 +12,8 @@ class BackgroundLayerEditor extends Panel {
     scaleSlider!: Slider;
     verticalFlip: boolean = false;
     horizontalFlip: boolean = false;
+    horizontalFlipButton!: EditorButtonToggle;
+    verticalFlipButton!: EditorButtonToggle;
 
     selectedSource!: BackgroundSource;
     hslOffset!: Hsl;
@@ -82,16 +84,16 @@ class BackgroundLayerEditor extends Panel {
         colorAndAnchorPanel.AddChild(this.colorEdit);
         
         let anchorPanel = new Panel(0, 0, 140, 70);
-        let anchorButton1 = new EditorButtonToggle(tiles["editor"][2][3], "Toggle vertical flip", false, (newSelectedState: boolean) => {
+        this.verticalFlipButton = new EditorButtonToggle(tiles["editor"][2][3], "Toggle vertical flip", false, (newSelectedState: boolean) => {
             this.verticalFlip = newSelectedState;
             this.OnChange();
         });
-        anchorPanel.AddChild(anchorButton1);
-        let anchorButton2 = new EditorButtonToggle(tiles["editor"][2][1], "Toggle horizontal flip", false, (newSelectedState: boolean) => {
+        anchorPanel.AddChild(this.verticalFlipButton);
+        this.horizontalFlipButton = new EditorButtonToggle(tiles["editor"][2][1], "Toggle horizontal flip", false, (newSelectedState: boolean) => {
             this.horizontalFlip = newSelectedState;
             this.OnChange();
         });
-        anchorPanel.AddChild(anchorButton2);
+        anchorPanel.AddChild(this.horizontalFlipButton);
         colorAndAnchorPanel.AddChild(anchorPanel);
         this.AddChild(colorAndAnchorPanel);
 
@@ -140,7 +142,6 @@ class BackgroundLayerEditor extends Panel {
         bgLayer.cameraScrollSpeed = this.depthSlider.value;
         bgLayer.verticalAnchor = this.verticalFlip ? (this.selectedSource.defaultVerticalAnchor == "top" ? "bottom" : "top") : this.selectedSource.defaultVerticalAnchor;
         bgLayer.horizontalFlip = this.horizontalFlip;
-
 
         if (this.xScrollSlider) {
             bgLayer.autoHorizontalScrollSpeed = this.xScrollSlider.value;

@@ -35,7 +35,7 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
         //this.container.backColor = "#4228";
         this.container.layout = "vertical";
         ret.push(this.container);
-        this.minigameContainer = new Panel(0, 0, camera.canvas.width, camera.canvas.height);
+        this.minigameContainer = new Panel(1, 0, camera.canvas.width, camera.canvas.height);
         ret.push(this.minigameContainer);
         var buttonWidth = 350;
         var continueButton = new Button(camera.canvas.width / 2 - buttonWidth / 2, 430, buttonWidth, 55);

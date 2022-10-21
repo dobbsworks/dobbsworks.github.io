@@ -79,4 +79,5 @@ var spriteTypes = [
     FlatKey,
     SapphireSnail,
     OrangeShrubbert,
+    Yoyo,
 ];

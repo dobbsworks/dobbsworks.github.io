@@ -249,12 +249,14 @@ var Sprite = /** @class */ (function () {
                             this.x = (this.x < sprite.x) ? (sprite.x - this.width) : (sprite.x + sprite.width);
                         }
                     }
-                    if (this.y > sprite.yBottom && this.GetTotalDy() < sprite.GetTotalDy() &&
+                    if (this.y > sprite.yMid && this.GetTotalDy() <= sprite.GetTotalDy() &&
                         (this.x < sprite.xRight && this.xRight > sprite.x)) {
                         // block from bottom
-                        this.dyFromPlatform = sprite.GetTotalDy();
-                        this.dy = 0;
-                        this.y = sprite.yBottom;
+                        if (this.standingOn.length == 0 && this instanceof Player && this.heldItem !== sprite) {
+                            this.dyFromPlatform = sprite.GetTotalDy();
+                            this.dy = 0;
+                            this.y = sprite.yBottom;
+                        }
                     }
                 }
                 if (sprite.isPlatform || sprite.isSolidBox) {
@@ -786,8 +788,8 @@ var Sprite = /** @class */ (function () {
         var _this = this;
         this.layer.sprites.push(newSprite);
         this.layer.sprites = this.layer.sprites.filter(function (a) { return a != _this; });
-        newSprite.x = this.x;
-        newSprite.y = this.y;
+        newSprite.x = this.x + this.width / 2 - newSprite.width / 2;
+        newSprite.y = this.y + this.height / 2 - newSprite.height / 2;
         newSprite.dx = this.dx;
         newSprite.dy = this.dy;
         this.isActive = false;
@@ -797,6 +799,7 @@ var Sprite = /** @class */ (function () {
         var newSprite = new newSpriteType(this.x, this.y, this.layer, []);
         return this.ReplaceWithSprite(newSprite);
     };
+    Sprite.prototype.OnBeforeDraw = function (camera) { };
     Sprite.prototype.OnAfterDraw = function (camera) { };
     return Sprite;
 }());

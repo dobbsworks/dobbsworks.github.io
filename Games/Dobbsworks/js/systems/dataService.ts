@@ -13,9 +13,11 @@ class DataService {
         onError: (data: any) => void = DataService.DefaultErrorHandler): void {
 
         let baseUrl = "https://dabbleworlds1.azurewebsites.net/api/";
-        if (window.location.href.indexOf("localhost") > -1 ) {
-        //if (window.location.href.indexOf("localhost") > -1 || window.location.href.indexOf("127.0.0.1")) {
-            baseUrl = "https://localhost:7121/api/";
+        if (window.location.href.indexOf("localhost") > -1) {
+                baseUrl = "https://localhost:7121/api/";
+        }
+        if (window.location.href.startsWith("http://127.0.0.1/") ) {
+            return;
         }
         let endpoint = baseUrl + urlAction;
         let init = <RequestInit>{ method: method };

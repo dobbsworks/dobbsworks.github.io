@@ -6,6 +6,11 @@ class PanelScroll extends Panel {
 
     handleTopY: number = -1;
     handleBottomY: number = -1;
+    mouseInitialClickY: number = -1;
+    mouseScrollAnchorY: number = -1;
+    mouseScrollThresholdDistance = -1;
+    uncommitedScrollDelta = 0;
+    isOutOfScrollColumn = false;
 
 
     Update(): void {
@@ -16,15 +21,73 @@ class PanelScroll extends Panel {
         this.targetY = this.parentPanel.targetY;
         if (this.isHidden) return;
 
+
         if (mouseHandler.mouseX > this.x &&
-            mouseHandler.mouseX < this.x + this.width &&
-            mouseHandler.mouseY > this.y && mouseHandler.mouseY < this.y + this.height) {
-            if (mouseHandler.isMouseDown) {
-                if (mouseHandler.mouseY < this.handleTopY) this.parentPanel.Scroll(-1);
-                if (mouseHandler.mouseY > this.handleBottomY) this.parentPanel.Scroll(1);
+            mouseHandler.mouseX < this.x + this.width) {
+            // within horizontal column
+
+            if (mouseHandler.mouseY >= this.y &&
+                mouseHandler.mouseY <= this.y + this.height) {
+                // within bounding box
+
+                if (this.mouseInitialClickY == -1 &&
+                    mouseHandler.isMouseDown) {
+                    if (mouseHandler.mouseY >= this.handleTopY &&
+                        mouseHandler.mouseY <= this.handleBottomY &&
+                        mouseHandler.isMouseClicked()) {
+                        // initial click on scroll handle
+                        this.mouseInitialClickY = mouseHandler.mouseY;
+                        this.mouseScrollAnchorY = mouseHandler.mouseY;
+                    } else if (mouseHandler.mouseY < this.handleTopY) {
+                        this.parentPanel.Scroll(-1);
+                    } else if (mouseHandler.mouseY > this.handleBottomY) {
+                        this.parentPanel.Scroll(1);
+                    }
+                } else {
+                    if (mouseHandler.mouseScroll > 0 || KeyboardHandler.IsKeyPressed(KeyAction.ScrollDown, true)) this.parentPanel.Scroll(1);
+                    if (mouseHandler.mouseScroll < 0 || KeyboardHandler.IsKeyPressed(KeyAction.ScrollUp, true)) this.parentPanel.Scroll(-1);
+                }
             }
-            if (mouseHandler.mouseScroll > 0 || KeyboardHandler.IsKeyPressed(KeyAction.ScrollDown, true)) this.parentPanel.Scroll(1);
-            if (mouseHandler.mouseScroll < 0 || KeyboardHandler.IsKeyPressed(KeyAction.ScrollUp, true)) this.parentPanel.Scroll(-1);
+        }
+
+        if (!mouseHandler.isMouseDown) {
+            this.mouseInitialClickY = -1;
+            this.mouseScrollAnchorY = -1
+            this.uncommitedScrollDelta = 0;
+            this.isOutOfScrollColumn = false
+        }
+
+        if (mouseHandler.isMouseDown &&
+            this.mouseInitialClickY !== -1) {
+
+            if (mouseHandler.mouseX > this.x - 100 &&
+                mouseHandler.mouseX < this.x + this.width + 100) {
+                if (this.isOutOfScrollColumn) {
+                    this.isOutOfScrollColumn = false;
+                    for (let i = 0; i < this.uncommitedScrollDelta; i++) this.parentPanel.Scroll(1);
+                    for (let i = 0; i < -this.uncommitedScrollDelta; i++) this.parentPanel.Scroll(-1);
+                }
+
+                // dragging within horizontal column
+                if (mouseHandler.mouseY - this.mouseScrollAnchorY > this.mouseScrollThresholdDistance) {
+                    let scrollSuccessful = this.parentPanel.Scroll(1);
+                    if (scrollSuccessful) {
+                        this.mouseScrollAnchorY += this.mouseScrollThresholdDistance;
+                        this.uncommitedScrollDelta += 1;
+                    }
+                }
+                if (mouseHandler.mouseY - this.mouseScrollAnchorY < -this.mouseScrollThresholdDistance) {
+                    let scrollSuccessful = this.parentPanel.Scroll(-1);
+                    if (scrollSuccessful) {
+                        this.mouseScrollAnchorY -= this.mouseScrollThresholdDistance;
+                        this.uncommitedScrollDelta -= 1;
+                    }
+                }
+            } else {
+                for (let i = 0; i < this.uncommitedScrollDelta; i++) this.parentPanel.Scroll(-1);
+                for (let i = 0; i < -this.uncommitedScrollDelta; i++) this.parentPanel.Scroll(1);
+                this.isOutOfScrollColumn = true;
+            }
         }
     }
 
@@ -33,16 +96,18 @@ class PanelScroll extends Panel {
         super.Draw(ctx);
 
         let panel = this.parentPanel;
-        let totalElements = (panel.children.length + panel.scrollableChildrenDown.length + panel.scrollableChildrenUp.length);
+        let numberOfScrollableElements = panel.scrollableChildrenDown.length + panel.scrollableChildrenUp.length;
+        let totalElements = panel.children.length + numberOfScrollableElements;
         let displayedRatio = panel.children.length / totalElements;
-        let scrollOffset = (panel.scrollIndex % totalElements);
-        let scrollOffsetRatio = scrollOffset / (panel.scrollableChildrenDown.length + panel.scrollableChildrenUp.length);
+        let scrollOffset = panel.scrollIndex % totalElements;
+        let scrollOffsetRatio = scrollOffset / numberOfScrollableElements;
 
-        ctx.fillStyle = "#FFF8";
+        ctx.fillStyle = (this.mouseInitialClickY == -1 ? "#FFF8" : "#FFFF");
         let availableScrollSpace = this.height - 8;
         let scrollHandleSize = availableScrollSpace * displayedRatio;
         let availableMovementDistance = availableScrollSpace - scrollHandleSize;
 
+        this.mouseScrollThresholdDistance = availableMovementDistance / numberOfScrollableElements;
         this.handleTopY = this.y + 4 + scrollOffsetRatio * availableMovementDistance;
         this.handleBottomY = this.handleTopY + scrollHandleSize;
         ctx.fillRect(this.x + 4, this.handleTopY, 8, scrollHandleSize);

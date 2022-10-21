@@ -32,7 +32,7 @@ class EditorButtonBackgroundLoad extends EditorButton {
 
         for (let i=0; i<importedSections.length; i++) {
             let bgLayer = BackgroundLayer.FromImportString(i, importedSections[i]);
-            bgLayer.Draw(dummyCamera, 0, true);
+            bgLayer.Draw(dummyCamera, 0);
         }
 
         let opacityHex = parseFloat(skyElements[4] || "0").toString(16).substring(2, 4).padEnd(2, "0");

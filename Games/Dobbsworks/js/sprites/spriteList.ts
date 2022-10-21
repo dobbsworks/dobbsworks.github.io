@@ -84,4 +84,5 @@ var spriteTypes: SpriteType[] = [
     SapphireSnail,
     
     OrangeShrubbert,
+    Yoyo,
 ];

@@ -47,13 +47,15 @@ class Panel extends UIElement {
         this.children.push(newChild);
     }
 
-    Scroll(direction: -1 | 1): void {
+    Scroll(direction: -1 | 1): boolean {
         if (direction == 1 && this.scrollableChildrenDown.length != 0) {
             // scroll down
             audioHandler.PlaySound("scroll", true);
             this.scrollIndex++;
             this.scrollableChildrenUp.push(this.children.splice(0, 1)[0]);
             this.children.push(this.scrollableChildrenDown.splice(0, 1)[0]);
+            this.children.forEach(a => a.parentElement = this);
+            return true;
         } else if (direction == -1 && this.scrollableChildrenUp.length != 0) {
             // scroll up
             audioHandler.PlaySound("scroll", true);
@@ -62,8 +64,10 @@ class Panel extends UIElement {
             this.scrollableChildrenDown.unshift(el1);
             let el2 = this.scrollableChildrenUp.splice(this.scrollableChildrenUp.length - 1, 1)[0];
             this.children.unshift(el2);
+            this.children.forEach(a => a.parentElement = this);
+            return true;
         }
-        this.children.forEach(a => a.parentElement = this);
+        return false;
     }
 
     Update(): void {
@@ -111,6 +115,7 @@ class Panel extends UIElement {
     }
 
     Draw(ctx: CanvasRenderingContext2D): void {
+        if (this.x == 0 && this.y == 0) return;
         if (this.isHidden) return;
         if (this.scrollBar) this.scrollBar.Draw(ctx);
         let radius = this.borderRadius;

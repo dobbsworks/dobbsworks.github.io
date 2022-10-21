@@ -21,7 +21,7 @@ class LevelSuccessMenu extends Menu {
         this.container.layout = "vertical";
         ret.push(this.container);
 
-        this.minigameContainer = new Panel(0, 0, camera.canvas.width, camera.canvas.height);
+        this.minigameContainer = new Panel(1, 0, camera.canvas.width, camera.canvas.height);
         ret.push(this.minigameContainer);
 
         let buttonWidth = 350;

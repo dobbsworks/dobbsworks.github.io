@@ -67,6 +67,8 @@ var Panel = /** @class */ (function (_super) {
             this.scrollIndex++;
             this.scrollableChildrenUp.push(this.children.splice(0, 1)[0]);
             this.children.push(this.scrollableChildrenDown.splice(0, 1)[0]);
+            this.children.forEach(function (a) { return a.parentElement = _this; });
+            return true;
         }
         else if (direction == -1 && this.scrollableChildrenUp.length != 0) {
             // scroll up
@@ -76,8 +78,10 @@ var Panel = /** @class */ (function (_super) {
             this.scrollableChildrenDown.unshift(el1);
             var el2 = this.scrollableChildrenUp.splice(this.scrollableChildrenUp.length - 1, 1)[0];
             this.children.unshift(el2);
+            this.children.forEach(function (a) { return a.parentElement = _this; });
+            return true;
         }
-        this.children.forEach(function (a) { return a.parentElement = _this; });
+        return false;
     };
     Panel.prototype.Update = function () {
         if (uiHandler.mousedOverElements.indexOf(this) > -1) {
@@ -129,6 +133,8 @@ var Panel = /** @class */ (function (_super) {
             this.scrollBar.Update();
     };
     Panel.prototype.Draw = function (ctx) {
+        if (this.x == 0 && this.y == 0)
+            return;
         if (this.isHidden)
             return;
         if (this.scrollBar)

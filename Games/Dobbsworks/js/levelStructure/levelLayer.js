@@ -42,8 +42,13 @@ var LevelLayer = /** @class */ (function () {
             var tile = _a[_i];
             var tileType = tile.tileType;
             var imageTiles = tileType.imageTiles;
-            var index = Math.floor(frameNum / tileType.framesPerTile) % imageTiles.length;
-            this.RedrawTile(tile.tileX, tile.tileY, imageTiles[index]);
+            if (imageTiles) {
+                var index = Math.floor(frameNum / tileType.framesPerTile) % imageTiles.length;
+                this.RedrawTile(tile.tileX, tile.tileY, imageTiles[index]);
+            }
+            else {
+                this.RedrawTile(tile.tileX, tile.tileY, tileType.imageTile);
+            }
         }
     };
     LevelLayer.prototype.DrawSectionToCanvas = function (canvas, left, top, right, bottom) {
@@ -147,6 +152,7 @@ var LevelLayer = /** @class */ (function () {
                 }
             }
         }
+        this.animatedTileList = this.tiles.flatMap(function (a) { return a; }).filter(function (a) { return a.tileType instanceof AnimatedTileType; });
     };
     LevelLayer.prototype.RedrawTile = function (xIndex, yIndex, imageTile) {
         var cachedCtx = this.cachedCanvas.getContext("2d");
@@ -215,6 +221,7 @@ var LevelLayer = /** @class */ (function () {
         orderedSprites.sort(function (a, b) { return a.zIndex - b.zIndex; });
         for (var _i = 0, orderedSprites_2 = orderedSprites; _i < orderedSprites_2.length; _i++) {
             var sprite = orderedSprites_2[_i];
+            sprite.OnBeforeDraw(camera);
             var frameData = sprite.GetFrameData(frameNum);
             if ('xFlip' in frameData) {
                 this.DrawFrame(frameData, scale, sprite);

@@ -5,8 +5,10 @@ var DeathLogService = /** @class */ (function () {
     DeathLogService.LogDeathCounts = function () {
         var deathCount = StorageService.PopNextDeathCounter();
         while (deathCount != null) {
-            var progressModel = new LevelProgressModel(deathCount.levelCode, 0, deathCount.deathCount);
-            DataService.LogLevelPlayDone(progressModel).then(function (awardsModel) { });
+            if (deathCount.levelCode != "") {
+                var progressModel = new LevelProgressModel(deathCount.levelCode, 0, deathCount.deathCount);
+                DataService.LogLevelPlayDone(progressModel).then(function (awardsModel) { });
+            }
             deathCount = StorageService.PopNextDeathCounter();
         }
     };

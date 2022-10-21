@@ -81,12 +81,12 @@ class RollingBarrel extends Sprite {
         if (this.touchedLeftWalls.length > 0 || this.touchedRightWalls.length > 0) { 
             this.Break();
         } else if (this.isInWater) {
-            let floatingBarrel = new Barrel(this.x, this.y, this.layer, []);
-            this.isActive = false;
-            floatingBarrel.dx = this.dx;
-            floatingBarrel.dy = this.dy;
-            this.layer.sprites.push(floatingBarrel);
+            this.Float();
         }
+    }
+
+    Float() {
+        this.ReplaceWithSpriteType(Barrel);
     }
     
     GetFrameData(frameNum: number): FrameData {
@@ -142,6 +142,9 @@ class RollingSteelBarrel extends RollingBarrel {
     Break(): void {
         this.dx = 0;
         this.dy = -1;
+        this.ReplaceWithSpriteType(SteelBarrel);
+    }
+    Float() {
         this.ReplaceWithSpriteType(SteelBarrel);
     }
 }

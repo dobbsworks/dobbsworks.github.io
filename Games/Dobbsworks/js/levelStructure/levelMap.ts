@@ -53,7 +53,7 @@ class LevelMap {
             camera.SnapCamera();
             this.cameraLocksHorizontal = <CameraLockHorizontal[]>this.mainLayer.sprites.filter(a => a instanceof CameraLockHorizontal);
             this.cameraLocksHorizontal.forEach(a => a.isActive = false);
-            this.cameraLocksHorizontal.sort((a,b) => a.x - b.x);
+            this.cameraLocksHorizontal.sort((a, b) => a.x - b.x);
         }
         camera.Update();
         this.fluidLevels.forEach(a => {
@@ -296,6 +296,7 @@ class LevelMap {
             this.bgColorBottom = skyDataPieces[1];
             editorHandler.skyEditor.bottomColorPanel.SetColor(this.bgColorBottom);
         }
+        
         for (let i = 0; i < importedSections.length; i++) {
             this.backgroundLayers[i] = BackgroundLayer.FromImportString(i, importedSections[i]);
         }
@@ -401,7 +402,6 @@ class LevelMap {
         editorHandler.CloseDrawers();
 
         if (!keepGhostFrames) editorHandler.playerFrames = [];
-
         return ret;
     }
 

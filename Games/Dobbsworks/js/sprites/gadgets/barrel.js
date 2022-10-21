@@ -94,12 +94,11 @@ var RollingBarrel = /** @class */ (function (_super) {
             this.Break();
         }
         else if (this.isInWater) {
-            var floatingBarrel = new Barrel(this.x, this.y, this.layer, []);
-            this.isActive = false;
-            floatingBarrel.dx = this.dx;
-            floatingBarrel.dy = this.dy;
-            this.layer.sprites.push(floatingBarrel);
+            this.Float();
         }
+    };
+    RollingBarrel.prototype.Float = function () {
+        this.ReplaceWithSpriteType(Barrel);
     };
     RollingBarrel.prototype.GetFrameData = function (frameNum) {
         var totalFrames = 4;
@@ -165,6 +164,9 @@ var RollingSteelBarrel = /** @class */ (function (_super) {
     RollingSteelBarrel.prototype.Break = function () {
         this.dx = 0;
         this.dy = -1;
+        this.ReplaceWithSpriteType(SteelBarrel);
+    };
+    RollingSteelBarrel.prototype.Float = function () {
         this.ReplaceWithSpriteType(SteelBarrel);
     };
     return RollingSteelBarrel;

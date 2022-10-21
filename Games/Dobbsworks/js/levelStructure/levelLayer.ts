@@ -37,8 +37,12 @@ class LevelLayer {
         for (let tile of this.animatedTileList) {
             let tileType = <AnimatedTileType>tile.tileType;
             let imageTiles = tileType.imageTiles;
-            let index = Math.floor(frameNum / tileType.framesPerTile) % imageTiles.length;
-            this.RedrawTile(tile.tileX, tile.tileY, imageTiles[index]);
+            if (imageTiles) {
+                let index = Math.floor(frameNum / tileType.framesPerTile) % imageTiles.length;
+                this.RedrawTile(tile.tileX, tile.tileY, imageTiles[index]);
+            } else {
+                this.RedrawTile(tile.tileX, tile.tileY, tileType.imageTile);
+            }
         }
     }
 
@@ -134,6 +138,7 @@ class LevelLayer {
                 }
             }
         }
+        this.animatedTileList = this.tiles.flatMap(a => a).filter(a => a.tileType instanceof AnimatedTileType);
     }
 
     RedrawTile(xIndex: number, yIndex: number, imageTile: ImageTile) {
@@ -161,7 +166,7 @@ class LevelLayer {
             ...this.sprites.filter(a => !a.isPlatform && !(a instanceof Motor) && !(a instanceof Player)),
         ];
         this.sprites = orderedSprites;
-
+        
         for (let sprite of orderedSprites) {
             if (sprite.locked) continue;
             if (sprite.updatedThisFrame) continue;
@@ -211,6 +216,7 @@ class LevelLayer {
         let orderedSprites = [...this.sprites];
         orderedSprites.sort((a,b)=>a.zIndex-b.zIndex);
         for (let sprite of orderedSprites) {
+            sprite.OnBeforeDraw(camera);
             let frameData = sprite.GetFrameData(frameNum);
             if ('xFlip' in frameData) {
                 this.DrawFrame(frameData, scale, sprite);
