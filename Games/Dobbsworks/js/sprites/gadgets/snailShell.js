@@ -50,6 +50,8 @@ var SnailShell = /** @class */ (function (_super) {
         var shell = new RollingSnailShell(this.x, this.y, this.layer, []);
         shell.age = 0;
         shell.direction = direction;
+        if (!(thrower instanceof Player))
+            shell.framesSinceThrown = 100;
         this.layer.sprites.push(shell);
         return shell;
     };

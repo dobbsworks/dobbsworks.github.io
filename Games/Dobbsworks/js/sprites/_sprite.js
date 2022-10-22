@@ -258,7 +258,7 @@ var Sprite = /** @class */ (function () {
                             this.dyFromPlatform = sprite.GetTotalDy();
                             this.dy = 0;
                             this.y = sprite.yBottom;
-                            if (groundPixel == -1) {
+                            if (groundPixel == -1 || groundPixel == -999999) {
                                 // far from ground
                             }
                             else {

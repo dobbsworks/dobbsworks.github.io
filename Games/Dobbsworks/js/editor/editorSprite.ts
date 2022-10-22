@@ -146,6 +146,10 @@ class EditorSprite {
     Copy(): EditorSprite {
         let spr = new EditorSprite(this.spriteType, { ...this.tileCoord });
         spr.editorProps = [...this.editorProps]; // include props
+        spr.spriteInstance.width = this.spriteInstance.width;
+        if (!('xFlip' in this.frameData)) {
+            spr.frameData = [...this.frameData];
+        }
         return spr;
     }
 }

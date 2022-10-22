@@ -276,16 +276,12 @@ class MyLevelsMenu extends Menu {
             button.SnapToPlace();
         }
 
-        if (buttons.length == 1) myLevelsPanel.AddChild(new Spacer(0, 0, 88 * 2 + 10, 50 * 2 + 10));
-        if (buttons.length == 2) myLevelsPanel.AddChild(new Spacer(0, 0, 88 * 2 + 10, 50 * 2 + 10));
-
-        while (buttons.length > 3) {
-            let slotButton = buttons.pop();
-            if (slotButton) myLevelsPanel.scrollableChildrenDown.push(slotButton);
-        }
-        while (buttons.length > 0) {
-            let slotButton = buttons.pop();
-            if (slotButton) myLevelsPanel.AddChild(slotButton);
+        for (let button of buttons) {
+            if (myLevelsPanel.children.length < 3) {
+                myLevelsPanel.AddChild(button);
+            } else {
+                myLevelsPanel.scrollableChildrenDown.push(button);
+            }
         }
 
         return myLevelsPanel;

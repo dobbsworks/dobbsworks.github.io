@@ -27,7 +27,7 @@ var LevelMap = /** @class */ (function () {
         this.playerWaterMode = false;
         this.mapHeight = 20;
         this.timerText = "";
-        this.silhoutteColor = ""; //"#000E";
+        this.silhoutteColor = ""; //"#000" //"#867e1dee" // "#000F";
         this.bgDarknessRatio = 0;
         this.fullDarknessRatio = 0;
         this.standChangeTiles = [];
@@ -39,6 +39,8 @@ var LevelMap = /** @class */ (function () {
         this.songId = 0;
         this.isInitialized = false;
         this.cameraLocksHorizontal = [];
+        this.spriteKillerCheckComplete = false;
+        this.hasSpriteKillers = false;
         mainLayer.map = this;
         wireLayer.map = this;
         waterLayer.map = this;
@@ -112,28 +114,34 @@ var LevelMap = /** @class */ (function () {
                 var autoChangeTile = _e[_d];
                 _loop_3(autoChangeTile);
             }
-            var onScreenSprites = this.mainLayer.sprites.filter(function (a) { return a.IsOnScreen(); });
-            var deletedSprite = false;
-            for (var _f = 0, onScreenSprites_1 = onScreenSprites; _f < onScreenSprites_1.length; _f++) {
-                var sprite = onScreenSprites_1[_f];
-                if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof)
-                    continue;
-                var xs = [sprite.x, sprite.xRight, sprite.xMid].map(function (a) { return Math.floor(a / _this.mainLayer.tileWidth); }).filter(Utility.OnlyUnique);
-                var ys = [sprite.y, sprite.yBottom, sprite.yMid].map(function (a) { return Math.floor(a / _this.mainLayer.tileHeight); }).filter(Utility.OnlyUnique);
-                for (var _g = 0, xs_1 = xs; _g < xs_1.length; _g++) {
-                    var tileX = xs_1[_g];
-                    for (var _h = 0, ys_1 = ys; _h < ys_1.length; _h++) {
-                        var tileY = ys_1[_h];
-                        var tile = this.mainLayer.GetTileByIndex(tileX, tileY);
-                        if (tile.tileType == TileType.SpriteKiller) {
-                            sprite.ReplaceWithSpriteType(Poof);
-                            deletedSprite = true;
+            if (!this.spriteKillerCheckComplete) {
+                this.spriteKillerCheckComplete = true;
+                this.hasSpriteKillers = this.mainLayer.tiles.flatMap(function (a) { return a; }).some(function (a) { return a.tileType == TileType.SpriteKiller; });
+            }
+            if (this.hasSpriteKillers) {
+                var onScreenSprites = this.mainLayer.sprites.filter(function (a) { return a.IsOnScreen(); });
+                var deletedSprite = false;
+                for (var _f = 0, onScreenSprites_1 = onScreenSprites; _f < onScreenSprites_1.length; _f++) {
+                    var sprite = onScreenSprites_1[_f];
+                    if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof)
+                        continue;
+                    var xs = [sprite.x, sprite.xRight, sprite.xMid].map(function (a) { return Math.floor(a / _this.mainLayer.tileWidth); }).filter(Utility.OnlyUnique);
+                    var ys = [sprite.y, sprite.yBottom, sprite.yMid].map(function (a) { return Math.floor(a / _this.mainLayer.tileHeight); }).filter(Utility.OnlyUnique);
+                    for (var _g = 0, xs_1 = xs; _g < xs_1.length; _g++) {
+                        var tileX = xs_1[_g];
+                        for (var _h = 0, ys_1 = ys; _h < ys_1.length; _h++) {
+                            var tileY = ys_1[_h];
+                            var tile = this.mainLayer.GetTileByIndex(tileX, tileY);
+                            if (tile.tileType == TileType.SpriteKiller) {
+                                sprite.ReplaceWithSpriteType(Poof);
+                                deletedSprite = true;
+                            }
                         }
                     }
                 }
+                if (deletedSprite)
+                    audioHandler.PlaySound("erase", true);
             }
-            if (deletedSprite)
-                audioHandler.PlaySound("erase", true);
         }
         if (camera.transitionTimer > 0) {
             // do not process any updates

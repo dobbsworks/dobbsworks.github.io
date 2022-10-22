@@ -71,8 +71,8 @@ var EditorDeleteCurrentSlotButton = /** @class */ (function (_super) {
         _this.onClickEvents.push(function () {
             if (editorHandler.currentSaveSlot > 0) {
                 UIDialog.Confirm("Are you sure you want to delete this local save file? This cannot be undone.", "Delete it", "Cancel", function () {
-                    StorageService.SetSavedLevel(MyLevelsMenu.selectedLocalSlot, "", "");
-                    EditorSaveSlotButton.Buttons[MyLevelsMenu.selectedLocalSlot].ClearThumbnail();
+                    EditorSaveSlotButton.Buttons[editorHandler.currentSaveSlot].ClearThumbnail();
+                    StorageService.SetSavedLevel(editorHandler.currentSaveSlot, "", "");
                 });
             }
         });

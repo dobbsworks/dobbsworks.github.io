@@ -21,6 +21,7 @@ var Piggle = /** @class */ (function (_super) {
         _this.respectsSolidTiles = true;
         _this.canBeBouncedOn = true;
         _this.squishTimer = 0;
+        _this.imageSource = "pig";
         _this.animationSpeed = 0.2;
         _this.frameRow = 0;
         _this.turnAtLedges = true;
@@ -55,7 +56,7 @@ var Piggle = /** @class */ (function (_super) {
         if (this.isInDeathAnimation)
             frame = 5;
         return {
-            imageTile: tiles["pig"][frame][this.frameRow],
+            imageTile: tiles[this.imageSource][frame][this.frameRow],
             xFlip: this.direction == 1,
             yFlip: false,
             xOffset: 2,

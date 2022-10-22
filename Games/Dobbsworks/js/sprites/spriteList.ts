@@ -85,4 +85,6 @@ var spriteTypes: SpriteType[] = [
     
     OrangeShrubbert,
     Yoyo,
+    Wooly,
+    Booly,
 ];

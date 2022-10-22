@@ -20,6 +20,9 @@ class Baseball extends Sprite {
 
     Update(): void {
         this.hurtsEnemies = this.isInThrowMode;
+
+        if (player && player.heldItem == this) this.isInThrowMode = false;
+
         if (this.isInThrowMode) {
             this.dx = this.throwDirection * 1.5;
             if (this.isInWater) this.dx *= 0.5;

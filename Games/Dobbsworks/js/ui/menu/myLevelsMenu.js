@@ -251,19 +251,14 @@ var MyLevelsMenu = /** @class */ (function (_super) {
             var button = buttons_1[_i];
             button.SnapToPlace();
         }
-        if (buttons.length == 1)
-            myLevelsPanel.AddChild(new Spacer(0, 0, 88 * 2 + 10, 50 * 2 + 10));
-        if (buttons.length == 2)
-            myLevelsPanel.AddChild(new Spacer(0, 0, 88 * 2 + 10, 50 * 2 + 10));
-        while (buttons.length > 3) {
-            var slotButton = buttons.pop();
-            if (slotButton)
-                myLevelsPanel.scrollableChildrenDown.push(slotButton);
-        }
-        while (buttons.length > 0) {
-            var slotButton = buttons.pop();
-            if (slotButton)
-                myLevelsPanel.AddChild(slotButton);
+        for (var _a = 0, buttons_2 = buttons; _a < buttons_2.length; _a++) {
+            var button = buttons_2[_a];
+            if (myLevelsPanel.children.length < 3) {
+                myLevelsPanel.AddChild(button);
+            }
+            else {
+                myLevelsPanel.scrollableChildrenDown.push(button);
+            }
         }
         return myLevelsPanel;
     };

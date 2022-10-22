@@ -29,9 +29,12 @@ var Yoyo = /** @class */ (function (_super) {
         this.ReactToPlatformsAndSolids();
         this.MoveByVelocity();
     };
-    Yoyo.prototype.OnThrow = function (thrower, direction) { this.YoyoThrow(direction); };
-    Yoyo.prototype.OnUpThrow = function (thrower, direction) { this.YoyoThrow(direction); };
-    Yoyo.prototype.OnDownThrow = function (thrower, direction) { this.YoyoThrow(direction); };
+    Yoyo.prototype.OnThrow = function (thrower, direction) { if (thrower instanceof Player)
+        this.YoyoThrow(direction); };
+    Yoyo.prototype.OnUpThrow = function (thrower, direction) { if (thrower instanceof Player)
+        this.YoyoThrow(direction); };
+    Yoyo.prototype.OnDownThrow = function (thrower, direction) { if (thrower instanceof Player)
+        this.YoyoThrow(direction); };
     Yoyo.prototype.YoyoThrow = function (facing) {
         var horizontalDir = KeyboardHandler.IsKeyPressed(KeyAction.Left, false) ? -1 :
             KeyboardHandler.IsKeyPressed(KeyAction.Right, false) ? 1 : 0;

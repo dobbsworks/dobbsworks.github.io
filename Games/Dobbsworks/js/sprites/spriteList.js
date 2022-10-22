@@ -80,4 +80,6 @@ var spriteTypes = [
     SapphireSnail,
     OrangeShrubbert,
     Yoyo,
+    Wooly,
+    Booly,
 ];

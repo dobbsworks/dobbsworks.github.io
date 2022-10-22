@@ -5,6 +5,7 @@ class Piggle extends Enemy {
     respectsSolidTiles = true;
     canBeBouncedOn = true;
     squishTimer = 0;
+    imageSource = "pig";
 
     animationSpeed = 0.2;
     frameRow = 0;
@@ -38,7 +39,7 @@ class Piggle extends Enemy {
         let frame = frames[Math.floor(frameNum * this.animationSpeed) % frames.length];
         if (this.isInDeathAnimation) frame = 5;
         return {
-            imageTile: tiles["pig"][frame][this.frameRow],
+            imageTile: tiles[this.imageSource][frame][this.frameRow],
             xFlip: this.direction == 1,
             yFlip: false,
             xOffset: 2,

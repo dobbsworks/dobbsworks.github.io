@@ -122,10 +122,12 @@ var UIDialogOption = /** @class */ (function () {
         this.isMouseOver = false;
     }
     UIDialogOption.prototype.Update = function () {
-        this.isMouseOver = (mouseHandler.mouseX >= this.x &&
-            mouseHandler.mouseX <= this.xRight &&
-            mouseHandler.mouseY >= this.y &&
-            mouseHandler.mouseY <= this.yBottom);
+        var mouseX = mouseHandler.GetCanvasMousePixel().xPixel;
+        var mouseY = mouseHandler.GetCanvasMousePixel().yPixel;
+        this.isMouseOver = (mouseX >= this.x &&
+            mouseX <= this.xRight &&
+            mouseY >= this.y &&
+            mouseY <= this.yBottom);
     };
     return UIDialogOption;
 }());

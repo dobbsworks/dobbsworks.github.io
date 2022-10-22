@@ -161,6 +161,10 @@ var EditorSprite = /** @class */ (function () {
     EditorSprite.prototype.Copy = function () {
         var spr = new EditorSprite(this.spriteType, __assign({}, this.tileCoord));
         spr.editorProps = __spreadArrays(this.editorProps); // include props
+        spr.spriteInstance.width = this.spriteInstance.width;
+        if (!('xFlip' in this.frameData)) {
+            spr.frameData = __spreadArrays(this.frameData);
+        }
         return spr;
     };
     return EditorSprite;

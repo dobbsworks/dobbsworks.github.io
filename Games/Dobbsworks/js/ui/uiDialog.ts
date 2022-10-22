@@ -120,10 +120,12 @@ class UIDialogOption {
     isMouseOver = false;
 
     Update(): void {
-        this.isMouseOver = (mouseHandler.mouseX >= this.x &&
-            mouseHandler.mouseX <= this.xRight &&
-            mouseHandler.mouseY >= this.y &&
-            mouseHandler.mouseY <= this.yBottom);
+        let mouseX = mouseHandler.GetCanvasMousePixel().xPixel;
+        let mouseY = mouseHandler.GetCanvasMousePixel().yPixel;
+        this.isMouseOver = (mouseX >= this.x &&
+            mouseX <= this.xRight &&
+            mouseY >= this.y &&
+            mouseY <= this.yBottom);
     }
 }
 
