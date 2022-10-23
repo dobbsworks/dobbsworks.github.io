@@ -27,12 +27,12 @@ var Rocket = /** @class */ (function (_super) {
     }
     Rocket.prototype.Update = function () {
         if (this.isRocketing) {
-            var targetDx = this.direction * 1.5;
-            this.dx += 0.1 * (targetDx > 0 ? 1 : -1);
-            if (Math.abs(this.dx) > Math.abs(targetDx))
-                this.dx = targetDx;
+            this.ReactToPlatformsAndSolids();
+            this.AccelerateHorizontally(0.1, this.direction * 1.5);
             if (this.isTouchingLeftWall || this.isTouchingRightWall) {
                 this.ReplaceWithSprite(new DeadEnemy(this));
+                if (player && player.heldItem == this)
+                    player.heldItem = null;
             }
         }
         else {
@@ -50,11 +50,11 @@ var Rocket = /** @class */ (function (_super) {
                 else {
                     this.ApplyInertia();
                     this.ApplyGravity();
+                    this.ReactToPlatformsAndSolids();
                 }
             }
         }
         this.ReactToWater();
-        this.ReactToPlatformsAndSolids();
         this.MoveByVelocity();
     };
     Rocket.prototype.GetFrameData = function (frameNum) {

@@ -7,7 +7,7 @@ class Player extends Sprite {
     public coyoteTimer: number = 999; // how long since not on ground // start this value above threshold so that player cannot immediately jump if starting in air, must hit ground first
     private frameNum: number = 0;
     public jumpTimer: number = -1; // how long have we been ascending for current jump
-    private throwTimer: number = 999; // how long since throwing something
+    public throwTimer: number = 999; // how long since throwing something
     private swimTimer: number = -1; // how long since last swim
     public isClimbing: boolean = false;
     public isHanging: boolean = false;
@@ -21,6 +21,7 @@ class Player extends Sprite {
     private bumperTimer = 0;
     private isTouchingStickyWall = false;
     private wallClingDirection: -1 | 1 = -1;
+    private wallDragDirection: -1 | 1 | 0 = 0;
     canMotorHold = false;
 
     public maxBreath: number = 600;
@@ -98,6 +99,19 @@ class Player extends Sprite {
         }
         if (this.neutralTimer > 0) this.neutralTimer--;
         if (this.forcedJumpTimer > 0) this.forcedJumpTimer--;
+
+        if (this.GetTotalDy() > 0) {
+            if (this.touchedRightWalls.some(a => a instanceof LevelTile && a.tileType.isJumpWall) && KeyboardHandler.IsKeyPressed(KeyAction.Right, false)) {
+                this.wallDragDirection = 1;
+                this.direction = 1;
+            }
+            if (this.touchedLeftWalls.some(a => a instanceof LevelTile && a.tileType.isJumpWall) && KeyboardHandler.IsKeyPressed(KeyAction.Left, false)) {
+                this.wallDragDirection = -1;
+                this.direction = -1;
+            }
+        }
+
+
         if (this.touchedRightWalls.some(a => a instanceof LevelTile && a.tileType.isStickyWall)) {
             this.isTouchingStickyWall = true;
             this.wallClingDirection = 1;
@@ -108,6 +122,7 @@ class Player extends Sprite {
             this.wallClingDirection = -1;
             this.direction = -1;
         }
+
         let wasInWater = this.isInWater;
         let waterLayerAtMid = this.layer.map?.waterLayer.GetTileByPixel(this.xMid, this.yMid).tileType || TileType.Air;
         let waterTileAtFoot = this.layer.map?.waterLayer.GetTileByPixel(this.xMid, this.yBottom - 0.1).tileType || TileType.Air;
@@ -180,12 +195,14 @@ class Player extends Sprite {
             //this.ApplyGravity();
         }
         if (this.dy > this.maxDY) this.dy = this.maxDY;
+        if (this.dy > this.maxDY / 2.5 && this.wallDragDirection != 0) this.dy = this.maxDY / 2.5;
 
         let isJumpInitialPressed = KeyboardHandler.IsKeyPressed(KeyAction.Action1, true) /*&& this.forcedJumpTimer <= 0*/;
         if (this.jumpBufferTimer >= 0) this.jumpBufferTimer++;
         if (isJumpInitialPressed) this.jumpBufferTimer = 0;
         if (this.jumpBufferTimer > 3) this.jumpBufferTimer = -1;
-        if (this.jumpBufferTimer > -1 && this.coyoteTimer < 5 && this.forcedJumpTimer <= 0) {
+
+        if (this.jumpBufferTimer > -1 && (this.coyoteTimer < 5 || this.IsNeighboringWallJumpTiles()) && this.forcedJumpTimer <= 0) {
             this.Jump();
             this.isSliding = false;
         }
@@ -246,6 +263,17 @@ class Player extends Sprite {
             this.dx = 0;
             this.dy = 0;
             this.isSliding = false;
+        } else if (this.wallDragDirection != 0) {
+            if (this.isOnGround) {
+                this.wallDragDirection = 0;
+            } else if (this.wallDragDirection == -1 && KeyboardHandler.IsKeyPressed(KeyAction.Right, false)) {
+                this.wallDragDirection = 0;
+            } else if (this.wallDragDirection == 1 && KeyboardHandler.IsKeyPressed(KeyAction.Left, false)) {
+                this.wallDragDirection = 0;
+            }
+            else {
+                if (!this.IsNeighboringWallJumpTiles()) this.wallDragDirection = 0;
+            }
         } else if (!this.isSliding) {
             if (this.isClimbing) {
                 this.parentSprite = null;
@@ -371,10 +399,19 @@ class Player extends Sprite {
         this.isClimbing = false;
         this.climbCooldownTimer = 0;
         this.parentSprite = null;
-        if (this.isTouchingStickyWall) {
+
+        let jumpWallLeft = this.IsNeighboringWallJumpTilesSide(-1);
+        let jumpWallRight = this.IsNeighboringWallJumpTilesSide(1);
+
+        if (this.isTouchingStickyWall || this.wallDragDirection != 0 || jumpWallLeft || jumpWallRight) {
             this.dx = -this.wallClingDirection * this.moveSpeed;
+
+            if (jumpWallLeft) this.dx = this.moveSpeed
+            if (jumpWallRight) this.dx = -this.moveSpeed
+
             this.dy = -1.1; // less than normal to make sure no single-wall scaling
             this.direction = this.wallClingDirection == 1 ? -1 : 1;
+            this.wallDragDirection = 0;
         }
         if (this.currentSlope !== 0) {
             this.dx += this.currentSlope / 2;
@@ -401,6 +438,18 @@ class Player extends Sprite {
             if (this.breathTimer > 0) this.breathTimer -= 1;
             if (this.breathTimer <= 0 && this.currentBreath < this.maxBreath) this.currentBreath += 4;
         }
+    }
+
+    IsNeighboringWallJumpTiles(): boolean {
+        return this.IsNeighboringWallJumpTilesSide(-1) || this.IsNeighboringWallJumpTilesSide(1);
+    }
+
+    IsNeighboringWallJumpTilesSide(direction: -1 | 1): boolean {
+        let x = direction == 1 ? this.xRight + 0.1 : this.x - 0.1;
+        return !this.isOnGround && ([
+            this.layer.GetTileByPixel(x, this.y).GetSemisolidNeighbor(),
+            this.layer.GetTileByPixel(x, this.yBottom).GetSemisolidNeighbor(),
+        ].some(a => a?.tileType.isJumpWall));
     }
 
     HandleBumpers(): void {
@@ -559,6 +608,7 @@ class Player extends Sprite {
     }
 
     OnPlayerHurt(): void {
+        if (this.heldItem && this.heldItem instanceof GoldHeart) return;
         if (this.iFrames == 0) {
             if (this.extraHits > 0) {
                 this.extraHits--;
@@ -756,6 +806,7 @@ class Player extends Sprite {
 
             if (!this.heldItem?.isActive) this.heldItem = null;
         }
+
     }
 
     HandleDoors(): void {
@@ -781,6 +832,10 @@ class Player extends Sprite {
             if (Math.floor(this.iFrames / 8) % 2 == 0) sourceImage = "dobbsGhost";
         } else if (this.iFrames > 0) {
             if (Math.floor(this.iFrames / 4) % 2 == 0) sourceImage = "dobbsGhost";
+        }
+
+        if (this.heldItem && this.heldItem instanceof GoldHeart) {
+            if (Math.floor(this.age / 8) % 2 == 0) sourceImage = "dobbsGhost";
         }
 
 
@@ -834,7 +889,7 @@ class Player extends Sprite {
             tile = tiles[sourceImage][3][row];
         }
 
-        if (this.isTouchingStickyWall) {
+        if (this.isTouchingStickyWall || this.wallDragDirection != 0) {
             tile = tiles[sourceImage][0][4];
         }
 

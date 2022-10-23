@@ -9,7 +9,7 @@ class SnowtemPole extends Enemy {
     Update(): void {
         if (!this.WaitForOnScreen()) return;
         this.height = this.numLowerParts * 6 + 9;
-        this.Patrol(0.3, true);
+        this.GroundPatrol(0.3, true);
         this.ApplyGravity();
         this.ApplyInertia();
         this.ReactToWater();

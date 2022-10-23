@@ -25,7 +25,7 @@ var Snail = /** @class */ (function (_super) {
     Snail.prototype.Update = function () {
         if (!this.WaitForOnScreen())
             return;
-        this.Patrol(0.2, true);
+        this.GroundPatrol(0.2, true);
         this.ApplyGravity();
         this.ApplyInertia();
     };

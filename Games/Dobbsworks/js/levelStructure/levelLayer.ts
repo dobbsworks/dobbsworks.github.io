@@ -155,6 +155,7 @@ class LevelLayer {
         let cachedCtx = <CanvasRenderingContext2D>this.cachedCanvas.getContext("2d");
         cachedCtx.clearRect(xIndex * this.tileWidth, yIndex * this.tileHeight, this.tileWidth, this.tileHeight);
         imageTile.Draw(cachedCtx, xIndex * this.tileWidth, yIndex * this.tileHeight, 1);
+
         if (imageTile.yOffset != 0) {
             this.isDirty = true;
         }
@@ -183,7 +184,7 @@ class LevelLayer {
             ...this.sprites.filter(a => !a.isPlatform && !(a instanceof Motor) && !(a instanceof Player)),
         ];
         this.sprites = orderedSprites;
-        
+
         for (let sprite of orderedSprites) {
             if (sprite.locked) continue;
             if (sprite.updatedThisFrame) continue;
@@ -231,7 +232,7 @@ class LevelLayer {
         let scale = camera.scale;
         // draw player on top of other sprites
         let orderedSprites = [...this.sprites];
-        orderedSprites.sort((a,b)=>a.zIndex-b.zIndex);
+        orderedSprites.sort((a, b) => a.zIndex - b.zIndex);
         for (let sprite of orderedSprites) {
             sprite.OnBeforeDraw(camera);
             let frameData = sprite.GetFrameData(frameNum);
@@ -252,7 +253,7 @@ class LevelLayer {
             ctx = camera.ctx;
         } else {
             ctx = <CanvasRenderingContext2D>this.spriteCanvas.getContext("2d");
-            ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
             ctx.imageSmoothingEnabled = false;
         }
 
@@ -270,12 +271,12 @@ class LevelLayer {
                 (sprite.x + sprite.dx - camera.x) * scale + camera.canvas.width / 2,
                 (sprite.y + sprite.dy - camera.y) * scale + camera.canvas.height / 2,
                 sprite.width * scale, sprite.height * scale);
-                ctx.strokeRect(
+            ctx.strokeRect(
                 (sprite.x - camera.x) * scale + camera.canvas.width / 2,
                 (sprite.y - camera.y) * scale + camera.canvas.height / 2,
                 sprite.width * scale, sprite.height * scale);
         }
-        
+
         if (this.map && this.map.silhoutteColor && !sprite.isExemptFromSilhoutte) {
             ctx.globalCompositeOperation = "source-atop";
             ctx.fillStyle = this.map.silhoutteColor;

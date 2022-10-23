@@ -38,7 +38,7 @@ var Piggle = /** @class */ (function (_super) {
             }
         }
         else {
-            this.Patrol(0.3, this.turnAtLedges);
+            this.GroundPatrol(0.3, this.turnAtLedges);
             this.ApplyGravity();
             this.ApplyInertia();
             this.ReactToWater();
@@ -93,11 +93,7 @@ var Hoggle = /** @class */ (function (_super) {
                     this.dx = -0.8;
                     this.dy = -0.7;
                 }
-                this.dx += this.direction * 0.015;
-                var maxSpeed = 1;
-                if (Math.abs(this.dx) > maxSpeed) {
-                    this.dx = this.direction * maxSpeed;
-                }
+                this.AccelerateHorizontally(0.015, this.direction * 1);
             }
             this.ApplyGravity();
             this.ReactToWater();

@@ -25,6 +25,7 @@ class Yoyo extends Sprite {
         if (horizontalDir == 0 && verticalDir == 0) horizontalDir = facing;
 
         let newSprite = this.ReplaceWithSpriteType(SpinningYoyo);
+        audioHandler.PlaySound("yoyo", false);
         let isDiagonal = horizontalDir != 0 && verticalDir != 0;
         let baseSpeed = 3;
         if (isDiagonal) baseSpeed /= Math.sqrt(2);

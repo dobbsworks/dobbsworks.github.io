@@ -29,9 +29,9 @@ var BoolyState;
     BoolyState[BoolyState["WindUp"] = 1] = "WindUp";
     BoolyState[BoolyState["Charging"] = 2] = "Charging";
 })(BoolyState || (BoolyState = {}));
-var Booly = /** @class */ (function (_super) {
-    __extends(Booly, _super);
-    function Booly() {
+var WoolyBooly = /** @class */ (function (_super) {
+    __extends(WoolyBooly, _super);
+    function WoolyBooly() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.imageSource = "sheep";
         _this.frameRow = 1;
@@ -43,7 +43,7 @@ var Booly = /** @class */ (function (_super) {
     // canBeHelds
     // hearts
     // special : pop balloons
-    Booly.prototype.Update = function () {
+    WoolyBooly.prototype.Update = function () {
         if (!this.WaitForOnScreen())
             return;
         if (this.isInDeathAnimation) {
@@ -54,7 +54,7 @@ var Booly = /** @class */ (function (_super) {
         }
         else {
             if (this.state == BoolyState.Patrol) {
-                this.Patrol(0.3, this.turnAtLedges);
+                this.GroundPatrol(0.3, this.turnAtLedges);
                 if (player) {
                     var isPlayerInLineOfSightVertically = player.yBottom <= this.yBottom + 12 &&
                         player.yBottom >= this.yBottom - 12;
@@ -90,12 +90,13 @@ var Booly = /** @class */ (function (_super) {
                     var sprites = this.GetPotentialBounceSprites();
                     var xLeft = this.direction == -1 ? this.x - 3 : this.xRight;
                     var xRight = this.direction == -1 ? this.x : this.xRight + 3;
+                    sprites.sort(function (a, b) { return b.y - a.y; });
                     for (var _i = 0, sprites_1 = sprites; _i < sprites_1.length; _i++) {
                         var sprite = sprites_1[_i];
                         if (sprite.x < xRight && sprite.xRight > xLeft &&
                             sprite.y < this.yBottom && sprite.yBottom > this.y) {
-                            this.Recoil(this.direction);
                             this.LaunchSprite(sprite);
+                            this.Recoil(this.direction);
                             break;
                         }
                     }
@@ -105,27 +106,45 @@ var Booly = /** @class */ (function (_super) {
             this.ReactToWater();
         }
     };
-    Booly.prototype.LaunchSprite = function (sprite) {
+    WoolyBooly.prototype.LaunchSprite = function (sprite) {
+        var parentMotor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == sprite; });
+        if (parentMotor) {
+            parentMotor.connectedSprite = null;
+        }
         if (sprite instanceof RedBalloon) {
             sprite.OnBounce();
         }
-        else {
-            sprite.dx = this.direction * 3;
-            sprite.dy = -2;
+        else if (sprite.canBeHeld) {
             sprite.OnThrow(this, this.direction);
         }
-        if (player && player.heldItem == sprite) {
+        else {
+            if (!sprite.updatedThisFrame) {
+                sprite.updatedThisFrame = true;
+                sprite.SharedUpdate();
+                sprite.Update();
+                if (sprite instanceof Enemy) {
+                    sprite.EnemyUpdate();
+                }
+            }
+            sprite.isOnGround = false;
+            sprite.dx = this.direction * 2;
+            sprite.dy = -2;
+            if (sprite instanceof RollingSnailShell)
+                sprite.direction = this.direction;
+        }
+        if (sprite == player) {
+            player.throwTimer = 0;
             player.heldItem = null;
         }
     };
-    Booly.prototype.GetPotentialBounceSprites = function () {
-        return this.layer.sprites.filter(function (a) { return a instanceof Enemy ||
-            a.canBeHeld || a instanceof ExtraHitHeart || a instanceof RedBalloon; });
+    WoolyBooly.prototype.GetPotentialBounceSprites = function () {
+        return this.layer.sprites.filter(function (a) { return (a instanceof Enemy || a instanceof Player ||
+            a.canBeHeld || a instanceof ExtraHitHeart || a instanceof RedBalloon) && !(a instanceof Sparky); });
     };
-    Booly.prototype.Recoil = function (direction) {
+    WoolyBooly.prototype.Recoil = function (direction) {
         this.dx = -0.8 * direction;
         this.dy = -0.7;
         this.state = BoolyState.Patrol;
     };
-    return Booly;
+    return WoolyBooly;
 }(Hoggle));

@@ -11,7 +11,7 @@ enum BoolyState {
     Charging,
 }
 
-class Booly extends Hoggle {
+class WoolyBooly extends Hoggle {
     imageSource = "sheep";
     frameRow = 1;
     state: BoolyState = BoolyState.Patrol;
@@ -21,7 +21,7 @@ class Booly extends Hoggle {
     // canBeHelds
     // hearts
     // special : pop balloons
-    
+
     Update(): void {
         if (!this.WaitForOnScreen()) return;
         if (this.isInDeathAnimation) {
@@ -31,31 +31,31 @@ class Booly extends Hoggle {
             }
         } else {
             if (this.state == BoolyState.Patrol) {
-                this.Patrol(0.3, this.turnAtLedges);
+                this.GroundPatrol(0.3, this.turnAtLedges);
 
                 if (player) {
-                    let isPlayerInLineOfSightVertically = 
-                        player.yBottom <= this.yBottom + 12 && 
+                    let isPlayerInLineOfSightVertically =
+                        player.yBottom <= this.yBottom + 12 &&
                         player.yBottom >= this.yBottom - 12;
 
                     let numberOfTilesVision = 10;
-                    let isPlayerInLineOfSightHorizontally = 
+                    let isPlayerInLineOfSightHorizontally =
                         this.direction == -1 ?
-                        (
-                            player.xMid >= this.xMid - 12 * numberOfTilesVision &&
-                            player.xMid <= this.xMid
-                        ) :
-                        (
-                            player.xMid <= this.xMid + 12 * numberOfTilesVision &&
-                            player.xMid >= this.xMid);
-                    
+                            (
+                                player.xMid >= this.xMid - 12 * numberOfTilesVision &&
+                                player.xMid <= this.xMid
+                            ) :
+                            (
+                                player.xMid <= this.xMid + 12 * numberOfTilesVision &&
+                                player.xMid >= this.xMid);
+
                     if (isPlayerInLineOfSightVertically && isPlayerInLineOfSightHorizontally) {
                         this.state = BoolyState.WindUp;
                         this.windupTimer = 0;
                         this.dx = 0;
                         this.direction = (player.xMid < this.xMid ? -1 : 1);
                     }
-                        
+
                 }
             } else if (this.state == BoolyState.WindUp) {
                 this.windupTimer++;
@@ -74,11 +74,12 @@ class Booly extends Hoggle {
 
                     let xLeft = this.direction == -1 ? this.x - 3 : this.xRight;
                     let xRight = this.direction == -1 ? this.x : this.xRight + 3;
+                    sprites.sort((a,b) => b.y - a.y)
                     for (let sprite of sprites) {
-                        if (sprite.x < xRight && sprite.xRight > xLeft && 
+                        if (sprite.x < xRight && sprite.xRight > xLeft &&
                             sprite.y < this.yBottom && sprite.yBottom > this.y) {
+                                this.LaunchSprite(sprite);
                             this.Recoil(this.direction);
-                            this.LaunchSprite(sprite);
                             break;
                         }
                     }
@@ -91,21 +92,37 @@ class Booly extends Hoggle {
     }
 
     LaunchSprite(sprite: Sprite): void {
+        let parentMotor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == sprite);
+        if (parentMotor) {
+            parentMotor.connectedSprite = null;
+        }
         if (sprite instanceof RedBalloon) {
             sprite.OnBounce();
-        } else {
-            sprite.dx = this.direction * 3;
-            sprite.dy = -2;
+        } else if (sprite.canBeHeld) {
             sprite.OnThrow(this, this.direction);
+        } else {
+            if (!sprite.updatedThisFrame) {
+                sprite.updatedThisFrame = true;
+                sprite.SharedUpdate();
+                sprite.Update();
+                if (sprite instanceof Enemy) {
+                    sprite.EnemyUpdate();
+                }
+            }
+            sprite.isOnGround = false;
+            sprite.dx = this.direction * 2;
+            sprite.dy = -2;
+            if (sprite instanceof RollingSnailShell) sprite.direction = this.direction;
         }
-        if (player && player.heldItem == sprite) {
+        if (sprite == player) {
+            player.throwTimer = 0;
             player.heldItem = null;
         }
     }
 
     GetPotentialBounceSprites(): Sprite[] {
-        return this.layer.sprites.filter(a => a instanceof Enemy ||
-            a.canBeHeld || a instanceof ExtraHitHeart || a instanceof RedBalloon);
+        return this.layer.sprites.filter(a => (a instanceof Enemy || a instanceof Player ||
+            a.canBeHeld || a instanceof ExtraHitHeart || a instanceof RedBalloon) && !(a instanceof Sparky));
     }
 
     Recoil(direction: -1 | 1) {

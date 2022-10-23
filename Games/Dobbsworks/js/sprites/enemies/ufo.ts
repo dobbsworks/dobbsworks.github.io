@@ -21,6 +21,8 @@ class Yufo extends Enemy {
         if (this.touchedLeftWalls.length) this.direction = 1;
         if (this.touchedRightWalls.length) this.direction = -1;
 
+        this.dy *= 0.94;
+
         if (this.stateTimer <= 0) {
             // move to next state
             if (this.state == "travel") {

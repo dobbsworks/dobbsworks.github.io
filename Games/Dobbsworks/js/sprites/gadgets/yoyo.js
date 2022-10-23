@@ -43,6 +43,7 @@ var Yoyo = /** @class */ (function (_super) {
         if (horizontalDir == 0 && verticalDir == 0)
             horizontalDir = facing;
         var newSprite = this.ReplaceWithSpriteType(SpinningYoyo);
+        audioHandler.PlaySound("yoyo", false);
         var isDiagonal = horizontalDir != 0 && verticalDir != 0;
         var baseSpeed = 3;
         if (isDiagonal)

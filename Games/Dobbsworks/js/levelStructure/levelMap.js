@@ -419,14 +419,14 @@ var LevelMap = /** @class */ (function () {
         editorHandler.spriteWaterModeToggle.isSelected = false;
         currentMap.playerWaterMode = false;
         currentMap.spriteWaterMode = false;
-        currentMap.mapHeight = 24;
+        currentMap.mapHeight = 12;
         editorHandler.sprites = [];
         currentMap.GetLayerList().forEach(function (layer, index) {
-            var newLayer = LevelLayer.FromImportString("AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AAf", index, currentMap.mapHeight, currentMap);
+            var newLayer = LevelLayer.FromImportString("AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AAP", index, currentMap.mapHeight, currentMap);
             (currentMap[TargetLayer[index] + "Layer"]) = newLayer;
         });
-        editorHandler.sprites.push(new EditorSprite(Player, { tileX: 4, tileY: 20 }));
-        editorHandler.sprites.push(new EditorSprite(GoldGear, { tileX: 55, tileY: 20 }));
+        editorHandler.sprites.push(new EditorSprite(Player, { tileX: 4, tileY: 8 }));
+        editorHandler.sprites.push(new EditorSprite(GoldGear, { tileX: 55, tileY: 8 }));
         editorHandler.playerFrames = [];
         editorHandler.history.RecordHistory();
     };

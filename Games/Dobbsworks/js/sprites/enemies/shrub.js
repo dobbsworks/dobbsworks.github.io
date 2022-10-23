@@ -42,7 +42,7 @@ var Shrubbert = /** @class */ (function (_super) {
             var speed = this.state == "normal" ? 0.3 : 0.6;
             if (this.stackedOn)
                 speed = 0.3;
-            this.Patrol(speed, this.turnAtLedges);
+            this.GroundPatrol(speed, this.turnAtLedges);
         }
         this.ApplyGravity();
         this.ApplyInertia();

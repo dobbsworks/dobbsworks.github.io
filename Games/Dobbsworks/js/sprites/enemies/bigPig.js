@@ -30,7 +30,7 @@ var Biggle = /** @class */ (function (_super) {
     Biggle.prototype.Update = function () {
         if (!this.WaitForOnScreen())
             return;
-        this.Patrol(0.3, this.turnAtLedges);
+        this.GroundPatrol(0.3, this.turnAtLedges);
         this.ApplyGravity();
         this.ApplyInertia();
         this.ReactToWater();

@@ -10,7 +10,7 @@ class DrSnips extends Enemy {
     Update(): void {
         if (!this.WaitForOnScreen()) return;
         let speed = this.isInWater ? 0.4 : 0.25;
-        this.Patrol(speed, true);
+        this.GroundPatrol(speed, true);
         this.ApplyGravity();
         this.ApplyInertia();
         this.ReactToWater();

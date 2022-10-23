@@ -40,11 +40,12 @@ var PorcoRosso = /** @class */ (function (_super) {
         else {
             this.PorcoMovement();
             this.ApplyInertia();
+            this.dy *= 0.9;
             this.ReactToWater();
         }
     };
     PorcoRosso.prototype.PorcoMovement = function () {
-        this.Patrol(0.3, false);
+        this.SkyPatrol(0.3);
     };
     PorcoRosso.prototype.OnBounce = function () {
         this.squishTimer = 1;
@@ -72,7 +73,7 @@ var PorcoBlu = /** @class */ (function (_super) {
         return _this;
     }
     PorcoBlu.prototype.PorcoMovement = function () {
-        this.Patrol(1, false);
+        this.SkyPatrol(1);
     };
     return PorcoBlu;
 }(PorcoRosso));
@@ -84,7 +85,7 @@ var PorcoVerde = /** @class */ (function (_super) {
         return _this;
     }
     PorcoVerde.prototype.PorcoMovement = function () {
-        this.Patrol(0.3, false);
+        this.SkyPatrol(0.3);
     };
     return PorcoVerde;
 }(PorcoRosso));

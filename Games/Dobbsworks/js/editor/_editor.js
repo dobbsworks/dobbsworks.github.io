@@ -136,7 +136,7 @@ var EditorHandler = /** @class */ (function () {
         // tilePanelButtons.push(new EditorButtonSlopePen(new SlopeFill("Cave", TileType.CaveGround)));
         var tilePanel = this.CreateFloatingButtonPanel(tilePanelButtons, 5, 9);
         /* ENEMY PANEL */
-        var enemyTypes = [Piggle, Hoggle, Biggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, /*Wooly, Booly,*/ Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
+        var enemyTypes = [Piggle, Hoggle, Biggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, /* Wooly, WoolyBooly,*/ Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
             Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Yufo];
         var enemyButtons = enemyTypes.map(function (a) { return new EditorButtonSprite(a); });
         enemyButtons.filter(function (a) { return a.spriteType == Piggle || a.spriteType == Snail; }).forEach(function (a) { return hotbarDefaults.push(a); });
@@ -175,6 +175,8 @@ var EditorHandler = /** @class */ (function () {
         gizmoButtons.push(new EditorButtonTile(TileType.SolidForPlayer, "Player Blocker"));
         gizmoButtons.push(new EditorButtonTile(TileType.SolidForNonplayer, "Sprite Blocker"));
         gizmoButtons.push(new EditorButtonTile(TileType.SpriteKiller, "Sprite Killer"));
+        // gizmoButtons.push(new EditorButtonTile(TileType.WallJumpLeft, "Wall Jump (left)"));
+        // gizmoButtons.push(new EditorButtonTile(TileType.WallJumpRight, "Wall Jump (right)"));
         var gizmoPanel = this.CreateFloatingButtonPanel(gizmoButtons, 5, 6);
         var brushTypeHandle = new EditorButtonDrawerHandle(tiles["editor"][4][0], "Brush types", []);
         this.brushPanel = new EditorButtonDrawer(this.mainPanel.x - 160, this.mainPanel.y, 70, 70, brushTypeHandle, [
@@ -285,6 +287,7 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonSprite(Coin),
             new EditorButtonSprite(Dobbloon),
             new EditorButtonSprite(ExtraHitHeart),
+            //new EditorButtonSprite(GoldHeart),
             new EditorButtonSprite(Checkpoint),
             new EditorButtonSprite(CameraLockHorizontal),
             new EditorButtonSprite(CameraScrollRight),
@@ -505,9 +508,18 @@ var EditorHandler = /** @class */ (function () {
             if (currentMap.frameNum % 10 == 0) {
                 var player_1 = currentMap.mainLayer.sprites.find(function (a) { return a instanceof Player; });
                 if (player_1) {
-                    this.playerFrames.push({ fd: player_1.GetFrameData(currentMap.frameNum), x: player_1.x, y: player_1.y });
-                    if (this.playerFrames.length > 30) {
-                        this.playerFrames.splice(0, 1);
+                    var newFrame = { fd: player_1.GetFrameData(currentMap.frameNum), x: player_1.x, y: player_1.y };
+                    var matchesLatest = false;
+                    var latestFrame = this.playerFrames[this.playerFrames.length - 1];
+                    if (latestFrame) {
+                        if (Math.abs(latestFrame.x - newFrame.x) < 1 && Math.abs(latestFrame.y - newFrame.y) < 1)
+                            matchesLatest = true;
+                    }
+                    if (!matchesLatest) {
+                        this.playerFrames.push(newFrame);
+                        if (this.playerFrames.length > 30) {
+                            this.playerFrames.splice(0, 1);
+                        }
                     }
                 }
             }
@@ -691,10 +703,12 @@ var EditorHandler = /** @class */ (function () {
     };
     EditorHandler.prototype.Draw = function (camera) {
         if (this.transitionValue > 0 && currentMap) {
-            for (var _i = 0, _a = this.playerFrames; _i < _a.length; _i++) {
-                var playerFrame = _a[_i];
-                var sprite = { x: playerFrame.x, y: playerFrame.y };
-                currentMap.mainLayer.DrawFrame(GetGhostFrameData(playerFrame.fd), camera.scale, sprite);
+            if (this.playerFrames.length > 1) {
+                for (var _i = 0, _a = this.playerFrames; _i < _a.length; _i++) {
+                    var playerFrame = _a[_i];
+                    var sprite = { x: playerFrame.x, y: playerFrame.y };
+                    currentMap.mainLayer.DrawFrame(GetGhostFrameData(playerFrame.fd), camera.scale, sprite);
+                }
             }
             this.DrawSprites(camera);
             this.DrawGridlines(camera, currentMap);

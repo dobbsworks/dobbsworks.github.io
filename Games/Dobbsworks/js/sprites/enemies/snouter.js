@@ -50,7 +50,7 @@ var Snouter = /** @class */ (function (_super) {
                 }
             }
             else {
-                this.Patrol(0.3, this.turnAtLedges);
+                this.GroundPatrol(0.3, this.turnAtLedges);
             }
             this.ApplyGravity();
             this.ApplyInertia();

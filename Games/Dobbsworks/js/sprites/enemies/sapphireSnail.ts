@@ -15,8 +15,7 @@ class SapphireSnail extends Enemy {
         this.ApplyInertia();
         this.ReactToWater();
         
-        let speed = 0.2;
-        this.dx = speed * this.direction;
+        this.AccelerateHorizontally(0.01, 0.2 * this.direction);
 
         this.frame++;
 
@@ -30,17 +29,16 @@ class SapphireSnail extends Enemy {
                 if (!this.wasPlayerOnLastFrame) {
                     this.dy = 0.4;
                 }
-                this.dy -= 0.01;
-                if (this.dy < -0.2) this.dy = -0.2;
+                this.AccelerateVertically(0.01, -0.2);
             } else {
                 if (this.dy > 0) {
-                    this.dy -= 0.02;
-                    if (this.dy < 0) this.dy = 0;
+                    this.AccelerateVertically(0.02, 0);
                 } else if (this.dy < 0) {
-                    this.dy += 0.01;
-                    if (this.dy > 0) this.dy = 0;
+                    this.AccelerateVertically(0.01, 0);
                 }
             }
+            if (Math.abs(this.dx) > 0.3) this.dx *= 0.95;
+            if (Math.abs(this.dy) > 0.3) this.dy *= 0.95;
             this.wasPlayerOnLastFrame = playerStandingOn;
         }
 

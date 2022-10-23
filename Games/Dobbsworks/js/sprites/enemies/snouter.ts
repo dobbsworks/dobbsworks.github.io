@@ -32,7 +32,7 @@ class Snouter extends Enemy {
                     this.layer.sprites.push(bullet);
                 }
             } else {
-                this.Patrol(0.3, this.turnAtLedges);
+                this.GroundPatrol(0.3, this.turnAtLedges);
             }
 
             this.ApplyGravity();

@@ -7,7 +7,7 @@ class Snail extends Enemy {
 
     Update(): void {
         if (!this.WaitForOnScreen()) return;
-        this.Patrol(0.2, true);
+        this.GroundPatrol(0.2, true);
         this.ApplyGravity();
         this.ApplyInertia();
     }

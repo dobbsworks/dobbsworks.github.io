@@ -81,5 +81,6 @@ var spriteTypes = [
     OrangeShrubbert,
     Yoyo,
     Wooly,
-    Booly,
+    WoolyBooly,
+    GoldHeart,
 ];

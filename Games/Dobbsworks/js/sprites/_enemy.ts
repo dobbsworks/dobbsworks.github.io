@@ -19,12 +19,24 @@ abstract class Enemy extends Sprite {
         if (this.killedByProjectiles) {
             // check for taking damage
             let sprites = this.layer.sprites.filter(a => a.hurtsEnemies && a.IsGoingToOverlapSprite(this));
-            if (sprites.length) {
-                this.isActive = false;
-                let deadSprite = new DeadEnemy(this);
-                this.layer.sprites.push(deadSprite);
-                for (let sprite of sprites) {
-                    sprite.OnStrikeEnemy(this);
+
+            // special case for Booly
+            let boolyLaunched = false;
+            for (let projectile of sprites) {
+                if ((this instanceof WoolyBooly && this.state !== BoolyState.Patrol) && ((projectile.x < this.x && this.direction == -1) || (projectile.xRight > this.xRight && this.direction == 1))) {
+                    this.LaunchSprite(projectile);
+                    boolyLaunched = true;
+                }
+            }
+
+            if (!boolyLaunched) {
+                if (sprites.length) {
+                    this.isActive = false;
+                    let deadSprite = new DeadEnemy(this);
+                    this.layer.sprites.push(deadSprite);
+                    for (let sprite of sprites) {
+                        sprite.OnStrikeEnemy(this);
+                    }
                 }
             }
         }
@@ -112,8 +124,17 @@ abstract class Enemy extends Sprite {
         audioHandler.PlaySound(this.bounceSoundId, true);
     }
 
-    public Patrol(speed: number, turnAtLedge: boolean) {
+    public SkyPatrol(speed: number) {
         this.dx = speed * this.direction;
+        if (this.isTouchingLeftWall) {
+            this.direction = 1;
+        } else if (this.isTouchingRightWall) {
+            this.direction = -1;
+        }
+    }
+
+    public GroundPatrol(speed: number, turnAtLedge: boolean) {
+        if (this.isOnGround) this.dx = speed * this.direction;
         if (this.isTouchingLeftWall) {
             this.direction = 1;
         } else if (this.isTouchingRightWall) {

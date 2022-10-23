@@ -124,3 +124,30 @@ class ExtraHitHeartSmallLoss extends Sprite {
         };
     }
 }
+
+class GoldHeart extends Sprite {
+
+    public height: number = 11;
+    public width: number = 11;
+    respectsSolidTiles = true;
+    canBeHeld = true;
+    isExemptFromSilhoutte = true;
+
+    Update(): void {
+        this.ApplyGravity();
+        this.ApplyInertia();
+        this.ReactToWater();
+        this.ReactToPlatformsAndSolids();
+        this.MoveByVelocity();
+    }
+
+    GetFrameData(frameNum: number): FrameData {
+        return {
+            imageTile: tiles["goldHeart"][0][0],
+            xFlip: false,
+            yFlip: false,
+            xOffset: 0,
+            yOffset: 0
+        };
+    }
+}

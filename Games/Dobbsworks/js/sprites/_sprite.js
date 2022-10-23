@@ -796,6 +796,22 @@ var Sprite = /** @class */ (function () {
         var imageTile = ('xFlip' in frameData) ? frameData.imageTile : frameData[frameData.length - 1].imageTile;
         return imageTile;
     };
+    Sprite.prototype.AccelerateHorizontally = function (acceleration, targetDx) {
+        this.dx += acceleration * (targetDx > this.dx ? 1 : -1);
+        if (this.dx > targetDx && targetDx >= 0 && Math.abs(this.dx - targetDx) < acceleration)
+            this.dx = targetDx;
+        if (this.dx < targetDx && targetDx <= 0 && Math.abs(this.dx - targetDx) < acceleration)
+            this.dx = targetDx;
+        if (this instanceof SapphireSnail && debugMode)
+            console.log(acceleration, targetDx, this.dx);
+    };
+    Sprite.prototype.AccelerateVertically = function (acceleration, targetDy) {
+        this.dy += acceleration * (targetDy > this.dy ? 1 : -1);
+        if (this.dy > targetDy && targetDy >= 0 && Math.abs(this.dy - targetDy) < acceleration)
+            this.dy = targetDy;
+        if (this.dy < targetDy && targetDy <= 0 && Math.abs(this.dy - targetDy) < acceleration)
+            this.dy = targetDy;
+    };
     Sprite.prototype.ReplaceWithSprite = function (newSprite) {
         var _this = this;
         this.layer.sprites.push(newSprite);

@@ -28,6 +28,7 @@ var TileType = /** @class */ (function () {
         this.drainsAir = false;
         this.canWalkOn = true; //sticky honey blocks
         this.isStickyWall = false;
+        this.isJumpWall = false;
         this.isTrack = false;
         this.isTrackCap = false;
         this.trackEquation = function (x, y) { return ({ x: x, y: y }); };
@@ -280,6 +281,8 @@ var TileType = /** @class */ (function () {
         TileType.DecorWhite;
         TileType.RegisterSlope("White", 9);
         TileType.SteelBarrel;
+        TileType.WallJumpLeft;
+        TileType.WallJumpRight;
     };
     TileType.RegisterSlope = function (keyBase, tileRow) {
         var colIter = 8;
@@ -1834,6 +1837,24 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "SpriteKiller", {
         get: function () { return TileType.GetTileType("SpriteKiller", "misc", 3, 4, Solidity.None, TargetLayer.main, function (tileType) { }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "WallJumpLeft", {
+        get: function () {
+            return TileType.GetTileType("WallJumpLeft", "wallJump", 0, 0, Solidity.LeftWall, TargetLayer.semisolid, function (tileType) {
+                tileType.isJumpWall = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "WallJumpRight", {
+        get: function () {
+            return TileType.GetTileType("WallJumpRight", "wallJump", 1, 0, Solidity.RightWall, TargetLayer.semisolid, function (tileType) {
+                tileType.isJumpWall = true;
+            });
+        },
         enumerable: false,
         configurable: true
     });

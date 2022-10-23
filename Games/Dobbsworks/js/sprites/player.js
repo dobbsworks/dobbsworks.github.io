@@ -37,6 +37,7 @@ var Player = /** @class */ (function (_super) {
         _this.bumperTimer = 0;
         _this.isTouchingStickyWall = false;
         _this.wallClingDirection = -1;
+        _this.wallDragDirection = 0;
         _this.canMotorHold = false;
         _this.maxBreath = 600;
         _this.currentBreath = 600;
@@ -114,6 +115,16 @@ var Player = /** @class */ (function (_super) {
             this.neutralTimer--;
         if (this.forcedJumpTimer > 0)
             this.forcedJumpTimer--;
+        if (this.GetTotalDy() > 0) {
+            if (this.touchedRightWalls.some(function (a) { return a instanceof LevelTile && a.tileType.isJumpWall; }) && KeyboardHandler.IsKeyPressed(KeyAction.Right, false)) {
+                this.wallDragDirection = 1;
+                this.direction = 1;
+            }
+            if (this.touchedLeftWalls.some(function (a) { return a instanceof LevelTile && a.tileType.isJumpWall; }) && KeyboardHandler.IsKeyPressed(KeyAction.Left, false)) {
+                this.wallDragDirection = -1;
+                this.direction = -1;
+            }
+        }
         if (this.touchedRightWalls.some(function (a) { return a instanceof LevelTile && a.tileType.isStickyWall; })) {
             this.isTouchingStickyWall = true;
             this.wallClingDirection = 1;
@@ -194,6 +205,8 @@ var Player = /** @class */ (function (_super) {
         }
         if (this.dy > this.maxDY)
             this.dy = this.maxDY;
+        if (this.dy > this.maxDY / 2.5 && this.wallDragDirection != 0)
+            this.dy = this.maxDY / 2.5;
         var isJumpInitialPressed = KeyboardHandler.IsKeyPressed(KeyAction.Action1, true) /*&& this.forcedJumpTimer <= 0*/;
         if (this.jumpBufferTimer >= 0)
             this.jumpBufferTimer++;
@@ -201,7 +214,7 @@ var Player = /** @class */ (function (_super) {
             this.jumpBufferTimer = 0;
         if (this.jumpBufferTimer > 3)
             this.jumpBufferTimer = -1;
-        if (this.jumpBufferTimer > -1 && this.coyoteTimer < 5 && this.forcedJumpTimer <= 0) {
+        if (this.jumpBufferTimer > -1 && (this.coyoteTimer < 5 || this.IsNeighboringWallJumpTiles()) && this.forcedJumpTimer <= 0) {
             this.Jump();
             this.isSliding = false;
         }
@@ -261,6 +274,21 @@ var Player = /** @class */ (function (_super) {
             this.dx = 0;
             this.dy = 0;
             this.isSliding = false;
+        }
+        else if (this.wallDragDirection != 0) {
+            if (this.isOnGround) {
+                this.wallDragDirection = 0;
+            }
+            else if (this.wallDragDirection == -1 && KeyboardHandler.IsKeyPressed(KeyAction.Right, false)) {
+                this.wallDragDirection = 0;
+            }
+            else if (this.wallDragDirection == 1 && KeyboardHandler.IsKeyPressed(KeyAction.Left, false)) {
+                this.wallDragDirection = 0;
+            }
+            else {
+                if (!this.IsNeighboringWallJumpTiles())
+                    this.wallDragDirection = 0;
+            }
         }
         else if (!this.isSliding) {
             if (this.isClimbing) {
@@ -396,10 +424,17 @@ var Player = /** @class */ (function (_super) {
         this.isClimbing = false;
         this.climbCooldownTimer = 0;
         this.parentSprite = null;
-        if (this.isTouchingStickyWall) {
+        var jumpWallLeft = this.IsNeighboringWallJumpTilesSide(-1);
+        var jumpWallRight = this.IsNeighboringWallJumpTilesSide(1);
+        if (this.isTouchingStickyWall || this.wallDragDirection != 0 || jumpWallLeft || jumpWallRight) {
             this.dx = -this.wallClingDirection * this.moveSpeed;
+            if (jumpWallLeft)
+                this.dx = this.moveSpeed;
+            if (jumpWallRight)
+                this.dx = -this.moveSpeed;
             this.dy = -1.1; // less than normal to make sure no single-wall scaling
             this.direction = this.wallClingDirection == 1 ? -1 : 1;
+            this.wallDragDirection = 0;
         }
         if (this.currentSlope !== 0) {
             this.dx += this.currentSlope / 2;
@@ -428,6 +463,16 @@ var Player = /** @class */ (function (_super) {
             if (this.breathTimer <= 0 && this.currentBreath < this.maxBreath)
                 this.currentBreath += 4;
         }
+    };
+    Player.prototype.IsNeighboringWallJumpTiles = function () {
+        return this.IsNeighboringWallJumpTilesSide(-1) || this.IsNeighboringWallJumpTilesSide(1);
+    };
+    Player.prototype.IsNeighboringWallJumpTilesSide = function (direction) {
+        var x = direction == 1 ? this.xRight + 0.1 : this.x - 0.1;
+        return !this.isOnGround && ([
+            this.layer.GetTileByPixel(x, this.y).GetSemisolidNeighbor(),
+            this.layer.GetTileByPixel(x, this.yBottom).GetSemisolidNeighbor(),
+        ].some(function (a) { return a === null || a === void 0 ? void 0 : a.tileType.isJumpWall; }));
     };
     Player.prototype.HandleBumpers = function () {
         // maybe todo:
@@ -597,6 +642,8 @@ var Player = /** @class */ (function (_super) {
     };
     Player.prototype.OnPlayerHurt = function () {
         var _this = this;
+        if (this.heldItem && this.heldItem instanceof GoldHeart)
+            return;
         if (this.iFrames == 0) {
             if (this.extraHits > 0) {
                 this.extraHits--;
@@ -827,6 +874,10 @@ var Player = /** @class */ (function (_super) {
             if (Math.floor(this.iFrames / 4) % 2 == 0)
                 sourceImage = "dobbsGhost";
         }
+        if (this.heldItem && this.heldItem instanceof GoldHeart) {
+            if (Math.floor(this.age / 8) % 2 == 0)
+                sourceImage = "dobbsGhost";
+        }
         var isInCannon = this.layer.sprites.some(function (a) { return a instanceof RedCannon && a.holdingPlayer; });
         if (isInCannon) {
             return {
@@ -875,7 +926,7 @@ var Player = /** @class */ (function (_super) {
         if (this.isSliding) {
             tile = tiles[sourceImage][3][row];
         }
-        if (this.isTouchingStickyWall) {
+        if (this.isTouchingStickyWall || this.wallDragDirection != 0) {
             tile = tiles[sourceImage][0][4];
         }
         return {

@@ -785,6 +785,19 @@ abstract class Sprite {
         return imageTile;
     }
 
+    public AccelerateHorizontally(acceleration: number, targetDx: number): void {
+        this.dx += acceleration * (targetDx > this.dx ? 1 : -1);
+        if (this.dx > targetDx && targetDx >= 0 && Math.abs(this.dx - targetDx) < acceleration) this.dx = targetDx;
+        if (this.dx < targetDx && targetDx <= 0 && Math.abs(this.dx - targetDx) < acceleration) this.dx = targetDx;
+        if (this instanceof SapphireSnail && debugMode) console.log(acceleration, targetDx, this.dx)
+    }
+
+    public AccelerateVertically(acceleration: number, targetDy: number): void {
+        this.dy += acceleration * (targetDy > this.dy ? 1 : -1);
+        if (this.dy > targetDy && targetDy >= 0 && Math.abs(this.dy - targetDy) < acceleration) this.dy = targetDy;
+        if (this.dy < targetDy && targetDy <= 0 && Math.abs(this.dy - targetDy) < acceleration) this.dy = targetDy;
+    }
+
     ReplaceWithSprite(newSprite: Sprite): Sprite {
         this.layer.sprites.push(newSprite);
         this.layer.sprites = this.layer.sprites.filter(a => a != this);

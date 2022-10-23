@@ -62,7 +62,7 @@ var Snoworm = /** @class */ (function (_super) {
         if (!this.WaitForOnScreen())
             return;
         this.UpdateBodySegments();
-        this.Patrol(0.3, true);
+        this.GroundPatrol(0.3, true);
         this.ApplyGravity();
         this.ApplyInertia();
         this.ReactToWater();

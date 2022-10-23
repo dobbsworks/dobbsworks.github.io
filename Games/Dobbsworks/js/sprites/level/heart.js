@@ -154,3 +154,32 @@ var ExtraHitHeartSmallLoss = /** @class */ (function (_super) {
     };
     return ExtraHitHeartSmallLoss;
 }(Sprite));
+var GoldHeart = /** @class */ (function (_super) {
+    __extends(GoldHeart, _super);
+    function GoldHeart() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.height = 11;
+        _this.width = 11;
+        _this.respectsSolidTiles = true;
+        _this.canBeHeld = true;
+        _this.isExemptFromSilhoutte = true;
+        return _this;
+    }
+    GoldHeart.prototype.Update = function () {
+        this.ApplyGravity();
+        this.ApplyInertia();
+        this.ReactToWater();
+        this.ReactToPlatformsAndSolids();
+        this.MoveByVelocity();
+    };
+    GoldHeart.prototype.GetFrameData = function (frameNum) {
+        return {
+            imageTile: tiles["goldHeart"][0][0],
+            xFlip: false,
+            yFlip: false,
+            xOffset: 0,
+            yOffset: 0
+        };
+    };
+    return GoldHeart;
+}(Sprite));

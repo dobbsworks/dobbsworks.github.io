@@ -82,7 +82,7 @@ class EditorHandler {
                 MenuHandler.CreateMenu(MainMenu);
             }
         });
-        
+
 
         /* TILE PANEL */
         let slopeFills: SlopeFill[] = [
@@ -154,7 +154,7 @@ class EditorHandler {
 
 
         /* ENEMY PANEL */
-        let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, /*Wooly, Booly,*/ Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
+        let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail,/* Wooly, WoolyBooly,*/ Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
             Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Yufo];
         let enemyButtons = enemyTypes.map(a => new EditorButtonSprite(a));
         enemyButtons.filter(a => a.spriteType == Piggle || a.spriteType == Snail).forEach(a => hotbarDefaults.push(a));
@@ -197,6 +197,8 @@ class EditorHandler {
         gizmoButtons.push(new EditorButtonTile(TileType.SolidForPlayer, "Player Blocker"));
         gizmoButtons.push(new EditorButtonTile(TileType.SolidForNonplayer, "Sprite Blocker"));
         gizmoButtons.push(new EditorButtonTile(TileType.SpriteKiller, "Sprite Killer"));
+        // gizmoButtons.push(new EditorButtonTile(TileType.WallJumpLeft, "Wall Jump (left)"));
+        // gizmoButtons.push(new EditorButtonTile(TileType.WallJumpRight, "Wall Jump (right)"));
 
         let gizmoPanel = this.CreateFloatingButtonPanel(gizmoButtons, 5, 6);
 
@@ -314,6 +316,7 @@ class EditorHandler {
             new EditorButtonSprite(Coin),
             new EditorButtonSprite(Dobbloon),
             new EditorButtonSprite(ExtraHitHeart),
+            //new EditorButtonSprite(GoldHeart),
             new EditorButtonSprite(Checkpoint),
 
             new EditorButtonSprite(CameraLockHorizontal),
@@ -372,7 +375,7 @@ class EditorHandler {
             let rowPanel = new Panel(0, 0, panel.width, 70);
             rowButtons.forEach(a => rowPanel.AddChild(a));
             let remainingSpaces = tilesPerRow - rowButtons.length;
-            for (let i = 0; i < remainingSpaces; i++) { 
+            for (let i = 0; i < remainingSpaces; i++) {
                 rowPanel.AddChild(new Spacer(0, 0, 60, 60))
             }
             if (panel.children.length < maxDisplayedRows) {
@@ -552,9 +555,17 @@ class EditorHandler {
             if (currentMap.frameNum % 10 == 0) {
                 let player = currentMap.mainLayer.sprites.find(a => a instanceof Player);
                 if (player) {
-                    this.playerFrames.push({ fd: <FrameData>player.GetFrameData(currentMap.frameNum), x: player.x, y: player.y });
-                    if (this.playerFrames.length > 30) {
-                        this.playerFrames.splice(0, 1);
+                    let newFrame = { fd: <FrameData>player.GetFrameData(currentMap.frameNum), x: player.x, y: player.y };
+                    let matchesLatest = false;
+                    let latestFrame = this.playerFrames[this.playerFrames.length - 1];
+                    if (latestFrame) {
+                        if (Math.abs(latestFrame.x - newFrame.x) < 1 && Math.abs(latestFrame.y - newFrame.y) < 1) matchesLatest = true;
+                    }
+                    if (!matchesLatest) {
+                        this.playerFrames.push(newFrame);
+                        if (this.playerFrames.length > 30) {
+                            this.playerFrames.splice(0, 1);
+                        }
                     }
                 }
             }
@@ -739,9 +750,11 @@ class EditorHandler {
     Draw(camera: Camera): void {
         if (this.transitionValue > 0 && currentMap) {
 
-            for (let playerFrame of this.playerFrames) {
-                let sprite = <Sprite>{ x: playerFrame.x, y: playerFrame.y };
-                currentMap.mainLayer.DrawFrame(GetGhostFrameData(playerFrame.fd), camera.scale, sprite);
+            if (this.playerFrames.length > 1) {
+                for (let playerFrame of this.playerFrames) {
+                    let sprite = <Sprite>{ x: playerFrame.x, y: playerFrame.y };
+                    currentMap.mainLayer.DrawFrame(GetGhostFrameData(playerFrame.fd), camera.scale, sprite);
+                }
             }
 
             this.DrawSprites(camera);

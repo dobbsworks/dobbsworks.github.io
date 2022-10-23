@@ -4,10 +4,13 @@ class BeeWithSunglasses extends Enemy {
     public width: number = 9;
     respectsSolidTiles = true;
     canBeBouncedOn = true;
+    originalY = -1;
+    anchor = null;
 
     patrolTimer = 0;
 
     Update(): void {
+        if (this.originalY == -1) this.originalY = this.y;
         if (!this.WaitForOnScreen()) return;
         
         if (this.isTouchingLeftWall) {
@@ -28,8 +31,9 @@ class BeeWithSunglasses extends Enemy {
         }
 
         this.dx += 0.03 * this.direction;
-        this.dy += Math.cos(this.age / 30) / 1000;
-
+        let targetY = Math.sin(this.age / 30) + this.originalY;
+        this.AccelerateVertically(0.02, targetY - this.y);
+        this.dy *= 0.98;
 
         if (Math.abs(this.dx) > 0.3) {
             this.dx = this.direction * 0.3;

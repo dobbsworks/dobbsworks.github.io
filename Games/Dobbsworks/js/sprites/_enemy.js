@@ -37,13 +37,24 @@ var Enemy = /** @class */ (function (_super) {
         if (this.killedByProjectiles) {
             // check for taking damage
             var sprites = this.layer.sprites.filter(function (a) { return a.hurtsEnemies && a.IsGoingToOverlapSprite(_this); });
-            if (sprites.length) {
-                this.isActive = false;
-                var deadSprite = new DeadEnemy(this);
-                this.layer.sprites.push(deadSprite);
-                for (var _i = 0, sprites_1 = sprites; _i < sprites_1.length; _i++) {
-                    var sprite = sprites_1[_i];
-                    sprite.OnStrikeEnemy(this);
+            // special case for Booly
+            var boolyLaunched = false;
+            for (var _i = 0, sprites_1 = sprites; _i < sprites_1.length; _i++) {
+                var projectile = sprites_1[_i];
+                if ((this instanceof WoolyBooly && this.state !== BoolyState.Patrol) && ((projectile.x < this.x && this.direction == -1) || (projectile.xRight > this.xRight && this.direction == 1))) {
+                    this.LaunchSprite(projectile);
+                    boolyLaunched = true;
+                }
+            }
+            if (!boolyLaunched) {
+                if (sprites.length) {
+                    this.isActive = false;
+                    var deadSprite = new DeadEnemy(this);
+                    this.layer.sprites.push(deadSprite);
+                    for (var _a = 0, sprites_2 = sprites; _a < sprites_2.length; _a++) {
+                        var sprite = sprites_2[_a];
+                        sprite.OnStrikeEnemy(this);
+                    }
                 }
             }
         }
@@ -138,10 +149,20 @@ var Enemy = /** @class */ (function (_super) {
         this.ApplyStackStun();
         audioHandler.PlaySound(this.bounceSoundId, true);
     };
-    Enemy.prototype.Patrol = function (speed, turnAtLedge) {
+    Enemy.prototype.SkyPatrol = function (speed) {
+        this.dx = speed * this.direction;
+        if (this.isTouchingLeftWall) {
+            this.direction = 1;
+        }
+        else if (this.isTouchingRightWall) {
+            this.direction = -1;
+        }
+    };
+    Enemy.prototype.GroundPatrol = function (speed, turnAtLedge) {
         var _this = this;
         var _a, _b;
-        this.dx = speed * this.direction;
+        if (this.isOnGround)
+            this.dx = speed * this.direction;
         if (this.isTouchingLeftWall) {
             this.direction = 1;
         }

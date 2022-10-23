@@ -21,6 +21,7 @@ class TileType {
     public drainsAir: boolean = false;
     public canWalkOn: boolean = true; //sticky honey blocks
     public isStickyWall: boolean = false;
+    public isJumpWall: boolean = false;
     public isTrack: boolean = false;
     public isTrackCap: boolean = false;
     public trackEquation: (x: number, y: number) => { x: number, y: number } = (x: number, y: number) => ({ x: x, y: y });
@@ -309,6 +310,8 @@ class TileType {
         TileType.RegisterSlope("White", 9);
 
         TileType.SteelBarrel;
+        TileType.WallJumpLeft;
+        TileType.WallJumpRight;
     }
 
 
@@ -1162,6 +1165,18 @@ class TileType {
     public static get SolidForNonplayer(): TileType { return TileType.GetTileType("SolidForNonplayer", "misc", 2, 4, Solidity.SolidForNonplayer, TargetLayer.main, (tileType: TileType) => {}) }
     public static get SpriteKiller(): TileType { return TileType.GetTileType("SpriteKiller", "misc", 3, 4, Solidity.None, TargetLayer.main, (tileType: TileType) => {}) }
 
+
+    public static get WallJumpLeft(): TileType {
+        return TileType.GetTileType("WallJumpLeft", "wallJump", 0, 0, Solidity.LeftWall, TargetLayer.semisolid, (tileType: TileType) => {
+            tileType.isJumpWall = true;
+        })
+    }
+
+    public static get WallJumpRight(): TileType {
+        return TileType.GetTileType("WallJumpRight", "wallJump", 1, 0, Solidity.RightWall, TargetLayer.semisolid, (tileType: TileType) => {
+            tileType.isJumpWall = true;
+        })
+    }
 
 
 

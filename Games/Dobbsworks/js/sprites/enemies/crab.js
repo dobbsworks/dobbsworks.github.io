@@ -27,7 +27,7 @@ var DrSnips = /** @class */ (function (_super) {
         if (!this.WaitForOnScreen())
             return;
         var speed = this.isInWater ? 0.4 : 0.25;
-        this.Patrol(speed, true);
+        this.GroundPatrol(speed, true);
         this.ApplyGravity();
         this.ApplyInertia();
         this.ReactToWater();

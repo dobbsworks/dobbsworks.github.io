@@ -20,10 +20,14 @@ var BeeWithSunglasses = /** @class */ (function (_super) {
         _this.width = 9;
         _this.respectsSolidTiles = true;
         _this.canBeBouncedOn = true;
+        _this.originalY = -1;
+        _this.anchor = null;
         _this.patrolTimer = 0;
         return _this;
     }
     BeeWithSunglasses.prototype.Update = function () {
+        if (this.originalY == -1)
+            this.originalY = this.y;
         if (!this.WaitForOnScreen())
             return;
         if (this.isTouchingLeftWall) {
@@ -42,7 +46,9 @@ var BeeWithSunglasses = /** @class */ (function (_super) {
             this.direction *= -1;
         }
         this.dx += 0.03 * this.direction;
-        this.dy += Math.cos(this.age / 30) / 1000;
+        var targetY = Math.sin(this.age / 30) + this.originalY;
+        this.AccelerateVertically(0.02, targetY - this.y);
+        this.dy *= 0.98;
         if (Math.abs(this.dx) > 0.3) {
             this.dx = this.direction * 0.3;
         }

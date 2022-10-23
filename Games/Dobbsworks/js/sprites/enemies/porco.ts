@@ -23,12 +23,13 @@ class PorcoRosso extends Enemy {
         } else {
             this.PorcoMovement();
             this.ApplyInertia();
+            this.dy *= 0.9;
             this.ReactToWater();
         }
     }
 
     PorcoMovement(): void {
-        this.Patrol(0.3, false);
+        this.SkyPatrol(0.3);
     }
     
     OnBounce(): void {
@@ -52,13 +53,13 @@ class PorcoRosso extends Enemy {
 class PorcoBlu extends PorcoRosso {
     frameRow = 1;
     PorcoMovement(): void {
-        this.Patrol(1, false);
+        this.SkyPatrol(1);
     }
 }
 
 class PorcoVerde extends PorcoRosso {
     frameRow = 2;
     PorcoMovement(): void {
-        this.Patrol(0.3, false);
+        this.SkyPatrol(0.3);
     }
 }

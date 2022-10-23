@@ -25,7 +25,7 @@ var Prickle = /** @class */ (function (_super) {
     Prickle.prototype.Update = function () {
         if (!this.WaitForOnScreen())
             return;
-        this.Patrol(0.3, true);
+        this.GroundPatrol(0.3, true);
         this.ApplyGravity();
         this.ApplyInertia();
         this.ReactToWater();
