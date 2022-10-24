@@ -76,11 +76,26 @@ var UIDialog = /** @class */ (function () {
         else {
             document.body.style.cursor = "unset";
         }
+        if (MenuHandler.Dialog == this) {
+            // no options clicked
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Cancel, true)) {
+                this.OnKeyboardCancel();
+                this.OnAnyAction();
+                MenuHandler.Dialog = null;
+            }
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Confirm, true)) {
+                this.OnKeyboardConfirm();
+                this.OnAnyAction();
+                MenuHandler.Dialog = null;
+            }
+        }
     };
     UIDialog.prototype.GetButtonActionParameters = function () {
         return [];
     };
     UIDialog.prototype.OnAnyAction = function () { };
+    UIDialog.prototype.OnKeyboardConfirm = function () { };
+    UIDialog.prototype.OnKeyboardCancel = function () { };
     UIDialog.Alert = function (info, confirmButtonText) {
         MenuHandler.Dialog = new UIAlert(info, confirmButtonText);
     };
@@ -137,7 +152,9 @@ var UISmallPrompt = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.maxLength = maxLength;
         _this.onConfirmAction = onConfirmAction;
-        _this.options.push(new UIDialogOption(confirmText, onConfirmAction));
+        var cancelOption = new UIDialogOption("Cancel", function () { });
+        cancelOption.color = "#115B";
+        _this.options.push(cancelOption, new UIDialogOption(confirmText, onConfirmAction));
         _this.promptText = messageText;
         return _this;
     }
@@ -174,13 +191,19 @@ var UISmallPrompt = /** @class */ (function (_super) {
                     document.body.removeChild(_this.inputForm);
                     MenuHandler.Dialog = null;
                 }
+                if (e.code === "Escape") {
+                    _this.onConfirmAction(_this.inputForm.value);
+                    document.body.removeChild(_this.inputForm);
+                    MenuHandler.Dialog = null;
+                }
             };
-            document.body.appendChild(this.inputForm);
+            document.body.prepend(this.inputForm);
             this.inputForm.focus();
             if (this.maxLength)
                 this.inputForm.maxLength = this.maxLength;
             this.inputForm.style.opacity = "0";
             this.inputForm.style.position = "fixed";
+            this.inputForm.style.top = "0";
         }
         else {
             this.inputForm.focus();
@@ -193,16 +216,20 @@ var UIAlert = /** @class */ (function (_super) {
     function UIAlert(messageText, confirmText, onConfirmAction) {
         if (onConfirmAction === void 0) { onConfirmAction = function () { }; }
         var _this = _super.call(this) || this;
+        _this.onConfirmAction = onConfirmAction;
         _this.options.push(new UIDialogOption(confirmText, onConfirmAction));
         _this.promptText = messageText;
         return _this;
     }
+    UIAlert.prototype.OnKeyboardConfirm = function () { this.onConfirmAction(); };
+    UIAlert.prototype.OnKeyboardCancel = function () { this.onConfirmAction(); };
     return UIAlert;
 }(UIDialog));
 var UIConfirm = /** @class */ (function (_super) {
     __extends(UIConfirm, _super);
     function UIConfirm(messageText, confirmText, rejectText, onConfirmAction) {
         var _this = _super.call(this) || this;
+        _this.onConfirmAction = onConfirmAction;
         var opt1 = new UIDialogOption(rejectText, function () { });
         opt1.color = "#115B";
         var opt2 = new UIDialogOption(confirmText, onConfirmAction);
@@ -210,5 +237,6 @@ var UIConfirm = /** @class */ (function (_super) {
         _this.promptText = messageText;
         return _this;
     }
+    UIConfirm.prototype.OnKeyboardConfirm = function () { this.onConfirmAction(); };
     return UIConfirm;
 }(UIDialog));

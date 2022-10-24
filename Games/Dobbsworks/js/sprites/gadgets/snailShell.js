@@ -25,9 +25,6 @@ var SnailShell = /** @class */ (function (_super) {
         return _this;
     }
     SnailShell.prototype.Update = function () {
-        this.ApplyGravity();
-        this.ApplyInertia();
-        this.ReactToWater();
         if (this.parentSprite) {
             this.rotation -= (this.parentSprite.GetTotalDx() - this.GetTotalDx()) / 2;
         }
@@ -42,6 +39,9 @@ var SnailShell = /** @class */ (function (_super) {
                 newShell.dy = oldDy;
             }
         }
+        this.ApplyGravity();
+        this.ApplyInertia();
+        this.ReactToWater();
         this.ReactToPlatformsAndSolids();
         this.MoveByVelocity();
     };

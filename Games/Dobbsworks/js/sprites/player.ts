@@ -691,11 +691,14 @@ class Player extends Sprite {
             && !isInCannon
             && this.throwTimer > 20) {
             // try to grab item?
+
             for (let sprite of this.layer.sprites.filter(a => a.canBeHeld)) {
                 if (sprite.age < 10) continue; // can't grab items that just spawned (prevent grabbing shell after shell jump)
+                
                 if (this.IsGoingToOverlapSprite(sprite)) {
                     this.heldItem = sprite;
                     startedHolding = true;
+
                     audioHandler.PlaySound("pick-up", true);
                     break;
                 }

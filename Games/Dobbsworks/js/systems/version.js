@@ -25,6 +25,6 @@ var Version = /** @class */ (function () {
     Version.IsLevelVersionNewerThanClient = function (levelVersion) {
         return Version.Compare(Version.Current, levelVersion) == -1;
     };
-    Version.Current = "1.1.5";
+    Version.Current = "1.1.6";
     return Version;
 }());

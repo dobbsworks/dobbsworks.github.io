@@ -6,7 +6,11 @@ class Prickle extends Enemy {
     canBeBouncedOn = false;
 
     Update(): void {
-        if (!this.WaitForOnScreen()) return;
+        if (!this.WaitForOnScreen()) {
+            return; 
+        } else {
+            this.dx = -0.3;
+        }
         this.GroundPatrol(0.3, true);
         this.ApplyGravity();
         this.ApplyInertia();

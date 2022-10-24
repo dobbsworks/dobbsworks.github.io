@@ -23,8 +23,12 @@ var Prickle = /** @class */ (function (_super) {
         return _this;
     }
     Prickle.prototype.Update = function () {
-        if (!this.WaitForOnScreen())
+        if (!this.WaitForOnScreen()) {
             return;
+        }
+        else {
+            this.dx = -0.3;
+        }
         this.GroundPatrol(0.3, true);
         this.ApplyGravity();
         this.ApplyInertia();

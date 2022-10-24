@@ -26,6 +26,7 @@ class KeyAction {
     static EditorSelectWithoutClosingDrawers = new KeyAction("EditorSelectWithoutClosingDrawers");
     static EditorPasteDrag = new KeyAction("EditorPasteDrag");
     static Cancel = new KeyAction("Cancel");
+    static Confirm = new KeyAction("Confirm");
     static Pause = new KeyAction("Pause");
     static ScrollDown = new KeyAction("ScrollDown");
     static ScrollUp = new KeyAction("ScrollUp");
@@ -82,6 +83,7 @@ class KeyboardHandler {
         {k: "Escape", v: KeyAction.Cancel},
         {k: "KeyQ", v: KeyAction.Cancel},
         {k: "Backslash", v: KeyAction.Debug1},
+        {k: "Enter", v: KeyAction.Confirm},
         {k: "Enter", v: KeyAction.Debug2},
         //{k: "Backspace", v: KeyAction.Debug3},
         

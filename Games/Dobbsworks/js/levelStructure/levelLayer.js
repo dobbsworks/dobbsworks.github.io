@@ -180,6 +180,7 @@ var LevelLayer = /** @class */ (function () {
     LevelLayer.prototype.Update = function () {
         if (!this.isAnimatedTileListInitialized) {
             this.animatedTileList = this.tiles.flatMap(function (a) { return a; }).filter(function (a) { return a.tileType instanceof AnimatedTileType; });
+            //this.isAnimatedTileListInitialized = true;
         }
         this.sprites.forEach(function (a) { return a.updatedThisFrame = false; });
         var platforms = this.sprites.filter(function (a) { return a.isPlatform; });

@@ -9,10 +9,6 @@ class SnailShell extends Sprite {
 
 
     Update(): void {
-        this.ApplyGravity();
-        this.ApplyInertia();
-        this.ReactToWater();
-
         if (this.parentSprite) {
             this.rotation -= (this.parentSprite.GetTotalDx() - this.GetTotalDx()) / 2;
         } else {
@@ -28,6 +24,9 @@ class SnailShell extends Sprite {
             }
         }
 
+        this.ApplyGravity();
+        this.ApplyInertia();
+        this.ReactToWater();
         this.ReactToPlatformsAndSolids();
         this.MoveByVelocity();
     }

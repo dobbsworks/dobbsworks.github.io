@@ -171,6 +171,7 @@ class LevelLayer {
     Update(): void {
         if (!this.isAnimatedTileListInitialized) {
             this.animatedTileList = this.tiles.flatMap(a => a).filter(a => a.tileType instanceof AnimatedTileType);
+            //this.isAnimatedTileListInitialized = true;
         }
         this.sprites.forEach(a => a.updatedThisFrame = false);
         let platforms = this.sprites.filter(a => a.isPlatform);

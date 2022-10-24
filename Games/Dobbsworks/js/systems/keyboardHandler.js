@@ -45,6 +45,7 @@ var KeyAction = /** @class */ (function () {
     KeyAction.EditorSelectWithoutClosingDrawers = new KeyAction("EditorSelectWithoutClosingDrawers");
     KeyAction.EditorPasteDrag = new KeyAction("EditorPasteDrag");
     KeyAction.Cancel = new KeyAction("Cancel");
+    KeyAction.Confirm = new KeyAction("Confirm");
     KeyAction.Pause = new KeyAction("Pause");
     KeyAction.ScrollDown = new KeyAction("ScrollDown");
     KeyAction.ScrollUp = new KeyAction("ScrollUp");
@@ -252,6 +253,7 @@ var KeyboardHandler = /** @class */ (function () {
         { k: "Escape", v: KeyAction.Cancel },
         { k: "KeyQ", v: KeyAction.Cancel },
         { k: "Backslash", v: KeyAction.Debug1 },
+        { k: "Enter", v: KeyAction.Confirm },
         { k: "Enter", v: KeyAction.Debug2 },
         //{k: "Backspace", v: KeyAction.Debug3},
         { k: "F11", v: KeyAction.Fullscreen },

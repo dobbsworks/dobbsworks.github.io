@@ -68,6 +68,20 @@ abstract class UIDialog {
         } else {
             document.body.style.cursor = "unset";
         }
+
+        if (MenuHandler.Dialog == this) {
+            // no options clicked
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Cancel, true)) {
+                this.OnKeyboardCancel();
+                this.OnAnyAction();
+                MenuHandler.Dialog = null;
+            }
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Confirm, true)) {
+                this.OnKeyboardConfirm();
+                this.OnAnyAction();
+                MenuHandler.Dialog = null;
+            }
+        }
     }
 
     GetButtonActionParameters(): any[] {
@@ -75,6 +89,9 @@ abstract class UIDialog {
     }
 
     OnAnyAction(): void {}
+
+    OnKeyboardConfirm(): void {}
+    OnKeyboardCancel(): void {}
 
     static Alert(info: string, confirmButtonText: string): void {
         MenuHandler.Dialog = new UIAlert(info, confirmButtonText);
@@ -137,7 +154,9 @@ class UISmallPrompt extends UIDialog {
         private onConfirmAction: (value: string) => void
     ) {
         super();
-        this.options.push(new UIDialogOption(confirmText, onConfirmAction));
+        let cancelOption = new UIDialogOption("Cancel", () => { });
+        cancelOption.color = "#115B";
+        this.options.push(cancelOption, new UIDialogOption(confirmText, onConfirmAction));
         this.promptText = messageText;
     }
 
@@ -178,12 +197,18 @@ class UISmallPrompt extends UIDialog {
                     document.body.removeChild(this.inputForm);
                     MenuHandler.Dialog = null;
                 }
+                if (e.code === "Escape") {
+                    this.onConfirmAction(this.inputForm.value);
+                    document.body.removeChild(this.inputForm);
+                    MenuHandler.Dialog = null;
+                }
             };
-            document.body.appendChild(this.inputForm);
+            document.body.prepend(this.inputForm);
             this.inputForm.focus();
             if (this.maxLength) this.inputForm.maxLength = this.maxLength;
             this.inputForm.style.opacity = "0";
             this.inputForm.style.position = "fixed";
+            this.inputForm.style.top = "0";
         } else {
             this.inputForm.focus();
         }
@@ -194,12 +219,15 @@ class UIAlert extends UIDialog {
     constructor(
         messageText: string,
         confirmText: string,
-        onConfirmAction: () => void = () => { }
+        private onConfirmAction: () => void = () => { }
     ) {
         super();
         this.options.push(new UIDialogOption(confirmText, onConfirmAction));
         this.promptText = messageText;
     }
+    
+    OnKeyboardConfirm(): void { this.onConfirmAction(); }
+    OnKeyboardCancel(): void { this.onConfirmAction(); }
 }
 
 class UIConfirm extends UIDialog {
@@ -207,7 +235,7 @@ class UIConfirm extends UIDialog {
         messageText: string,
         confirmText: string,
         rejectText: string,
-        onConfirmAction: () => void
+        private onConfirmAction: () => void
     ) {
         super();
         let opt1 = new UIDialogOption(rejectText, () => { });
@@ -216,4 +244,6 @@ class UIConfirm extends UIDialog {
         this.options.push(opt1, opt2);
         this.promptText = messageText;
     }
+    
+    OnKeyboardConfirm(): void { this.onConfirmAction(); }
 }
