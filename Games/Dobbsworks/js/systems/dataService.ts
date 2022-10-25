@@ -133,10 +133,16 @@ class DataService {
             DataService.BasePost("Levels/LogLevelPlayDone", progress, resolve, reject);
         })
     }
-
-    static GetGdbSetting(): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            DataService.BaseGet("Settings/GetGdbSetting", resolve, reject);
+        
+    static UpdateNameAndAvatar(avatarCode: string, newName: string): Promise<number> {
+        return new Promise<number>((resolve, reject) => {
+            DataService.BasePost("Users/UpdateNameAndAvatar?avatarCode=" + avatarCode + "&name=" + newName, {}, resolve, reject);
+        })
+    }
+    
+    static GetUserData(): Promise<UserDT> {
+        return new Promise<UserDT>((resolve, reject) => {
+            DataService.BaseGet("Users/GetUserData", resolve, reject);
         })
     }
 }

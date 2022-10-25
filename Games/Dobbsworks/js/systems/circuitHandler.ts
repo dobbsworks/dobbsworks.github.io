@@ -1,7 +1,9 @@
 class CircuitHandler {
 
+
+
     public static UpdateCircuits(layer: LevelLayer, sprites: Sprite[]): void {
-        let allTiles = layer.tiles.flatMap(a => a);
+        let allTiles = layer.wireFlatMap;
         let poweredSprites = sprites.filter(a => a.isPowerSource);
 
         // remove power from all sprite-powered tiles

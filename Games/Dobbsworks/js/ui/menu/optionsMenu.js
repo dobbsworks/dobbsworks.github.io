@@ -26,6 +26,11 @@ var OptionsMenu = /** @class */ (function (_super) {
         container.margin = 0;
         container.layout = "vertical";
         ret.push(container);
+        var profileButton = this.CreateButton("Edit Profile");
+        container.AddChild(profileButton);
+        profileButton.onClickEvents.push(function () {
+            MenuHandler.SubMenu(AvatarCustomizationMenu);
+        });
         var musicVol = this.CreateSlider("Music Volume", StorageService.GetMusicVolume(), function (newVal) {
             audioHandler.SetMusicVolume(newVal);
         });

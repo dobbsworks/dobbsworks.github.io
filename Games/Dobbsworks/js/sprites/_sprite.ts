@@ -47,7 +47,7 @@ abstract class Sprite {
     public isExemptFromSilhoutte = false;
 
     public age: number = 0;
-    public framesSinceThrown: number = 0;
+    public framesSinceThrown: number = 100;
     public isPlatform: boolean = false;
     public isSolidBox: boolean = false;
     public parentSprite: Sprite | null = null;
@@ -95,18 +95,29 @@ abstract class Sprite {
         this.gustUpTimer--;
         if (!this.respectsSolidTiles) this.isOnGround = false;
 
-        // if (this.isPlatform) {
-        //     let riders = this.layer.sprites.filter(a => a.parentSprite == this);
-        //     for (let rider of riders) {
-        //         rider.isOnGround = true;
-        //         rider.y = this.y - rider.height;
-        //         if (rider.GetTotalDy() > this.GetTotalDy()) {
-        //             rider.dyFromPlatform = this.GetTotalDy();
-        //             rider.dy = 0;
-        //         }
-        //         rider.dxFromPlatform = this.dx;
-        //     }
-        // }
+// ISSUES WITH WARP WALL:
+// 1. momentum! Wall reaction is what triggers "touching wall", but that also reduces velocity
+// 2. clearance! Need to check if there's enough room on the other side!
+// 3. what in the world was happening with shells
+
+        //TODO: repeat this for sprites that never touch wall
+        let leftWarpWall = <LevelTile>this.touchedLeftWalls.find(a => a instanceof LevelTile && a.tileType.isWarpWall)
+        if (leftWarpWall) {
+            let yIndex = leftWarpWall.tileY;
+            let acrossWarpWall = leftWarpWall.layer.tiles.map(a => a[yIndex]).find(a => a.tileX > leftWarpWall.tileX && a.tileType == TileType.WallWarpRight);
+            if (acrossWarpWall) {
+                this.x = acrossWarpWall.tileX * this.layer.tileWidth - this.width;
+            }
+        } else {
+            let rightWarpWall = <LevelTile>this.touchedRightWalls.find(a => a instanceof LevelTile && a.tileType.isWarpWall)
+            if (rightWarpWall) {
+                let yIndex = rightWarpWall.tileY;
+                let acrossWarpWall = rightWarpWall.layer.tiles.map(a => a[yIndex]).find(a => a.tileX < rightWarpWall.tileX && a.tileType == TileType.WallWarpLeft);
+                if (acrossWarpWall) {
+                    this.x = (acrossWarpWall.tileX + 1) * this.layer.tileWidth;
+                }
+            }
+        }
     }
 
     ApplyGravity(): void {
@@ -249,7 +260,8 @@ abstract class Sprite {
                     if (this.y > sprite.yMid && this.GetTotalDy() <= sprite.GetTotalDy() &&
                         (this.x < sprite.xRight && this.xRight > sprite.x)) {
                         // block from bottom
-                        if (this.standingOn.length == 0 && this instanceof Player && this.heldItem !== sprite) {
+                        let isPlayerHoldingThisSprite = this instanceof Player && this.heldItem == sprite;
+                        if (this.standingOn.length == 0 && !isPlayerHoldingThisSprite) {
                             let groundPixel = this.GetHeightOfSolid(0, 1).yPixel;
                             this.dyFromPlatform = sprite.GetTotalDy();
                             this.dy = 0;

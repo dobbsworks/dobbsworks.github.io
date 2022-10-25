@@ -27,7 +27,7 @@ var Sprite = /** @class */ (function () {
         this.canMotorHold = true;
         this.isExemptFromSilhoutte = false;
         this.age = 0;
-        this.framesSinceThrown = 0;
+        this.framesSinceThrown = 100;
         this.isPlatform = false;
         this.isSolidBox = false;
         this.parentSprite = null;
@@ -100,18 +100,29 @@ var Sprite = /** @class */ (function () {
         this.gustUpTimer--;
         if (!this.respectsSolidTiles)
             this.isOnGround = false;
-        // if (this.isPlatform) {
-        //     let riders = this.layer.sprites.filter(a => a.parentSprite == this);
-        //     for (let rider of riders) {
-        //         rider.isOnGround = true;
-        //         rider.y = this.y - rider.height;
-        //         if (rider.GetTotalDy() > this.GetTotalDy()) {
-        //             rider.dyFromPlatform = this.GetTotalDy();
-        //             rider.dy = 0;
-        //         }
-        //         rider.dxFromPlatform = this.dx;
-        //     }
-        // }
+        // ISSUES WITH WARP WALL:
+        // 1. momentum! Wall reaction is what triggers "touching wall", but that also reduces velocity
+        // 2. clearance! Need to check if there's enough room on the other side!
+        // 3. what in the world was happening with shells
+        //TODO: repeat this for sprites that never touch wall
+        var leftWarpWall = this.touchedLeftWalls.find(function (a) { return a instanceof LevelTile && a.tileType.isWarpWall; });
+        if (leftWarpWall) {
+            var yIndex_1 = leftWarpWall.tileY;
+            var acrossWarpWall = leftWarpWall.layer.tiles.map(function (a) { return a[yIndex_1]; }).find(function (a) { return a.tileX > leftWarpWall.tileX && a.tileType == TileType.WallWarpRight; });
+            if (acrossWarpWall) {
+                this.x = acrossWarpWall.tileX * this.layer.tileWidth - this.width;
+            }
+        }
+        else {
+            var rightWarpWall_1 = this.touchedRightWalls.find(function (a) { return a instanceof LevelTile && a.tileType.isWarpWall; });
+            if (rightWarpWall_1) {
+                var yIndex_2 = rightWarpWall_1.tileY;
+                var acrossWarpWall = rightWarpWall_1.layer.tiles.map(function (a) { return a[yIndex_2]; }).find(function (a) { return a.tileX < rightWarpWall_1.tileX && a.tileType == TileType.WallWarpLeft; });
+                if (acrossWarpWall) {
+                    this.x = (acrossWarpWall.tileX + 1) * this.layer.tileWidth;
+                }
+            }
+        }
     };
     Sprite.prototype.ApplyGravity = function () {
         var _a, _b;
@@ -253,7 +264,8 @@ var Sprite = /** @class */ (function () {
                     if (this.y > sprite.yMid && this.GetTotalDy() <= sprite.GetTotalDy() &&
                         (this.x < sprite.xRight && this.xRight > sprite.x)) {
                         // block from bottom
-                        if (this.standingOn.length == 0 && this instanceof Player && this.heldItem !== sprite) {
+                        var isPlayerHoldingThisSprite = this instanceof Player && this.heldItem == sprite;
+                        if (this.standingOn.length == 0 && !isPlayerHoldingThisSprite) {
                             var groundPixel = this.GetHeightOfSolid(0, 1).yPixel;
                             this.dyFromPlatform = sprite.GetTotalDy();
                             this.dy = 0;

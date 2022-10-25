@@ -10,6 +10,12 @@ class OptionsMenu extends Menu {
         container.layout = "vertical";
         ret.push(container);
 
+        let profileButton = this.CreateButton("Edit Profile");
+        container.AddChild(profileButton);
+        profileButton.onClickEvents.push(() => {
+            MenuHandler.SubMenu(AvatarCustomizationMenu);
+        })
+
         let musicVol = this.CreateSlider("Music Volume",  StorageService.GetMusicVolume(), (newVal) => {
             audioHandler.SetMusicVolume(newVal);
         });

@@ -42,7 +42,6 @@ var Player = /** @class */ (function (_super) {
         _this.maxBreath = 600;
         _this.currentBreath = 600;
         _this.breathTimer = 0; // current breath only recovers after breath timer runs out
-        _this.extraHits = 0;
         _this.iFrames = 0;
         _this.replayHandler = new ReplayHandler();
         _this.neutralTimer = 0;
@@ -428,13 +427,17 @@ var Player = /** @class */ (function (_super) {
         var jumpWallRight = this.IsNeighboringWallJumpTilesSide(1);
         if (this.isTouchingStickyWall || this.wallDragDirection != 0 || jumpWallLeft || jumpWallRight) {
             this.dx = -this.wallClingDirection * this.moveSpeed;
-            if (jumpWallLeft)
-                this.dx = this.moveSpeed;
-            if (jumpWallRight)
-                this.dx = -this.moveSpeed;
             this.dy = -1.1; // less than normal to make sure no single-wall scaling
             this.direction = this.wallClingDirection == 1 ? -1 : 1;
             this.wallDragDirection = 0;
+            if (jumpWallLeft) {
+                this.dx = this.moveSpeed;
+                this.direction = 1;
+            }
+            if (jumpWallRight) {
+                this.dx = -this.moveSpeed;
+                this.direction = -1;
+            }
         }
         if (this.currentSlope !== 0) {
             this.dx += this.currentSlope / 2;
@@ -553,9 +556,12 @@ var Player = /** @class */ (function (_super) {
         var sprites = this.layer.sprites;
         for (var _i = 0, sprites_1 = sprites; _i < sprites_1.length; _i++) {
             var sprite = sprites_1[_i];
-            var aboutToOverlapFromAbove = this.xRight > sprite.x &&
-                this.x < sprite.xRight && this.yBottom > sprite.y && this.yBottom - 3 < sprite.y;
-            var landingOnTop = sprite.canBeBouncedOn && aboutToOverlapFromAbove;
+            var isHorizontalOverlap = this.xRight > sprite.x && this.x < sprite.xRight;
+            //let aboutToOverlapFromAbove = this.yBottom > sprite.y && this.yBottom - 3 < sprite.y;
+            var currentlyAbove = this.yBottom <= sprite.y;
+            var projectedBelow = this.yBottom + this.GetTotalDy() > sprite.y + sprite.GetTotalDy();
+            var aboutToOverlapFromAbove = currentlyAbove && projectedBelow;
+            var landingOnTop = sprite.canBeBouncedOn && aboutToOverlapFromAbove && isHorizontalOverlap;
             if (sprite instanceof Enemy) {
                 if (sprite.framesSinceThrown > 0 && sprite.framesSinceThrown < 25)
                     continue; // can't bounce on items that have just been thrown
@@ -564,7 +570,7 @@ var Player = /** @class */ (function (_super) {
                     sprite.OnBounce();
                     sprite.SharedOnBounce(); //enemy-specific method
                 }
-                else if (sprite.canStandOn && aboutToOverlapFromAbove) {
+                else if (sprite.canStandOn && aboutToOverlapFromAbove && isHorizontalOverlap) {
                 }
                 else if (!sprite.isInDeathAnimation && this.xRight > sprite.x && this.x < sprite.xRight && this.yBottom > sprite.y && this.y < sprite.yBottom) {
                     if (this.isSliding) {
@@ -645,20 +651,16 @@ var Player = /** @class */ (function (_super) {
         if (this.heldItem && this.heldItem instanceof GoldHeart)
             return;
         if (this.iFrames == 0) {
-            if (this.extraHits > 0) {
-                this.extraHits--;
+            var nextHeart_1 = this.layer.sprites.find(function (a) { return a instanceof ExtraHitHeartSmall && a.parent == _this; });
+            if (nextHeart_1) {
                 this.iFrames += 130;
                 audioHandler.PlaySound("hurt", true);
                 // hurt heart animation
-                var hearts = this.layer.sprites.filter(function (a) { return a instanceof ExtraHitHeartSmall; });
-                var heart_1 = hearts.find(function (a) { return a.parent == _this; });
-                if (heart_1) {
-                    var childHeart = hearts.find(function (a) { return a.parent == heart_1; });
-                    if (childHeart)
-                        childHeart.parent = this;
-                    heart_1.isActive = false;
-                    heart_1.ReplaceWithSpriteType(ExtraHitHeartSmallLoss);
-                }
+                var childHeart = this.layer.sprites.find(function (a) { return a instanceof ExtraHitHeartSmall && a.parent == nextHeart_1; });
+                if (childHeart)
+                    childHeart.parent = this;
+                nextHeart_1.isActive = false;
+                nextHeart_1.ReplaceWithSpriteType(ExtraHitHeartSmallLoss);
             }
             else {
                 this.OnPlayerDead();

@@ -14,8 +14,8 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var Button = /** @class */ (function (_super) {
     __extends(Button, _super);
-    function Button() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function Button(x, y, width, height) {
+        var _this = _super.call(this, x, y, width, height) || this;
         _this.borderRadius = 0;
         _this.radioKey = "";
         _this.onClickEvents = [];
@@ -23,6 +23,14 @@ var Button = /** @class */ (function (_super) {
         _this.mouseoverBackColor = "#224b";
         _this.isMousedOver = false;
         _this.isNoisy = false;
+        _this.isSelected = false;
+        _this.onClickEvents.push(function () {
+            if (_this.radioKey !== "") {
+                var buttons = uiHandler.GetAllElements().
+                    filter(function (a) { return a instanceof Button && a != _this && a.radioKey === _this.radioKey; });
+                buttons.forEach(function (a) { return a.isSelected = false; });
+            }
+        });
         return _this;
     }
     Button.prototype.Update = function () {

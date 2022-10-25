@@ -17,7 +17,6 @@ class ExtraHitHeart extends Sprite {
             audioHandler.PlaySound("heart", false);
             player.heldItem = null;
             this.isActive = false;
-            player.extraHits += 1;
             this.layer.sprites.push(new ExtraHitHeartAnimation(this.x, this.y, this.layer, []));
             let floatingHeart = new ExtraHitHeartSmall(this.x, this.y, this.layer, []);
             let latestFloatingHeart = <ExtraHitHeartSmall[]>this.layer.sprites.filter(a => a instanceof ExtraHitHeartSmall);

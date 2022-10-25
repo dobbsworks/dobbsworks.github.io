@@ -34,7 +34,6 @@ var ExtraHitHeart = /** @class */ (function (_super) {
             audioHandler.PlaySound("heart", false);
             player.heldItem = null;
             this.isActive = false;
-            player.extraHits += 1;
             this.layer.sprites.push(new ExtraHitHeartAnimation(this.x, this.y, this.layer, []));
             var floatingHeart = new ExtraHitHeartSmall(this.x, this.y, this.layer, []);
             var latestFloatingHeart = this.layer.sprites.filter(function (a) { return a instanceof ExtraHitHeartSmall; });

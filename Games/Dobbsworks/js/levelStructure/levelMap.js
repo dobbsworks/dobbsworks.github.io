@@ -123,7 +123,7 @@ var LevelMap = /** @class */ (function () {
                 var deletedSprite = false;
                 for (var _f = 0, onScreenSprites_1 = onScreenSprites; _f < onScreenSprites_1.length; _f++) {
                     var sprite = onScreenSprites_1[_f];
-                    if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof)
+                    if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof || sprite instanceof KeyDomino)
                         continue;
                     var xs = [sprite.x, sprite.xRight, sprite.xMid].map(function (a) { return Math.floor(a / _this.mainLayer.tileWidth); }).filter(Utility.OnlyUnique);
                     var ys = [sprite.y, sprite.yBottom, sprite.yMid].map(function (a) { return Math.floor(a / _this.mainLayer.tileHeight); }).filter(Utility.OnlyUnique);

@@ -28,7 +28,6 @@ class Player extends Sprite {
     public currentBreath: number = 600;
     private breathTimer: number = 0; // current breath only recovers after breath timer runs out
 
-    public extraHits: number = 0;
     private iFrames: number = 0;
 
     public replayHandler = new ReplayHandler();
@@ -110,7 +109,6 @@ class Player extends Sprite {
                 this.direction = -1;
             }
         }
-
 
         if (this.touchedRightWalls.some(a => a instanceof LevelTile && a.tileType.isStickyWall)) {
             this.isTouchingStickyWall = true;
@@ -403,15 +401,23 @@ class Player extends Sprite {
         let jumpWallLeft = this.IsNeighboringWallJumpTilesSide(-1);
         let jumpWallRight = this.IsNeighboringWallJumpTilesSide(1);
 
+
+
+
         if (this.isTouchingStickyWall || this.wallDragDirection != 0 || jumpWallLeft || jumpWallRight) {
             this.dx = -this.wallClingDirection * this.moveSpeed;
-
-            if (jumpWallLeft) this.dx = this.moveSpeed
-            if (jumpWallRight) this.dx = -this.moveSpeed
-
             this.dy = -1.1; // less than normal to make sure no single-wall scaling
             this.direction = this.wallClingDirection == 1 ? -1 : 1;
             this.wallDragDirection = 0;
+
+            if (jumpWallLeft) {
+                this.dx = this.moveSpeed;
+                this.direction = 1;
+            }
+            if (jumpWallRight) {
+                this.dx = -this.moveSpeed;
+                this.direction = -1;
+            }
         }
         if (this.currentSlope !== 0) {
             this.dx += this.currentSlope / 2;
@@ -528,9 +534,14 @@ class Player extends Sprite {
     HandleEnemies(): void {
         let sprites = this.layer.sprites;
         for (let sprite of sprites) {
-            let aboutToOverlapFromAbove = this.xRight > sprite.x &&
-                this.x < sprite.xRight && this.yBottom > sprite.y && this.yBottom - 3 < sprite.y;
-            let landingOnTop = sprite.canBeBouncedOn && aboutToOverlapFromAbove;
+            let isHorizontalOverlap = this.xRight > sprite.x && this.x < sprite.xRight;
+
+            //let aboutToOverlapFromAbove = this.yBottom > sprite.y && this.yBottom - 3 < sprite.y;
+            let currentlyAbove = this.yBottom <= sprite.y;
+            let projectedBelow = this.yBottom + this.GetTotalDy() > sprite.y + sprite.GetTotalDy();
+            let aboutToOverlapFromAbove = currentlyAbove && projectedBelow;
+
+            let landingOnTop = sprite.canBeBouncedOn && aboutToOverlapFromAbove && isHorizontalOverlap;
 
             if (sprite instanceof Enemy) {
                 if (sprite.framesSinceThrown > 0 && sprite.framesSinceThrown < 25) continue; // can't bounce on items that have just been thrown
@@ -538,7 +549,7 @@ class Player extends Sprite {
                     this.Bounce();
                     sprite.OnBounce();
                     sprite.SharedOnBounce(); //enemy-specific method
-                } else if (sprite.canStandOn && aboutToOverlapFromAbove) {
+                } else if (sprite.canStandOn && aboutToOverlapFromAbove && isHorizontalOverlap) {
 
                 } else if (!sprite.isInDeathAnimation && this.xRight > sprite.x && this.x < sprite.xRight && this.yBottom > sprite.y && this.y < sprite.yBottom) {
                     if (this.isSliding) {
@@ -610,19 +621,15 @@ class Player extends Sprite {
     OnPlayerHurt(): void {
         if (this.heldItem && this.heldItem instanceof GoldHeart) return;
         if (this.iFrames == 0) {
-            if (this.extraHits > 0) {
-                this.extraHits--;
+            let nextHeart = this.layer.sprites.find(a => a instanceof ExtraHitHeartSmall && a.parent == this);
+            if (nextHeart) {
                 this.iFrames += 130;
                 audioHandler.PlaySound("hurt", true);
                 // hurt heart animation
-                let hearts = <ExtraHitHeartSmall[]>this.layer.sprites.filter(a => a instanceof ExtraHitHeartSmall);
-                let heart = hearts.find(a => a.parent == this);
-                if (heart) {
-                    let childHeart = hearts.find(a => a.parent == heart);
-                    if (childHeart) childHeart.parent = this;
-                    heart.isActive = false;
-                    heart.ReplaceWithSpriteType(ExtraHitHeartSmallLoss);
-                }
+                let childHeart = <ExtraHitHeartSmall>this.layer.sprites.find(a => a instanceof ExtraHitHeartSmall && a.parent == nextHeart);
+                if (childHeart) childHeart.parent = this;
+                nextHeart.isActive = false;
+                nextHeart.ReplaceWithSpriteType(ExtraHitHeartSmallLoss);
             } else {
                 this.OnPlayerDead();
             }
@@ -694,7 +701,7 @@ class Player extends Sprite {
 
             for (let sprite of this.layer.sprites.filter(a => a.canBeHeld)) {
                 if (sprite.age < 10) continue; // can't grab items that just spawned (prevent grabbing shell after shell jump)
-                
+
                 if (this.IsGoingToOverlapSprite(sprite)) {
                     this.heldItem = sprite;
                     startedHolding = true;

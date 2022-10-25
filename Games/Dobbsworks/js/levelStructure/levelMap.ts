@@ -109,7 +109,7 @@ class LevelMap {
                 let onScreenSprites = this.mainLayer.sprites.filter(a => a.IsOnScreen());
                 let deletedSprite = false;
                 for (let sprite of onScreenSprites) {
-                    if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof) continue;
+                    if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof || sprite instanceof KeyDomino) continue;
                     let xs = [sprite.x, sprite.xRight, sprite.xMid].map(a => Math.floor(a / this.mainLayer.tileWidth)).filter(Utility.OnlyUnique);
                     let ys = [sprite.y, sprite.yBottom, sprite.yMid].map(a => Math.floor(a / this.mainLayer.tileHeight)).filter(Utility.OnlyUnique);
                     for (let tileX of xs) for (let tileY of ys) {

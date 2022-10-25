@@ -2,15 +2,7 @@ class EditorButton extends Button {
     constructor(imageTile: ImageTile, public tooltip: string = "") {
         super(0, 0, 60, 60);
         this.AddChild(new ImageFromTile(0,0,50,50, imageTile));
-        this.onClickEvents.push(() => {
-            if (this.radioKey !== "") {
-                let buttons = <EditorButton[]>uiHandler.GetAllElements().
-                    filter(a => a instanceof EditorButton && a != this && a.radioKey === this.radioKey);
-                buttons.forEach(a => a.isSelected = false);
-            }
-        })
     }
-    isSelected: boolean = false;
     radioKey: string = "";
 
     CreateCopy(): EditorButton | null {
