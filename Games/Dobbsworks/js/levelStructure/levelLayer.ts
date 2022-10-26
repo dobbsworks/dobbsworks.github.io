@@ -17,6 +17,8 @@ class LevelLayer {
 
     private isAnimatedTileListInitialized = false;
     private animatedTileList: LevelTile[] = [];
+    public wireFlatMap: LevelTile[] = [];
+    private isWireFlatMapInitialized = false;
 
     GetMaxX(): number {
         return this.tiles.length * this.tileWidth;
@@ -106,6 +108,8 @@ class LevelLayer {
         let tileExists = !!(this.tiles[xIndex] && this.tiles[xIndex][yIndex]);
         let existingTile = this.GetTileByIndex(xIndex, yIndex);
         if (existingTile.tileType !== tileType || !tileExists) {
+            this.wireFlatMap = this.wireFlatMap.filter(a => !(a.tileX == xIndex && a.tileY == yIndex));
+
             existingTile.tileType = tileType
             existingTile.SetPropertiesByTileType();
             let col = this.tiles[xIndex];
@@ -123,6 +127,7 @@ class LevelLayer {
             let existingAnimatedEntry = this.animatedTileList.find(a => a.tileX == xIndex && a.tileY == yIndex);
             if (existingAnimatedEntry) this.animatedTileList = this.animatedTileList.filter(a => a != existingAnimatedEntry);
             if (tileType instanceof AnimatedTileType) this.animatedTileList.push(existingTile);
+            if (this.layerType == TargetLayer.wire) this.wireFlatMap.push(existingTile);
 
             return true;
         }
@@ -171,7 +176,11 @@ class LevelLayer {
     Update(): void {
         if (!this.isAnimatedTileListInitialized) {
             this.animatedTileList = this.tiles.flatMap(a => a).filter(a => a.tileType instanceof AnimatedTileType);
-            //this.isAnimatedTileListInitialized = true;
+            this.isAnimatedTileListInitialized = true;
+        }
+        if (this.layerType == TargetLayer.wire && !this.isWireFlatMapInitialized) {
+            this.isWireFlatMapInitialized = true;
+            this.wireFlatMap = this.tiles.flatMap(a => a);
         }
         this.sprites.forEach(a => a.updatedThisFrame = false);
         let platforms = this.sprites.filter(a => a.isPlatform);
@@ -235,17 +244,22 @@ class LevelLayer {
         let orderedSprites = [...this.sprites];
         orderedSprites.sort((a, b) => a.zIndex - b.zIndex);
         for (let sprite of orderedSprites) {
-            sprite.OnBeforeDraw(camera);
-            let frameData = sprite.GetFrameData(frameNum);
-            if ('xFlip' in frameData) {
-                this.DrawFrame(frameData, scale, sprite);
-            } else {
-                for (let fd of <FrameData[]>frameData) {
-                    this.DrawFrame(fd, scale, sprite);
-                }
-            }
-            sprite.OnAfterDraw(camera);
+            this.DrawSprite(sprite, camera, frameNum);
         }
+    }
+
+    DrawSprite(sprite: Sprite, camera: Camera, frameNum: number): void {
+        sprite.OnBeforeDraw(camera);
+        let frameData = sprite.GetFrameData(frameNum);
+        if ('xFlip' in frameData) {
+            this.DrawFrame(frameData, camera.scale, sprite);
+        } else {
+            for (let fd of <FrameData[]>frameData) {
+                this.DrawFrame(fd, camera.scale, sprite);
+            }
+        }
+        sprite.OnAfterDraw(camera);
+
     }
 
     public DrawFrame(frameData: FrameData, scale: number, sprite: Sprite) {

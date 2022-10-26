@@ -33,6 +33,8 @@ var Piggle = /** @class */ (function (_super) {
             return;
         if (this.isInDeathAnimation) {
             this.squishTimer++;
+            this.dx = 0;
+            this.dy = 0;
             if (this.squishTimer > 30) {
                 this.isActive = false;
             }
@@ -49,6 +51,7 @@ var Piggle = /** @class */ (function (_super) {
         this.isInDeathAnimation = true;
         this.dx = 0;
         this.dy = 0;
+        this.OnDead();
     };
     Piggle.prototype.GetFrameData = function (frameNum) {
         var frames = [0, 1, 2, 1, 0, 3, 4, 4, 3];
@@ -65,6 +68,131 @@ var Piggle = /** @class */ (function (_super) {
     };
     return Piggle;
 }(Enemy));
+var PogoPiggle = /** @class */ (function (_super) {
+    __extends(PogoPiggle, _super);
+    function PogoPiggle() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.height = 15;
+        _this.width = 10;
+        _this.respectsSolidTiles = true;
+        _this.canBeBouncedOn = true;
+        _this.squishTimer = 0;
+        _this.pogoTimer = 0;
+        _this.bounceSoundId = "oink";
+        _this.hasHelmet = true;
+        _this.iFrames = 0;
+        return _this;
+    }
+    PogoPiggle.prototype.Update = function () {
+        if (!this.WaitForOnScreen())
+            return;
+        if (this.isInDeathAnimation) {
+            this.squishTimer++;
+            if (this.squishTimer > 30) {
+                this.isActive = false;
+            }
+        }
+        else {
+            if (this.isOnGround) {
+                this.pogoTimer++;
+                this.dx *= 0.9;
+                if (this.pogoTimer > 10) {
+                    this.pogoTimer = 0;
+                    this.dy = -2.5;
+                }
+            }
+            if (this.iFrames > 0) {
+                this.iFrames--;
+                if (this.iFrames == 0)
+                    this.damagesPlayer = true;
+            }
+            this.SkyPatrol(0.3);
+            this.ApplyGravity();
+            this.ApplyInertia();
+            this.ReactToWater();
+        }
+    };
+    PogoPiggle.prototype.OnBounce = function () {
+        if (this.iFrames > 0) {
+            return;
+        }
+        if (this.hasHelmet) {
+            this.hasHelmet = false;
+            if (this.dy < 0)
+                this.dy = 0;
+            var helmet = new PogoHelmet(this.x, this.y, this.layer, []);
+            helmet.dy = -1;
+            this.layer.sprites.push(helmet);
+            this.iFrames = 10;
+            this.damagesPlayer = false;
+        }
+        else {
+            this.canBeBouncedOn = false;
+            this.isInDeathAnimation = true;
+            this.dx = 0;
+            this.dy = 0;
+            this.OnDead();
+        }
+    };
+    PogoPiggle.prototype.GetFrameData = function (frameNum) {
+        if (this.isInDeathAnimation) {
+            return {
+                imageTile: tiles["pig"][5][0],
+                xFlip: this.direction == 1,
+                yFlip: false,
+                xOffset: 3,
+                yOffset: 1
+            };
+        }
+        var frame = this.pogoTimer > 0 ? 1 : 0;
+        if (!this.hasHelmet)
+            frame += 2;
+        return {
+            imageTile: tiles["pogo"][frame][0],
+            xFlip: this.direction == 1,
+            yFlip: false,
+            xOffset: 3,
+            yOffset: 1
+        };
+    };
+    return PogoPiggle;
+}(Enemy));
+var PogoHelmet = /** @class */ (function (_super) {
+    __extends(PogoHelmet, _super);
+    function PogoHelmet() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.height = 15;
+        _this.width = 10;
+        _this.respectsSolidTiles = false;
+        _this.direction = 1;
+        return _this;
+    }
+    PogoHelmet.prototype.Update = function () {
+        if (this.age > 30)
+            this.isActive = false;
+        this.ApplyGravity();
+        this.MoveByVelocity();
+    };
+    PogoHelmet.prototype.GetFrameData = function (frameNum) {
+        if (Math.floor(frameNum / 4) % 2 == 0) {
+            return {
+                imageTile: tiles["empty"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            };
+        }
+        return {
+            imageTile: tiles["pogo"][4][0],
+            xFlip: this.direction == 1,
+            yFlip: false,
+            xOffset: 3,
+            yOffset: 1
+        };
+    };
+    return PogoHelmet;
+}(Sprite));
 var Hoggle = /** @class */ (function (_super) {
     __extends(Hoggle, _super);
     function Hoggle() {

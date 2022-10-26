@@ -57,6 +57,7 @@ class PrickleEgg extends PrickleShell {
         let crumble = new PrickleEggCrumble(this.x, this.y, this.layer, []);
         crumble.dy = this.dy;
         this.layer.sprites.push(crumble);
+        this.OnDead();
     }
 
     canBeBouncedOn = true;

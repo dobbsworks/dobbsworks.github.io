@@ -62,6 +62,7 @@ var Snouter = /** @class */ (function (_super) {
         this.isInDeathAnimation = true;
         this.dx = 0;
         this.dy = 0;
+        this.OnDead();
     };
     Snouter.prototype.GetFrameData = function (frameNum) {
         var frames = [0, 1];

@@ -32,6 +32,8 @@ var ImageFromTile = /** @class */ (function (_super) {
     ImageFromTile.prototype.Update = function () { };
     ImageFromTile.prototype.Draw = function (ctx) {
         var zoom = this.zoom;
+        if (!this.imageTile)
+            return;
         //this.imageTile.Draw(ctx, this.x, this.y, 4, false, false);
         var fullImageWidth = this.imageTile.width * zoom;
         var widthClipScale = Math.min(1, this.width / fullImageWidth);

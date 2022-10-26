@@ -120,6 +120,7 @@ function Update() {
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditToggle, true) && !PauseMenu.IsPaused) {
             if (editorHandler.isInEditMode) {
                 editorHandler.SwitchToPlayMode();
+                currentMap.fadeOutRatio = 0; // skip usual fade from black
             }
             else if (editorHandler.isEditorAllowed) {
                 editorHandler.SwitchToEditMode();

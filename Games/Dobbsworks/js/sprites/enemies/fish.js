@@ -62,6 +62,7 @@ var AFish = /** @class */ (function (_super) {
     };
     AFish.prototype.OnBounce = function () {
         this.ReplaceWithSprite(new DeadEnemy(this));
+        this.OnDead();
     };
     AFish.prototype.GetFrameData = function (frameNum) {
         var col = Math.floor(frameNum / 10) % 2;
@@ -103,6 +104,7 @@ var FloppingFish = /** @class */ (function (_super) {
             var dead = this.ReplaceWithSprite(new DeadEnemy(this));
             dead.dy = -1;
             dead.dx = 0.5;
+            this.OnDead();
         }
     };
     FloppingFish.prototype.GetFrameData = function (frameNum) {

@@ -15,7 +15,7 @@ class SnailShell extends Sprite {
             this.rotation -= this.GetTotalDx() / 2
         }
 
-        if (this.framesSinceThrown > 10) {
+        if (this.age > 10) {
             let player = <Player>(this.layer.sprites.find(a => a instanceof Player));
             if (player && player.heldItem != this && player.IsGoingToOverlapSprite(this)) {
                 let oldDy = this.dy;
@@ -35,6 +35,7 @@ class SnailShell extends Sprite {
         this.isActive = false;
         let shell = new RollingSnailShell(this.x, this.y, this.layer, []);
         shell.age = 0;
+        shell.framesSinceThrown = 0;
         shell.direction = direction;
         if (!(thrower instanceof Player)) shell.framesSinceThrown = 100;
         this.layer.sprites.push(shell);

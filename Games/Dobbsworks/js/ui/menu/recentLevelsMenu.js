@@ -222,6 +222,7 @@ var RecentLevelsMenu = /** @class */ (function (_super) {
                 var panel = new Panel(0, 0, rightPanelWidth_1, frames == 0 ? 50 : 100);
                 panel.layout = "vertical";
                 panel.backColor = "#0008";
+                panel.margin = 0;
                 var wrText = new UIText(0, 0, labelText, 14, "white");
                 wrText.xOffset = rightPanelWidth_1 / 2;
                 wrText.yOffset = 18 + (frames == 0 ? -3 : 0);
@@ -230,13 +231,21 @@ var RecentLevelsMenu = /** @class */ (function (_super) {
                 if (frames > 0) {
                     var wrTimeText = new UIText(0, 0, Utility.FramesToTimeText(frames), 28, "white");
                     wrTimeText.xOffset = rightPanelWidth_1 / 2;
-                    wrTimeText.yOffset = 6;
+                    wrTimeText.yOffset = 22;
                     panel.AddChild(wrTimeText);
                 }
+                var bottomLine = new Panel(0, 0, rightPanelWidth_1, 40);
                 var wrHolderText = new UIText(0, 0, holder ? holder.username : "Me", 20, "white");
-                wrHolderText.xOffset = rightPanelWidth_1 / 2;
-                wrHolderText.yOffset = -5;
-                panel.AddChild(wrHolderText);
+                if (!holder)
+                    wrHolderText.xOffset = rightPanelWidth_1 / 2;
+                wrHolderText.yOffset = 28;
+                if (holder)
+                    bottomLine.AddChild(new AvatarPanel(holder.avatar));
+                bottomLine.AddChild(wrHolderText);
+                bottomLine.margin = 0;
+                if (holder)
+                    bottomLine.AddChild(new Spacer(0, 0, 40, 40));
+                panel.AddChild(bottomLine);
                 return panel;
             };
             //rightPanel.AddChild(new Spacer(0, 0, 10, 5));
@@ -305,18 +314,23 @@ var CloudLevelButton = /** @class */ (function (_super) {
         }
         var texts = new Panel(0, 0, 230, 80);
         texts.layout = "vertical";
-        var fontSize = 20;
-        for (var _i = 0, _a = [
-            levelDt.name,
-            "by " + levelListing.author.username,
-        ]; _i < _a.length; _i++) {
-            var text = _a[_i];
-            var textLine = new UIText(0, 0, text, fontSize, "white");
-            fontSize = 14;
-            textLine.textAlign = "left";
-            textLine.yOffset = 20;
-            texts.AddChild(textLine);
-        }
+        var titleLine = new Panel(0, 0, 150, 25);
+        titleLine.margin = 0;
+        var titleLineText = new UIText(0, 0, levelDt.name, 20, "white");
+        titleLineText.textAlign = "left";
+        titleLineText.yOffset = 20;
+        titleLine.AddChild(titleLineText);
+        var byLine = new Panel(0, 0, 150, 20);
+        byLine.margin = 0;
+        byLine.AddChild(new AvatarPanel(levelListing.author.avatar));
+        var byLineText = new UIText(0, 0, "by " + levelListing.author.username, 14, "white");
+        byLineText.textAlign = "left";
+        byLineText.yOffset = 20;
+        var byLineTextContainer = new Panel(0, 0, 180, 20);
+        byLineTextContainer.AddChild(byLineText);
+        byLine.AddChild(byLineTextContainer);
+        texts.AddChild(titleLine);
+        texts.AddChild(byLine);
         texts.AddChild(new Spacer(0, 0, 0, 0));
         _this.AddChild(texts);
         _this.onClickEvents.push(function () {

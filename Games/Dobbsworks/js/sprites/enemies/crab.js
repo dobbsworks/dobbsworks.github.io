@@ -39,6 +39,7 @@ var DrSnips = /** @class */ (function (_super) {
             this.isActive = false;
             var deadSprite = new DeadEnemy(this);
             this.layer.sprites.push(deadSprite);
+            this.OnDead();
         }
     };
     DrSnips.prototype.GetFrameData = function (frameNum) {

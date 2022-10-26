@@ -22,6 +22,7 @@ class SnowtemPole extends Enemy {
             this.y += 6;
         } else {
             this.isActive = false;
+            this.OnDead();
         }
 
         let deadBody = new SnowmanWormBody(this.x, this.yBottom - 6, this.layer, []);

@@ -19,6 +19,8 @@ var LevelLayer = /** @class */ (function () {
         this.tileWidth = 0;
         this.isAnimatedTileListInitialized = false;
         this.animatedTileList = [];
+        this.wireFlatMap = [];
+        this.isWireFlatMapInitialized = false;
         this.tileHeight = TileType.Air.imageTile.height;
         this.tileWidth = TileType.Air.imageTile.width;
     }
@@ -120,6 +122,7 @@ var LevelLayer = /** @class */ (function () {
         var tileExists = !!(this.tiles[xIndex] && this.tiles[xIndex][yIndex]);
         var existingTile = this.GetTileByIndex(xIndex, yIndex);
         if (existingTile.tileType !== tileType || !tileExists) {
+            this.wireFlatMap = this.wireFlatMap.filter(function (a) { return !(a.tileX == xIndex && a.tileY == yIndex); });
             existingTile.tileType = tileType;
             existingTile.SetPropertiesByTileType();
             var col = this.tiles[xIndex];
@@ -138,6 +141,8 @@ var LevelLayer = /** @class */ (function () {
                 this.animatedTileList = this.animatedTileList.filter(function (a) { return a != existingAnimatedEntry_1; });
             if (tileType instanceof AnimatedTileType)
                 this.animatedTileList.push(existingTile);
+            if (this.layerType == TargetLayer.wire)
+                this.wireFlatMap.push(existingTile);
             return true;
         }
         return false;
@@ -180,7 +185,11 @@ var LevelLayer = /** @class */ (function () {
     LevelLayer.prototype.Update = function () {
         if (!this.isAnimatedTileListInitialized) {
             this.animatedTileList = this.tiles.flatMap(function (a) { return a; }).filter(function (a) { return a.tileType instanceof AnimatedTileType; });
-            //this.isAnimatedTileListInitialized = true;
+            this.isAnimatedTileListInitialized = true;
+        }
+        if (this.layerType == TargetLayer.wire && !this.isWireFlatMapInitialized) {
+            this.isWireFlatMapInitialized = true;
+            this.wireFlatMap = this.tiles.flatMap(function (a) { return a; });
         }
         this.sprites.forEach(function (a) { return a.updatedThisFrame = false; });
         var platforms = this.sprites.filter(function (a) { return a.isPlatform; });
@@ -237,19 +246,22 @@ var LevelLayer = /** @class */ (function () {
         orderedSprites.sort(function (a, b) { return a.zIndex - b.zIndex; });
         for (var _i = 0, orderedSprites_2 = orderedSprites; _i < orderedSprites_2.length; _i++) {
             var sprite = orderedSprites_2[_i];
-            sprite.OnBeforeDraw(camera);
-            var frameData = sprite.GetFrameData(frameNum);
-            if ('xFlip' in frameData) {
-                this.DrawFrame(frameData, scale, sprite);
-            }
-            else {
-                for (var _a = 0, _b = frameData; _a < _b.length; _a++) {
-                    var fd = _b[_a];
-                    this.DrawFrame(fd, scale, sprite);
-                }
-            }
-            sprite.OnAfterDraw(camera);
+            this.DrawSprite(sprite, camera, frameNum);
         }
+    };
+    LevelLayer.prototype.DrawSprite = function (sprite, camera, frameNum) {
+        sprite.OnBeforeDraw(camera);
+        var frameData = sprite.GetFrameData(frameNum);
+        if ('xFlip' in frameData) {
+            this.DrawFrame(frameData, camera.scale, sprite);
+        }
+        else {
+            for (var _i = 0, _a = frameData; _i < _a.length; _i++) {
+                var fd = _a[_i];
+                this.DrawFrame(fd, camera.scale, sprite);
+            }
+        }
+        sprite.OnAfterDraw(camera);
     };
     LevelLayer.prototype.DrawFrame = function (frameData, scale, sprite) {
         var ctx = camera.ctx;

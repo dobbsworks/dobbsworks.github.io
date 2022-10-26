@@ -113,9 +113,14 @@ var DataService = /** @class */ (function () {
             DataService.BasePost("Levels/LogLevelPlayDone", progress, resolve, reject);
         });
     };
-    DataService.GetGdbSetting = function () {
+    DataService.UpdateNameAndAvatar = function (avatarCode, newName) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("Settings/GetGdbSetting", resolve, reject);
+            DataService.BasePost("Users/UpdateNameAndAvatar?avatarCode=" + avatarCode + "&name=" + newName, {}, resolve, reject);
+        });
+    };
+    DataService.GetUserData = function () {
+        return new Promise(function (resolve, reject) {
+            DataService.BaseGet("Users/GetUserData", resolve, reject);
         });
     };
     return DataService;

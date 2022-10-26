@@ -68,6 +68,7 @@ class Snoworm extends Enemy {
         } else {
             this.bounceTimer++;
             this.canBeBouncedOn = false;
+            this.OnDead();
         }
         this.iframes = 10;
     }
@@ -104,6 +105,7 @@ class SnowmanWormBody extends Enemy {
     bounceTimer: number = 0;
     parent: Snoworm | null = null;
     childNumber = 0;
+    isExemptFromSpriteKillCheck = true;
 
     Update(): void {
         if (!this.WaitForOnScreen()) return;

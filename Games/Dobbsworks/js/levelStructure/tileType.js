@@ -29,6 +29,7 @@ var TileType = /** @class */ (function () {
         this.canWalkOn = true; //sticky honey blocks
         this.isStickyWall = false;
         this.isJumpWall = false;
+        this.isWarpWall = false;
         this.isTrack = false;
         this.isTrackCap = false;
         this.trackEquation = function (x, y) { return ({ x: x, y: y }); };
@@ -283,6 +284,8 @@ var TileType = /** @class */ (function () {
         TileType.SteelBarrel;
         TileType.WallJumpLeft;
         TileType.WallJumpRight;
+        // TileType.WallWarpLeft;
+        // TileType.WallWarpRight;
     };
     TileType.RegisterSlope = function (keyBase, tileRow) {
         var colIter = 8;
@@ -1853,6 +1856,24 @@ var TileType = /** @class */ (function () {
         get: function () {
             return TileType.GetTileType("WallJumpRight", "wallJump", 1, 0, Solidity.RightWall, TargetLayer.semisolid, function (tileType) {
                 tileType.isJumpWall = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "WallWarpLeft", {
+        get: function () {
+            return TileType.GetAnimatedTileType("WallWarpLeft", "warpWall", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (y) { return ({ x: 0, y: y }); }), 6, Solidity.LeftWall, TargetLayer.semisolid, function (tileType) {
+                tileType.isWarpWall = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "WallWarpRight", {
+        get: function () {
+            return TileType.GetAnimatedTileType("WallWarpRight", "warpWall", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (y) { return ({ x: 1, y: y }); }), 6, Solidity.RightWall, TargetLayer.semisolid, function (tileType) {
+                tileType.isWarpWall = true;
             });
         },
         enumerable: false,

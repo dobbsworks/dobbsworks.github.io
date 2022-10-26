@@ -1,6 +1,8 @@
 class UnloadHandler {
 
-    static DoUnsavedChangesExist(): boolean {
+    static ShouldPrompt(): boolean {
+        if (window.location.href.startsWith("https://localhost:7121/")) return false;
+
         let unsavedChangesExist = true;
         let currentSaveValue = currentMap.GetExportString();
 
@@ -25,7 +27,7 @@ class UnloadHandler {
 
     static RegisterUnloadHandler(): void {
         addEventListener('beforeunload', (event) => {
-            if (event && UnloadHandler.DoUnsavedChangesExist()) {
+            if (event && UnloadHandler.ShouldPrompt()) {
                 (<any>event).preventDefault();
                 (<any>event).returnValue = 'Are you sure you want to leave? Changes will not be saved.';
             }

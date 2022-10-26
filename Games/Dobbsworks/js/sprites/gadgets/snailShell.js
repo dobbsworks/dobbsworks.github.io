@@ -31,7 +31,7 @@ var SnailShell = /** @class */ (function (_super) {
         else {
             this.rotation -= this.GetTotalDx() / 2;
         }
-        if (this.framesSinceThrown > 10) {
+        if (this.age > 10) {
             var player_1 = (this.layer.sprites.find(function (a) { return a instanceof Player; }));
             if (player_1 && player_1.heldItem != this && player_1.IsGoingToOverlapSprite(this)) {
                 var oldDy = this.dy;
@@ -49,6 +49,7 @@ var SnailShell = /** @class */ (function (_super) {
         this.isActive = false;
         var shell = new RollingSnailShell(this.x, this.y, this.layer, []);
         shell.age = 0;
+        shell.framesSinceThrown = 0;
         shell.direction = direction;
         if (!(thrower instanceof Player))
             shell.framesSinceThrown = 100;

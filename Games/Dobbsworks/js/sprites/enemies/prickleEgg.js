@@ -76,6 +76,7 @@ var PrickleEgg = /** @class */ (function (_super) {
         var crumble = new PrickleEggCrumble(this.x, this.y, this.layer, []);
         crumble.dy = this.dy;
         this.layer.sprites.push(crumble);
+        this.OnDead();
     };
     return PrickleEgg;
 }(PrickleShell));

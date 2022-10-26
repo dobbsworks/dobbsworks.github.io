@@ -34,25 +34,28 @@ var PanelScroll = /** @class */ (function (_super) {
         this.targetY = this.parentPanel.targetY;
         if (this.isHidden)
             return;
-        if (mouseHandler.mouseX > this.x &&
-            mouseHandler.mouseX < this.x + this.width) {
+        var mousePixel = mouseHandler.GetCanvasMousePixel();
+        var mouseX = mousePixel.xPixel;
+        var mouseY = mousePixel.yPixel;
+        if (mouseX > this.x &&
+            mouseX < this.x + this.width) {
             // within horizontal column
-            if (mouseHandler.mouseY >= this.y &&
-                mouseHandler.mouseY <= this.y + this.height) {
+            if (mouseY >= this.y &&
+                mouseY <= this.y + this.height) {
                 // within bounding box
                 if (this.mouseInitialClickY == -1 &&
                     mouseHandler.isMouseDown) {
-                    if (mouseHandler.mouseY >= this.handleTopY &&
-                        mouseHandler.mouseY <= this.handleBottomY &&
+                    if (mouseY >= this.handleTopY &&
+                        mouseY <= this.handleBottomY &&
                         mouseHandler.isMouseClicked()) {
                         // initial click on scroll handle
-                        this.mouseInitialClickY = mouseHandler.mouseY;
-                        this.mouseScrollAnchorY = mouseHandler.mouseY;
+                        this.mouseInitialClickY = mouseY;
+                        this.mouseScrollAnchorY = mouseY;
                     }
-                    else if (mouseHandler.mouseY < this.handleTopY) {
+                    else if (mouseY < this.handleTopY) {
                         this.parentPanel.Scroll(-1);
                     }
-                    else if (mouseHandler.mouseY > this.handleBottomY) {
+                    else if (mouseY > this.handleBottomY) {
                         this.parentPanel.Scroll(1);
                     }
                 }
@@ -72,8 +75,8 @@ var PanelScroll = /** @class */ (function (_super) {
         }
         if (mouseHandler.isMouseDown &&
             this.mouseInitialClickY !== -1) {
-            if (mouseHandler.mouseX > this.x - 100 &&
-                mouseHandler.mouseX < this.x + this.width + 100) {
+            if (mouseX > this.x - 100 &&
+                mouseX < this.x + this.width + 100) {
                 if (this.isOutOfScrollColumn) {
                     this.isOutOfScrollColumn = false;
                     for (var i = 0; i < this.uncommitedScrollDelta; i++)
@@ -82,14 +85,14 @@ var PanelScroll = /** @class */ (function (_super) {
                         this.parentPanel.Scroll(-1);
                 }
                 // dragging within horizontal column
-                if (mouseHandler.mouseY - this.mouseScrollAnchorY > this.mouseScrollThresholdDistance) {
+                if (mouseY - this.mouseScrollAnchorY > this.mouseScrollThresholdDistance) {
                     var scrollSuccessful = this.parentPanel.Scroll(1);
                     if (scrollSuccessful) {
                         this.mouseScrollAnchorY += this.mouseScrollThresholdDistance;
                         this.uncommitedScrollDelta += 1;
                     }
                 }
-                if (mouseHandler.mouseY - this.mouseScrollAnchorY < -this.mouseScrollThresholdDistance) {
+                if (mouseY - this.mouseScrollAnchorY < -this.mouseScrollThresholdDistance) {
                     var scrollSuccessful = this.parentPanel.Scroll(-1);
                     if (scrollSuccessful) {
                         this.mouseScrollAnchorY -= this.mouseScrollThresholdDistance;

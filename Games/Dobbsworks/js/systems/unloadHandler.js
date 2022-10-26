@@ -2,7 +2,9 @@
 var UnloadHandler = /** @class */ (function () {
     function UnloadHandler() {
     }
-    UnloadHandler.DoUnsavedChangesExist = function () {
+    UnloadHandler.ShouldPrompt = function () {
+        if (window.location.href.startsWith("https://localhost:7121/"))
+            return false;
         var unsavedChangesExist = true;
         var currentSaveValue = currentMap.GetExportString();
         if (currentSaveValue == startLevel)
@@ -24,7 +26,7 @@ var UnloadHandler = /** @class */ (function () {
     };
     UnloadHandler.RegisterUnloadHandler = function () {
         addEventListener('beforeunload', function (event) {
-            if (event && UnloadHandler.DoUnsavedChangesExist()) {
+            if (event && UnloadHandler.ShouldPrompt()) {
                 event.preventDefault();
                 event.returnValue = 'Are you sure you want to leave? Changes will not be saved.';
             }

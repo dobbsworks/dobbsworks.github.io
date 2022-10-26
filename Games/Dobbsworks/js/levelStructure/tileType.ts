@@ -22,6 +22,7 @@ class TileType {
     public canWalkOn: boolean = true; //sticky honey blocks
     public isStickyWall: boolean = false;
     public isJumpWall: boolean = false;
+    public isWarpWall: boolean = false;
     public isTrack: boolean = false;
     public isTrackCap: boolean = false;
     public trackEquation: (x: number, y: number) => { x: number, y: number } = (x: number, y: number) => ({ x: x, y: y });
@@ -312,6 +313,9 @@ class TileType {
         TileType.SteelBarrel;
         TileType.WallJumpLeft;
         TileType.WallJumpRight;
+
+        // TileType.WallWarpLeft;
+        // TileType.WallWarpRight;
     }
 
 
@@ -1175,6 +1179,18 @@ class TileType {
     public static get WallJumpRight(): TileType {
         return TileType.GetTileType("WallJumpRight", "wallJump", 1, 0, Solidity.RightWall, TargetLayer.semisolid, (tileType: TileType) => {
             tileType.isJumpWall = true;
+        })
+    }
+
+    public static get WallWarpLeft(): TileType {
+        return TileType.GetAnimatedTileType("WallWarpLeft", "warpWall", [0,1,2,3,4,5,6,7,8,9,10,11].map(y => ({x: 0, y: y})), 6, Solidity.LeftWall, TargetLayer.semisolid, (tileType: TileType) => {
+            tileType.isWarpWall = true;
+        })
+    }
+
+    public static get WallWarpRight(): TileType {
+        return TileType.GetAnimatedTileType("WallWarpRight", "warpWall", [0,1,2,3,4,5,6,7,8,9,10,11].map(y => ({x: 1, y: y})), 6, Solidity.RightWall, TargetLayer.semisolid, (tileType: TileType) => {
+            tileType.isWarpWall = true;
         })
     }
 

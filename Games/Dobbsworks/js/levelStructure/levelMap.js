@@ -17,7 +17,7 @@ var LevelMap = /** @class */ (function () {
         this.backgroundLayers = [];
         this.frameNum = 0;
         this.doorTransition = null;
-        this.fadeOutRatio = 0;
+        this.fadeOutRatio = 1;
         this.bgColorTop = "#87cefa";
         this.bgColorBottom = "#ffffff";
         this.bgColorTopPositionRatio = 0;
@@ -60,6 +60,11 @@ var LevelMap = /** @class */ (function () {
             this.cameraLocksHorizontal.forEach(function (a) { return a.isActive = false; });
             this.cameraLocksHorizontal.sort(function (a, b) { return a.x - b.x; });
         }
+        if (this.fadeOutRatio > 0) {
+            this.fadeOutRatio -= 0.2;
+        }
+        if (this.fadeOutRatio < 0)
+            this.fadeOutRatio = 0;
         camera.Update();
         this.fluidLevels.forEach(function (a) {
             if (a.currentY == -1)
@@ -123,7 +128,7 @@ var LevelMap = /** @class */ (function () {
                 var deletedSprite = false;
                 for (var _f = 0, onScreenSprites_1 = onScreenSprites; _f < onScreenSprites_1.length; _f++) {
                     var sprite = onScreenSprites_1[_f];
-                    if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof)
+                    if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof || sprite instanceof KeyDomino)
                         continue;
                     var xs = [sprite.x, sprite.xRight, sprite.xMid].map(function (a) { return Math.floor(a / _this.mainLayer.tileWidth); }).filter(Utility.OnlyUnique);
                     var ys = [sprite.y, sprite.yBottom, sprite.yMid].map(function (a) { return Math.floor(a / _this.mainLayer.tileHeight); }).filter(Utility.OnlyUnique);
@@ -193,9 +198,13 @@ var LevelMap = /** @class */ (function () {
         this.semisolidLayer.DrawTiles(camera, this.frameNum);
         this.fluidLevels.forEach(function (a) { return a.Draw(camera); });
         this.mainLayer.DrawSprites(camera, this.frameNum);
-        if (this.fadeOutRatio) {
+        if (this.fadeOutRatio && !editorHandler.isInEditMode) {
             camera.ctx.fillStyle = "rgba(0,0,0," + this.fadeOutRatio.toFixed(2) + ")";
             camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
+            var deadPlayer = this.mainLayer.sprites.find(function (a) { return a instanceof DeadPlayer; });
+            if (deadPlayer) {
+                this.mainLayer.DrawSprite(deadPlayer, camera, this.frameNum);
+            }
         }
         BenchmarkService.Log("DrawDone");
         if (player) {

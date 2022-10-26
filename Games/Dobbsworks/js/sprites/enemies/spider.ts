@@ -65,6 +65,7 @@ class Spurpider extends Enemy {
     OnBounce(): void {
         this.canBeBouncedOn = false;
         this.isInDeathAnimation = true;
+        this.OnDead();
     }
     
     GetFrameData(frameNum: number): FrameData {

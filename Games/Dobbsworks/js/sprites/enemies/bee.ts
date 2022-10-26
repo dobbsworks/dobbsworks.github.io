@@ -45,6 +45,7 @@ class BeeWithSunglasses extends Enemy {
 
     OnBounce(): void {
         this.ReplaceWithSprite(new DeadEnemy(this));
+        this.OnDead();
     }
 
     GetFrameData(frameNum: number): FrameData {

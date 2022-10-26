@@ -57,6 +57,7 @@ var BeeWithSunglasses = /** @class */ (function (_super) {
     };
     BeeWithSunglasses.prototype.OnBounce = function () {
         this.ReplaceWithSprite(new DeadEnemy(this));
+        this.OnDead();
     };
     BeeWithSunglasses.prototype.GetFrameData = function (frameNum) {
         var col = Math.floor(frameNum / 5) % 2;

@@ -88,4 +88,5 @@ var spriteTypes: SpriteType[] = [
     Wooly,
     WoolyBooly,
     GoldHeart,
+    PogoPiggle,
 ];

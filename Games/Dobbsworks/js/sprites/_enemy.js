@@ -55,6 +55,9 @@ var Enemy = /** @class */ (function (_super) {
                         var sprite = sprites_2[_a];
                         sprite.OnStrikeEnemy(this);
                     }
+                    if (!this.isExemptFromSpriteKillCheck) {
+                        this.OnDead();
+                    }
                 }
             }
         }

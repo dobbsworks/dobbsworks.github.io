@@ -42,7 +42,6 @@ var Player = /** @class */ (function (_super) {
         _this.maxBreath = 600;
         _this.currentBreath = 600;
         _this.breathTimer = 0; // current breath only recovers after breath timer runs out
-        _this.extraHits = 0;
         _this.iFrames = 0;
         _this.replayHandler = new ReplayHandler();
         _this.neutralTimer = 0;
@@ -178,10 +177,10 @@ var Player = /** @class */ (function (_super) {
         this.HandleBreath(isLosingBreath);
         this.isInQuicksand = ((_c = this.layer.map) === null || _c === void 0 ? void 0 : _c.waterLayer.GetTileByPixel(this.xMid, this.yBottom - 0.1).tileType.isQuicksand) || false;
         if (this.isOnGround || this.isClimbing || ((this.isInWater || this.isInQuicksand) && this.heldItem == null) || this.isTouchingStickyWall || ((_d = this.heldItem) === null || _d === void 0 ? void 0 : _d.canHangFrom)) {
-            this.coyoteTimer = 0;
+            if (this.age > 1)
+                this.coyoteTimer = 0;
         }
-        if (!this.isOnGround)
-            this.coyoteTimer++;
+        this.coyoteTimer++;
         var isJumpHeld = KeyboardHandler.IsKeyPressed(KeyAction.Action1, false);
         if (this.jumpTimer > -1) {
             if (isJumpHeld || this.forcedJumpTimer > 0)
@@ -215,6 +214,7 @@ var Player = /** @class */ (function (_super) {
         if (this.jumpBufferTimer > 3)
             this.jumpBufferTimer = -1;
         if (this.jumpBufferTimer > -1 && (this.coyoteTimer < 5 || this.IsNeighboringWallJumpTiles()) && this.forcedJumpTimer <= 0) {
+            console.log(this.coyoteTimer);
             this.Jump();
             this.isSliding = false;
         }
@@ -428,13 +428,17 @@ var Player = /** @class */ (function (_super) {
         var jumpWallRight = this.IsNeighboringWallJumpTilesSide(1);
         if (this.isTouchingStickyWall || this.wallDragDirection != 0 || jumpWallLeft || jumpWallRight) {
             this.dx = -this.wallClingDirection * this.moveSpeed;
-            if (jumpWallLeft)
-                this.dx = this.moveSpeed;
-            if (jumpWallRight)
-                this.dx = -this.moveSpeed;
             this.dy = -1.1; // less than normal to make sure no single-wall scaling
             this.direction = this.wallClingDirection == 1 ? -1 : 1;
             this.wallDragDirection = 0;
+            if (jumpWallLeft) {
+                this.dx = this.moveSpeed;
+                this.direction = 1;
+            }
+            if (jumpWallRight) {
+                this.dx = -this.moveSpeed;
+                this.direction = -1;
+            }
         }
         if (this.currentSlope !== 0) {
             this.dx += this.currentSlope / 2;
@@ -553,9 +557,12 @@ var Player = /** @class */ (function (_super) {
         var sprites = this.layer.sprites;
         for (var _i = 0, sprites_1 = sprites; _i < sprites_1.length; _i++) {
             var sprite = sprites_1[_i];
-            var aboutToOverlapFromAbove = this.xRight > sprite.x &&
-                this.x < sprite.xRight && this.yBottom > sprite.y && this.yBottom - 3 < sprite.y;
-            var landingOnTop = sprite.canBeBouncedOn && aboutToOverlapFromAbove;
+            var isHorizontalOverlap = this.xRight > sprite.x && this.x < sprite.xRight;
+            //let aboutToOverlapFromAbove = this.yBottom > sprite.y && this.yBottom - 3 < sprite.y;
+            var currentlyAbove = this.yBottom <= sprite.y + 3 || this.parentSprite == sprite;
+            var projectedBelow = this.yBottom + this.GetTotalDy() > sprite.y + sprite.GetTotalDy();
+            var aboutToOverlapFromAbove = currentlyAbove && projectedBelow;
+            var landingOnTop = sprite.canBeBouncedOn && aboutToOverlapFromAbove && isHorizontalOverlap;
             if (sprite instanceof Enemy) {
                 if (sprite.framesSinceThrown > 0 && sprite.framesSinceThrown < 25)
                     continue; // can't bounce on items that have just been thrown
@@ -564,7 +571,7 @@ var Player = /** @class */ (function (_super) {
                     sprite.OnBounce();
                     sprite.SharedOnBounce(); //enemy-specific method
                 }
-                else if (sprite.canStandOn && aboutToOverlapFromAbove) {
+                else if (sprite.canStandOn && aboutToOverlapFromAbove && isHorizontalOverlap) {
                 }
                 else if (!sprite.isInDeathAnimation && this.xRight > sprite.x && this.x < sprite.xRight && this.yBottom > sprite.y && this.y < sprite.yBottom) {
                     if (this.isSliding) {
@@ -645,20 +652,16 @@ var Player = /** @class */ (function (_super) {
         if (this.heldItem && this.heldItem instanceof GoldHeart)
             return;
         if (this.iFrames == 0) {
-            if (this.extraHits > 0) {
-                this.extraHits--;
+            var nextHeart_1 = this.layer.sprites.find(function (a) { return a instanceof ExtraHitHeartSmall && a.parent == _this; });
+            if (nextHeart_1) {
                 this.iFrames += 130;
                 audioHandler.PlaySound("hurt", true);
                 // hurt heart animation
-                var hearts = this.layer.sprites.filter(function (a) { return a instanceof ExtraHitHeartSmall; });
-                var heart_1 = hearts.find(function (a) { return a.parent == _this; });
-                if (heart_1) {
-                    var childHeart = hearts.find(function (a) { return a.parent == heart_1; });
-                    if (childHeart)
-                        childHeart.parent = this;
-                    heart_1.isActive = false;
-                    heart_1.ReplaceWithSpriteType(ExtraHitHeartSmallLoss);
-                }
+                var childHeart = this.layer.sprites.find(function (a) { return a instanceof ExtraHitHeartSmall && a.parent == nextHeart_1; });
+                if (childHeart)
+                    childHeart.parent = this;
+                nextHeart_1.isActive = false;
+                nextHeart_1.ReplaceWithSpriteType(ExtraHitHeartSmallLoss);
             }
             else {
                 this.OnPlayerDead();
@@ -668,6 +671,7 @@ var Player = /** @class */ (function (_super) {
     Player.prototype.OnPlayerDead = function () {
         if (!this.isActive)
             return;
+        this.OnDead();
         this.isActive = false;
         // log player death
         var newDeathCount = StorageService.IncrementDeathCounter(currentLevelCode);
@@ -969,6 +973,9 @@ var DeadPlayer = /** @class */ (function (_super) {
     DeadPlayer.prototype.Update = function () {
         this.ApplyGravity();
         this.MoveByVelocity();
+        if (this.age > 45) {
+            currentMap.fadeOutRatio = (this.age - 45) / 14;
+        }
         if (this.age > 60) {
             editorHandler.SwitchToEditMode();
             editorHandler.SwitchToPlayMode();

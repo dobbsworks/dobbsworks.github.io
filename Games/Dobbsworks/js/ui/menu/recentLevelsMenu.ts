@@ -228,6 +228,7 @@ class RecentLevelsMenu extends Menu {
                 let panel = new Panel(0, 0, rightPanelWidth, frames == 0 ? 50 : 100);
                 panel.layout = "vertical";
                 panel.backColor = "#0008";
+                panel.margin = 0;
 
                 let wrText = new UIText(0, 0, labelText, 14, "white");
                 wrText.xOffset = rightPanelWidth / 2;
@@ -238,14 +239,20 @@ class RecentLevelsMenu extends Menu {
                 if (frames > 0) {
                     let wrTimeText = new UIText(0, 0, Utility.FramesToTimeText(frames), 28, "white");
                     wrTimeText.xOffset = rightPanelWidth / 2;
-                    wrTimeText.yOffset = 6;
+                    wrTimeText.yOffset = 22;
                     panel.AddChild(wrTimeText);
                 }
 
+                let bottomLine = new Panel(0, 0, rightPanelWidth, 40);
+
                 let wrHolderText = new UIText(0, 0, holder ? holder.username : "Me", 20, "white");
-                wrHolderText.xOffset = rightPanelWidth / 2;
-                wrHolderText.yOffset = -5;
-                panel.AddChild(wrHolderText);
+                if (!holder) wrHolderText.xOffset = rightPanelWidth / 2;
+                wrHolderText.yOffset = 28;
+                if (holder) bottomLine.AddChild(new AvatarPanel(holder.avatar));
+                bottomLine.AddChild(wrHolderText);
+                bottomLine.margin = 0;
+                if (holder) bottomLine.AddChild(new Spacer(0,0,40,40));
+                panel.AddChild(bottomLine);
 
                 return panel;
             }
@@ -330,18 +337,31 @@ class CloudLevelButton extends Button {
         let texts = new Panel(0, 0, 230, 80);
         texts.layout = "vertical";
 
-        let fontSize = 20;
-        for (let text of [
-            levelDt.name,
-            "by " + levelListing.author.username,
-            //new Date(Date.parse((levelDt.timestamp + "+00:00"))).toLocaleString()
-        ]) {
-            let textLine = new UIText(0, 0, text, fontSize, "white");
-            fontSize = 14;
-            textLine.textAlign = "left";
-            textLine.yOffset = 20;
-            texts.AddChild(textLine);
-        }
+
+        let titleLine = new Panel(0, 0, 150, 25);
+        titleLine.margin = 0;
+
+        let titleLineText = new UIText(0, 0, levelDt.name, 20, "white");
+        titleLineText.textAlign = "left";
+        titleLineText.yOffset = 20;
+        titleLine.AddChild(titleLineText);
+
+        let byLine = new Panel(0, 0, 150, 20);
+        byLine.margin = 0;
+        
+        byLine.AddChild(new AvatarPanel(levelListing.author.avatar));
+
+        let byLineText = new UIText(0, 0, "by " + levelListing.author.username, 14, "white");
+        byLineText.textAlign = "left";
+        byLineText.yOffset = 20;
+
+        let byLineTextContainer = new Panel(0, 0, 180, 20);
+        byLineTextContainer.AddChild(byLineText);
+        byLine.AddChild(byLineTextContainer);
+
+        texts.AddChild(titleLine);
+        texts.AddChild(byLine);
+
         texts.AddChild(new Spacer(0, 0, 0, 0));
 
         this.AddChild(texts);

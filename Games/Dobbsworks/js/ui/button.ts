@@ -7,6 +7,18 @@ class Button extends Panel {
     mouseoverBackColor = "#224b";
     isMousedOver: boolean = false;
     isNoisy: boolean = false;
+    isSelected: boolean = false;
+
+    constructor(x: number, y: number, width: number, height: number) {
+        super(x, y, width, height);
+        this.onClickEvents.push(() => {
+            if (this.radioKey !== "") {
+                let buttons = <Button[]>uiHandler.GetAllElements().
+                    filter(a => a instanceof Button && a != this && a.radioKey === this.radioKey);
+                buttons.forEach(a => a.isSelected = false);
+            }
+        })
+    }
 
     Update(): void {
         super.Update();

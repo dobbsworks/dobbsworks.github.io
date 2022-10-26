@@ -21,7 +21,7 @@ class LevelMap {
     backgroundLayers: BackgroundLayer[] = [];
     frameNum: number = 0;
     doorTransition: DoorTransition | null = null;
-    fadeOutRatio: number = 0;
+    fadeOutRatio: number = 1;
     bgColorTop: string = "#87cefa";
     bgColorBottom: string = "#ffffff";
     bgColorTopPositionRatio: number = 0;
@@ -59,6 +59,10 @@ class LevelMap {
             this.cameraLocksHorizontal.forEach(a => a.isActive = false);
             this.cameraLocksHorizontal.sort((a, b) => a.x - b.x);
         }
+        if (this.fadeOutRatio > 0) {
+            this.fadeOutRatio -= 0.2;
+        }
+        if (this.fadeOutRatio < 0) this.fadeOutRatio = 0;
         camera.Update();
         this.fluidLevels.forEach(a => {
             if (a.currentY == -1) a.currentY = (this.mapHeight + 1) * 12;
@@ -109,7 +113,7 @@ class LevelMap {
                 let onScreenSprites = this.mainLayer.sprites.filter(a => a.IsOnScreen());
                 let deletedSprite = false;
                 for (let sprite of onScreenSprites) {
-                    if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof) continue;
+                    if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof || sprite instanceof KeyDomino) continue;
                     let xs = [sprite.x, sprite.xRight, sprite.xMid].map(a => Math.floor(a / this.mainLayer.tileWidth)).filter(Utility.OnlyUnique);
                     let ys = [sprite.y, sprite.yBottom, sprite.yMid].map(a => Math.floor(a / this.mainLayer.tileHeight)).filter(Utility.OnlyUnique);
                     for (let tileX of xs) for (let tileY of ys) {
@@ -173,9 +177,13 @@ class LevelMap {
         this.fluidLevels.forEach(a => a.Draw(camera));
         this.mainLayer.DrawSprites(camera, this.frameNum);
 
-        if (this.fadeOutRatio) {
+        if (this.fadeOutRatio && !editorHandler.isInEditMode) {
             camera.ctx.fillStyle = `rgba(0,0,0,${this.fadeOutRatio.toFixed(2)})`;
             camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
+            let deadPlayer = this.mainLayer.sprites.find(a => a instanceof DeadPlayer);
+            if (deadPlayer) {
+                this.mainLayer.DrawSprite(deadPlayer, camera, this.frameNum);
+            }
         }
         BenchmarkService.Log("DrawDone");
 

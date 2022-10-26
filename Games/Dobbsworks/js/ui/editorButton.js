@@ -18,16 +18,8 @@ var EditorButton = /** @class */ (function (_super) {
         if (tooltip === void 0) { tooltip = ""; }
         var _this = _super.call(this, 0, 0, 60, 60) || this;
         _this.tooltip = tooltip;
-        _this.isSelected = false;
         _this.radioKey = "";
         _this.AddChild(new ImageFromTile(0, 0, 50, 50, imageTile));
-        _this.onClickEvents.push(function () {
-            if (_this.radioKey !== "") {
-                var buttons = uiHandler.GetAllElements().
-                    filter(function (a) { return a instanceof EditorButton && a != _this && a.radioKey === _this.radioKey; });
-                buttons.forEach(function (a) { return a.isSelected = false; });
-            }
-        });
         return _this;
     }
     EditorButton.prototype.CreateCopy = function () {

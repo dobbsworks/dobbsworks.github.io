@@ -171,6 +171,7 @@ class AudioHandler {
         "waltz",
         "faire",
         "choir",
+        "meditate",
     ]
 }
 

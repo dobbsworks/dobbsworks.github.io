@@ -76,6 +76,7 @@ var Spurpider = /** @class */ (function (_super) {
     Spurpider.prototype.OnBounce = function () {
         this.canBeBouncedOn = false;
         this.isInDeathAnimation = true;
+        this.OnDead();
     };
     Spurpider.prototype.GetFrameData = function (frameNum) {
         var frameCol = 0;
