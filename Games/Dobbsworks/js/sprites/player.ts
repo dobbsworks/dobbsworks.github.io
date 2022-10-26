@@ -170,9 +170,9 @@ class Player extends Sprite {
         this.isInQuicksand = this.layer.map?.waterLayer.GetTileByPixel(this.xMid, this.yBottom - 0.1).tileType.isQuicksand || false;
 
         if (this.isOnGround || this.isClimbing || ((this.isInWater || this.isInQuicksand) && this.heldItem == null) || this.isTouchingStickyWall || (this.heldItem?.canHangFrom)) {
-            this.coyoteTimer = 0;
+            if (this.age > 1) this.coyoteTimer = 0;
         }
-        if (!this.isOnGround) this.coyoteTimer++;
+        this.coyoteTimer++;
 
         let isJumpHeld = KeyboardHandler.IsKeyPressed(KeyAction.Action1, false);
         if (this.jumpTimer > -1) {
@@ -201,6 +201,7 @@ class Player extends Sprite {
         if (this.jumpBufferTimer > 3) this.jumpBufferTimer = -1;
 
         if (this.jumpBufferTimer > -1 && (this.coyoteTimer < 5 || this.IsNeighboringWallJumpTiles()) && this.forcedJumpTimer <= 0) {
+            console.log(this.coyoteTimer)
             this.Jump();
             this.isSliding = false;
         }
@@ -537,13 +538,14 @@ class Player extends Sprite {
             let isHorizontalOverlap = this.xRight > sprite.x && this.x < sprite.xRight;
 
             //let aboutToOverlapFromAbove = this.yBottom > sprite.y && this.yBottom - 3 < sprite.y;
-            let currentlyAbove = this.yBottom <= sprite.y;
+            let currentlyAbove = this.yBottom <= sprite.y + 3 || this.parentSprite == sprite;
             let projectedBelow = this.yBottom + this.GetTotalDy() > sprite.y + sprite.GetTotalDy();
             let aboutToOverlapFromAbove = currentlyAbove && projectedBelow;
 
             let landingOnTop = sprite.canBeBouncedOn && aboutToOverlapFromAbove && isHorizontalOverlap;
 
             if (sprite instanceof Enemy) {
+
                 if (sprite.framesSinceThrown > 0 && sprite.framesSinceThrown < 25) continue; // can't bounce on items that have just been thrown
                 if (landingOnTop) {
                     this.Bounce();
@@ -638,6 +640,8 @@ class Player extends Sprite {
 
     OnPlayerDead(): void {
         if (!this.isActive) return;
+        
+        this.OnDead();
         this.isActive = false;
         // log player death
         let newDeathCount = StorageService.IncrementDeathCounter(currentLevelCode);
@@ -945,6 +949,9 @@ class DeadPlayer extends Sprite {
     Update(): void {
         this.ApplyGravity();
         this.MoveByVelocity();
+        if (this.age > 45) {
+            currentMap.fadeOutRatio = (this.age - 45) / 14;
+        }
         if (this.age > 60) {
             editorHandler.SwitchToEditMode();
             editorHandler.SwitchToPlayMode();

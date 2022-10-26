@@ -246,19 +246,22 @@ var LevelLayer = /** @class */ (function () {
         orderedSprites.sort(function (a, b) { return a.zIndex - b.zIndex; });
         for (var _i = 0, orderedSprites_2 = orderedSprites; _i < orderedSprites_2.length; _i++) {
             var sprite = orderedSprites_2[_i];
-            sprite.OnBeforeDraw(camera);
-            var frameData = sprite.GetFrameData(frameNum);
-            if ('xFlip' in frameData) {
-                this.DrawFrame(frameData, scale, sprite);
-            }
-            else {
-                for (var _a = 0, _b = frameData; _a < _b.length; _a++) {
-                    var fd = _b[_a];
-                    this.DrawFrame(fd, scale, sprite);
-                }
-            }
-            sprite.OnAfterDraw(camera);
+            this.DrawSprite(sprite, camera, frameNum);
         }
+    };
+    LevelLayer.prototype.DrawSprite = function (sprite, camera, frameNum) {
+        sprite.OnBeforeDraw(camera);
+        var frameData = sprite.GetFrameData(frameNum);
+        if ('xFlip' in frameData) {
+            this.DrawFrame(frameData, camera.scale, sprite);
+        }
+        else {
+            for (var _i = 0, _a = frameData; _i < _a.length; _i++) {
+                var fd = _a[_i];
+                this.DrawFrame(fd, camera.scale, sprite);
+            }
+        }
+        sprite.OnAfterDraw(camera);
     };
     LevelLayer.prototype.DrawFrame = function (frameData, scale, sprite) {
         var ctx = camera.ctx;

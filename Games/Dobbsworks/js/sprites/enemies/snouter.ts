@@ -46,6 +46,7 @@ class Snouter extends Enemy {
         this.isInDeathAnimation = true;
         this.dx = 0;
         this.dy = 0;
+        this.OnDead();
     }
 
     GetFrameData(frameNum: number): FrameData {

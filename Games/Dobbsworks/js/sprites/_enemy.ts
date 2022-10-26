@@ -37,6 +37,9 @@ abstract class Enemy extends Sprite {
                     for (let sprite of sprites) {
                         sprite.OnStrikeEnemy(this);
                     }
+                    if (!this.isExemptFromSpriteKillCheck) {
+                        this.OnDead();
+                    }
                 }
             }
         }

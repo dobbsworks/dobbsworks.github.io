@@ -41,7 +41,7 @@ var Biggle = /** @class */ (function (_super) {
         [1, -1].forEach(function (dir) {
             var pig = new Piggle(_this.xMid + dir * 6 - 5.5, _this.yMid, _this.layer, []);
             _this.layer.sprites.push(pig);
-            pig.dx = dir * 2;
+            pig.dx = dir * 0.5;
             pig.dy = -1;
             pig.direction = dir == -1 ? -1 : 1;
         });

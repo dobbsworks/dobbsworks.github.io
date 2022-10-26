@@ -86,6 +86,7 @@ var Snoworm = /** @class */ (function (_super) {
         else {
             this.bounceTimer++;
             this.canBeBouncedOn = false;
+            this.OnDead();
         }
         this.iframes = 10;
     };
@@ -124,6 +125,7 @@ var SnowmanWormBody = /** @class */ (function (_super) {
         _this.bounceTimer = 0;
         _this.parent = null;
         _this.childNumber = 0;
+        _this.isExemptFromSpriteKillCheck = true;
         return _this;
     }
     SnowmanWormBody.prototype.Update = function () {

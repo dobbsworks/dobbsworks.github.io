@@ -131,6 +131,8 @@ class GoldHeart extends Sprite {
     respectsSolidTiles = true;
     canBeHeld = true;
     isExemptFromSilhoutte = true;
+    isBroken = false;
+    brokenTimer = 0;
 
     Update(): void {
         this.ApplyGravity();
@@ -138,14 +140,34 @@ class GoldHeart extends Sprite {
         this.ReactToWater();
         this.ReactToPlatformsAndSolids();
         this.MoveByVelocity();
+
+        if (this.isBroken) {
+            this.canBeHeld = false;
+            this.dx = 0;
+            this.dy = -0.2;
+            if (player && player.heldItem == this) player.heldItem = null;
+            this.brokenTimer++;
+            if (this.brokenTimer > 60) {
+                this.dy = 0;
+            }
+        }
     }
 
     GetFrameData(frameNum: number): FrameData {
+        if (this.isBroken && Math.floor(frameNum / 4) % 2 == 0 && this.brokenTimer < 60) {
+            return {
+                imageTile: tiles["empty"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            };
+        }
         return {
-            imageTile: tiles["goldHeart"][0][0],
+            imageTile: tiles["goldHeart"][this.isBroken ? 1 : 0][0],
             xFlip: false,
             yFlip: false,
-            xOffset: 0,
+            xOffset: 1,
             yOffset: 0
         };
     }

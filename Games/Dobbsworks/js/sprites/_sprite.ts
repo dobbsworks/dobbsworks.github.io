@@ -47,7 +47,7 @@ abstract class Sprite {
     public isExemptFromSilhoutte = false;
 
     public age: number = 0;
-    public framesSinceThrown: number = 100;
+    public framesSinceThrown: number = -1;
     public isPlatform: boolean = false;
     public isSolidBox: boolean = false;
     public parentSprite: Sprite | null = null;
@@ -62,6 +62,7 @@ abstract class Sprite {
     public anchor: Direction | null = Direction.Down;
     public maxAllowed: number = -1; // -1 for no limit
     public isRequired: boolean = false;
+    public isExemptFromSpriteKillCheck: boolean = false;
 
 
     protected rotation: number = 0; // used for animating round objects
@@ -91,7 +92,7 @@ abstract class Sprite {
 
     SharedUpdate(): void {
         this.age++;
-        this.framesSinceThrown++;
+        if (this.framesSinceThrown >= 0) this.framesSinceThrown++;
         this.gustUpTimer--;
         if (!this.respectsSolidTiles) this.isOnGround = false;
 
@@ -801,7 +802,6 @@ abstract class Sprite {
         this.dx += acceleration * (targetDx > this.dx ? 1 : -1);
         if (this.dx > targetDx && targetDx >= 0 && Math.abs(this.dx - targetDx) < acceleration) this.dx = targetDx;
         if (this.dx < targetDx && targetDx <= 0 && Math.abs(this.dx - targetDx) < acceleration) this.dx = targetDx;
-        if (this instanceof SapphireSnail && debugMode) console.log(acceleration, targetDx, this.dx)
     }
 
     public AccelerateVertically(acceleration: number, targetDy: number): void {
@@ -828,4 +828,9 @@ abstract class Sprite {
 
     OnBeforeDraw(camera: Camera): void { }
     OnAfterDraw(camera: Camera): void { }
+
+    OnDead(): void {
+        let hearts = <GoldHeart[]>this.layer.sprites.filter(a => a instanceof GoldHeart);
+        hearts.forEach(a => a.isBroken = true);
+    }
 }

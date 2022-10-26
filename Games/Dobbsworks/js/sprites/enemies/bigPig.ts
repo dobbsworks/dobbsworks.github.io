@@ -24,7 +24,7 @@ class Biggle extends Enemy {
         [1, -1].forEach(dir => {
             let pig = new Piggle(this.xMid + dir * 6 - 5.5, this.yMid, this.layer, []);
             this.layer.sprites.push(pig);
-            pig.dx = dir * 2;
+            pig.dx = dir * 0.5;
             pig.dy = -1;
             pig.direction = dir == -1 ? -1 : 1;
         });

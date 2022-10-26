@@ -33,6 +33,8 @@ var Piggle = /** @class */ (function (_super) {
             return;
         if (this.isInDeathAnimation) {
             this.squishTimer++;
+            this.dx = 0;
+            this.dy = 0;
             if (this.squishTimer > 30) {
                 this.isActive = false;
             }
@@ -49,6 +51,7 @@ var Piggle = /** @class */ (function (_super) {
         this.isInDeathAnimation = true;
         this.dx = 0;
         this.dy = 0;
+        this.OnDead();
     };
     Piggle.prototype.GetFrameData = function (frameNum) {
         var frames = [0, 1, 2, 1, 0, 3, 4, 4, 3];
@@ -128,6 +131,7 @@ var PogoPiggle = /** @class */ (function (_super) {
             this.isInDeathAnimation = true;
             this.dx = 0;
             this.dy = 0;
+            this.OnDead();
         }
     };
     PogoPiggle.prototype.GetFrameData = function (frameNum) {

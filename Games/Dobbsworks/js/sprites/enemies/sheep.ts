@@ -2,6 +2,7 @@ class Wooly extends Piggle {
     frameRow = 0;
     imageSource = "sheep";
     turnAtLedges = false;
+    bounceSoundId = "baa-dead";
 }
 
 
@@ -16,6 +17,7 @@ class WoolyBooly extends Hoggle {
     frameRow = 1;
     state: BoolyState = BoolyState.Patrol;
     windupTimer = 0;
+    bounceSoundId = "baa-dead";
 
     // enemies
     // canBeHelds
@@ -51,6 +53,7 @@ class WoolyBooly extends Hoggle {
 
                     if (isPlayerInLineOfSightVertically && isPlayerInLineOfSightHorizontally) {
                         this.state = BoolyState.WindUp;
+                        audioHandler.PlaySound("baa", false);
                         this.windupTimer = 0;
                         this.dx = 0;
                         this.direction = (player.xMid < this.xMid ? -1 : 1);
@@ -129,6 +132,7 @@ class WoolyBooly extends Hoggle {
         this.dx = -0.8 * direction;
         this.dy = -0.7;
         this.state = BoolyState.Patrol;
+        audioHandler.PlaySound("crash", false);
     }
 
 }

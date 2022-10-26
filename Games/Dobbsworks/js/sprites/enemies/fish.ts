@@ -44,6 +44,7 @@ class AFish extends Enemy {
 
     OnBounce(): void {
         this.ReplaceWithSprite(new DeadEnemy(this));
+        this.OnDead();
     }
 
     GetFrameData(frameNum: number): FrameData {
@@ -85,6 +86,7 @@ class FloppingFish extends Sprite {
             let dead = this.ReplaceWithSprite(new DeadEnemy(this));
             dead.dy = -1;
             dead.dx = 0.5;
+            this.OnDead();
         }
     }
 

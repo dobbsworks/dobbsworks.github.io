@@ -10,6 +10,7 @@ class RollingSnailShell extends Enemy {
     floatsInWater = true;
     hurtsEnemies = true;
 
+
     Update(): void {
         this.ApplyGravity();
         if (this.isTouchingLeftWall) {

@@ -244,17 +244,22 @@ class LevelLayer {
         let orderedSprites = [...this.sprites];
         orderedSprites.sort((a, b) => a.zIndex - b.zIndex);
         for (let sprite of orderedSprites) {
-            sprite.OnBeforeDraw(camera);
-            let frameData = sprite.GetFrameData(frameNum);
-            if ('xFlip' in frameData) {
-                this.DrawFrame(frameData, scale, sprite);
-            } else {
-                for (let fd of <FrameData[]>frameData) {
-                    this.DrawFrame(fd, scale, sprite);
-                }
-            }
-            sprite.OnAfterDraw(camera);
+            this.DrawSprite(sprite, camera, frameNum);
         }
+    }
+
+    DrawSprite(sprite: Sprite, camera: Camera, frameNum: number): void {
+        sprite.OnBeforeDraw(camera);
+        let frameData = sprite.GetFrameData(frameNum);
+        if ('xFlip' in frameData) {
+            this.DrawFrame(frameData, camera.scale, sprite);
+        } else {
+            for (let fd of <FrameData[]>frameData) {
+                this.DrawFrame(fd, camera.scale, sprite);
+            }
+        }
+        sprite.OnAfterDraw(camera);
+
     }
 
     public DrawFrame(frameData: FrameData, scale: number, sprite: Sprite) {

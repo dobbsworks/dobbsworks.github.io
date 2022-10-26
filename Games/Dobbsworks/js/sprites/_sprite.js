@@ -27,7 +27,7 @@ var Sprite = /** @class */ (function () {
         this.canMotorHold = true;
         this.isExemptFromSilhoutte = false;
         this.age = 0;
-        this.framesSinceThrown = 100;
+        this.framesSinceThrown = -1;
         this.isPlatform = false;
         this.isSolidBox = false;
         this.parentSprite = null;
@@ -40,6 +40,7 @@ var Sprite = /** @class */ (function () {
         this.anchor = Direction.Down;
         this.maxAllowed = -1; // -1 for no limit
         this.isRequired = false;
+        this.isExemptFromSpriteKillCheck = false;
         this.rotation = 0; // used for animating round objects
         this.rolls = false;
         this.isPowerSource = false;
@@ -96,7 +97,8 @@ var Sprite = /** @class */ (function () {
     };
     Sprite.prototype.SharedUpdate = function () {
         this.age++;
-        this.framesSinceThrown++;
+        if (this.framesSinceThrown >= 0)
+            this.framesSinceThrown++;
         this.gustUpTimer--;
         if (!this.respectsSolidTiles)
             this.isOnGround = false;
@@ -814,8 +816,6 @@ var Sprite = /** @class */ (function () {
             this.dx = targetDx;
         if (this.dx < targetDx && targetDx <= 0 && Math.abs(this.dx - targetDx) < acceleration)
             this.dx = targetDx;
-        if (this instanceof SapphireSnail && debugMode)
-            console.log(acceleration, targetDx, this.dx);
     };
     Sprite.prototype.AccelerateVertically = function (acceleration, targetDy) {
         this.dy += acceleration * (targetDy > this.dy ? 1 : -1);
@@ -841,5 +841,9 @@ var Sprite = /** @class */ (function () {
     };
     Sprite.prototype.OnBeforeDraw = function (camera) { };
     Sprite.prototype.OnAfterDraw = function (camera) { };
+    Sprite.prototype.OnDead = function () {
+        var hearts = this.layer.sprites.filter(function (a) { return a instanceof GoldHeart; });
+        hearts.forEach(function (a) { return a.isBroken = true; });
+    };
     return Sprite;
 }());

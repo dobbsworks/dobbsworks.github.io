@@ -58,6 +58,7 @@ var Shrubbert = /** @class */ (function (_super) {
             this.isActive = false;
             var deadSprite = new DeadEnemy(this);
             this.layer.sprites.push(deadSprite);
+            this.OnDead();
         }
     };
     Shrubbert.prototype.GetFrameData = function (frameNum) {

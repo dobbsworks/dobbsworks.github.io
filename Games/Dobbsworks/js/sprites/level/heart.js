@@ -162,6 +162,8 @@ var GoldHeart = /** @class */ (function (_super) {
         _this.respectsSolidTiles = true;
         _this.canBeHeld = true;
         _this.isExemptFromSilhoutte = true;
+        _this.isBroken = false;
+        _this.brokenTimer = 0;
         return _this;
     }
     GoldHeart.prototype.Update = function () {
@@ -170,13 +172,33 @@ var GoldHeart = /** @class */ (function (_super) {
         this.ReactToWater();
         this.ReactToPlatformsAndSolids();
         this.MoveByVelocity();
+        if (this.isBroken) {
+            this.canBeHeld = false;
+            this.dx = 0;
+            this.dy = -0.2;
+            if (player && player.heldItem == this)
+                player.heldItem = null;
+            this.brokenTimer++;
+            if (this.brokenTimer > 60) {
+                this.dy = 0;
+            }
+        }
     };
     GoldHeart.prototype.GetFrameData = function (frameNum) {
+        if (this.isBroken && Math.floor(frameNum / 4) % 2 == 0 && this.brokenTimer < 60) {
+            return {
+                imageTile: tiles["empty"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            };
+        }
         return {
-            imageTile: tiles["goldHeart"][0][0],
+            imageTile: tiles["goldHeart"][this.isBroken ? 1 : 0][0],
             xFlip: false,
             yFlip: false,
-            xOffset: 0,
+            xOffset: 1,
             yOffset: 0
         };
     };

@@ -1,0 +1,12 @@
+Sprite
+    add file ref to index.html
+    if available in editor
+        add to spriteList
+        add to editor panel
+    if enemy
+        SFX!
+        Apply onDead ... todo, how does biggle work, snail, snowworm
+
+Tile
+    add to tileType manifest
+    add to editor 

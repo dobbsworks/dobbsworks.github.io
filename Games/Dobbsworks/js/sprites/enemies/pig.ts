@@ -16,6 +16,8 @@ class Piggle extends Enemy {
         if (!this.WaitForOnScreen()) return;
         if (this.isInDeathAnimation) {
             this.squishTimer++;
+            this.dx = 0;
+            this.dy = 0;
             if (this.squishTimer > 30) {
                 this.isActive = false;
             }
@@ -32,6 +34,7 @@ class Piggle extends Enemy {
         this.isInDeathAnimation = true;
         this.dx = 0;
         this.dy = 0;
+        this.OnDead();
     }
 
     GetFrameData(frameNum: number): FrameData {
@@ -106,6 +109,7 @@ class PogoPiggle extends Enemy {
             this.isInDeathAnimation = true;
             this.dx = 0;
             this.dy = 0;
+            this.OnDead();
         }
     }
 

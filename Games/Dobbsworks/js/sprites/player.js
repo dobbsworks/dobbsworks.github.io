@@ -177,10 +177,10 @@ var Player = /** @class */ (function (_super) {
         this.HandleBreath(isLosingBreath);
         this.isInQuicksand = ((_c = this.layer.map) === null || _c === void 0 ? void 0 : _c.waterLayer.GetTileByPixel(this.xMid, this.yBottom - 0.1).tileType.isQuicksand) || false;
         if (this.isOnGround || this.isClimbing || ((this.isInWater || this.isInQuicksand) && this.heldItem == null) || this.isTouchingStickyWall || ((_d = this.heldItem) === null || _d === void 0 ? void 0 : _d.canHangFrom)) {
-            this.coyoteTimer = 0;
+            if (this.age > 1)
+                this.coyoteTimer = 0;
         }
-        if (!this.isOnGround)
-            this.coyoteTimer++;
+        this.coyoteTimer++;
         var isJumpHeld = KeyboardHandler.IsKeyPressed(KeyAction.Action1, false);
         if (this.jumpTimer > -1) {
             if (isJumpHeld || this.forcedJumpTimer > 0)
@@ -214,6 +214,7 @@ var Player = /** @class */ (function (_super) {
         if (this.jumpBufferTimer > 3)
             this.jumpBufferTimer = -1;
         if (this.jumpBufferTimer > -1 && (this.coyoteTimer < 5 || this.IsNeighboringWallJumpTiles()) && this.forcedJumpTimer <= 0) {
+            console.log(this.coyoteTimer);
             this.Jump();
             this.isSliding = false;
         }
@@ -558,7 +559,7 @@ var Player = /** @class */ (function (_super) {
             var sprite = sprites_1[_i];
             var isHorizontalOverlap = this.xRight > sprite.x && this.x < sprite.xRight;
             //let aboutToOverlapFromAbove = this.yBottom > sprite.y && this.yBottom - 3 < sprite.y;
-            var currentlyAbove = this.yBottom <= sprite.y;
+            var currentlyAbove = this.yBottom <= sprite.y + 3 || this.parentSprite == sprite;
             var projectedBelow = this.yBottom + this.GetTotalDy() > sprite.y + sprite.GetTotalDy();
             var aboutToOverlapFromAbove = currentlyAbove && projectedBelow;
             var landingOnTop = sprite.canBeBouncedOn && aboutToOverlapFromAbove && isHorizontalOverlap;
@@ -670,6 +671,7 @@ var Player = /** @class */ (function (_super) {
     Player.prototype.OnPlayerDead = function () {
         if (!this.isActive)
             return;
+        this.OnDead();
         this.isActive = false;
         // log player death
         var newDeathCount = StorageService.IncrementDeathCounter(currentLevelCode);
@@ -971,6 +973,9 @@ var DeadPlayer = /** @class */ (function (_super) {
     DeadPlayer.prototype.Update = function () {
         this.ApplyGravity();
         this.MoveByVelocity();
+        if (this.age > 45) {
+            currentMap.fadeOutRatio = (this.age - 45) / 14;
+        }
         if (this.age > 60) {
             editorHandler.SwitchToEditMode();
             editorHandler.SwitchToPlayMode();

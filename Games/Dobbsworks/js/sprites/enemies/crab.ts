@@ -24,6 +24,7 @@ class DrSnips extends Enemy {
             this.isActive = false;
             let deadSprite = new DeadEnemy(this);
             this.layer.sprites.push(deadSprite);
+            this.OnDead();
         }
     }
 

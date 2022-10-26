@@ -23,6 +23,7 @@ var AudioHandler = /** @class */ (function () {
             "waltz",
             "faire",
             "choir",
+            "meditate",
         ];
     }
     AudioHandler.prototype.Initialize = function () {

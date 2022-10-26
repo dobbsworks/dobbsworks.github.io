@@ -40,6 +40,7 @@ var SnowtemPole = /** @class */ (function (_super) {
         }
         else {
             this.isActive = false;
+            this.OnDead();
         }
         var deadBody = new SnowmanWormBody(this.x, this.yBottom - 6, this.layer, []);
         var spr = new DeadEnemy(deadBody);

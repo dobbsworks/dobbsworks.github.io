@@ -19,6 +19,7 @@ var Wooly = /** @class */ (function (_super) {
         _this.frameRow = 0;
         _this.imageSource = "sheep";
         _this.turnAtLedges = false;
+        _this.bounceSoundId = "baa-dead";
         return _this;
     }
     return Wooly;
@@ -37,6 +38,7 @@ var WoolyBooly = /** @class */ (function (_super) {
         _this.frameRow = 1;
         _this.state = BoolyState.Patrol;
         _this.windupTimer = 0;
+        _this.bounceSoundId = "baa-dead";
         return _this;
     }
     // enemies
@@ -66,6 +68,7 @@ var WoolyBooly = /** @class */ (function (_super) {
                             player.xMid >= this.xMid);
                     if (isPlayerInLineOfSightVertically && isPlayerInLineOfSightHorizontally) {
                         this.state = BoolyState.WindUp;
+                        audioHandler.PlaySound("baa", false);
                         this.windupTimer = 0;
                         this.dx = 0;
                         this.direction = (player.xMid < this.xMid ? -1 : 1);
@@ -145,6 +148,7 @@ var WoolyBooly = /** @class */ (function (_super) {
         this.dx = -0.8 * direction;
         this.dy = -0.7;
         this.state = BoolyState.Patrol;
+        audioHandler.PlaySound("crash", false);
     };
     return WoolyBooly;
 }(Hoggle));
