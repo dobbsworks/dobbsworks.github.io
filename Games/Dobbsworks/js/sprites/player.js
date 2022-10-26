@@ -562,6 +562,9 @@ var Player = /** @class */ (function (_super) {
             var currentlyAbove = this.yBottom <= sprite.y + 3 || this.parentSprite == sprite;
             var projectedBelow = this.yBottom + this.GetTotalDy() > sprite.y + sprite.GetTotalDy();
             var aboutToOverlapFromAbove = currentlyAbove && projectedBelow;
+            if (!aboutToOverlapFromAbove && sprite instanceof RollingSnailShell) {
+                aboutToOverlapFromAbove = this.yBottom > sprite.y && this.yBottom - 3 < sprite.y;
+            }
             var landingOnTop = sprite.canBeBouncedOn && aboutToOverlapFromAbove && isHorizontalOverlap;
             if (sprite instanceof Enemy) {
                 if (sprite.framesSinceThrown > 0 && sprite.framesSinceThrown < 25)
@@ -571,7 +574,7 @@ var Player = /** @class */ (function (_super) {
                     sprite.OnBounce();
                     sprite.SharedOnBounce(); //enemy-specific method
                 }
-                else if (sprite.canStandOn && aboutToOverlapFromAbove && isHorizontalOverlap) {
+                else if (sprite.canStandOn && currentlyAbove && isHorizontalOverlap) {
                 }
                 else if (!sprite.isInDeathAnimation && this.xRight > sprite.x && this.x < sprite.xRight && this.yBottom > sprite.y && this.y < sprite.yBottom) {
                     if (this.isSliding) {

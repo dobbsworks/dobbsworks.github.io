@@ -13,10 +13,10 @@ var ImageTile = /** @class */ (function () {
         if (xFlip === void 0) { xFlip = false; }
         if (yFlip === void 0) { yFlip = false; }
         if (scale === void 0) { scale = 1; }
-        if (xFlip || yFlip)
-            ctx.scale(xFlip ? -1 : 1, yFlip ? -1 : 1);
         destY += this.yOffset;
         destX += this.xOffset;
+        if (xFlip || yFlip)
+            ctx.scale(xFlip ? -1 : 1, yFlip ? -1 : 1);
         ctx.drawImage(this.src, this.xSrc + 0.1, this.ySrc + 0.1, this.width - 0.2, this.height - 0.2, xFlip ? -destX - this.width * zoom : destX, yFlip ? -destY - this.width * zoom : destY, this.width * zoom * scale, this.height * zoom * scale);
         if (xFlip || yFlip)
             ctx.scale(xFlip ? -1 : 1, yFlip ? -1 : 1);

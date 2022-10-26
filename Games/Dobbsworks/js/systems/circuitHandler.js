@@ -3,6 +3,7 @@ var CircuitHandler = /** @class */ (function () {
     function CircuitHandler() {
     }
     CircuitHandler.UpdateCircuits = function (layer, sprites) {
+        layer.Update();
         var allTiles = layer.wireFlatMap;
         var poweredSprites = sprites.filter(function (a) { return a.isPowerSource; });
         // remove power from all sprite-powered tiles

@@ -100,7 +100,7 @@ class LevelLayer {
         }
     }
 
-    SetTile(xIndex: number, yIndex: number, tileType: TileType): boolean {
+    SetTile(xIndex: number, yIndex: number, tileType: TileType, isInitialMapSetup = false): boolean {
         if (this.map && yIndex >= this.map?.mapHeight) {
             new LevelTile(xIndex, yIndex, TileType.Air, this);
             return false;
@@ -127,7 +127,7 @@ class LevelLayer {
             let existingAnimatedEntry = this.animatedTileList.find(a => a.tileX == xIndex && a.tileY == yIndex);
             if (existingAnimatedEntry) this.animatedTileList = this.animatedTileList.filter(a => a != existingAnimatedEntry);
             if (tileType instanceof AnimatedTileType) this.animatedTileList.push(existingTile);
-            if (this.layerType == TargetLayer.wire) this.wireFlatMap.push(existingTile);
+            if (!isInitialMapSetup && this.layerType == TargetLayer.wire) this.wireFlatMap.push(existingTile);
 
             return true;
         }
@@ -239,7 +239,6 @@ class LevelLayer {
     }
 
     DrawSprites(camera: Camera, frameNum: number): void {
-        let scale = camera.scale;
         // draw player on top of other sprites
         let orderedSprites = [...this.sprites];
         orderedSprites.sort((a, b) => a.zIndex - b.zIndex);
@@ -261,15 +260,17 @@ class LevelLayer {
         sprite.OnAfterDraw(camera);
 
     }
-
+    
     public DrawFrame(frameData: FrameData, scale: number, sprite: Sprite) {
         let ctx = camera.ctx;
-        if (sprite.isExemptFromSilhoutte) {
-            ctx = camera.ctx;
-        } else {
-            ctx = <CanvasRenderingContext2D>this.spriteCanvas.getContext("2d");
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-            ctx.imageSmoothingEnabled = false;
+        if (this.map && this.map.silhoutteColor) {
+            if (sprite.isExemptFromSilhoutte) {
+                ctx = camera.ctx;
+            } else {
+                ctx = <CanvasRenderingContext2D>this.spriteCanvas.getContext("2d");
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.imageSmoothingEnabled = false;
+            }
         }
 
         if (!ctx) return;
@@ -301,12 +302,15 @@ class LevelLayer {
         if (!sprite.isExemptFromSilhoutte) camera.ctx.drawImage(this.spriteCanvas, 0, 0);
     }
 
-    ExportToString(): string {
+    ExportToString(numColumns = 0): string {
         let allTiles = <TileType[]>Object.values(TileType.TileMap);
         let availableTileTypes = allTiles.filter(a => a.targetLayer == this.layerType);
         if (availableTileTypes.indexOf(TileType.Air) == -1) availableTileTypes.unshift(TileType.Air);
 
         let tileIndeces = this.tiles.flatMap(a => a).map(a => availableTileTypes.indexOf(a.tileType));
+        if (numColumns > 0) {
+            tileIndeces = this.tiles.filter((a,i) => i < numColumns).flatMap(a => a).map(a => availableTileTypes.indexOf(a.tileType));
+        }
         if (tileIndeces.some(a => a == -1)) {
             console.error("Layer includes invalid tile");
         }
@@ -350,7 +354,7 @@ class LevelLayer {
             let tileCount = Utility.IntFromB64(importStr[i + 2]) + 1;
             let tileType = availableTileTypes[tileIndex];
             for (let j = 0; j < tileCount; j++) {
-                ret.SetTile(x, y, tileType);
+                ret.SetTile(x, y, tileType, true);
                 y++;
                 if (y >= mapHeight) {
                     x++;

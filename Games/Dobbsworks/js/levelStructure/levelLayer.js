@@ -113,8 +113,9 @@ var LevelLayer = /** @class */ (function () {
             ctx.globalCompositeOperation = "source-over";
         }
     };
-    LevelLayer.prototype.SetTile = function (xIndex, yIndex, tileType) {
+    LevelLayer.prototype.SetTile = function (xIndex, yIndex, tileType, isInitialMapSetup) {
         var _a;
+        if (isInitialMapSetup === void 0) { isInitialMapSetup = false; }
         if (this.map && yIndex >= ((_a = this.map) === null || _a === void 0 ? void 0 : _a.mapHeight)) {
             new LevelTile(xIndex, yIndex, TileType.Air, this);
             return false;
@@ -141,7 +142,7 @@ var LevelLayer = /** @class */ (function () {
                 this.animatedTileList = this.animatedTileList.filter(function (a) { return a != existingAnimatedEntry_1; });
             if (tileType instanceof AnimatedTileType)
                 this.animatedTileList.push(existingTile);
-            if (this.layerType == TargetLayer.wire)
+            if (!isInitialMapSetup && this.layerType == TargetLayer.wire)
                 this.wireFlatMap.push(existingTile);
             return true;
         }
@@ -240,7 +241,6 @@ var LevelLayer = /** @class */ (function () {
         camera.ctx.drawImage(this.cachedCanvas, -camera.x * scale + camera.canvas.width / 2, -camera.y * scale + camera.canvas.height / 2, this.cachedCanvas.width * scale, this.cachedCanvas.height * scale);
     };
     LevelLayer.prototype.DrawSprites = function (camera, frameNum) {
-        var scale = camera.scale;
         // draw player on top of other sprites
         var orderedSprites = __spreadArrays(this.sprites);
         orderedSprites.sort(function (a, b) { return a.zIndex - b.zIndex; });
@@ -265,13 +265,15 @@ var LevelLayer = /** @class */ (function () {
     };
     LevelLayer.prototype.DrawFrame = function (frameData, scale, sprite) {
         var ctx = camera.ctx;
-        if (sprite.isExemptFromSilhoutte) {
-            ctx = camera.ctx;
-        }
-        else {
-            ctx = this.spriteCanvas.getContext("2d");
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-            ctx.imageSmoothingEnabled = false;
+        if (this.map && this.map.silhoutteColor) {
+            if (sprite.isExemptFromSilhoutte) {
+                ctx = camera.ctx;
+            }
+            else {
+                ctx = this.spriteCanvas.getContext("2d");
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.imageSmoothingEnabled = false;
+            }
         }
         if (!ctx)
             return;
@@ -292,13 +294,17 @@ var LevelLayer = /** @class */ (function () {
         if (!sprite.isExemptFromSilhoutte)
             camera.ctx.drawImage(this.spriteCanvas, 0, 0);
     };
-    LevelLayer.prototype.ExportToString = function () {
+    LevelLayer.prototype.ExportToString = function (numColumns) {
         var _this = this;
+        if (numColumns === void 0) { numColumns = 0; }
         var allTiles = Object.values(TileType.TileMap);
         var availableTileTypes = allTiles.filter(function (a) { return a.targetLayer == _this.layerType; });
         if (availableTileTypes.indexOf(TileType.Air) == -1)
             availableTileTypes.unshift(TileType.Air);
         var tileIndeces = this.tiles.flatMap(function (a) { return a; }).map(function (a) { return availableTileTypes.indexOf(a.tileType); });
+        if (numColumns > 0) {
+            tileIndeces = this.tiles.filter(function (a, i) { return i < numColumns; }).flatMap(function (a) { return a; }).map(function (a) { return availableTileTypes.indexOf(a.tileType); });
+        }
         if (tileIndeces.some(function (a) { return a == -1; })) {
             console.error("Layer includes invalid tile");
         }
@@ -342,7 +348,7 @@ var LevelLayer = /** @class */ (function () {
             var tileCount = Utility.IntFromB64(importStr[i + 2]) + 1;
             var tileType = availableTileTypes[tileIndex];
             for (var j = 0; j < tileCount; j++) {
-                ret.SetTile(x, y, tileType);
+                ret.SetTile(x, y, tileType, true);
                 y++;
                 if (y >= mapHeight) {
                     x++;

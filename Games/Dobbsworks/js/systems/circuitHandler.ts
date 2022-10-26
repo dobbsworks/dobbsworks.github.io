@@ -3,6 +3,7 @@ class CircuitHandler {
 
 
     public static UpdateCircuits(layer: LevelLayer, sprites: Sprite[]): void {
+        layer.Update();
         let allTiles = layer.wireFlatMap;
         let poweredSprites = sprites.filter(a => a.isPowerSource);
 

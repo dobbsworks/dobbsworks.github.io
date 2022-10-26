@@ -175,6 +175,7 @@ class LevelMap {
         this.wireLayer.DrawTiles(camera, this.frameNum);
         this.semisolidLayer.DrawTiles(camera, this.frameNum);
         this.fluidLevels.forEach(a => a.Draw(camera));
+        BenchmarkService.Log("DrawSprites");
         this.mainLayer.DrawSprites(camera, this.frameNum);
 
         if (this.fadeOutRatio && !editorHandler.isInEditMode) {
@@ -368,12 +369,15 @@ class LevelMap {
         ret.mapVersion = properties[0];
         let mapHeight = parseInt(properties[1]);
         ret.mapHeight = mapHeight;
+// 134ms
         ret.LoadBackgroundsFromImportString(importSegments[1]);
+// 482ms
 
         ret.GetLayerList().forEach((layer, index) => {
             let newLayer = LevelLayer.FromImportString(importSegments[index + 2], index, mapHeight, ret);
             ((<any>ret)[TargetLayer[index] + "Layer"]) = newLayer;
         })
+// 2947ms
 
         editorHandler.sprites = [];
         for (let spriteStr of importSegments[7].split(";")) {

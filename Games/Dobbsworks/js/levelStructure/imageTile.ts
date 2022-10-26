@@ -11,9 +11,10 @@ class ImageTile {
     public xOffset: number = 0;
 
     Draw(ctx: CanvasRenderingContext2D, destX: number, destY: number, zoom: number, xFlip: boolean = false, yFlip: boolean = false, scale: number = 1) {
-        if (xFlip || yFlip) ctx.scale(xFlip ? -1 : 1, yFlip ? -1 : 1);
         destY += this.yOffset;
         destX += this.xOffset;
+
+        if (xFlip || yFlip) ctx.scale(xFlip ? -1 : 1, yFlip ? -1 : 1);
         ctx.drawImage(this.src, this.xSrc + 0.1, this.ySrc + 0.1, this.width - 0.2, this.height - 0.2,
             xFlip ? -destX - this.width * zoom : destX,
             yFlip ? -destY - this.width * zoom : destY,

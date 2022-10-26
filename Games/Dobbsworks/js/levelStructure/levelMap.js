@@ -197,6 +197,7 @@ var LevelMap = /** @class */ (function () {
         this.wireLayer.DrawTiles(camera, this.frameNum);
         this.semisolidLayer.DrawTiles(camera, this.frameNum);
         this.fluidLevels.forEach(function (a) { return a.Draw(camera); });
+        BenchmarkService.Log("DrawSprites");
         this.mainLayer.DrawSprites(camera, this.frameNum);
         if (this.fadeOutRatio && !editorHandler.isInEditMode) {
             camera.ctx.fillStyle = "rgba(0,0,0," + this.fadeOutRatio.toFixed(2) + ")";
@@ -375,11 +376,14 @@ var LevelMap = /** @class */ (function () {
         ret.mapVersion = properties[0];
         var mapHeight = parseInt(properties[1]);
         ret.mapHeight = mapHeight;
+        // 134ms
         ret.LoadBackgroundsFromImportString(importSegments[1]);
+        // 482ms
         ret.GetLayerList().forEach(function (layer, index) {
             var newLayer = LevelLayer.FromImportString(importSegments[index + 2], index, mapHeight, ret);
             (ret[TargetLayer[index] + "Layer"]) = newLayer;
         });
+        // 2947ms
         editorHandler.sprites = [];
         for (var _i = 0, _a = importSegments[7].split(";"); _i < _a.length; _i++) {
             var spriteStr = _a[_i];
