@@ -162,7 +162,7 @@ class EditorHandler {
 
         let gizmoTypes: (SpriteType)[] = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform,
-            Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, Propeller, RedCannon, BlueCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon
+            Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, /*SpringBox,*/ Propeller, RedCannon, BlueCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon
         ];
         let gizmoButtons: EditorButton[] = gizmoTypes.map(a => new EditorButtonSprite(a));
         let keyIndex = gizmoButtons.findIndex(a => a instanceof EditorButtonSprite && a.spriteType == FlatKey);
@@ -322,12 +322,13 @@ class EditorHandler {
             new EditorButtonSprite(Checkpoint),
 
             new EditorButtonSprite(CameraLockHorizontal),
+            new EditorButtonSprite(CameraZoomIn),
+            new EditorButtonSprite(CameraZoomOut),
             new EditorButtonSprite(CameraScrollRight),
             new EditorButtonSprite(CameraScrollUp),
             new EditorButtonSprite(CameraScrollLeft),
             new EditorButtonSprite(CameraScrollDown),
-            new EditorButtonSprite(CameraZoomIn),
-            new EditorButtonSprite(CameraZoomOut),
+            new EditorButtonSprite(CameraScrollReset),
             //new EditorButtonSprite(CopperGear),
             //new EditorButtonSprite(IronGear),
         ], 3, 5);
@@ -447,7 +448,7 @@ class EditorHandler {
         this.SwitchToEditMode();
     }
 
-    SwitchToEditMode(): void {
+    SwitchToEditMode(isResettingLevel = false): void {
         this.transitionValue = 0;
         this.isInEditMode = true;
         camera.target = null;
@@ -464,7 +465,7 @@ class EditorHandler {
             this.editorParentElementsBottom.forEach(a => a.targetY -= 90);
         }
         if (this.exportString) {
-            currentMap = LevelMap.FromImportString(this.exportString, true);
+            currentMap = LevelMap.FromImportString(this.exportString, true, isResettingLevel);
         }
         camera.Reset();
     }

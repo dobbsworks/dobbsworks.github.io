@@ -71,6 +71,7 @@ class Player extends Sprite {
         //this.HandleBumpers();
         if (this.iFrames > 0) this.iFrames--;
         this.PlayerMovement(); // includes gravity
+        this.PlayerItem();
         this.HandleEnemies(); // includes gravity
         this.PlayerInertia();
         this.PushByAutoscroll();
@@ -78,7 +79,6 @@ class Player extends Sprite {
         this.SlideDownSlopes();
         if (!this.yoyoTarget) this.MoveByVelocity();
         this.ReactToSpikes();
-        this.PlayerItem();
         this.KeepInBounds();
         //console.log(this.x - oldX, this.y - oldY)
         this.frameNum += Math.max(Math.abs(this.dx / 4), Math.abs(this.dy / 4));
@@ -201,7 +201,6 @@ class Player extends Sprite {
         if (this.jumpBufferTimer > 3) this.jumpBufferTimer = -1;
 
         if (this.jumpBufferTimer > -1 && (this.coyoteTimer < 5 || this.IsNeighboringWallJumpTiles()) && this.forcedJumpTimer <= 0) {
-            console.log(this.coyoteTimer)
             this.Jump();
             this.isSliding = false;
         }
@@ -321,8 +320,8 @@ class Player extends Sprite {
                     this.dx += this.targetDirection * accel;
 
                     // cap speed
-                    if (this.dx * this.targetDirection > maxSpeed) {
-                        this.dx = this.targetDirection * maxSpeed;
+                    if (Math.abs(this.dx) > maxSpeed) {
+                        this.dx = maxSpeed * (this.dx > 0 ? 1 : -1);
                     }
                 }
             }
@@ -452,11 +451,18 @@ class Player extends Sprite {
     }
 
     IsNeighboringWallJumpTilesSide(direction: -1 | 1): boolean {
+        if (this.direction == -1) {
+            if (this.x % this.layer.tileWidth > 0.1) return false;
+        }
+        if (this.direction == 1) {
+            let xInTile = (this.x + this.width) % this.layer.tileWidth;
+            if (xInTile < 11.9 && xInTile !== 0) return false;
+        }
         let x = direction == 1 ? this.xRight + 0.1 : this.x - 0.1;
         return !this.isOnGround && ([
             this.layer.GetTileByPixel(x, this.y).GetSemisolidNeighbor(),
             this.layer.GetTileByPixel(x, this.yBottom).GetSemisolidNeighbor(),
-        ].some(a => a?.tileType.isJumpWall));
+        ].some(a => (a?.tileType == TileType.WallJumpLeft && direction == -1) || (a?.tileType == TileType.WallJumpRight && direction == 1)));
     }
 
     HandleBumpers(): void {
@@ -722,7 +728,7 @@ class Player extends Sprite {
                 // check for items we can hang from
                 let myX = this.x + this.GetTotalDx();
                 let myY = this.y + this.GetTotalDy();
-                for (let sprite of this.layer.sprites.filter(a => a.canHangFrom && a.framesSinceThrown > 30)) {
+                for (let sprite of this.layer.sprites.filter(a => a.canHangFrom && (a.framesSinceThrown > 30 || a.framesSinceThrown == -1))) {
                     // special overlap logic for y coords:
                     let spriteX = sprite.x + sprite.GetTotalDx();
                     let spriteYBottom = sprite.yBottom + sprite.GetTotalDy();
@@ -956,7 +962,7 @@ class DeadPlayer extends Sprite {
             currentMap.fadeOutRatio = (this.age - 45) / 14;
         }
         if (this.age > 60) {
-            editorHandler.SwitchToEditMode();
+            editorHandler.SwitchToEditMode(true);
             editorHandler.SwitchToPlayMode();
             if (camera.target) {
                 camera.x = camera.target.xMid;

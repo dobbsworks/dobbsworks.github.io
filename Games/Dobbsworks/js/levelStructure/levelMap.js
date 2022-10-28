@@ -61,7 +61,7 @@ var LevelMap = /** @class */ (function () {
             this.cameraLocksHorizontal.sort(function (a, b) { return a.x - b.x; });
         }
         if (this.fadeOutRatio > 0) {
-            this.fadeOutRatio -= 0.2;
+            this.fadeOutRatio -= 0.1;
         }
         if (this.fadeOutRatio < 0)
             this.fadeOutRatio = 0;
@@ -140,6 +140,8 @@ var LevelMap = /** @class */ (function () {
                             if (tile.tileType == TileType.SpriteKiller) {
                                 sprite.ReplaceWithSpriteType(Poof);
                                 deletedSprite = true;
+                                if (sprite instanceof Enemy)
+                                    sprite.OnDead();
                             }
                         }
                     }
@@ -367,17 +369,30 @@ var LevelMap = /** @class */ (function () {
             this.wireLayer,
         ];
     };
-    LevelMap.FromImportString = function (importStr, keepGhostFrames) {
+    LevelMap.FromImportString = function (importStr, keepGhostFrames, isResettingLevel) {
         if (keepGhostFrames === void 0) { keepGhostFrames = false; }
+        if (isResettingLevel === void 0) { isResettingLevel = false; }
         var importSegments = importStr.split("|");
         var properties = importSegments[0].split(";");
         var dummyLayer = new LevelLayer(TargetLayer.main);
+        var oldMap = currentMap;
         var ret = new LevelMap(dummyLayer, dummyLayer, dummyLayer, dummyLayer, dummyLayer);
         ret.mapVersion = properties[0];
         var mapHeight = parseInt(properties[1]);
         ret.mapHeight = mapHeight;
         // 134ms
-        ret.LoadBackgroundsFromImportString(importSegments[1]);
+        if (isResettingLevel || true) {
+            ret.LoadBackgroundsFromImportString(importSegments[1]);
+        }
+        else {
+            // TODO : about 0.5 seconds available if we can recycle existing backgrounds
+            // ret.backgroundLayers = oldMap.backgroundLayers;
+            // ret.bgColorTop = oldMap.bgColorTop;
+            // ret.bgColorTopPositionRatio = oldMap.bgColorTopPositionRatio;
+            // ret.bgColorBottomPositionRatio = oldMap.bgColorBottomPositionRatio;
+            // ret.overlayOpacity = oldMap.overlayOpacity;
+            // ret.bgColorBottom = oldMap.bgColorBottom;
+        }
         // 482ms
         ret.GetLayerList().forEach(function (layer, index) {
             var newLayer = LevelLayer.FromImportString(importSegments[index + 2], index, mapHeight, ret);
@@ -385,30 +400,7 @@ var LevelMap = /** @class */ (function () {
         });
         // 2947ms
         editorHandler.sprites = [];
-        for (var _i = 0, _a = importSegments[7].split(";"); _i < _a.length; _i++) {
-            var spriteStr = _a[_i];
-            if (!spriteStr)
-                continue;
-            var spriteIndex = Utility.IntFromB64(spriteStr.slice(0, 2));
-            var spriteX = Utility.IntFromB64(spriteStr.slice(2, 4));
-            var spriteY = Utility.IntFromB64(spriteStr.slice(4, 6));
-            var spriteType = spriteTypes[spriteIndex];
-            var rawPropsStr = spriteStr.slice(6);
-            var additionalProps = [];
-            for (var i = 0; i < rawPropsStr.length; i += 2) {
-                var propB64 = rawPropsStr.slice(i, 2);
-                var propNum = Utility.IntFromB64(propB64);
-                additionalProps.push(propNum);
-            }
-            var editorSprite = new EditorSprite(spriteType, { tileX: spriteX, tileY: spriteY });
-            editorSprite.editorProps = additionalProps;
-            if (editorSprite.spriteInstance instanceof BasePlatform) {
-                if (additionalProps[0])
-                    editorSprite.width = additionalProps[0];
-            }
-            editorHandler.sprites.push(editorSprite);
-            editorSprite.ResetSprite();
-        }
+        LevelMap.ImportSprites(importSegments[7]);
         ret.playerWaterMode = properties[2] == "1";
         ret.spriteWaterMode = properties[3] == "1";
         if (editorHandler) {
@@ -426,6 +418,34 @@ var LevelMap = /** @class */ (function () {
         if (!keepGhostFrames)
             editorHandler.playerFrames = [];
         return ret;
+    };
+    LevelMap.ImportSprites = function (importString, startX, startY) {
+        if (startX === void 0) { startX = 0; }
+        if (startY === void 0) { startY = 0; }
+        for (var _i = 0, _a = importString.split(";"); _i < _a.length; _i++) {
+            var spriteStr = _a[_i];
+            if (!spriteStr)
+                continue;
+            var spriteIndex = Utility.IntFromB64(spriteStr.slice(0, 2));
+            var spriteX = Utility.IntFromB64(spriteStr.slice(2, 4)) + startX;
+            var spriteY = Utility.IntFromB64(spriteStr.slice(4, 6)) + startY;
+            var spriteType = spriteTypes[spriteIndex];
+            var rawPropsStr = spriteStr.slice(6);
+            var additionalProps = [];
+            for (var i = 0; i < rawPropsStr.length; i += 2) {
+                var propB64 = rawPropsStr.slice(i, 2);
+                var propNum = Utility.IntFromB64(propB64);
+                additionalProps.push(propNum);
+            }
+            var editorSprite = new EditorSprite(spriteType, { tileX: spriteX, tileY: spriteY });
+            editorSprite.editorProps = additionalProps;
+            if (editorSprite.spriteInstance instanceof BasePlatform) {
+                if (additionalProps[0])
+                    editorSprite.width = additionalProps[0];
+            }
+            editorHandler.sprites.push(editorSprite);
+            editorSprite.ResetSprite();
+        }
     };
     LevelMap.BlankOutMap = function () {
         editorHandler.playerWaterModeToggle.isSelected = false;

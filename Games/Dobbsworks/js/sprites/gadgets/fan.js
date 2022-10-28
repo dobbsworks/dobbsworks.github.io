@@ -12,6 +12,13 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 var Fan = /** @class */ (function (_super) {
     __extends(Fan, _super);
     function Fan() {
@@ -22,8 +29,6 @@ var Fan = /** @class */ (function (_super) {
         _this.canBeHeld = true;
         _this.isPlatform = true;
         _this.isSolidBox = true;
-        //public direction: Direction = Direction.Up;
-        _this.gusts = [];
         return _this;
     }
     Fan.prototype.Update = function () {
@@ -33,20 +38,6 @@ var Fan = /** @class */ (function (_super) {
         this.ReactToWater();
         this.ReactToPlatformsAndSolids();
         this.MoveByVelocity();
-        var targetX = this.x;
-        for (var i = 0; i < 5; i++) {
-            var targetY = this.y - 12 * (i + 1);
-            if (this.gusts[i]) {
-                this.gusts[i].x = targetX;
-                this.gusts[i].y = targetY;
-            }
-            else {
-                var newGust = new Gust(targetX, targetY, this.layer, []);
-                this.gusts.push(newGust);
-                this.layer.sprites.push(newGust);
-            }
-        }
-        var totalGustHeight = this.gusts.length * 12;
         var affectedSprites = this.layer.sprites.filter(function (a) { return a.xMid > _this.x && a.xMid < _this.xRight && a.yBottom <= _this.y && a.yBottom > _this.y - 60; });
         affectedSprites.forEach(function (a) { return a.gustUpTimer = 3; });
     };
@@ -56,13 +47,20 @@ var Fan = /** @class */ (function (_super) {
         return (tile === null || tile === void 0 ? void 0 : tile.isPowered()) || false;
     };
     Fan.prototype.GetFrameData = function (frameNum) {
-        return {
-            imageTile: tiles["misc"][0][3],
+        var gusts = [0, 1, 2, 3, 4].map(function (a) { return ({
+            imageTile: tiles["gust"][Math.floor(frameNum % 12)][0],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
-            yOffset: 7
-        };
+            yOffset: a * 12 + 12
+        }); });
+        return __spreadArrays(gusts, [{
+                imageTile: tiles["misc"][0][3],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 7
+            }]);
     };
     return Fan;
 }(Sprite));

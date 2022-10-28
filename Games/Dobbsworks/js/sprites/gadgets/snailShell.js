@@ -33,7 +33,7 @@ var SnailShell = /** @class */ (function (_super) {
         }
         if (this.age > 10) {
             var player_1 = (this.layer.sprites.find(function (a) { return a instanceof Player; }));
-            if (player_1 && player_1.heldItem != this && player_1.IsGoingToOverlapSprite(this)) {
+            if (player_1 && player_1.heldItem != this && player_1.Overlaps(this)) {
                 var oldDy = this.dy;
                 var newShell = this.OnThrow(player_1, player_1.x < this.x ? 1 : -1);
                 newShell.dy = oldDy;
@@ -44,6 +44,10 @@ var SnailShell = /** @class */ (function (_super) {
         this.ReactToWater();
         this.ReactToPlatformsAndSolids();
         this.MoveByVelocity();
+    };
+    SnailShell.prototype.OnDownThrow = function (thrower, direction) {
+        _super.prototype.OnDownThrow.call(this, thrower, direction);
+        this.age = 0;
     };
     SnailShell.prototype.OnThrow = function (thrower, direction) {
         this.isActive = false;

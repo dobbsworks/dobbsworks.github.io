@@ -143,7 +143,7 @@ var EditorHandler = /** @class */ (function () {
         var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 4, 7);
         var gizmoTypes = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform,
-            Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, Propeller, RedCannon, BlueCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon
+            Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, /*SpringBox,*/ Propeller, RedCannon, BlueCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon
         ];
         var gizmoButtons = gizmoTypes.map(function (a) { return new EditorButtonSprite(a); });
         var keyIndex = gizmoButtons.findIndex(function (a) { return a instanceof EditorButtonSprite && a.spriteType == FlatKey; });
@@ -292,12 +292,13 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonSprite(GoldHeart),
             new EditorButtonSprite(Checkpoint),
             new EditorButtonSprite(CameraLockHorizontal),
+            new EditorButtonSprite(CameraZoomIn),
+            new EditorButtonSprite(CameraZoomOut),
             new EditorButtonSprite(CameraScrollRight),
             new EditorButtonSprite(CameraScrollUp),
             new EditorButtonSprite(CameraScrollLeft),
             new EditorButtonSprite(CameraScrollDown),
-            new EditorButtonSprite(CameraZoomIn),
-            new EditorButtonSprite(CameraZoomOut),
+            new EditorButtonSprite(CameraScrollReset),
         ], 3, 5);
         var levelFlowHandle = new EditorButtonDrawerHandle(tiles["editor"][5][3], "Level flow element", [levelFlowPanel]);
         var levelFlowHandlePanel = new Panel(mapSizePanel.x + 160, mapSizePanel.y, 70, 70);
@@ -403,7 +404,8 @@ var EditorHandler = /** @class */ (function () {
         this.exportString = importString;
         this.SwitchToEditMode();
     };
-    EditorHandler.prototype.SwitchToEditMode = function () {
+    EditorHandler.prototype.SwitchToEditMode = function (isResettingLevel) {
+        if (isResettingLevel === void 0) { isResettingLevel = false; }
         this.transitionValue = 0;
         this.isInEditMode = true;
         camera.target = null;
@@ -419,7 +421,7 @@ var EditorHandler = /** @class */ (function () {
             this.editorParentElementsBottom.forEach(function (a) { return a.targetY -= 90; });
         }
         if (this.exportString) {
-            currentMap = LevelMap.FromImportString(this.exportString, true);
+            currentMap = LevelMap.FromImportString(this.exportString, true, isResettingLevel);
         }
         camera.Reset();
     };

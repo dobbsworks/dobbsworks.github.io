@@ -54,12 +54,11 @@ class Camera {
                 if (trigger.direction) {
                     this.autoscrollX += trigger.direction.x * .25;
                     this.autoscrollY += trigger.direction.y * .25;
+                    // remove from list of available triggers
+                    this.autoscrollTriggers = this.autoscrollTriggers.filter(a => a != trigger);
                 } else {
                     this.Reset();
                 }
-
-                // remove from list of available triggers
-                this.autoscrollTriggers = this.autoscrollTriggers.filter(a => a != trigger);
             }            
         }
 

@@ -49,12 +49,12 @@ var Camera = /** @class */ (function () {
                 if (trigger.direction) {
                     this_1.autoscrollX += trigger.direction.x * .25;
                     this_1.autoscrollY += trigger.direction.y * .25;
+                    // remove from list of available triggers
+                    this_1.autoscrollTriggers = this_1.autoscrollTriggers.filter(function (a) { return a != trigger; });
                 }
                 else {
                     this_1.Reset();
                 }
-                // remove from list of available triggers
-                this_1.autoscrollTriggers = this_1.autoscrollTriggers.filter(function (a) { return a != trigger; });
             };
             var this_1 = this;
             for (var _i = 0, onScreenScrollTriggers_1 = onScreenScrollTriggers; _i < onScreenScrollTriggers_1.length; _i++) {

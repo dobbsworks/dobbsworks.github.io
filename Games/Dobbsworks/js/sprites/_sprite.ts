@@ -778,7 +778,7 @@ abstract class Sprite {
         }
         if (this instanceof CameraScrollTrigger) {
             frameData = {
-                imageTile: tiles["camera"][this.frameCol][1],
+                imageTile: tiles["camera"][this.frameCol][this.frameRow],
                 xFlip: false,
                 yFlip: false,
                 xOffset: 0,
@@ -832,5 +832,35 @@ abstract class Sprite {
     OnDead(): void {
         let hearts = <GoldHeart[]>this.layer.sprites.filter(a => a instanceof GoldHeart);
         hearts.forEach(a => a.isBroken = true);
+    }
+    
+
+    LaunchSprite(sprite: Sprite, direction: -1 | 1): void {
+        let parentMotor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == sprite);
+        if (parentMotor) {
+            parentMotor.connectedSprite = null;
+        }
+        if (sprite instanceof RedBalloon) {
+            sprite.OnBounce();
+        } else if (sprite.canBeHeld) {
+            sprite.OnThrow(this, direction);
+        } else {
+            if (!sprite.updatedThisFrame) {
+                sprite.updatedThisFrame = true;
+                sprite.SharedUpdate();
+                sprite.Update();
+                if (sprite instanceof Enemy) {
+                    sprite.EnemyUpdate();
+                }
+            }
+            sprite.isOnGround = false;
+            sprite.dx = direction * 2;
+            sprite.dy = -2;
+            if (sprite instanceof RollingSnailShell) sprite.direction = direction;
+        }
+        if (sprite == player) {
+            player.throwTimer = 0;
+            player.heldItem = null;
+        }
     }
 }

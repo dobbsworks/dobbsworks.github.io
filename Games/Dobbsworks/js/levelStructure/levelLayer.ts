@@ -101,7 +101,7 @@ class LevelLayer {
     }
 
     SetTile(xIndex: number, yIndex: number, tileType: TileType, isInitialMapSetup = false): boolean {
-        if (this.map && yIndex >= this.map?.mapHeight) {
+        if (this.map && (yIndex >= this.map?.mapHeight || yIndex < 0)) {
             new LevelTile(xIndex, yIndex, TileType.Air, this);
             return false;
         }
@@ -336,17 +336,21 @@ class LevelLayer {
         return ret;
     }
 
-    static FromImportString(importStr: string, layerType: TargetLayer, mapHeight: number, map: LevelMap): LevelLayer {
+    static FromImportString(importStr: string, layerType: TargetLayer, mapHeight: number, map: LevelMap, xStart = 0, yStart = 0): LevelLayer {
+        let ret = new LevelLayer(layerType);
+        ret.layerType = layerType;
+        ret.map = map;
+        LevelLayer.ImportIntoLayer(ret, importStr, layerType, mapHeight, 0, 0);
+        return ret;
+    }
+
+    static ImportIntoLayer(layer: LevelLayer, importStr: string, layerType: TargetLayer, mapHeight: number, xStart: number, yStart: number) {
         let allTiles = <TileType[]>Object.values(TileType.TileMap);
         let availableTileTypes = allTiles.filter(a => a.targetLayer == layerType);
         if (availableTileTypes.indexOf(TileType.Air) == -1) availableTileTypes.unshift(TileType.Air);
 
-        let ret = new LevelLayer(layerType);
-        ret.layerType = layerType;
-        ret.map = map;
-
-        let x = 0;
-        let y = 0;
+        let x = xStart;
+        let y = yStart;
 
         for (let i = 0; i < importStr.length; i += 3) {
             let tileChars = importStr[i] + importStr[i + 1];
@@ -354,7 +358,7 @@ class LevelLayer {
             let tileCount = Utility.IntFromB64(importStr[i + 2]) + 1;
             let tileType = availableTileTypes[tileIndex];
             for (let j = 0; j < tileCount; j++) {
-                ret.SetTile(x, y, tileType, true);
+                layer.SetTile(x, y, tileType, true);
                 y++;
                 if (y >= mapHeight) {
                     x++;
@@ -363,6 +367,6 @@ class LevelLayer {
             }
         }
 
-        return ret;
+        return layer;
     }
 }

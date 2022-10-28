@@ -82,6 +82,7 @@ var Player = /** @class */ (function (_super) {
         if (this.iFrames > 0)
             this.iFrames--;
         this.PlayerMovement(); // includes gravity
+        this.PlayerItem();
         this.HandleEnemies(); // includes gravity
         this.PlayerInertia();
         this.PushByAutoscroll();
@@ -90,7 +91,6 @@ var Player = /** @class */ (function (_super) {
         if (!this.yoyoTarget)
             this.MoveByVelocity();
         this.ReactToSpikes();
-        this.PlayerItem();
         this.KeepInBounds();
         //console.log(this.x - oldX, this.y - oldY)
         this.frameNum += Math.max(Math.abs(this.dx / 4), Math.abs(this.dy / 4));
@@ -214,7 +214,6 @@ var Player = /** @class */ (function (_super) {
         if (this.jumpBufferTimer > 3)
             this.jumpBufferTimer = -1;
         if (this.jumpBufferTimer > -1 && (this.coyoteTimer < 5 || this.IsNeighboringWallJumpTiles()) && this.forcedJumpTimer <= 0) {
-            console.log(this.coyoteTimer);
             this.Jump();
             this.isSliding = false;
         }
@@ -472,11 +471,19 @@ var Player = /** @class */ (function (_super) {
         return this.IsNeighboringWallJumpTilesSide(-1) || this.IsNeighboringWallJumpTilesSide(1);
     };
     Player.prototype.IsNeighboringWallJumpTilesSide = function (direction) {
+        if (this.direction == -1) {
+            if (this.x % this.layer.tileWidth > 0.1)
+                return false;
+        }
+        if (this.direction == 1) {
+            if ((this.x + this.width) % this.layer.tileWidth < 11.9)
+                return false;
+        }
         var x = direction == 1 ? this.xRight + 0.1 : this.x - 0.1;
         return !this.isOnGround && ([
             this.layer.GetTileByPixel(x, this.y).GetSemisolidNeighbor(),
             this.layer.GetTileByPixel(x, this.yBottom).GetSemisolidNeighbor(),
-        ].some(function (a) { return a === null || a === void 0 ? void 0 : a.tileType.isJumpWall; }));
+        ].some(function (a) { return ((a === null || a === void 0 ? void 0 : a.tileType) == TileType.WallJumpLeft && direction == -1) || ((a === null || a === void 0 ? void 0 : a.tileType) == TileType.WallJumpRight && direction == 1); }));
     };
     Player.prototype.HandleBumpers = function () {
         // maybe todo:
@@ -756,7 +763,7 @@ var Player = /** @class */ (function (_super) {
                 // check for items we can hang from
                 var myX = this.x + this.GetTotalDx();
                 var myY = this.y + this.GetTotalDy();
-                for (var _c = 0, _d = this.layer.sprites.filter(function (a) { return a.canHangFrom && a.framesSinceThrown > 30; }); _c < _d.length; _c++) {
+                for (var _c = 0, _d = this.layer.sprites.filter(function (a) { return a.canHangFrom && (a.framesSinceThrown > 30 || a.framesSinceThrown == -1); }); _c < _d.length; _c++) {
                     var sprite = _d[_c];
                     // special overlap logic for y coords:
                     var spriteX = sprite.x + sprite.GetTotalDx();
@@ -980,7 +987,7 @@ var DeadPlayer = /** @class */ (function (_super) {
             currentMap.fadeOutRatio = (this.age - 45) / 14;
         }
         if (this.age > 60) {
-            editorHandler.SwitchToEditMode();
+            editorHandler.SwitchToEditMode(true);
             editorHandler.SwitchToPlayMode();
             if (camera.target) {
                 camera.x = camera.target.xMid;

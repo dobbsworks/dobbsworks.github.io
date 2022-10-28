@@ -84,4 +84,6 @@ var spriteTypes = [
     WoolyBooly,
     GoldHeart,
     PogoPiggle,
+    CameraScrollReset,
+    SpringBox,
 ];

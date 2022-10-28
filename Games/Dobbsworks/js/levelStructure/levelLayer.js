@@ -116,7 +116,7 @@ var LevelLayer = /** @class */ (function () {
     LevelLayer.prototype.SetTile = function (xIndex, yIndex, tileType, isInitialMapSetup) {
         var _a;
         if (isInitialMapSetup === void 0) { isInitialMapSetup = false; }
-        if (this.map && yIndex >= ((_a = this.map) === null || _a === void 0 ? void 0 : _a.mapHeight)) {
+        if (this.map && (yIndex >= ((_a = this.map) === null || _a === void 0 ? void 0 : _a.mapHeight) || yIndex < 0)) {
             new LevelTile(xIndex, yIndex, TileType.Air, this);
             return false;
         }
@@ -332,23 +332,29 @@ var LevelLayer = /** @class */ (function () {
         }
         return ret;
     };
-    LevelLayer.FromImportString = function (importStr, layerType, mapHeight, map) {
+    LevelLayer.FromImportString = function (importStr, layerType, mapHeight, map, xStart, yStart) {
+        if (xStart === void 0) { xStart = 0; }
+        if (yStart === void 0) { yStart = 0; }
+        var ret = new LevelLayer(layerType);
+        ret.layerType = layerType;
+        ret.map = map;
+        LevelLayer.ImportIntoLayer(ret, importStr, layerType, mapHeight, 0, 0);
+        return ret;
+    };
+    LevelLayer.ImportIntoLayer = function (layer, importStr, layerType, mapHeight, xStart, yStart) {
         var allTiles = Object.values(TileType.TileMap);
         var availableTileTypes = allTiles.filter(function (a) { return a.targetLayer == layerType; });
         if (availableTileTypes.indexOf(TileType.Air) == -1)
             availableTileTypes.unshift(TileType.Air);
-        var ret = new LevelLayer(layerType);
-        ret.layerType = layerType;
-        ret.map = map;
-        var x = 0;
-        var y = 0;
+        var x = xStart;
+        var y = yStart;
         for (var i = 0; i < importStr.length; i += 3) {
             var tileChars = importStr[i] + importStr[i + 1];
             var tileIndex = Utility.IntFromB64(tileChars);
             var tileCount = Utility.IntFromB64(importStr[i + 2]) + 1;
             var tileType = availableTileTypes[tileIndex];
             for (var j = 0; j < tileCount; j++) {
-                ret.SetTile(x, y, tileType, true);
+                layer.SetTile(x, y, tileType, true);
                 y++;
                 if (y >= mapHeight) {
                     x++;
@@ -356,7 +362,7 @@ var LevelLayer = /** @class */ (function () {
                 }
             }
         }
-        return ret;
+        return layer;
     };
     return LevelLayer;
 }());

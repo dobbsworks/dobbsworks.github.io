@@ -82,7 +82,7 @@ var WoolyBooly = /** @class */ (function (_super) {
                 }
             }
             else if (this.state == BoolyState.Charging) {
-                this.dx = 1 * this.direction;
+                this.AccelerateHorizontally(0.25, this.direction);
                 if (this.touchedLeftWalls.length > 0 && this.direction == -1) {
                     this.Recoil(this.direction);
                 }
@@ -98,7 +98,7 @@ var WoolyBooly = /** @class */ (function (_super) {
                         var sprite = sprites_1[_i];
                         if (sprite.x < xRight && sprite.xRight > xLeft &&
                             sprite.y < this.yBottom && sprite.yBottom > this.y) {
-                            this.LaunchSprite(sprite);
+                            this.LaunchSprite(sprite, this.direction);
                             this.Recoil(this.direction);
                             break;
                         }
@@ -107,37 +107,6 @@ var WoolyBooly = /** @class */ (function (_super) {
             }
             this.ApplyGravity();
             this.ReactToWater();
-        }
-    };
-    WoolyBooly.prototype.LaunchSprite = function (sprite) {
-        var parentMotor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == sprite; });
-        if (parentMotor) {
-            parentMotor.connectedSprite = null;
-        }
-        if (sprite instanceof RedBalloon) {
-            sprite.OnBounce();
-        }
-        else if (sprite.canBeHeld) {
-            sprite.OnThrow(this, this.direction);
-        }
-        else {
-            if (!sprite.updatedThisFrame) {
-                sprite.updatedThisFrame = true;
-                sprite.SharedUpdate();
-                sprite.Update();
-                if (sprite instanceof Enemy) {
-                    sprite.EnemyUpdate();
-                }
-            }
-            sprite.isOnGround = false;
-            sprite.dx = this.direction * 2;
-            sprite.dy = -2;
-            if (sprite instanceof RollingSnailShell)
-                sprite.direction = this.direction;
-        }
-        if (sprite == player) {
-            player.throwTimer = 0;
-            player.heldItem = null;
         }
     };
     WoolyBooly.prototype.GetPotentialBounceSprites = function () {

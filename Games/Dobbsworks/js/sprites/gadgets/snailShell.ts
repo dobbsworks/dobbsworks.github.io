@@ -17,7 +17,7 @@ class SnailShell extends Sprite {
 
         if (this.age > 10) {
             let player = <Player>(this.layer.sprites.find(a => a instanceof Player));
-            if (player && player.heldItem != this && player.IsGoingToOverlapSprite(this)) {
+            if (player && player.heldItem != this && player.Overlaps(this)) {
                 let oldDy = this.dy;
                 let newShell = this.OnThrow(player, player.x < this.x ? 1 : -1);
                 newShell.dy = oldDy;
@@ -29,6 +29,11 @@ class SnailShell extends Sprite {
         this.ReactToWater();
         this.ReactToPlatformsAndSolids();
         this.MoveByVelocity();
+    }
+
+    OnDownThrow(thrower: Sprite, direction: -1 | 1) {
+        super.OnDownThrow(thrower, direction);
+        this.age = 0;
     }
 
     OnThrow(thrower: Sprite, direction: -1 | 1): Sprite {

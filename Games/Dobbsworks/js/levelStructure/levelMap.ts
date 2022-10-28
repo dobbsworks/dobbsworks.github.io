@@ -60,7 +60,7 @@ class LevelMap {
             this.cameraLocksHorizontal.sort((a, b) => a.x - b.x);
         }
         if (this.fadeOutRatio > 0) {
-            this.fadeOutRatio -= 0.2;
+            this.fadeOutRatio -= 0.1;
         }
         if (this.fadeOutRatio < 0) this.fadeOutRatio = 0;
         camera.Update();
@@ -121,6 +121,7 @@ class LevelMap {
                         if (tile.tileType == TileType.SpriteKiller) {
                             sprite.ReplaceWithSpriteType(Poof);
                             deletedSprite = true;
+                            if (sprite instanceof Enemy) sprite.OnDead();
                         }
                     }
                 }
@@ -360,17 +361,28 @@ class LevelMap {
         ]
     }
 
-    static FromImportString(importStr: string, keepGhostFrames: boolean = false): LevelMap {
+    static FromImportString(importStr: string, keepGhostFrames: boolean = false, isResettingLevel = false): LevelMap {
         let importSegments = importStr.split("|");
         let properties = importSegments[0].split(";");
 
         let dummyLayer = new LevelLayer(TargetLayer.main);
+        let oldMap = currentMap;
         let ret = new LevelMap(dummyLayer, dummyLayer, dummyLayer, dummyLayer, dummyLayer);
         ret.mapVersion = properties[0];
         let mapHeight = parseInt(properties[1]);
         ret.mapHeight = mapHeight;
 // 134ms
-        ret.LoadBackgroundsFromImportString(importSegments[1]);
+        if (isResettingLevel || true) {
+            ret.LoadBackgroundsFromImportString(importSegments[1]);
+        } else {
+            // TODO : about 0.5 seconds available if we can recycle existing backgrounds
+            // ret.backgroundLayers = oldMap.backgroundLayers;
+            // ret.bgColorTop = oldMap.bgColorTop;
+            // ret.bgColorTopPositionRatio = oldMap.bgColorTopPositionRatio;
+            // ret.bgColorBottomPositionRatio = oldMap.bgColorBottomPositionRatio;
+            // ret.overlayOpacity = oldMap.overlayOpacity;
+            // ret.bgColorBottom = oldMap.bgColorBottom;
+        }
 // 482ms
 
         ret.GetLayerList().forEach((layer, index) => {
@@ -380,31 +392,7 @@ class LevelMap {
 // 2947ms
 
         editorHandler.sprites = [];
-        for (let spriteStr of importSegments[7].split(";")) {
-            if (!spriteStr) continue;
-
-            let spriteIndex = Utility.IntFromB64(spriteStr.slice(0, 2));
-            let spriteX = Utility.IntFromB64(spriteStr.slice(2, 4));
-            let spriteY = Utility.IntFromB64(spriteStr.slice(4, 6));
-
-            let spriteType = spriteTypes[spriteIndex];
-            let rawPropsStr = spriteStr.slice(6);
-
-            let additionalProps: number[] = [];
-            for (let i = 0; i < rawPropsStr.length; i += 2) {
-                let propB64 = rawPropsStr.slice(i, 2);
-                let propNum = Utility.IntFromB64(propB64);
-                additionalProps.push(propNum);
-            }
-
-            let editorSprite = new EditorSprite(spriteType, { tileX: spriteX, tileY: spriteY });
-            editorSprite.editorProps = additionalProps;
-            if (editorSprite.spriteInstance instanceof BasePlatform) {
-                if (additionalProps[0]) editorSprite.width = additionalProps[0];
-            }
-            editorHandler.sprites.push(editorSprite);
-            editorSprite.ResetSprite();
-        }
+        LevelMap.ImportSprites(importSegments[7]);
 
         ret.playerWaterMode = properties[2] == "1";
         ret.spriteWaterMode = properties[3] == "1";
@@ -426,6 +414,34 @@ class LevelMap {
 
         if (!keepGhostFrames) editorHandler.playerFrames = [];
         return ret;
+    }
+
+    static ImportSprites(importString: string, startX = 0, startY = 0) {
+        for (let spriteStr of importString.split(";")) {
+            if (!spriteStr) continue;
+
+            let spriteIndex = Utility.IntFromB64(spriteStr.slice(0, 2));
+            let spriteX = Utility.IntFromB64(spriteStr.slice(2, 4)) + startX;
+            let spriteY = Utility.IntFromB64(spriteStr.slice(4, 6)) + startY;
+
+            let spriteType = spriteTypes[spriteIndex];
+            let rawPropsStr = spriteStr.slice(6);
+
+            let additionalProps: number[] = [];
+            for (let i = 0; i < rawPropsStr.length; i += 2) {
+                let propB64 = rawPropsStr.slice(i, 2);
+                let propNum = Utility.IntFromB64(propB64);
+                additionalProps.push(propNum);
+            }
+
+            let editorSprite = new EditorSprite(spriteType, { tileX: spriteX, tileY: spriteY });
+            editorSprite.editorProps = additionalProps;
+            if (editorSprite.spriteInstance instanceof BasePlatform) {
+                if (additionalProps[0]) editorSprite.width = additionalProps[0];
+            }
+            editorHandler.sprites.push(editorSprite);
+            editorSprite.ResetSprite();
+        }
     }
 
     static BlankOutMap(): void {
