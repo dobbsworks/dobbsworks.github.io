@@ -99,8 +99,8 @@ abstract class UIDialog {
     static Confirm(info: string, confirmButtonText: string, rejectButtonText: string, confirmAction: () => void): void {
         MenuHandler.Dialog = new UIConfirm(info, confirmButtonText, rejectButtonText, confirmAction);
     }
-    static SmallPrompt(info: string, confirmButtonText: string, maxLength: number, confirmAction: (text: string) => void): void {
-        MenuHandler.Dialog = new UISmallPrompt(info, confirmButtonText, maxLength, confirmAction);
+    static SmallPrompt(info: string, confirmButtonText: string, maxLength: number, confirmAction: (text: string) => void, allowedCharacters: string = ""): void {
+        MenuHandler.Dialog = new UISmallPrompt(info, confirmButtonText, maxLength, confirmAction, allowedCharacters);
     }
 }
 
@@ -151,7 +151,8 @@ class UISmallPrompt extends UIDialog {
         messageText: string,
         confirmText: string,
         private maxLength: number,
-        private onConfirmAction: (value: string) => void
+        private onConfirmAction: (value: string) => void,
+        private allowedCharacters: string // blank to allow all
     ) {
         super();
         let cancelOption = new UIDialogOption("Cancel", () => { });
@@ -161,6 +162,9 @@ class UISmallPrompt extends UIDialog {
     }
 
     inputForm!: HTMLInputElement;
+
+    static SimpleCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789$+-/=%`#@&(),.;'?! ";
+    static LevelCodeCharacters = "ABCDEFabcdef0123456789";
 
     GetButtonActionParameters() {
         return [this.inputForm.value];
@@ -211,6 +215,16 @@ class UISmallPrompt extends UIDialog {
             this.inputForm.style.top = "0";
         } else {
             this.inputForm.focus();
+        }
+
+        if (document.activeElement != this.inputForm) {
+            KeyboardHandler.connectedInput = this.inputForm;
+        } else {
+            KeyboardHandler.connectedInput = null;
+        }
+
+        if (this.allowedCharacters.length) {
+            this.inputForm.value = this.inputForm.value.split("").filter(a => this.allowedCharacters.indexOf(a) > -1).join("");;
         }
     }
 }

@@ -61,4 +61,21 @@ class Utility {
     public static Xor(con1: boolean, con2: boolean): boolean {
         return (con1 && !con2) || (!con1 && con2);
     }
+
+    public static GetClosestInList(listOfNumbers: number[], targetNumber: number): number | null {
+        if (listOfNumbers.length == 0) return null;
+
+        let currentClosest = listOfNumbers[0];
+        let currentDistance = Math.abs(targetNumber - currentClosest);
+        for (let index = 1; index < listOfNumbers.length; index++) {
+            let thisNumber = listOfNumbers[index];
+            let thisDistance = Math.abs(targetNumber - thisNumber);
+            if (thisDistance < currentDistance) {
+                currentDistance = thisDistance;
+                currentClosest = thisNumber;
+            }
+        }
+
+        return currentClosest;
+    }
 }

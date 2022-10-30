@@ -78,6 +78,7 @@ class Player extends Sprite {
         this.ReactToPlatformsAndSolids();
         this.SlideDownSlopes();
         if (!this.yoyoTarget) this.MoveByVelocity();
+        this.UpdateHeldItemLocation();
         this.ReactToSpikes();
         this.KeepInBounds();
         //console.log(this.x - oldX, this.y - oldY)
@@ -649,7 +650,7 @@ class Player extends Sprite {
 
     OnPlayerDead(): void {
         if (!this.isActive) return;
-        
+
         this.OnDead();
         this.isActive = false;
         // log player death
@@ -770,12 +771,7 @@ class Player extends Sprite {
                 this.heldItem.Update();
             }
             if (this.heldItem && this.heldItem.canBeHeld) {
-                this.heldItem.x = this.x + this.width / 2 - this.heldItem.width / 2;
-                this.heldItem.y = this.y - this.heldItem.height;
-                this.heldItem.dx = 0;
-                this.heldItem.dy = 0;
-                this.heldItem.dxFromPlatform = 0;
-                this.heldItem.dyFromPlatform = 0;
+                this.UpdateHeldItemLocation();
 
                 if (!startedHolding && !KeyboardHandler.IsKeyPressed(KeyAction.Action2, false)) {
                     if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false)) {
@@ -830,6 +826,17 @@ class Player extends Sprite {
             if (!this.heldItem?.isActive) this.heldItem = null;
         }
 
+    }
+
+    UpdateHeldItemLocation(): void {
+        if (this.heldItem && this.heldItem.canBeHeld) {
+            this.heldItem.x = this.x + this.width / 2 - this.heldItem.width / 2;
+            this.heldItem.y = this.y - this.heldItem.height;
+            this.heldItem.dx = 0;
+            this.heldItem.dy = 0;
+            this.heldItem.dxFromPlatform = 0;
+            this.heldItem.dyFromPlatform = 0;
+        }
     }
 
     HandleDoors(): void {

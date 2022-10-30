@@ -41,31 +41,91 @@ var SpringBox = /** @class */ (function (_super) {
         }
         var bounceSpeed = 2;
         var timerResetValue = 30;
-        var overlappingSprites = this.layer.sprites.filter(function (a) { return a.Overlaps(_this); });
+        var overlappingSprites = this.layer.sprites.filter(function (a) { return !(a instanceof SpringBox) && a.Overlaps(_this); });
         for (var _i = 0, overlappingSprites_1 = overlappingSprites; _i < overlappingSprites_1.length; _i++) {
             var sprite = overlappingSprites_1[_i];
-            var deltaY = sprite.yMid - this.yMid;
-            var deltaX = sprite.xMid - this.xMid;
-            if (Math.abs(deltaY) > Math.abs(deltaX)) {
-                // vertical bounce
-                if (deltaY > 0) {
-                    // bounce down
-                    sprite.dy = bounceSpeed;
-                    this.springTimers[1] = timerResetValue;
+            // check if sprite is fully in a quadrant relative to spring's center
+            // if so, use closest corner to calculate direction
+            // otherwise:
+            //      check if sprite is full in a half, then go that way
+            // otherotherwise: use sprite center
+            var springDirection = null;
+            var cornerDeadSpace = 1;
+            if (sprite.x >= this.xMid) {
+                // on right
+                var deltaX = sprite.x - this.xMid;
+                if (sprite.yBottom <= this.yMid) {
+                    // up right
+                    var deltaY = Math.abs(sprite.yBottom - this.yMid);
+                    springDirection = (deltaX > deltaY) ? Direction.Right : Direction.Up;
+                    if (Math.abs(deltaX - deltaY) < cornerDeadSpace)
+                        springDirection = null;
+                }
+                else if (sprite.y >= this.yMid) {
+                    // down right
+                    var deltaY = Math.abs(sprite.y - this.yMid);
+                    springDirection = (deltaX > deltaY) ? Direction.Right : Direction.Down;
+                    if (Math.abs(deltaX - deltaY) < cornerDeadSpace)
+                        springDirection = null;
                 }
                 else {
-                    // bounce up
-                    sprite.dy = -bounceSpeed * 1.6;
-                    this.springTimers[3] = timerResetValue;
+                    // fully right
+                    springDirection = Direction.Right;
                 }
+            }
+            else if (sprite.xRight <= this.xMid) {
+                // on left
+                var deltaX = this.xMid - this.xRight;
+                if (sprite.yBottom <= this.yMid) {
+                    // up left
+                    var deltaY = Math.abs(sprite.yBottom - this.yMid);
+                    springDirection = (deltaX > deltaY) ? Direction.Left : Direction.Up;
+                    if (Math.abs(deltaX - deltaY) < cornerDeadSpace)
+                        springDirection = null;
+                }
+                else if (sprite.y >= this.yMid) {
+                    // down left
+                    var deltaY = Math.abs(sprite.y - this.yMid);
+                    springDirection = (deltaX > deltaY) ? Direction.Left : Direction.Down;
+                    if (Math.abs(deltaX - deltaY) < cornerDeadSpace)
+                        springDirection = null;
+                }
+                else {
+                    // fully left
+                    springDirection = Direction.Left;
+                }
+            }
+            else if (sprite.yBottom <= this.yMid) {
+                // fully above
+                springDirection = Direction.Up;
+            }
+            else if (sprite.y >= this.yMid) {
+                // fully below
+                springDirection = Direction.Down;
+            }
+            else {
+                // somewhere in the middle, uh oh
+                springDirection = Direction.Right;
+            }
+            if (springDirection == null)
+                continue;
+            if (springDirection == Direction.Down) {
+                // bounce down
+                sprite.dy = bounceSpeed;
+                this.springTimers[1] = timerResetValue;
+            }
+            else if (springDirection == Direction.Up) {
+                // bounce up
+                sprite.dy = -bounceSpeed * 1.6;
+                this.springTimers[3] = timerResetValue;
             }
             else {
                 // horizontal bounce
                 sprite.dy -= 0.3;
                 if (sprite instanceof Enemy) {
-                    sprite.direction = sprite.direction == -1 ? 1 : -1;
+                    sprite.direction = springDirection == Direction.Right ? 1 : -1;
                 }
-                if (deltaX > 0) {
+                if (springDirection == Direction.Right) {
                     // bounce right
                     this.springTimers[0] = timerResetValue;
                     this.LaunchSprite(sprite, 1);

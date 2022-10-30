@@ -53,6 +53,21 @@ var Utility = /** @class */ (function () {
     Utility.Xor = function (con1, con2) {
         return (con1 && !con2) || (!con1 && con2);
     };
+    Utility.GetClosestInList = function (listOfNumbers, targetNumber) {
+        if (listOfNumbers.length == 0)
+            return null;
+        var currentClosest = listOfNumbers[0];
+        var currentDistance = Math.abs(targetNumber - currentClosest);
+        for (var index = 1; index < listOfNumbers.length; index++) {
+            var thisNumber = listOfNumbers[index];
+            var thisDistance = Math.abs(targetNumber - thisNumber);
+            if (thisDistance < currentDistance) {
+                currentDistance = thisDistance;
+                currentClosest = thisNumber;
+            }
+        }
+        return currentClosest;
+    };
     Utility.b64Str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     return Utility;
 }());

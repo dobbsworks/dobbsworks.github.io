@@ -341,7 +341,7 @@ abstract class Sprite {
             }
         }
 
-        this.isInQuicksand = this.layer.map?.waterLayer.GetTileByPixel(this.xMid, this.yBottom + this.floatingPointOffset).tileType.isQuicksand || false;
+        this.isInQuicksand = this.layer.map?.waterLayer.GetTileByPixel(this.xMid, this.yBottom + this.floatingPointOffset - 0.01).tileType.isQuicksand || false;
         if (this.isInQuicksand) {
             this.dx *= 0.8;
             this.dy *= 0.8;
@@ -855,12 +855,8 @@ abstract class Sprite {
             }
             sprite.isOnGround = false;
             sprite.dx = direction * 2;
-            sprite.dy = -2;
+            if (!(sprite instanceof SapphireSnail)) sprite.dy = -2;
             if (sprite instanceof RollingSnailShell) sprite.direction = direction;
-        }
-        if (sprite == player) {
-            player.throwTimer = 0;
-            player.heldItem = null;
         }
     }
 }

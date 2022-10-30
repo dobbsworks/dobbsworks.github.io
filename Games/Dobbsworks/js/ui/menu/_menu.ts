@@ -5,6 +5,7 @@ abstract class Menu {
     stopsMapUpdate: boolean = false;
     blocksPause: boolean = true;
     backgroundColor: string = "#0000";
+    backgroundColor2: string = ""; //if set, use a gradient
 
 
     InitialDisplay(): void {

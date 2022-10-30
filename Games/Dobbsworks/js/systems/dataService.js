@@ -73,9 +73,49 @@ var DataService = /** @class */ (function () {
             DataService.BaseGet("Levels/MyLevels", resolve, reject);
         });
     };
+    // static GetRecentLevels(): Promise<LevelListing[]> {
+    //     return new Promise<LevelListing[]>((resolve, reject) => {
+    //         DataService.BaseGet("Levels/RecentLevels", resolve, reject);
+    //     })
+    // }
     DataService.GetRecentLevels = function () {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("Levels/RecentLevels", resolve, reject);
+            DataService.BaseGet("LevelSearch/RecentLevels", resolve, reject);
+        });
+    };
+    DataService.GetOldestLevels = function () {
+        return new Promise(function (resolve, reject) {
+            DataService.BaseGet("LevelSearch/OldestLevels", resolve, reject);
+        });
+    };
+    DataService.GetMostLikedLevels = function () {
+        return new Promise(function (resolve, reject) {
+            DataService.BaseGet("LevelSearch/MostLikedLevels", resolve, reject);
+        });
+    };
+    DataService.GetBestRatedLevels = function () {
+        return new Promise(function (resolve, reject) {
+            DataService.BaseGet("LevelSearch/BestRatedLevels", resolve, reject);
+        });
+    };
+    DataService.GetUndiscoveredLevels = function () {
+        return new Promise(function (resolve, reject) {
+            DataService.BaseGet("LevelSearch/UndiscoveredLevels", resolve, reject);
+        });
+    };
+    DataService.GetMostPlayedLevels = function () {
+        return new Promise(function (resolve, reject) {
+            DataService.BaseGet("LevelSearch/MostPlayedLevels", resolve, reject);
+        });
+    };
+    DataService.GetEasiestLevels = function () {
+        return new Promise(function (resolve, reject) {
+            DataService.BaseGet("LevelSearch/EasiestLevels", resolve, reject);
+        });
+    };
+    DataService.GetHardestLevels = function () {
+        return new Promise(function (resolve, reject) {
+            DataService.BaseGet("LevelSearch/HardestLevels", resolve, reject);
         });
     };
     DataService.UploadLevel = function (levelUpload) {

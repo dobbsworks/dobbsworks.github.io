@@ -42,7 +42,7 @@ var Enemy = /** @class */ (function (_super) {
             for (var _i = 0, sprites_1 = sprites; _i < sprites_1.length; _i++) {
                 var projectile = sprites_1[_i];
                 if ((this instanceof WoolyBooly && this.state !== BoolyState.Patrol) && ((projectile.x < this.x && this.direction == -1) || (projectile.xRight > this.xRight && this.direction == 1))) {
-                    this.LaunchSprite(projectile);
+                    this.LaunchSprite(projectile, this.xMid < projectile.xMid ? -1 : 1);
                     boolyLaunched = true;
                 }
             }
@@ -121,6 +121,7 @@ var Enemy = /** @class */ (function (_super) {
                                 this.y = targetY;
                             else
                                 this.y -= verticalRestackSpeed;
+                            this.destackForgiveness = 3;
                         }
                     }
                     if (this.destackForgiveness <= 0 && distanceFromTargetY > 4) {
@@ -165,7 +166,7 @@ var Enemy = /** @class */ (function (_super) {
         var _this = this;
         var _a, _b;
         if (this.isOnGround)
-            this.dx = speed * this.direction;
+            this.AccelerateHorizontally(0.3, speed * this.direction);
         if (this.isTouchingLeftWall) {
             this.direction = 1;
         }

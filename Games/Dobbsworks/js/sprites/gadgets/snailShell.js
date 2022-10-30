@@ -49,6 +49,10 @@ var SnailShell = /** @class */ (function (_super) {
         _super.prototype.OnDownThrow.call(this, thrower, direction);
         this.age = 0;
     };
+    SnailShell.prototype.OnUpThrow = function (thrower, direction) {
+        _super.prototype.OnUpThrow.call(this, thrower, direction);
+        this.age = 0;
+    };
     SnailShell.prototype.OnThrow = function (thrower, direction) {
         this.isActive = false;
         var shell = new RollingSnailShell(this.x, this.y, this.layer, []);

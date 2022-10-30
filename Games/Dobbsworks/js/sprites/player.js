@@ -90,6 +90,7 @@ var Player = /** @class */ (function (_super) {
         this.SlideDownSlopes();
         if (!this.yoyoTarget)
             this.MoveByVelocity();
+        this.UpdateHeldItemLocation();
         this.ReactToSpikes();
         this.KeepInBounds();
         //console.log(this.x - oldX, this.y - oldY)
@@ -346,8 +347,8 @@ var Player = /** @class */ (function (_super) {
                     }
                     this.dx += this.targetDirection * accel;
                     // cap speed
-                    if (this.dx * this.targetDirection > maxSpeed) {
-                        this.dx = this.targetDirection * maxSpeed;
+                    if (Math.abs(this.dx) > maxSpeed) {
+                        this.dx = maxSpeed * (this.dx > 0 ? 1 : -1);
                     }
                 }
             }
@@ -476,7 +477,8 @@ var Player = /** @class */ (function (_super) {
                 return false;
         }
         if (this.direction == 1) {
-            if ((this.x + this.width) % this.layer.tileWidth < 11.9)
+            var xInTile = (this.x + this.width) % this.layer.tileWidth;
+            if (xInTile < 11.9 && xInTile !== 0)
                 return false;
         }
         var x = direction == 1 ? this.xRight + 0.1 : this.x - 0.1;
@@ -803,12 +805,7 @@ var Player = /** @class */ (function (_super) {
                 this.heldItem.Update();
             }
             if (this.heldItem && this.heldItem.canBeHeld) {
-                this.heldItem.x = this.x + this.width / 2 - this.heldItem.width / 2;
-                this.heldItem.y = this.y - this.heldItem.height;
-                this.heldItem.dx = 0;
-                this.heldItem.dy = 0;
-                this.heldItem.dxFromPlatform = 0;
-                this.heldItem.dyFromPlatform = 0;
+                this.UpdateHeldItemLocation();
                 if (!startedHolding && !KeyboardHandler.IsKeyPressed(KeyAction.Action2, false)) {
                     if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false)) {
                         this.heldItem.OnUpThrow(this, this.direction);
@@ -859,6 +856,16 @@ var Player = /** @class */ (function (_super) {
             }
             if (!((_a = this.heldItem) === null || _a === void 0 ? void 0 : _a.isActive))
                 this.heldItem = null;
+        }
+    };
+    Player.prototype.UpdateHeldItemLocation = function () {
+        if (this.heldItem && this.heldItem.canBeHeld) {
+            this.heldItem.x = this.x + this.width / 2 - this.heldItem.width / 2;
+            this.heldItem.y = this.y - this.heldItem.height;
+            this.heldItem.dx = 0;
+            this.heldItem.dy = 0;
+            this.heldItem.dxFromPlatform = 0;
+            this.heldItem.dyFromPlatform = 0;
         }
     };
     Player.prototype.HandleDoors = function () {

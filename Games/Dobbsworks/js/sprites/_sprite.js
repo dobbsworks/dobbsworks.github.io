@@ -346,7 +346,7 @@ var Sprite = /** @class */ (function () {
                 this.dy = oldDy * (this.dy < 0 ? -1 : 1);
             }
         }
-        this.isInQuicksand = ((_a = this.layer.map) === null || _a === void 0 ? void 0 : _a.waterLayer.GetTileByPixel(this.xMid, this.yBottom + this.floatingPointOffset).tileType.isQuicksand) || false;
+        this.isInQuicksand = ((_a = this.layer.map) === null || _a === void 0 ? void 0 : _a.waterLayer.GetTileByPixel(this.xMid, this.yBottom + this.floatingPointOffset - 0.01).tileType.isQuicksand) || false;
         if (this.isInQuicksand) {
             this.dx *= 0.8;
             this.dy *= 0.8;
@@ -867,13 +867,10 @@ var Sprite = /** @class */ (function () {
             }
             sprite.isOnGround = false;
             sprite.dx = direction * 2;
-            sprite.dy = -2;
+            if (!(sprite instanceof SapphireSnail))
+                sprite.dy = -2;
             if (sprite instanceof RollingSnailShell)
                 sprite.direction = direction;
-        }
-        if (sprite == player) {
-            player.throwTimer = 0;
-            player.heldItem = null;
         }
     };
     return Sprite;

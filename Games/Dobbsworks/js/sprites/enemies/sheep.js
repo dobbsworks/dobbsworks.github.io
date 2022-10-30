@@ -100,6 +100,10 @@ var WoolyBooly = /** @class */ (function (_super) {
                             sprite.y < this.yBottom && sprite.yBottom > this.y) {
                             this.LaunchSprite(sprite, this.direction);
                             this.Recoil(this.direction);
+                            if (sprite == player) {
+                                player.throwTimer = 0;
+                                player.heldItem = null;
+                            }
                             break;
                         }
                     }

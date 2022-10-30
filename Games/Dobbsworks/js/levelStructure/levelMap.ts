@@ -192,7 +192,7 @@ class LevelMap {
         if (player) {
             this.timerText = Utility.FramesToTimeText(player.age + (player.isActive ? editorHandler.bankedCheckpointTime : 0));
         }
-        if (this.timerText && !editorHandler.isEditorAllowed && currentLevelCode != "") {
+        if (this.timerText && !editorHandler.isInEditMode && !(MenuHandler.CurrentMenu instanceof MainMenu)) {
             let fontsize = 16;
             ctx.textAlign = "left";
             ctx.font = `${fontsize}px grobold`;
@@ -461,6 +461,20 @@ class LevelMap {
         editorHandler.sprites.push(new EditorSprite(GoldGear, { tileX: 55, tileY: 8 }));
         editorHandler.playerFrames = [];
         editorHandler.history.RecordHistory();
+    }
+
+    static ClearAllTiles(width: number, height: number) {
+        currentMap.GetLayerList().forEach((layer, index) => {
+            let newLayer = new LevelLayer(index);
+            newLayer.layerType = index;
+            newLayer.map = currentMap;
+            for (let x = 0; x < width; x++) {
+                for (let y = 0; y < height; y++) {
+                    newLayer.SetTile(x, y, TileType.Air, true);
+                }
+            }
+            ((<any>currentMap)[TargetLayer[index] + "Layer"]) = newLayer;
+        });
     }
 }
 

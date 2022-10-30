@@ -86,11 +86,66 @@ class DataService {
         })
     }
 
+    // static GetRecentLevels(): Promise<LevelListing[]> {
+    //     return new Promise<LevelListing[]>((resolve, reject) => {
+    //         DataService.BaseGet("Levels/RecentLevels", resolve, reject);
+    //     })
+    // }
+
+
+
     static GetRecentLevels(): Promise<LevelListing[]> {
         return new Promise<LevelListing[]>((resolve, reject) => {
-            DataService.BaseGet("Levels/RecentLevels", resolve, reject);
+            DataService.BaseGet("LevelSearch/RecentLevels", resolve, reject);
         })
     }
+
+    static GetOldestLevels(): Promise<LevelListing[]> {
+        return new Promise<LevelListing[]>((resolve, reject) => {
+            DataService.BaseGet("LevelSearch/OldestLevels", resolve, reject);
+        })
+    }
+
+    static GetMostLikedLevels(): Promise<LevelListing[]> {
+        return new Promise<LevelListing[]>((resolve, reject) => {
+            DataService.BaseGet("LevelSearch/MostLikedLevels", resolve, reject);
+        })
+    }
+
+    static GetBestRatedLevels(): Promise<LevelListing[]> {
+        return new Promise<LevelListing[]>((resolve, reject) => {
+            DataService.BaseGet("LevelSearch/BestRatedLevels", resolve, reject);
+        })
+    }
+
+    static GetUndiscoveredLevels(): Promise<LevelListing[]> {
+        return new Promise<LevelListing[]>((resolve, reject) => {
+            DataService.BaseGet("LevelSearch/UndiscoveredLevels", resolve, reject);
+        })
+    }
+
+    static GetMostPlayedLevels(): Promise<LevelListing[]> {
+        return new Promise<LevelListing[]>((resolve, reject) => {
+            DataService.BaseGet("LevelSearch/MostPlayedLevels", resolve, reject);
+        })
+    }
+
+    static GetEasiestLevels(): Promise<LevelListing[]> {
+        return new Promise<LevelListing[]>((resolve, reject) => {
+            DataService.BaseGet("LevelSearch/EasiestLevels", resolve, reject);
+        })
+    }
+
+    static GetHardestLevels(): Promise<LevelListing[]> {
+        return new Promise<LevelListing[]>((resolve, reject) => {
+            DataService.BaseGet("LevelSearch/HardestLevels", resolve, reject);
+        })
+    }
+
+
+
+
+
 
     static UploadLevel(levelUpload: LevelUploadDT): Promise<string> {
         return new Promise<string>((resolve, reject) => {

@@ -9,7 +9,7 @@ var UnloadHandler = /** @class */ (function () {
         var currentSaveValue = currentMap.GetExportString();
         if (currentSaveValue == startLevel)
             return false;
-        if (editorHandler.isEditorAllowed) {
+        if (editorHandler.isEditorAllowed && editorHandler.isInEditMode) {
             // we're in the editor, not looking at the title screen map
             // check current map code against all saved levels
             var saveKeys = Object.keys(localStorage).filter(function (a) { return a.startsWith("save_"); });

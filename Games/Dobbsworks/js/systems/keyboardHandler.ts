@@ -1,7 +1,7 @@
 
 
 class KeyAction {
-    constructor(public keyCode: string) {}
+    constructor(public keyCode: string) { }
 
     static Up = new KeyAction("up");
     static Left = new KeyAction("left");
@@ -30,7 +30,7 @@ class KeyAction {
     static Pause = new KeyAction("Pause");
     static ScrollDown = new KeyAction("ScrollDown");
     static ScrollUp = new KeyAction("ScrollUp");
-    
+
     static EditorHotkey1 = new KeyAction("EditorHotkey1");
     static EditorHotkey2 = new KeyAction("EditorHotkey2");
     static EditorHotkey3 = new KeyAction("EditorHotkey3");
@@ -62,69 +62,70 @@ class KeyboardHandler {
     }
 
     private static keyMap = [
-        {k: "KeyW", v: KeyAction.Up},
-        {k: "ArrowUp", v: KeyAction.Up},
-        {k: "KeyA", v: KeyAction.Left},
-        {k: "ArrowLeft", v: KeyAction.Left},
-        {k: "KeyD", v: KeyAction.Right},
-        {k: "ArrowRight", v: KeyAction.Right},
-        {k: "KeyS", v: KeyAction.Down},
-        {k: "ArrowDown", v: KeyAction.Down},
-        {k: "Space", v: KeyAction.Action1},
-        {k: "ShiftRight", v: KeyAction.Action2},
-        {k: "ShiftLeft", v: KeyAction.Action2},
+        { k: "KeyW", v: KeyAction.Up },
+        { k: "ArrowUp", v: KeyAction.Up },
+        { k: "KeyA", v: KeyAction.Left },
+        { k: "ArrowLeft", v: KeyAction.Left },
+        { k: "KeyD", v: KeyAction.Right },
+        { k: "ArrowRight", v: KeyAction.Right },
+        { k: "KeyS", v: KeyAction.Down },
+        { k: "ArrowDown", v: KeyAction.Down },
+        { k: "Space", v: KeyAction.Action1 },
+        { k: "ShiftRight", v: KeyAction.Action2 },
+        { k: "ShiftLeft", v: KeyAction.Action2 },
 
-        {k: "Esc", v: KeyAction.Pause},
-        {k: "Escape", v: KeyAction.Pause},
-        {k: "KeyP", v: KeyAction.Pause},
-        {k: "KeyF", v: KeyAction.EditorPlayerHotkey},
+        { k: "Esc", v: KeyAction.Pause },
+        { k: "Escape", v: KeyAction.Pause },
+        { k: "KeyP", v: KeyAction.Pause },
+        { k: "KeyF", v: KeyAction.EditorPlayerHotkey },
 
-        {k: "Esc", v: KeyAction.Cancel},
-        {k: "Escape", v: KeyAction.Cancel},
-        {k: "KeyQ", v: KeyAction.Cancel},
-        {k: "Backslash", v: KeyAction.Debug1},
-        {k: "Enter", v: KeyAction.Confirm},
-        {k: "Enter", v: KeyAction.Debug2},
+        { k: "Esc", v: KeyAction.Cancel },
+        { k: "Escape", v: KeyAction.Cancel },
+        { k: "KeyQ", v: KeyAction.Cancel },
+        { k: "Backslash", v: KeyAction.Debug1 },
+        { k: "Enter", v: KeyAction.Confirm },
+        { k: "Enter", v: KeyAction.Debug2 },
         //{k: "Backspace", v: KeyAction.Debug3},
-        
-        {k: "F11", v: KeyAction.Fullscreen},
-        {k: "Tab", v: KeyAction.EditToggle},
-        {k: "KeyX", v: KeyAction.EditorMinimize},
-        {k: "KeyE", v: KeyAction.EditorEraseHotkey},
-        {k: "KeyZ", v: KeyAction.EditorUndo},
-        {k: "KeyY", v: KeyAction.EditorRedo},
-        {k: "KeyT", v: KeyAction.Reset},
-        {k: "Delete", v: KeyAction.EditorDelete},
-        {k: "ControlLeft", v: KeyAction.EditorPasteDrag},
-        {k: "ControlRight", v: KeyAction.EditorPasteDrag},
-        {k: "ShiftRight", v: KeyAction.EditorSelectWithoutClosingDrawers},
-        {k: "ShiftLeft", v: KeyAction.EditorSelectWithoutClosingDrawers},
 
-        {k: "Period", v: KeyAction.ScrollDown},
-        {k: "Comma", v: KeyAction.ScrollUp},
+        { k: "F11", v: KeyAction.Fullscreen },
+        { k: "Tab", v: KeyAction.EditToggle },
+        { k: "KeyX", v: KeyAction.EditorMinimize },
+        { k: "KeyE", v: KeyAction.EditorEraseHotkey },
+        { k: "KeyZ", v: KeyAction.EditorUndo },
+        { k: "KeyY", v: KeyAction.EditorRedo },
+        { k: "KeyT", v: KeyAction.Reset },
+        { k: "Delete", v: KeyAction.EditorDelete },
+        { k: "ControlLeft", v: KeyAction.EditorPasteDrag },
+        { k: "ControlRight", v: KeyAction.EditorPasteDrag },
+        { k: "ShiftRight", v: KeyAction.EditorSelectWithoutClosingDrawers },
+        { k: "ShiftLeft", v: KeyAction.EditorSelectWithoutClosingDrawers },
 
-        {k: "Digit1", v: KeyAction.EditorHotkey1},
-        {k: "Numpad1", v: KeyAction.EditorHotkey1},
-        {k: "Digit2", v: KeyAction.EditorHotkey2},
-        {k: "Numpad2", v: KeyAction.EditorHotkey2},
-        {k: "Digit3", v: KeyAction.EditorHotkey3},
-        {k: "Numpad3", v: KeyAction.EditorHotkey3},
-        {k: "Digit4", v: KeyAction.EditorHotkey4},
-        {k: "Numpad4", v: KeyAction.EditorHotkey4},
-        {k: "Digit5", v: KeyAction.EditorHotkey5},
-        {k: "Numpad5", v: KeyAction.EditorHotkey5},
-        {k: "Digit6", v: KeyAction.EditorHotkey6},
-        {k: "Numpad6", v: KeyAction.EditorHotkey6},
-        {k: "Digit7", v: KeyAction.EditorHotkey7},
-        {k: "Numpad7", v: KeyAction.EditorHotkey7},
-        {k: "Digit8", v: KeyAction.EditorHotkey8},
-        {k: "Numpad8", v: KeyAction.EditorHotkey8},
-        {k: "Digit9", v: KeyAction.EditorHotkey9},
-        {k: "Numpad9", v: KeyAction.EditorHotkey9},
+        { k: "Period", v: KeyAction.ScrollDown },
+        { k: "Comma", v: KeyAction.ScrollUp },
+
+        { k: "Digit1", v: KeyAction.EditorHotkey1 },
+        { k: "Numpad1", v: KeyAction.EditorHotkey1 },
+        { k: "Digit2", v: KeyAction.EditorHotkey2 },
+        { k: "Numpad2", v: KeyAction.EditorHotkey2 },
+        { k: "Digit3", v: KeyAction.EditorHotkey3 },
+        { k: "Numpad3", v: KeyAction.EditorHotkey3 },
+        { k: "Digit4", v: KeyAction.EditorHotkey4 },
+        { k: "Numpad4", v: KeyAction.EditorHotkey4 },
+        { k: "Digit5", v: KeyAction.EditorHotkey5 },
+        { k: "Numpad5", v: KeyAction.EditorHotkey5 },
+        { k: "Digit6", v: KeyAction.EditorHotkey6 },
+        { k: "Numpad6", v: KeyAction.EditorHotkey6 },
+        { k: "Digit7", v: KeyAction.EditorHotkey7 },
+        { k: "Numpad7", v: KeyAction.EditorHotkey7 },
+        { k: "Digit8", v: KeyAction.EditorHotkey8 },
+        { k: "Numpad8", v: KeyAction.EditorHotkey8 },
+        { k: "Digit9", v: KeyAction.EditorHotkey9 },
+        { k: "Numpad9", v: KeyAction.EditorHotkey9 },
     ];
 
     private static keyState: KeyState[] = [];
     private static recentlyReleasedKeys: KeyAction[] = [];
+    public static connectedInput: HTMLInputElement | null = null;
 
     public static OnKeyDown(e: KeyboardEvent) {
         KeyboardHandler.gamepadIndex = -1;
@@ -138,6 +139,27 @@ class KeyboardHandler {
         } else {
             // console.log(keyCode);
             // e.preventDefault();
+        }
+
+        if (KeyboardHandler.connectedInput) {
+            if (e.key == "Backspace") {
+                KeyboardHandler.connectedInput.value = KeyboardHandler.connectedInput.value.substring(0, KeyboardHandler.connectedInput.value.length - 1);
+            }
+
+            if (e.key.toLowerCase() == "v" && e.ctrlKey) {
+                // paste event
+                navigator.clipboard.readText()
+                    .then(text => {
+                        if (KeyboardHandler.connectedInput) KeyboardHandler.connectedInput.value += text;
+                    })
+                    .catch(err => {
+                        console.error('Failed to read clipboard contents: ', err);
+                    });
+            } else if (e.key.length == 1) {
+                KeyboardHandler.connectedInput.value += e.key;
+            }
+
+            console.log(e.key)
         }
     }
 
@@ -249,7 +271,7 @@ class KeyboardHandler {
                     KeyboardHandler.SetActionState(KeyAction.Reset, gamepad.buttons[8].pressed);
                 }
                 KeyboardHandler.SetActionState(KeyAction.Pause, gamepad.buttons[9].pressed);
-                
+
                 if (gamepad.buttons[12].pressed) dy = -1;
                 if (gamepad.buttons[13].pressed) dy = 1;
                 if (gamepad.buttons[14].pressed) dx = -1;

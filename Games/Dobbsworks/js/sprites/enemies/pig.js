@@ -23,7 +23,7 @@ var Piggle = /** @class */ (function (_super) {
         _this.squishTimer = 0;
         _this.imageSource = "pig";
         _this.animationSpeed = 0.2;
-        _this.frameRow = 0;
+        _this.frameRow = (SeasonalService.GetEvent() == SeasonalEvent.Halloween) ? 2 : 0;
         _this.turnAtLedges = true;
         _this.bounceSoundId = "oink";
         return _this;

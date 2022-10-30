@@ -36,6 +36,11 @@ class SnailShell extends Sprite {
         this.age = 0;
     }
 
+    OnUpThrow(thrower: Sprite, direction: -1 | 1) {
+        super.OnUpThrow(thrower, direction);
+        this.age = 0;
+    }
+
     OnThrow(thrower: Sprite, direction: -1 | 1): Sprite {
         this.isActive = false;
         let shell = new RollingSnailShell(this.x, this.y, this.layer, []);

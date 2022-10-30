@@ -77,12 +77,16 @@ class WoolyBooly extends Hoggle {
 
                     let xLeft = this.direction == -1 ? this.x - 3 : this.xRight;
                     let xRight = this.direction == -1 ? this.x : this.xRight + 3;
-                    sprites.sort((a,b) => b.y - a.y)
+                    sprites.sort((a, b) => b.y - a.y)
                     for (let sprite of sprites) {
                         if (sprite.x < xRight && sprite.xRight > xLeft &&
                             sprite.y < this.yBottom && sprite.yBottom > this.y) {
-                                this.LaunchSprite(sprite, this.direction);
+                            this.LaunchSprite(sprite, this.direction);
                             this.Recoil(this.direction);
+                            if (sprite == player) {
+                                player.throwTimer = 0;
+                                player.heldItem = null;
+                            }
                             break;
                         }
                     }

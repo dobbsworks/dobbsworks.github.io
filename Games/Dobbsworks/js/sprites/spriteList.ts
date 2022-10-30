@@ -92,4 +92,6 @@ var spriteTypes: SpriteType[] = [
 
     CameraScrollReset,
     SpringBox,
+    Winch,
+    PullSwitch,
 ];

@@ -183,8 +183,8 @@ class LevelLayer {
             this.wireFlatMap = this.tiles.flatMap(a => a);
         }
         this.sprites.forEach(a => a.updatedThisFrame = false);
-        let platforms = this.sprites.filter(a => a.isPlatform);
         let motors = this.sprites.filter(a => a instanceof Motor);
+        let platforms = this.sprites.filter(a => a.isPlatform && !(a instanceof Motor));
         let players = this.sprites.filter(a => a instanceof Player);
         platforms.sort((a, b) => a.y - b.y)
         let orderedSprites = [
@@ -217,6 +217,7 @@ class LevelLayer {
         if (!this.tiles[xTile]) return new LevelTile(xTile, yTile, TileType.Air, this);
         if (!this.tiles[xTile][yTile]) {
             if (yTile < 0) {
+                if (this.layerType == TargetLayer.wire) return new LevelTile(xTile, yTile, TileType.Air, this);
                 let topOfScreenTile = this.GetTileByPixel(xPixel, 0);
                 return new LevelTile(xTile, yTile, topOfScreenTile.tileType, this);
             }

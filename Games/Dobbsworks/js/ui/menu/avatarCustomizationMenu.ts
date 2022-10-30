@@ -76,7 +76,7 @@ class AvatarCustomizationMenu extends Menu {
                     AvatarCustomizationMenu.username = newName;
                     this.usernameTextElement.text = newName;
                 }
-            })
+            }, UISmallPrompt.SimpleCharacters)
         });
 
         namePanel.AddChild(this.usernameTextElement);

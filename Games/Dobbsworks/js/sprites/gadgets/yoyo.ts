@@ -64,6 +64,7 @@ class SpinningYoyo extends Sprite {
                 player.dy = speed * Math.sin(theta);
                 player.yoyoTarget = null;
                 player.yoyoTimer = 10;
+                if (player.dy < 0) player.parentSprite = null;
             }
         }
     }

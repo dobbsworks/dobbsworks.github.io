@@ -193,8 +193,8 @@ var LevelLayer = /** @class */ (function () {
             this.wireFlatMap = this.tiles.flatMap(function (a) { return a; });
         }
         this.sprites.forEach(function (a) { return a.updatedThisFrame = false; });
-        var platforms = this.sprites.filter(function (a) { return a.isPlatform; });
         var motors = this.sprites.filter(function (a) { return a instanceof Motor; });
+        var platforms = this.sprites.filter(function (a) { return a.isPlatform && !(a instanceof Motor); });
         var players = this.sprites.filter(function (a) { return a instanceof Player; });
         platforms.sort(function (a, b) { return a.y - b.y; });
         var orderedSprites = __spreadArrays(motors, platforms, players, this.sprites.filter(function (a) { return !a.isPlatform && !(a instanceof Motor) && !(a instanceof Player); }));
@@ -225,6 +225,8 @@ var LevelLayer = /** @class */ (function () {
             return new LevelTile(xTile, yTile, TileType.Air, this);
         if (!this.tiles[xTile][yTile]) {
             if (yTile < 0) {
+                if (this.layerType == TargetLayer.wire)
+                    return new LevelTile(xTile, yTile, TileType.Air, this);
                 var topOfScreenTile = this.GetTileByPixel(xPixel, 0);
                 return new LevelTile(xTile, yTile, topOfScreenTile.tileType, this);
             }

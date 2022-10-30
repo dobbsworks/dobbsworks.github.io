@@ -86,4 +86,6 @@ var spriteTypes = [
     PogoPiggle,
     CameraScrollReset,
     SpringBox,
+    Winch,
+    PullSwitch,
 ];

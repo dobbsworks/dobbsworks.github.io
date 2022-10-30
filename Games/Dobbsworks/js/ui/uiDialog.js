@@ -102,8 +102,9 @@ var UIDialog = /** @class */ (function () {
     UIDialog.Confirm = function (info, confirmButtonText, rejectButtonText, confirmAction) {
         MenuHandler.Dialog = new UIConfirm(info, confirmButtonText, rejectButtonText, confirmAction);
     };
-    UIDialog.SmallPrompt = function (info, confirmButtonText, maxLength, confirmAction) {
-        MenuHandler.Dialog = new UISmallPrompt(info, confirmButtonText, maxLength, confirmAction);
+    UIDialog.SmallPrompt = function (info, confirmButtonText, maxLength, confirmAction, allowedCharacters) {
+        if (allowedCharacters === void 0) { allowedCharacters = ""; }
+        MenuHandler.Dialog = new UISmallPrompt(info, confirmButtonText, maxLength, confirmAction, allowedCharacters);
     };
     return UIDialog;
 }());
@@ -148,10 +149,12 @@ var UIDialogOption = /** @class */ (function () {
 }());
 var UISmallPrompt = /** @class */ (function (_super) {
     __extends(UISmallPrompt, _super);
-    function UISmallPrompt(messageText, confirmText, maxLength, onConfirmAction) {
+    function UISmallPrompt(messageText, confirmText, maxLength, onConfirmAction, allowedCharacters // blank to allow all
+    ) {
         var _this = _super.call(this) || this;
         _this.maxLength = maxLength;
         _this.onConfirmAction = onConfirmAction;
+        _this.allowedCharacters = allowedCharacters;
         var cancelOption = new UIDialogOption("Cancel", function () { });
         cancelOption.color = "#115B";
         _this.options.push(cancelOption, new UIDialogOption(confirmText, onConfirmAction));
@@ -208,7 +211,19 @@ var UISmallPrompt = /** @class */ (function (_super) {
         else {
             this.inputForm.focus();
         }
+        if (document.activeElement != this.inputForm) {
+            KeyboardHandler.connectedInput = this.inputForm;
+        }
+        else {
+            KeyboardHandler.connectedInput = null;
+        }
+        if (this.allowedCharacters.length) {
+            this.inputForm.value = this.inputForm.value.split("").filter(function (a) { return _this.allowedCharacters.indexOf(a) > -1; }).join("");
+            ;
+        }
     };
+    UISmallPrompt.SimpleCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789$+-/=%`#@&(),.;'?! ";
+    UISmallPrompt.LevelCodeCharacters = "ABCDEFabcdef0123456789";
     return UISmallPrompt;
 }(UIDialog));
 var UIAlert = /** @class */ (function (_super) {

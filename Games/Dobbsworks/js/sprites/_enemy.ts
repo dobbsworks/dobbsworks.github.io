@@ -24,7 +24,7 @@ abstract class Enemy extends Sprite {
             let boolyLaunched = false;
             for (let projectile of sprites) {
                 if ((this instanceof WoolyBooly && this.state !== BoolyState.Patrol) && ((projectile.x < this.x && this.direction == -1) || (projectile.xRight > this.xRight && this.direction == 1))) {
-                    this.LaunchSprite(projectile);
+                    this.LaunchSprite(projectile, this.xMid < projectile.xMid ? -1 : 1);
                     boolyLaunched = true;
                 }
             }
@@ -81,7 +81,6 @@ abstract class Enemy extends Sprite {
                     let targetY = this.stackedOn.y - this.height;
                     let distanceFromTargetY = Math.abs(this.y - targetY);
                     let verticalRestackSpeed = 1.5;
-
                     if (this.y < targetY) {
                         // stack is low
                         if (!this.isOnGround) {
@@ -93,6 +92,7 @@ abstract class Enemy extends Sprite {
                         if (!this.isOnCeiling) {
                             if (distanceFromTargetY <= verticalRestackSpeed) this.y = targetY;
                             else this.y -= verticalRestackSpeed;
+                            this.destackForgiveness = 3;
                         }
                     }
                     if (this.destackForgiveness <= 0 && distanceFromTargetY > 4) {
@@ -137,7 +137,7 @@ abstract class Enemy extends Sprite {
     }
 
     public GroundPatrol(speed: number, turnAtLedge: boolean) {
-        if (this.isOnGround) this.dx = speed * this.direction;
+        if (this.isOnGround) this.AccelerateHorizontally(0.3, speed * this.direction);
         if (this.isTouchingLeftWall) {
             this.direction = 1;
         } else if (this.isTouchingRightWall) {

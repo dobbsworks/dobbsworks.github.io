@@ -19,14 +19,12 @@ var Ring = /** @class */ (function (_super) {
         _this.height = 10;
         _this.width = 10;
         _this.respectsSolidTiles = false;
+        _this.rowNum = 0;
         _this.canHangFrom = true;
         return _this;
     }
     Ring.prototype.Update = function () {
-        //this.ApplyGravity();
         this.ApplyInertia();
-        //this.ReactToWater();
-        //this.ReactToPlatformsAndSolids();
         this.MoveByVelocity();
     };
     Ring.prototype.GetFrameData = function (frameNum) {
@@ -34,7 +32,7 @@ var Ring = /** @class */ (function (_super) {
         var frameIndex = Math.floor(frameNum / 10) % frames.length;
         var frame = frames[frameIndex];
         return {
-            imageTile: tiles["ring"][frame][0],
+            imageTile: tiles["ring"][frame][this.rowNum],
             xFlip: false,
             yFlip: false,
             xOffset: 1,
@@ -43,3 +41,30 @@ var Ring = /** @class */ (function (_super) {
     };
     return Ring;
 }(Sprite));
+var PullSwitch = /** @class */ (function (_super) {
+    __extends(PullSwitch, _super);
+    function PullSwitch() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.height = 7;
+        _this.rowNum = 1;
+        _this.isOn = false;
+        _this.anchor = Direction.Up;
+        _this.isPowerSource = true;
+        return _this;
+    }
+    PullSwitch.prototype.Update = function () {
+        this.ApplyInertia();
+        this.MoveByVelocity();
+        this.isOn = (player && player.heldItem == this);
+    };
+    PullSwitch.prototype.GetPowerPoints = function () {
+        if (this.isOn) {
+            return [
+                { xPixel: this.xMid, yPixel: this.y - 1 }
+            ];
+        }
+        else
+            return [];
+    };
+    return PullSwitch;
+}(Ring));

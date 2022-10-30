@@ -46,7 +46,13 @@ class InitialMenu extends Menu {
         this.Hide(1);
         setTimeout(() => {
             this.Dispose();
-            audioHandler.SetBackgroundMusic("intro");
+
+            if (SeasonalService.GetEvent() == SeasonalEvent.Halloween) {
+                audioHandler.SetBackgroundMusic("halloween");
+            } else {
+                audioHandler.SetBackgroundMusic("intro");
+            }
+
         }, 200)
         MenuHandler.CreateMenu(MainMenu);
     }

@@ -20,6 +20,7 @@ var UIText = /** @class */ (function (_super) {
         _this.fontSize = fontSize;
         _this.fillColor = fillColor;
         _this.width = 0;
+        _this.textWidth = 0;
         _this.height = 0;
         _this.xOffset = 0;
         _this.yOffset = 0;
@@ -30,6 +31,7 @@ var UIText = /** @class */ (function (_super) {
         camera.ctx.font = fontSize + "px sans-serif";
         camera.ctx.textAlign = "center";
         _this.width = camera.ctx.measureText(text).width;
+        _this.textWidth = _this.width;
         _this.height = fontSize;
         return _this;
     }
@@ -39,14 +41,36 @@ var UIText = /** @class */ (function (_super) {
     UIText.prototype.GetMouseOverElement = function () { return null; };
     UIText.prototype.Draw = function (ctx) {
         ctx.textAlign = this.textAlign;
-        ctx.font = this.fontSize + "px " + this.font;
-        if (this.strokeColor != "transparent") {
-            ctx.strokeStyle = this.strokeColor;
-            ctx.lineWidth = this.strokeWidth;
-            ctx.strokeText(this.text, this.x + this.xOffset, this.y + this.yOffset);
-        }
+        ctx.strokeStyle = this.strokeColor;
         ctx.fillStyle = this.fillColor;
-        ctx.fillText(this.text, this.x + this.xOffset, this.y + this.yOffset);
+        if (this.font == "grobold" && this.text.indexOf("#") > -1 && this.textAlign == "left") {
+            //font doesn't include a # glyph for some reason???
+            ctx.font = this.fontSize + "px " + "grobold";
+            var segments = this.text.split("#");
+            var x = this.x + this.xOffset;
+            var poundLength = ctx.measureText("#").width;
+            for (var i = 0; i < segments.length; i++) {
+                var segment = segments[i];
+                // todo, outline if ever needed
+                ctx.font = this.fontSize + "px " + "grobold";
+                ctx.fillText(segment, x, this.y + this.yOffset);
+                x += (ctx.measureText(segment).width || 0);
+                if (i < segments.length - 1) {
+                    ctx.font = this.fontSize + "px " + "arial";
+                    // bump # over by 5 px to line up better
+                    ctx.fillText("#", x + 5, this.y + this.yOffset);
+                    x += poundLength;
+                }
+            }
+        }
+        else {
+            ctx.font = this.fontSize + "px " + this.font;
+            if (this.strokeColor != "transparent") {
+                ctx.lineWidth = this.strokeWidth;
+                ctx.strokeText(this.text, this.x + this.xOffset, this.y + this.yOffset);
+            }
+            ctx.fillText(this.text, this.x + this.xOffset, this.y + this.yOffset);
+        }
     };
     return UIText;
 }(UIElement));

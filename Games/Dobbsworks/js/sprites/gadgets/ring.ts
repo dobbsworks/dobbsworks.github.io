@@ -3,15 +3,12 @@ class Ring extends Sprite {
     public height: number = 10;
     public width: number = 10;
     respectsSolidTiles = false;
-
+    rowNum = 0;
     canHangFrom = true;
 
 
     Update(): void {
-        //this.ApplyGravity();
         this.ApplyInertia();
-        //this.ReactToWater();
-        //this.ReactToPlatformsAndSolids();
         this.MoveByVelocity();
     }
     
@@ -20,11 +17,34 @@ class Ring extends Sprite {
         let frameIndex = Math.floor(frameNum / 10) % frames.length;
         let frame = frames[frameIndex]
         return {
-            imageTile: tiles["ring"][frame][0],
+            imageTile: tiles["ring"][frame][this.rowNum],
             xFlip: false,
             yFlip: false,
             xOffset: 1,
             yOffset: 1
         };
+    }
+}
+
+class PullSwitch extends Ring {
+    height = 7;
+    rowNum = 1;
+    isOn = false;
+    anchor = Direction.Up;
+    isPowerSource = true;
+
+    Update(): void {
+        this.ApplyInertia();
+        this.MoveByVelocity();
+
+        this.isOn = (player && player.heldItem == this);
+    }
+    
+    GetPowerPoints(): Pixel[] { 
+        if (this.isOn) {
+            return [
+                {xPixel: this.xMid, yPixel: this.y - 1}
+            ]; 
+        } else return [];
     }
 }

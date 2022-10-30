@@ -113,10 +113,8 @@ class MouseHandler {
         mouseHandler.mouseY = e.touches[0].pageY;
         mouseHandler.isMouseOver = true;
         mouseHandler.hasUserInteracted = true;
-        if (e.button === 0) {
-            mouseHandler.isMouseDown = true;
-            mouseHandler.isMouseChanged = true;
-        }
+        mouseHandler.isMouseDown = true;
+        mouseHandler.isMouseChanged = true;
         e.preventDefault();
     }
 

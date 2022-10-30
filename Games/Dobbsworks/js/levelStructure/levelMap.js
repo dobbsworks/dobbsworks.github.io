@@ -213,7 +213,7 @@ var LevelMap = /** @class */ (function () {
         if (player) {
             this.timerText = Utility.FramesToTimeText(player.age + (player.isActive ? editorHandler.bankedCheckpointTime : 0));
         }
-        if (this.timerText && !editorHandler.isEditorAllowed && currentLevelCode != "") {
+        if (this.timerText && !editorHandler.isInEditMode && !(MenuHandler.CurrentMenu instanceof MainMenu)) {
             var fontsize = 16;
             ctx.textAlign = "left";
             ctx.font = fontsize + "px grobold";
@@ -462,6 +462,19 @@ var LevelMap = /** @class */ (function () {
         editorHandler.sprites.push(new EditorSprite(GoldGear, { tileX: 55, tileY: 8 }));
         editorHandler.playerFrames = [];
         editorHandler.history.RecordHistory();
+    };
+    LevelMap.ClearAllTiles = function (width, height) {
+        currentMap.GetLayerList().forEach(function (layer, index) {
+            var newLayer = new LevelLayer(index);
+            newLayer.layerType = index;
+            newLayer.map = currentMap;
+            for (var x = 0; x < width; x++) {
+                for (var y = 0; y < height; y++) {
+                    newLayer.SetTile(x, y, TileType.Air, true);
+                }
+            }
+            (currentMap[TargetLayer[index] + "Layer"]) = newLayer;
+        });
     };
     return LevelMap;
 }());

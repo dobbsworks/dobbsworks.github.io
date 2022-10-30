@@ -7,6 +7,7 @@ var Menu = /** @class */ (function () {
         this.stopsMapUpdate = false;
         this.blocksPause = true;
         this.backgroundColor = "#0000";
+        this.backgroundColor2 = ""; //if set, use a gradient
     }
     Menu.prototype.InitialDisplay = function () {
         var _a, _b;

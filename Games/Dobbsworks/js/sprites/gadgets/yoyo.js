@@ -87,6 +87,8 @@ var SpinningYoyo = /** @class */ (function (_super) {
                 player.dy = speed * Math.sin(theta);
                 player.yoyoTarget = null;
                 player.yoyoTimer = 10;
+                if (player.dy < 0)
+                    player.parentSprite = null;
             }
         }
     };

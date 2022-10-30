@@ -250,6 +250,8 @@ class EditorHandler {
             new EditorButtonTile(TileType.CircuitHurtSolidOff, "Zappy block"),
             //new EditorButtonTile(TileType.CircuitMusicOff, "Music block"),
 
+            //new EditorButtonSprite(Winch),
+            //new EditorButtonSprite(PullSwitch),
             new EditorButtonSprite(SlowMotor),
             new EditorButtonSprite(Motor),
             new EditorButtonSprite(FastMotor),

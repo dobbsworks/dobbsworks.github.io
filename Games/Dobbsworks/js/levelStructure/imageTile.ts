@@ -180,6 +180,7 @@ function rgbToHSL(r: number, g: number, b: number) {
         s = (delta / (1 - Math.abs(2 * l - 1)))
     }
 
+    if (h < 0) h += 360;
     return {
         h: h,
         s: s,

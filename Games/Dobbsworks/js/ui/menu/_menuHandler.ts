@@ -59,8 +59,16 @@ class MenuHandler {
     
     static Draw(camera: Camera): void {
         if (MenuHandler.CurrentMenu) {
-            camera.ctx.fillStyle = MenuHandler.CurrentMenu.backgroundColor;
-            camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
+            if (MenuHandler.CurrentMenu.backgroundColor2) {
+                var grd = camera.ctx.createLinearGradient(0, 0, 0, camera.canvas.height);
+                grd.addColorStop(0, MenuHandler.CurrentMenu.backgroundColor);
+                grd.addColorStop(1, MenuHandler.CurrentMenu.backgroundColor2);
+                camera.ctx.fillStyle = grd;
+                camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
+            } else {
+                camera.ctx.fillStyle = MenuHandler.CurrentMenu.backgroundColor;
+                camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
+            }
         }
     }
 }

@@ -191,7 +191,7 @@ class MyLevelsMenu extends Menu {
                         MyLevelsMenu.selectedCloudCode = data;
                     })
                 }
-            });
+            }, UISmallPrompt.SimpleCharacters);
         });
         this.localSavesOptionsPanel.AddChild(this.buttonLocalUpload);
 

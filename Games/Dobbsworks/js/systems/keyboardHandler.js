@@ -83,6 +83,26 @@ var KeyboardHandler = /** @class */ (function () {
             // console.log(keyCode);
             // e.preventDefault();
         }
+        if (KeyboardHandler.connectedInput) {
+            if (e.key == "Backspace") {
+                KeyboardHandler.connectedInput.value = KeyboardHandler.connectedInput.value.substring(0, KeyboardHandler.connectedInput.value.length - 1);
+            }
+            if (e.key.toLowerCase() == "v" && e.ctrlKey) {
+                // paste event
+                navigator.clipboard.readText()
+                    .then(function (text) {
+                    if (KeyboardHandler.connectedInput)
+                        KeyboardHandler.connectedInput.value += text;
+                })
+                    .catch(function (err) {
+                    console.error('Failed to read clipboard contents: ', err);
+                });
+            }
+            else if (e.key.length == 1) {
+                KeyboardHandler.connectedInput.value += e.key;
+            }
+            console.log(e.key);
+        }
     };
     KeyboardHandler.OnKeyUp = function (e) {
         var keyCode = e.code;
@@ -291,6 +311,7 @@ var KeyboardHandler = /** @class */ (function () {
     ];
     KeyboardHandler.keyState = [];
     KeyboardHandler.recentlyReleasedKeys = [];
+    KeyboardHandler.connectedInput = null;
     KeyboardHandler.gamepadIndex = -1; //current active in-use
     return KeyboardHandler;
 }());

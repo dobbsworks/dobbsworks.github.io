@@ -177,7 +177,7 @@ var MyLevelsMenu = /** @class */ (function (_super) {
                         MyLevelsMenu.selectedCloudCode = data;
                     });
                 }
-            });
+            }, UISmallPrompt.SimpleCharacters);
         });
         this.localSavesOptionsPanel.AddChild(this.buttonLocalUpload);
         this.buttonLocalEdit = this.CreateActionButton("Edit", function () {

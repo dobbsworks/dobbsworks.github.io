@@ -84,7 +84,7 @@ var AvatarCustomizationMenu = /** @class */ (function (_super) {
                     AvatarCustomizationMenu.username = newName;
                     _this.usernameTextElement.text = newName;
                 }
-            });
+            }, UISmallPrompt.SimpleCharacters);
         });
         namePanel.AddChild(this.usernameTextElement);
         namePanel.AddChild(nameEditButton);

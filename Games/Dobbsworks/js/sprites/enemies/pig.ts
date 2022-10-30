@@ -8,7 +8,7 @@ class Piggle extends Enemy {
     imageSource = "pig";
 
     animationSpeed = 0.2;
-    frameRow = 0;
+    frameRow = (SeasonalService.GetEvent() == SeasonalEvent.Halloween) ? 2 : 0;
     turnAtLedges = true;
     bounceSoundId: string = "oink";
 

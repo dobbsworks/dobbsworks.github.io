@@ -59,7 +59,12 @@ var InitialMenu = /** @class */ (function (_super) {
         this.Hide(1);
         setTimeout(function () {
             _this.Dispose();
-            audioHandler.SetBackgroundMusic("intro");
+            if (SeasonalService.GetEvent() == SeasonalEvent.Halloween) {
+                audioHandler.SetBackgroundMusic("halloween");
+            }
+            else {
+                audioHandler.SetBackgroundMusic("intro");
+            }
         }, 200);
         MenuHandler.CreateMenu(MainMenu);
     };
