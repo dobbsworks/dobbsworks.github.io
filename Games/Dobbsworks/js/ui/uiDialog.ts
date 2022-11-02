@@ -5,6 +5,7 @@ abstract class UIDialog {
     options: UIDialogOption[] = [];
     promptText: string = "";
     promptLines: string[] = [];
+    suppressKeyNavigation = false;
 
     Draw(ctx: CanvasRenderingContext2D): void {
         ctx.fillStyle = "#0009";
@@ -62,6 +63,7 @@ abstract class UIDialog {
                     option.action(...this.GetButtonActionParameters());
                     this.OnAnyAction();
                     MenuHandler.Dialog = null;
+                    mouseHandler.isMouseDown = false;
                 }
             }
 
@@ -71,12 +73,12 @@ abstract class UIDialog {
 
         if (MenuHandler.Dialog == this) {
             // no options clicked
-            if (KeyboardHandler.IsKeyPressed(KeyAction.Cancel, true)) {
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Cancel, true) && !this.suppressKeyNavigation) {
                 this.OnKeyboardCancel();
                 this.OnAnyAction();
                 MenuHandler.Dialog = null;
             }
-            if (KeyboardHandler.IsKeyPressed(KeyAction.Confirm, true)) {
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Confirm, true) && !this.suppressKeyNavigation) {
                 this.OnKeyboardConfirm();
                 this.OnAnyAction();
                 MenuHandler.Dialog = null;
@@ -101,6 +103,9 @@ abstract class UIDialog {
     }
     static SmallPrompt(info: string, confirmButtonText: string, maxLength: number, confirmAction: (text: string) => void, allowedCharacters: string = ""): void {
         MenuHandler.Dialog = new UISmallPrompt(info, confirmButtonText, maxLength, confirmAction, allowedCharacters);
+    }
+    static ReadKey(info: string, confirmButtonText: string, rejectButtonText: string, confirmAction: () => void): void {
+        MenuHandler.Dialog = new UIReadKey(info, confirmButtonText, rejectButtonText, confirmAction);
     }
 }
 
@@ -260,4 +265,37 @@ class UIConfirm extends UIDialog {
     }
     
     OnKeyboardConfirm(): void { this.onConfirmAction(); }
+}
+
+class UIReadKey extends UIConfirm {
+    constructor(
+        messageText: string,
+        confirmText: string,
+        rejectText: string,
+        onConfirmAction: () => void = () => { }
+    ) {
+        super(messageText, confirmText, rejectText, onConfirmAction);
+        KeyboardHandler.lastPressedKeyCode = "";
+    }
+
+    private isLastLineAdded = false;
+    suppressKeyNavigation = true;
+
+    Update() {
+        super.Update();
+
+        if (!this.isLastLineAdded && this.promptLines.length) {
+            this.promptLines.push("", "");
+            this.isLastLineAdded = true;
+        }
+        let keyCode = KeyboardHandler.lastPressedKeyCode || "no key";
+        if (Object.keys(KeyboardHandler.gamepadMap).indexOf(keyCode) > -1) {
+            keyCode = (<any>KeyboardHandler).gamepadMap[keyCode];
+        }
+
+        this.promptLines[this.promptLines.length - 1] = "<" + keyCode + ">";
+    }
+
+    OnKeyboardConfirm(): void {};
+    OnKeyboardCancel(): void {};
 }

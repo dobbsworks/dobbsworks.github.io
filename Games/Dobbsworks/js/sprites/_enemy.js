@@ -154,7 +154,7 @@ var Enemy = /** @class */ (function (_super) {
         audioHandler.PlaySound(this.bounceSoundId, true);
     };
     Enemy.prototype.SkyPatrol = function (speed) {
-        this.dx = speed * this.direction;
+        this.AccelerateHorizontally(0.3, speed * this.direction);
         if (this.isTouchingLeftWall) {
             this.direction = 1;
         }

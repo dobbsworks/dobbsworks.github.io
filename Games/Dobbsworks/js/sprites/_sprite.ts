@@ -799,9 +799,13 @@ abstract class Sprite {
     }
 
     public AccelerateHorizontally(acceleration: number, targetDx: number): void {
+        let absoluteDistanceToMaxSpeed = Math.abs(targetDx - this.dx);
+        if (absoluteDistanceToMaxSpeed <= acceleration) {
+            this.dx = targetDx;
+            return;
+        }
+        // move speed towards targetDx
         this.dx += acceleration * (targetDx > this.dx ? 1 : -1);
-        if (this.dx > targetDx && targetDx >= 0 && Math.abs(this.dx - targetDx) < acceleration) this.dx = targetDx;
-        if (this.dx < targetDx && targetDx <= 0 && Math.abs(this.dx - targetDx) < acceleration) this.dx = targetDx;
     }
 
     public AccelerateVertically(acceleration: number, targetDy: number): void {

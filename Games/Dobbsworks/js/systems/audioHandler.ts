@@ -172,6 +172,7 @@ class AudioHandler {
         "faire",
         "choir",
         "meditate",
+        "slime",
     ]
 }
 

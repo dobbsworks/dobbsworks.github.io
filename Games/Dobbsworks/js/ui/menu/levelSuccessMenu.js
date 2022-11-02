@@ -83,6 +83,9 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
             if (_this.dislikeButton)
                 _this.dislikeButton.isHidden = true;
             DataService.LikeLevel(currentLevelCode);
+            var listing = LevelBrowseMenu.GetListing(currentLevelCode);
+            if (listing)
+                listing.isLiked = true;
         });
         this.dislikeButton.onClickEvents.push(function () {
             if (_this.liked || _this.disliked)
@@ -95,6 +98,9 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
             if (_this.likeButton)
                 _this.likeButton.isHidden = true;
             DataService.DislikeLevel(currentLevelCode);
+            var listing = LevelBrowseMenu.GetListing(currentLevelCode);
+            if (listing)
+                listing.isLiked = false;
         });
         return ret;
     };
@@ -125,6 +131,11 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
         this.deathCount = deaths;
         if (!isDemoMode) {
             DataService.LogLevelPlayDone(progressModel).then(function (awardsModel) { _this.PopulateTimes(awardsModel, frameCount); });
+            var listing = LevelBrowseMenu.GetListing(currentLevelCode);
+            if (listing) {
+                listing.level.numberOfAttempts += deaths + 1;
+                listing.level.numberOfClears += 1;
+            }
         }
     };
     LevelSuccessMenu.prototype.PopulateTimes = function (awardsModel, frameCount) {
@@ -268,7 +279,7 @@ var EndOfLevelMinigameGear = /** @class */ (function (_super) {
             }
         }
         else {
-            var listing = RecentLevelsMenu.GetListing(currentLevelCode);
+            var listing = LevelBrowseMenu.GetListing(currentLevelCode);
             if (listing) {
                 listing.isCleared = true;
             }
@@ -277,7 +288,7 @@ var EndOfLevelMinigameGear = /** @class */ (function (_super) {
                 listing2.levelState = LevelState.cleared;
                 MyLevelsMenu.Reset();
             }
-            RecentLevelsMenu.Reset();
+            LevelBrowseMenu.Reset();
             MenuHandler.GoBack();
             currentLevelCode = "";
             // menu music

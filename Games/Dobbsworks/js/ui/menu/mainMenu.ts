@@ -66,7 +66,7 @@ class MainMenu extends Menu {
         });
 
         recentLevelsButton.onClickEvents.push(() => {
-            MenuHandler.SubMenu(RecentLevelsMenu);
+            MenuHandler.SubMenu(LevelBrowseMenu);
             audioHandler.SetBackgroundMusic("menuJazz");
         });
         

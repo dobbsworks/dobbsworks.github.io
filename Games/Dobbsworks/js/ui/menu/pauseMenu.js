@@ -18,6 +18,7 @@ var PauseMenu = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.stopsMapUpdate = true;
         _this.backgroundColor = "#0005";
+        _this.backgroundColor2 = "#000D";
         return _this;
     }
     PauseMenu.prototype.CreateElements = function () {

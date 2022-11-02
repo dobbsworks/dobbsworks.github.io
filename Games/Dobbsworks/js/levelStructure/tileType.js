@@ -27,10 +27,12 @@ var TileType = /** @class */ (function () {
         this.conveyorSpeed = 0; // positive = clockwise
         this.drainsAir = false;
         this.canWalkOn = true; //sticky honey blocks
+        this.canJumpFrom = true; //sticky slime blocks
         this.isStickyWall = false;
         this.isJumpWall = false;
         this.isWarpWall = false;
         this.isTrack = false;
+        this.isExemptFromSlime = false;
         this.isTrackCap = false;
         this.trackEquation = function (x, y) { return ({ x: x, y: y }); };
         this.trackCrossedEquation = function (x1, y1, x2, y2) { return false; };
@@ -284,6 +286,7 @@ var TileType = /** @class */ (function () {
         TileType.SteelBarrel;
         TileType.WallJumpLeft;
         TileType.WallJumpRight;
+        TileType.Slime;
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
     };
@@ -814,11 +817,23 @@ var TileType = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(TileType, "Slime", {
+        get: function () {
+            return TileType.GetTileType("Slime", "water", 7, 2, Solidity.Top, TargetLayer.semisolid, function (tileType) {
+                tileType.imageTile.yOffset = -2;
+                tileType.canJumpFrom = false;
+                tileType.isExemptFromSlime = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(TileType, "HoneyLeft", {
         get: function () {
             return TileType.GetTileType("HoneyLeft", "water", 5, 2, Solidity.LeftWall, TargetLayer.semisolid, function (tileType) {
                 tileType.imageTile.xOffset = 8;
                 tileType.isStickyWall = true;
+                tileType.isExemptFromSlime = true;
             });
         },
         enumerable: false,
@@ -829,6 +844,7 @@ var TileType = /** @class */ (function () {
             return TileType.GetTileType("HoneyRight", "water", 6, 2, Solidity.RightWall, TargetLayer.semisolid, function (tileType) {
                 tileType.imageTile.xOffset = -8;
                 tileType.isStickyWall = true;
+                tileType.isExemptFromSlime = true;
             });
         },
         enumerable: false,
@@ -1289,6 +1305,7 @@ var TileType = /** @class */ (function () {
             return TileType.GetTileType("DisappearingBlockOff", "wire", 4, 1, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.canBePowered = true;
                 tileType.poweredTileName = "DisappearingBlockOn";
+                tileType.isExemptFromSlime = true;
             });
         },
         enumerable: false,
@@ -1447,6 +1464,7 @@ var TileType = /** @class */ (function () {
             frames.push({ x: 0, y: 0 });
             return TileType.GetAnimatedTileType("Barrel", "barrel", frames, 1, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.pickUpSprite = Barrel;
+                tileType.isExemptFromSlime = true;
             });
         },
         enumerable: false,
@@ -1464,6 +1482,7 @@ var TileType = /** @class */ (function () {
             frames.push({ x: 0, y: 2 });
             return TileType.GetAnimatedTileType("SteelBarrel", "barrel", frames, 1, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.pickUpSprite = SteelBarrel;
+                tileType.isExemptFromSlime = true;
             });
         },
         enumerable: false,
@@ -1481,6 +1500,7 @@ var TileType = /** @class */ (function () {
             frames.push({ x: 0, y: 0 });
             return TileType.GetAnimatedTileType("Pumpkin", "pumpkin", frames, 1, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.pickUpSprite = Pumpkin;
+                tileType.isExemptFromSlime = true;
             });
         },
         enumerable: false,
@@ -1536,6 +1556,7 @@ var TileType = /** @class */ (function () {
                     delay: 30
                 };
             }
+            tileType.isExemptFromSlime = true;
         });
     };
     Object.defineProperty(TileType, "HangingVine", {
@@ -1543,6 +1564,7 @@ var TileType = /** @class */ (function () {
             return TileType.GetTileType("HangingVine", "hanging", 0, 0, Solidity.Bottom, TargetLayer.semisolid, function (tileType) {
                 tileType.imageTile.yOffset = 3;
                 tileType.isHangable = true;
+                tileType.isExemptFromSlime = true;
             });
         },
         enumerable: false,
@@ -1553,6 +1575,7 @@ var TileType = /** @class */ (function () {
             return TileType.GetTileType("HangingBars", "hanging", 1, 0, Solidity.Bottom, TargetLayer.semisolid, function (tileType) {
                 tileType.imageTile.yOffset = 3;
                 tileType.isHangable = true;
+                tileType.isExemptFromSlime = true;
             });
         },
         enumerable: false,
@@ -1753,7 +1776,9 @@ var TileType = /** @class */ (function () {
             { x: 2, y: y },
         ];
         var solidity = [Solidity.LeftWall, Solidity.Bottom, Solidity.RightWall, Solidity.Top][y];
-        return TileType.GetAnimatedTileType("OneWay" + direction.name, "oneway", frames, 4, solidity, TargetLayer.semisolid, function (tileType) { });
+        return TileType.GetAnimatedTileType("OneWay" + direction.name, "oneway", frames, 4, solidity, TargetLayer.semisolid, function (tileType) {
+            tileType.isExemptFromSlime = true;
+        });
     };
     Object.defineProperty(TileType, "OneWayRight", {
         get: function () { return this.OneWay(Direction.Right); },
@@ -1847,6 +1872,7 @@ var TileType = /** @class */ (function () {
         get: function () {
             return TileType.GetTileType("WallJumpLeft", "wallJump", 0, 0, Solidity.LeftWall, TargetLayer.semisolid, function (tileType) {
                 tileType.isJumpWall = true;
+                tileType.isExemptFromSlime = true;
             });
         },
         enumerable: false,
@@ -1856,6 +1882,7 @@ var TileType = /** @class */ (function () {
         get: function () {
             return TileType.GetTileType("WallJumpRight", "wallJump", 1, 0, Solidity.RightWall, TargetLayer.semisolid, function (tileType) {
                 tileType.isJumpWall = true;
+                tileType.isExemptFromSlime = true;
             });
         },
         enumerable: false,
@@ -1865,6 +1892,7 @@ var TileType = /** @class */ (function () {
         get: function () {
             return TileType.GetAnimatedTileType("WallWarpLeft", "warpWall", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (y) { return ({ x: 0, y: y }); }), 6, Solidity.LeftWall, TargetLayer.semisolid, function (tileType) {
                 tileType.isWarpWall = true;
+                tileType.isExemptFromSlime = true;
             });
         },
         enumerable: false,
@@ -1874,6 +1902,7 @@ var TileType = /** @class */ (function () {
         get: function () {
             return TileType.GetAnimatedTileType("WallWarpRight", "warpWall", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (y) { return ({ x: 1, y: y }); }), 6, Solidity.RightWall, TargetLayer.semisolid, function (tileType) {
                 tileType.isWarpWall = true;
+                tileType.isExemptFromSlime = true;
             });
         },
         enumerable: false,

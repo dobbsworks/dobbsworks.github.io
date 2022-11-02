@@ -39,6 +39,7 @@ class UiHandler {
                 document.body.style.cursor = "pointer";
                 if (mouseHandler.isMouseClicked()) {
                     el.Click();
+                    break;
                 }
             }
         }

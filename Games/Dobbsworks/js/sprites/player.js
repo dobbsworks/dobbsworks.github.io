@@ -402,6 +402,7 @@ var Player = /** @class */ (function (_super) {
         this.jumpBufferTimer = -1;
         this.coyoteTimer = 999999;
         this.dy = Math.abs(this.dx) > 0.3 ? -1.5 : -1.2;
+        var isOnSlime = this.standingOn.some(function (a) { return !a.tileType.canJumpFrom; });
         if (this.isInWater) {
             this.swimTimer = 0;
             if (KeyboardHandler.IsKeyPressed(KeyAction.Down, false))
@@ -413,7 +414,12 @@ var Player = /** @class */ (function (_super) {
             audioHandler.PlaySound("swim", true);
         }
         else {
-            audioHandler.PlaySound("jump", true);
+            if (isOnSlime) {
+                audioHandler.PlaySound("stuck-jump", true);
+            }
+            else {
+                audioHandler.PlaySound("jump", true);
+            }
         }
         if ((_a = this.heldItem) === null || _a === void 0 ? void 0 : _a.canHangFrom) {
             this.heldItem.framesSinceThrown = 1;
@@ -444,6 +450,10 @@ var Player = /** @class */ (function (_super) {
             this.dx += this.currentSlope / 2;
         }
         this.isTouchingStickyWall = false;
+        if (isOnSlime) {
+            this.dy = 0;
+            this.jumpTimer = -1;
+        }
     };
     Player.prototype.Bounce = function () {
         // very similar to Jump()

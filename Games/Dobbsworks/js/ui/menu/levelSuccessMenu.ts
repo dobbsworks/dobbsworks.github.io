@@ -70,6 +70,8 @@ class LevelSuccessMenu extends Menu {
             if (this.likeButton) this.likeButton.mouseoverBackColor = "#0000";
             if (this.dislikeButton) this.dislikeButton.isHidden = true;
             DataService.LikeLevel(currentLevelCode);
+            let listing = LevelBrowseMenu.GetListing(currentLevelCode);
+            if (listing) listing.isLiked = true;
         });
 
         this.dislikeButton.onClickEvents.push(() => {
@@ -79,6 +81,8 @@ class LevelSuccessMenu extends Menu {
             if (this.dislikeButton) this.dislikeButton.mouseoverBackColor = "#0000";
             if (this.likeButton) this.likeButton.isHidden = true;
             DataService.DislikeLevel(currentLevelCode);
+            let listing = LevelBrowseMenu.GetListing(currentLevelCode);
+            if (listing) listing.isLiked = false;
         });
 
         return ret;
@@ -111,6 +115,11 @@ class LevelSuccessMenu extends Menu {
         this.deathCount = deaths;
         if (!isDemoMode) {
             DataService.LogLevelPlayDone(progressModel).then((awardsModel) => { this.PopulateTimes(awardsModel, frameCount) });
+            let listing = LevelBrowseMenu.GetListing(currentLevelCode);
+            if (listing) {
+                listing.level.numberOfAttempts += deaths + 1;
+                listing.level.numberOfClears += 1;
+            }
         }
     }
 
@@ -265,7 +274,7 @@ class EndOfLevelMinigameGear extends UIElement {
                 MenuHandler.GoBack();
             }
         } else {
-            let listing = RecentLevelsMenu.GetListing(currentLevelCode);
+            let listing = LevelBrowseMenu.GetListing(currentLevelCode);
             if (listing) {
                 listing.isCleared = true;
             }
@@ -274,7 +283,7 @@ class EndOfLevelMinigameGear extends UIElement {
                 listing2.levelState = LevelState.cleared;
                 MyLevelsMenu.Reset();
             }
-            RecentLevelsMenu.Reset();
+            LevelBrowseMenu.Reset();
             MenuHandler.GoBack();
             currentLevelCode = "";
             // menu music

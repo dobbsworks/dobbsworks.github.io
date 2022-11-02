@@ -1,6 +1,7 @@
 class PauseMenu extends Menu {
     stopsMapUpdate = true;
     backgroundColor = "#0005";
+    backgroundColor2 = "#000D";
 
     static UnpauseTime = new Date();
     static IsPaused = false;

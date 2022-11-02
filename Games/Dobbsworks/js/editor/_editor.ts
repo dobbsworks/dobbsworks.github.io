@@ -127,42 +127,19 @@ class EditorHandler {
             let fill = slopeFills.splice(0, 1)[0];
             if (fill) tilePanelButtons.push(new EditorButtonSlopePen(fill));
         }
-
-        // for (let i = 0; i < 7; i++) {
-        //     let tileTypeRow = <TileType[]>(Object.values(TileType.TileMap).slice(i * 28 + 1, i * 28 + 9));
-        //     tilePanelButtons.push(...tileTypeRow.map((a, col) => new EditorButtonTile(a, tooltips[col])));
-        //     if (i == 0) {
-        //         hotbarDefaults.push(<EditorButtonTile>tilePanelButtons[0]);
-        //         hotbarDefaults.push(<EditorButtonTile>tilePanelButtons[3]);
-        //         hotbarDefaults.push(<EditorButtonTile>tilePanelButtons[4]);
-        //         hotbarDefaults.push(<EditorButtonTile>tilePanelButtons[5]);
-        //         hotbarDefaults.push(<EditorButtonTile>tilePanelButtons[6]);
-        //     }
-        //     let fill = slopeFills.splice(0, 1)[0];
-        //     if (fill) tilePanelButtons.push(new EditorButtonSlopePen(fill));
-        // }
-        // tilePanelButtons.push(...[
-        //     TileType.MetalGround, TileType.MetalBrick, TileType.MetalBlock, TileType.MetalTop,
-        //     TileType.MetalBack, TileType.ChainLadder, TileType.MetalSpikes, TileType.DecorChain].map((a, col) => new EditorButtonTile(a, tooltips[col])));
-        // tilePanelButtons.push(new EditorButtonSlopePen(new SlopeFill("Metal", TileType.MetalBrick)));
-
-        // tilePanelButtons.push(...[
-        //     TileType.CaveGround, TileType.CaveBrick, TileType.CaveBlock, TileType.CaveTop,
-        //     TileType.CaveBack, TileType.CaveLadder, TileType.CaveSpikes, TileType.DecorCave].map((a, col) => new EditorButtonTile(a, tooltips[col])));
-        // tilePanelButtons.push(new EditorButtonSlopePen(new SlopeFill("Cave", TileType.CaveGround)));
         let tilePanel = this.CreateFloatingButtonPanel(tilePanelButtons, 5, 9);
 
 
         /* ENEMY PANEL */
         let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, Wooly, WoolyBooly, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
-            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Yufo];
+            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, LittleJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Yufo];
         let enemyButtons = enemyTypes.map(a => new EditorButtonSprite(a));
         enemyButtons.filter(a => a.spriteType == Piggle || a.spriteType == Snail).forEach(a => hotbarDefaults.push(a));
-        let enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 4, 7);
+        let enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 7);
 
         let gizmoTypes: (SpriteType)[] = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform,
-            Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, /*SpringBox,*/ Propeller, RedCannon, BlueCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon
+            Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, RedCannon, BlueCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon
         ];
         let gizmoButtons: EditorButton[] = gizmoTypes.map(a => new EditorButtonSprite(a));
         let keyIndex = gizmoButtons.findIndex(a => a instanceof EditorButtonSprite && a.spriteType == FlatKey);
@@ -250,8 +227,8 @@ class EditorHandler {
             new EditorButtonTile(TileType.CircuitHurtSolidOff, "Zappy block"),
             //new EditorButtonTile(TileType.CircuitMusicOff, "Music block"),
 
-            //new EditorButtonSprite(Winch),
-            //new EditorButtonSprite(PullSwitch),
+            new EditorButtonSprite(Winch),
+            new EditorButtonSprite(PullSwitch),
             new EditorButtonSprite(SlowMotor),
             new EditorButtonSprite(Motor),
             new EditorButtonSprite(FastMotor),
@@ -424,13 +401,14 @@ class EditorHandler {
 
         let bubbleButton = new EditorButtonSprite(AirBubble);
         let poisonGasBrush = new EditorButtonTile(TileType.PoisonGas, "Poison gas");
+        let slimeBrush = new EditorButtonTile(TileType.Slime, "Slime");
         let honeyBrush = new EditorButtonTile(TileType.Honey, "Honey");
         let honeyLeftBrush = new EditorButtonTile(TileType.HoneyLeft, "Honey wall (left)");
         let honeyRightBrush = new EditorButtonTile(TileType.HoneyRight, "Honey wall (right)");
 
         let ret = this.CreateFloatingButtonPanel([
             waterBrush, waterfallBrush, quickSandBrush, purpleWaterBrush, bubbleButton,
-            lavaBrush, honeyBrush, honeyLeftBrush, honeyRightBrush,
+            lavaBrush, slimeBrush, honeyBrush, honeyLeftBrush, honeyRightBrush,
             new EditorButtonTile(TileType.InitialWaterLevel, "Initial water level"),
             new EditorButtonTile(TileType.InitialPurpleWaterLevel, "Initial purple water level"),
             new EditorButtonTile(TileType.InitialLavaLevel, "Initial lava level"),
@@ -438,7 +416,7 @@ class EditorHandler {
             new EditorButtonTile(TileType.WaterTapOff, "Water tap"),
             new EditorButtonTile(TileType.PurpleWaterTapOff, "Purple water tap"),
             new EditorButtonTile(TileType.LavaTapOff, "Lava tap"),
-            this.playerWaterModeToggle, this.spriteWaterModeToggle], 3, 6);
+            this.playerWaterModeToggle, this.spriteWaterModeToggle], 4, 5);
         //ret.y = this.mainPanel.y - ret.height -;
         ret.targetY = ret.y;
         return ret;

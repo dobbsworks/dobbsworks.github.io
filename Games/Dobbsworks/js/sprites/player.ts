@@ -380,6 +380,8 @@ class Player extends Sprite {
         this.jumpBufferTimer = -1;
         this.coyoteTimer = 999999;
         this.dy = Math.abs(this.dx) > 0.3 ? -1.5 : -1.2;
+
+        let isOnSlime = this.standingOn.some(a => !a.tileType.canJumpFrom);
         if (this.isInWater) {
             this.swimTimer = 0;
             if (KeyboardHandler.IsKeyPressed(KeyAction.Down, false)) this.dy = -0.2;
@@ -387,7 +389,11 @@ class Player extends Sprite {
             else this.dy = -0.5;
             audioHandler.PlaySound("swim", true);
         } else {
-            audioHandler.PlaySound("jump", true);
+            if (isOnSlime) {
+                audioHandler.PlaySound("stuck-jump", true);
+            } else {
+                audioHandler.PlaySound("jump", true);
+            }
         }
         if (this.heldItem?.canHangFrom) {
             this.heldItem.framesSinceThrown = 1;
@@ -401,8 +407,6 @@ class Player extends Sprite {
 
         let jumpWallLeft = this.IsNeighboringWallJumpTilesSide(-1);
         let jumpWallRight = this.IsNeighboringWallJumpTilesSide(1);
-
-
 
 
         if (this.isTouchingStickyWall || this.wallDragDirection != 0 || jumpWallLeft || jumpWallRight) {
@@ -424,6 +428,11 @@ class Player extends Sprite {
             this.dx += this.currentSlope / 2;
         }
         this.isTouchingStickyWall = false;
+
+        if (isOnSlime) {
+            this.dy = 0;
+            this.jumpTimer = -1;
+        }
     }
 
     Bounce(): void {

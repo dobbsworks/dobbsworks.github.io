@@ -1,4 +1,11 @@
 "use strict";
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 var KeyAction = /** @class */ (function () {
     function KeyAction(keyCode) {
         this.keyCode = keyCode;
@@ -66,10 +73,19 @@ var KeyboardHandler = /** @class */ (function () {
     KeyboardHandler.InitKeyHandlers = function () {
         document.addEventListener("keydown", KeyboardHandler.OnKeyDown, false);
         document.addEventListener("keyup", KeyboardHandler.OnKeyUp, false);
+        KeyboardHandler.defaultKeyMap = __spreadArrays(KeyboardHandler.keyMap);
+        StorageService.LoadKeyboardMappings();
+    };
+    KeyboardHandler.GetNonDefaultMappings = function () {
+        return KeyboardHandler.keyMap.filter(function (a) { return !KeyboardHandler.defaultKeyMap.some(function (b) { return a.k == b.k && a.v == b.v; }); });
+    };
+    KeyboardHandler.GetRemovedDefaultMappings = function () {
+        return KeyboardHandler.defaultKeyMap.filter(function (a) { return !KeyboardHandler.keyMap.some(function (b) { return a.k == b.k && a.v == b.v; }); });
     };
     KeyboardHandler.OnKeyDown = function (e) {
         KeyboardHandler.gamepadIndex = -1;
         var keyCode = e.code;
+        KeyboardHandler.lastPressedKeyCode = keyCode;
         var mappedActions = KeyboardHandler.keyMap.filter(function (a) { return a.k === keyCode; });
         if (mappedActions.length) {
             for (var _i = 0, mappedActions_1 = mappedActions; _i < mappedActions_1.length; _i++) {
@@ -101,7 +117,6 @@ var KeyboardHandler = /** @class */ (function () {
             else if (e.key.length == 1) {
                 KeyboardHandler.connectedInput.value += e.key;
             }
-            console.log(e.key);
         }
     };
     KeyboardHandler.OnKeyUp = function (e) {
@@ -195,79 +210,68 @@ var KeyboardHandler = /** @class */ (function () {
         }
         if (KeyboardHandler.gamepadIndex === -1)
             return;
-        var dx = 0;
-        var dy = 0;
         var gamepad = navigator.getGamepads()[KeyboardHandler.gamepadIndex];
         if (!gamepad)
             return;
-        if (gamepad && gamepad.axes) {
-            if (gamepad.axes) {
-                if (gamepad.axes[0])
-                    dx += gamepad.axes[0];
-                if (gamepad.axes[1])
-                    dy += gamepad.axes[1];
-                if (gamepad.axes[2])
-                    dx += gamepad.axes[2];
-                if (gamepad.axes[3])
-                    dy += gamepad.axes[3];
-            }
-            if (gamepad.buttons) {
-                KeyboardHandler.SetActionState(KeyAction.Action1, gamepad.buttons[0].pressed);
-                KeyboardHandler.SetActionState(KeyAction.Action2, gamepad.buttons[2].pressed);
-                if (editorHandler.isEditorAllowed) {
-                    KeyboardHandler.SetActionState(KeyAction.EditToggle, gamepad.buttons[8].pressed);
+        var pressedGamepadButtons = [];
+        var deadZone = 0.3;
+        if (gamepad.axes) {
+            for (var i = 0; i < gamepad.axes.length; i++) {
+                var axisValue = gamepad.axes[i];
+                if (Math.abs(axisValue) > deadZone) {
+                    var posNeg = axisValue > 0 ? "+" : "-";
+                    pressedGamepadButtons.push("GpAxis" + i + posNeg);
                 }
-                else {
-                    KeyboardHandler.SetActionState(KeyAction.Reset, gamepad.buttons[8].pressed);
-                }
-                KeyboardHandler.SetActionState(KeyAction.Pause, gamepad.buttons[9].pressed);
-                if (gamepad.buttons[12].pressed)
-                    dy = -1;
-                if (gamepad.buttons[13].pressed)
-                    dy = 1;
-                if (gamepad.buttons[14].pressed)
-                    dx = -1;
-                if (gamepad.buttons[15].pressed)
-                    dx = 1;
             }
         }
-        // dead zone
-        if (Math.abs(dx) < 0.30)
-            dx = 0;
-        if (Math.abs(dy) < 0.30)
-            dy = 0;
-        if (dx < 0)
-            KeyboardHandler.SetActionState(KeyAction.Left, true);
-        if (dx > 0)
-            KeyboardHandler.SetActionState(KeyAction.Right, true);
-        if (dx <= 0)
-            KeyboardHandler.SetActionState(KeyAction.Right, false);
-        if (dx >= 0)
-            KeyboardHandler.SetActionState(KeyAction.Left, false);
-        if (dy < 0)
-            KeyboardHandler.SetActionState(KeyAction.Up, true);
-        if (dy > 0)
-            KeyboardHandler.SetActionState(KeyAction.Down, true);
-        if (dy <= 0)
-            KeyboardHandler.SetActionState(KeyAction.Down, false);
-        if (dy >= 0)
-            KeyboardHandler.SetActionState(KeyAction.Up, false);
+        if (gamepad.buttons) {
+            for (var i = 0; i < gamepad.buttons.length; i++) {
+                var button = gamepad.buttons[i];
+                if (button.pressed)
+                    pressedGamepadButtons.push("GpButton" + i);
+            }
+        }
+        var keyActions = Object.keys(KeyAction).filter(function (a) { return KeyAction[a].keyCode; }).map(function (a) { return KeyAction[a]; });
+        var _loop_1 = function (keyAction) {
+            var mappedGamepadButtons = KeyboardHandler.keyMap.filter(function (a) { return a.v == keyAction; }).map(function (a) { return a.k; });
+            var isPressed = mappedGamepadButtons.some(function (a) { return pressedGamepadButtons.indexOf(a) > -1; });
+            KeyboardHandler.SetActionState(keyAction, isPressed);
+        };
+        for (var _i = 0, keyActions_1 = keyActions; _i < keyActions_1.length; _i++) {
+            var keyAction = keyActions_1[_i];
+            _loop_1(keyAction);
+        }
+        if (pressedGamepadButtons.length) {
+            KeyboardHandler.lastPressedKeyCode = pressedGamepadButtons[0];
+        }
     };
+    KeyboardHandler.defaultKeyMap = [];
     KeyboardHandler.keyMap = [
         { k: "KeyW", v: KeyAction.Up },
         { k: "ArrowUp", v: KeyAction.Up },
+        { k: "GpAxis1-", v: KeyAction.Up },
+        { k: "GpButton12", v: KeyAction.Up },
         { k: "KeyA", v: KeyAction.Left },
         { k: "ArrowLeft", v: KeyAction.Left },
+        { k: "GpAxis0-", v: KeyAction.Left },
+        { k: "GpButton14", v: KeyAction.Left },
         { k: "KeyD", v: KeyAction.Right },
         { k: "ArrowRight", v: KeyAction.Right },
+        { k: "GpAxis0+", v: KeyAction.Right },
+        { k: "GpButton15", v: KeyAction.Right },
         { k: "KeyS", v: KeyAction.Down },
         { k: "ArrowDown", v: KeyAction.Down },
+        { k: "GpAxis1+", v: KeyAction.Down },
+        { k: "GpButton13", v: KeyAction.Down },
         { k: "Space", v: KeyAction.Action1 },
+        { k: "GpButton0", v: KeyAction.Action1 },
         { k: "ShiftRight", v: KeyAction.Action2 },
         { k: "ShiftLeft", v: KeyAction.Action2 },
+        { k: "GpButton2", v: KeyAction.Action2 },
         { k: "Esc", v: KeyAction.Pause },
         { k: "Escape", v: KeyAction.Pause },
         { k: "KeyP", v: KeyAction.Pause },
+        { k: "GpButton9", v: KeyAction.Pause },
         { k: "KeyF", v: KeyAction.EditorPlayerHotkey },
         { k: "Esc", v: KeyAction.Cancel },
         { k: "Escape", v: KeyAction.Cancel },
@@ -283,6 +287,7 @@ var KeyboardHandler = /** @class */ (function () {
         { k: "KeyZ", v: KeyAction.EditorUndo },
         { k: "KeyY", v: KeyAction.EditorRedo },
         { k: "KeyT", v: KeyAction.Reset },
+        { k: "GpButton8", v: KeyAction.Reset },
         { k: "Delete", v: KeyAction.EditorDelete },
         { k: "ControlLeft", v: KeyAction.EditorPasteDrag },
         { k: "ControlRight", v: KeyAction.EditorPasteDrag },
@@ -312,7 +317,34 @@ var KeyboardHandler = /** @class */ (function () {
     KeyboardHandler.keyState = [];
     KeyboardHandler.recentlyReleasedKeys = [];
     KeyboardHandler.connectedInput = null;
+    KeyboardHandler.lastPressedKeyCode = "";
     KeyboardHandler.gamepadIndex = -1; //current active in-use
+    KeyboardHandler.gamepadMap = {
+        "GpAxis0-": "LStick Left",
+        "GpAxis0+": "LStick Right",
+        "GpAxis1-": "LStick Up",
+        "GpAxis1+": "LStick Down",
+        "GpAxis2-": "RStick Left",
+        "GpAxis2+": "RStick Right",
+        "GpAxis3-": "RStick Up",
+        "GpAxis3+": "RStick Down",
+        "GpButton0": "Bottom Face Btn",
+        "GpButton1": "Right Face Btn",
+        "GpButton2": "Left Face Btn",
+        "GpButton3": "Top Face Btn",
+        "GpButton4": "Left Bumper",
+        "GpButton5": "Right Bumper",
+        "GpButton6": "Left Trigger",
+        "GpButton7": "Right Trigger",
+        "GpButton8": "Select",
+        "GpButton9": "Start",
+        "GpButton10": "LStick Push",
+        "GpButton11": "RStick Push",
+        "GpButton12": "DPad Up",
+        "GpButton13": "DPad Down",
+        "GpButton14": "DPad Left",
+        "GpButton15": "DPad Right",
+    };
     return KeyboardHandler;
 }());
 ;

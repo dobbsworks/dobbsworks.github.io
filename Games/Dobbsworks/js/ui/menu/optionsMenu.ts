@@ -1,6 +1,7 @@
 class OptionsMenu extends Menu {
     stopsMapUpdate = true;
     backgroundColor = "#0005";
+    backgroundColor2 = "#000D";
 
     CreateElements(): UIElement[] {
         let ret: UIElement[] = [];
@@ -14,6 +15,12 @@ class OptionsMenu extends Menu {
         container.AddChild(profileButton);
         profileButton.onClickEvents.push(() => {
             MenuHandler.SubMenu(AvatarCustomizationMenu);
+        })
+
+        let controlsButton = this.CreateButton("Edit Controls");
+        container.AddChild(controlsButton);
+        controlsButton.onClickEvents.push(() => {
+            MenuHandler.SubMenu(ControlMapMenu);
         })
 
         let musicVol = this.CreateSlider("Music Volume",  StorageService.GetMusicVolume(), (newVal) => {
@@ -36,7 +43,7 @@ class OptionsMenu extends Menu {
     }
 
     CreateSlider(header: string, initialValue: number, onChange: (newValue: number) => void): Panel {
-        let panel = new Panel(0, 0, camera.canvas.width / 2, 150);
+        let panel = new Panel(0, 0, camera.canvas.width / 2, 110);
         panel.margin = 15;
 
         panel.AddChild(new Spacer(0,0,0,0));
@@ -57,7 +64,6 @@ class OptionsMenu extends Menu {
         slider.value = initialValue;
         panel.AddChild(slider);
 
-        panel.AddChild(new Spacer(0,0,0,0));
         return panel;
     }
 

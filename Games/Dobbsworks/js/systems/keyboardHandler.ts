@@ -59,24 +59,39 @@ class KeyboardHandler {
     public static InitKeyHandlers() {
         document.addEventListener("keydown", KeyboardHandler.OnKeyDown, false);
         document.addEventListener("keyup", KeyboardHandler.OnKeyUp, false);
+        KeyboardHandler.defaultKeyMap = [...KeyboardHandler.keyMap];
+        StorageService.LoadKeyboardMappings();
     }
 
-    private static keyMap = [
+    public static defaultKeyMap: { k: string, v: KeyAction }[] = [];
+
+    public static keyMap = [
         { k: "KeyW", v: KeyAction.Up },
         { k: "ArrowUp", v: KeyAction.Up },
+        { k: "GpAxis1-", v: KeyAction.Up },
+        { k: "GpButton12", v: KeyAction.Up },
         { k: "KeyA", v: KeyAction.Left },
         { k: "ArrowLeft", v: KeyAction.Left },
+        { k: "GpAxis0-", v: KeyAction.Left },
+        { k: "GpButton14", v: KeyAction.Left },
         { k: "KeyD", v: KeyAction.Right },
         { k: "ArrowRight", v: KeyAction.Right },
+        { k: "GpAxis0+", v: KeyAction.Right },
+        { k: "GpButton15", v: KeyAction.Right },
         { k: "KeyS", v: KeyAction.Down },
         { k: "ArrowDown", v: KeyAction.Down },
+        { k: "GpAxis1+", v: KeyAction.Down },
+        { k: "GpButton13", v: KeyAction.Down },
         { k: "Space", v: KeyAction.Action1 },
+        { k: "GpButton0", v: KeyAction.Action1 },
         { k: "ShiftRight", v: KeyAction.Action2 },
         { k: "ShiftLeft", v: KeyAction.Action2 },
+        { k: "GpButton2", v: KeyAction.Action2 },
 
         { k: "Esc", v: KeyAction.Pause },
         { k: "Escape", v: KeyAction.Pause },
         { k: "KeyP", v: KeyAction.Pause },
+        { k: "GpButton9", v: KeyAction.Pause },
         { k: "KeyF", v: KeyAction.EditorPlayerHotkey },
 
         { k: "Esc", v: KeyAction.Cancel },
@@ -94,6 +109,7 @@ class KeyboardHandler {
         { k: "KeyZ", v: KeyAction.EditorUndo },
         { k: "KeyY", v: KeyAction.EditorRedo },
         { k: "KeyT", v: KeyAction.Reset },
+        { k: "GpButton8", v: KeyAction.Reset },
         { k: "Delete", v: KeyAction.EditorDelete },
         { k: "ControlLeft", v: KeyAction.EditorPasteDrag },
         { k: "ControlRight", v: KeyAction.EditorPasteDrag },
@@ -126,10 +142,19 @@ class KeyboardHandler {
     private static keyState: KeyState[] = [];
     private static recentlyReleasedKeys: KeyAction[] = [];
     public static connectedInput: HTMLInputElement | null = null;
+    public static lastPressedKeyCode: string = "";
+
+    public static GetNonDefaultMappings(): { k: string, v: KeyAction }[] {
+        return KeyboardHandler.keyMap.filter(a => !KeyboardHandler.defaultKeyMap.some(b => a.k == b.k && a.v == b.v))
+    }
+    public static GetRemovedDefaultMappings(): { k: string, v: KeyAction }[] {
+        return KeyboardHandler.defaultKeyMap.filter(a => !KeyboardHandler.keyMap.some(b => a.k == b.k && a.v == b.v))
+    }
 
     public static OnKeyDown(e: KeyboardEvent) {
         KeyboardHandler.gamepadIndex = -1;
         let keyCode = e.code;
+        KeyboardHandler.lastPressedKeyCode = keyCode;
         let mappedActions = KeyboardHandler.keyMap.filter(a => a.k === keyCode);
         if (mappedActions.length) {
             for (let mappedAction of mappedActions) {
@@ -158,8 +183,6 @@ class KeyboardHandler {
             } else if (e.key.length == 1) {
                 KeyboardHandler.connectedInput.value += e.key;
             }
-
-            console.log(e.key)
         }
     }
 
@@ -240,6 +263,35 @@ class KeyboardHandler {
     }
 
     static gamepadIndex: number = -1; //current active in-use
+
+    static gamepadMap = {
+        "GpAxis0-": "LStick Left",
+        "GpAxis0+": "LStick Right",
+        "GpAxis1-": "LStick Up",
+        "GpAxis1+": "LStick Down",
+        "GpAxis2-": "RStick Left",
+        "GpAxis2+": "RStick Right",
+        "GpAxis3-": "RStick Up",
+        "GpAxis3+": "RStick Down",
+        "GpButton0": "Bottom Face Btn",
+        "GpButton1": "Right Face Btn",
+        "GpButton2": "Left Face Btn",
+        "GpButton3": "Top Face Btn",
+        "GpButton4": "Left Bumper",
+        "GpButton5": "Right Bumper",
+        "GpButton6": "Left Trigger",
+        "GpButton7": "Right Trigger",
+        "GpButton8": "Select",
+        "GpButton9": "Start",
+        "GpButton10": "LStick Push",
+        "GpButton11": "RStick Push",
+        "GpButton12": "DPad Up",
+        "GpButton13": "DPad Down",
+        "GpButton14": "DPad Left",
+        "GpButton15": "DPad Right",
+    };
+
+
     private static UpdateGamepad() {
         for (let i = 0; i < navigator.getGamepads().length; i++) {
             let gp = navigator.getGamepads()[i];
@@ -251,47 +303,38 @@ class KeyboardHandler {
         }
         if (KeyboardHandler.gamepadIndex === -1) return;
 
-        let dx = 0;
-        let dy = 0;
         let gamepad = navigator.getGamepads()[KeyboardHandler.gamepadIndex];
         if (!gamepad) return;
-        if (gamepad && gamepad.axes) {
-            if (gamepad.axes) {
-                if (gamepad.axes[0]) dx += gamepad.axes[0];
-                if (gamepad.axes[1]) dy += gamepad.axes[1];
-                if (gamepad.axes[2]) dx += gamepad.axes[2];
-                if (gamepad.axes[3]) dy += gamepad.axes[3];
-            }
-            if (gamepad.buttons) {
-                KeyboardHandler.SetActionState(KeyAction.Action1, gamepad.buttons[0].pressed);
-                KeyboardHandler.SetActionState(KeyAction.Action2, gamepad.buttons[2].pressed);
-                if (editorHandler.isEditorAllowed) {
-                    KeyboardHandler.SetActionState(KeyAction.EditToggle, gamepad.buttons[8].pressed);
-                } else {
-                    KeyboardHandler.SetActionState(KeyAction.Reset, gamepad.buttons[8].pressed);
-                }
-                KeyboardHandler.SetActionState(KeyAction.Pause, gamepad.buttons[9].pressed);
 
-                if (gamepad.buttons[12].pressed) dy = -1;
-                if (gamepad.buttons[13].pressed) dy = 1;
-                if (gamepad.buttons[14].pressed) dx = -1;
-                if (gamepad.buttons[15].pressed) dx = 1;
+        let pressedGamepadButtons: string[] = [];
+        let deadZone = 0.3;
+        if (gamepad.axes) {
+            for (let i = 0; i < gamepad.axes.length; i++) {
+                let axisValue = gamepad.axes[i];
+                if (Math.abs(axisValue) > deadZone) {
+                    let posNeg = axisValue > 0 ? "+" : "-";
+                    pressedGamepadButtons.push("GpAxis" + i + posNeg);
+                }
+            }
+        }
+        if (gamepad.buttons) {
+            for (let i = 0; i < gamepad.buttons.length; i++) {
+                let button = gamepad.buttons[i];
+                if (button.pressed) pressedGamepadButtons.push("GpButton" + i);
             }
         }
 
-        // dead zone
-        if (Math.abs(dx) < 0.30) dx = 0;
-        if (Math.abs(dy) < 0.30) dy = 0;
+        let keyActions: KeyAction[] = Object.keys(KeyAction).filter(a => (<any>KeyAction)[a].keyCode).map(a => (<any>KeyAction)[a]);
 
-        if (dx < 0) KeyboardHandler.SetActionState(KeyAction.Left, true);
-        if (dx > 0) KeyboardHandler.SetActionState(KeyAction.Right, true);
-        if (dx <= 0) KeyboardHandler.SetActionState(KeyAction.Right, false);
-        if (dx >= 0) KeyboardHandler.SetActionState(KeyAction.Left, false);
+        for (let keyAction of keyActions) {
+            let mappedGamepadButtons = KeyboardHandler.keyMap.filter(a => a.v == keyAction).map(a => a.k);
+            let isPressed = mappedGamepadButtons.some(a => pressedGamepadButtons.indexOf(a) > -1);
+            KeyboardHandler.SetActionState(keyAction, isPressed);
+        }
 
-        if (dy < 0) KeyboardHandler.SetActionState(KeyAction.Up, true);
-        if (dy > 0) KeyboardHandler.SetActionState(KeyAction.Down, true);
-        if (dy <= 0) KeyboardHandler.SetActionState(KeyAction.Down, false);
-        if (dy >= 0) KeyboardHandler.SetActionState(KeyAction.Up, false);
+        if (pressedGamepadButtons.length) {
+            KeyboardHandler.lastPressedKeyCode = pressedGamepadButtons[0];
+        }
     }
 }
 

@@ -34,7 +34,8 @@ var MyLevelsMenu = /** @class */ (function (_super) {
         _this.baseRightX = 960 - _this.basePanelWidth - 30;
         _this.baseY = 70;
         _this.basePanelHeight = 400;
-        _this.backgroundColor = "#022";
+        _this.backgroundColor = "#03ddde";
+        _this.backgroundColor2 = "#335";
         return _this;
     }
     MyLevelsMenu.prototype.ResetLocalSavesPanel = function () {

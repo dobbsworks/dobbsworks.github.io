@@ -61,6 +61,31 @@ class StorageService {
         localStorage.setItem("sfxVol", val.toString());
     }
 
+    public static SaveKeyboardMappings(): void {
+        let added = KeyboardHandler.GetNonDefaultMappings();
+        let removed = KeyboardHandler.GetRemovedDefaultMappings();
+
+        let objects = [
+            ...added.map(a => ({k: a.k, v: a.v.keyCode, s: "+"})),
+            ...removed.map(a => ({k: a.k, v: a.v.keyCode, s: "-"}))
+        ];
+
+        localStorage.setItem("mapping", JSON.stringify(objects));
+    }
+
+    public static LoadKeyboardMappings(): void {
+        let mappings = JSON.parse(localStorage.getItem("mapping") || "[]");
+        for (let mapping of mappings) {
+            let action = <KeyAction>(Object.values(KeyAction).find(a => a.keyCode == mapping.v));
+            if (mapping.s == "+") {
+                KeyboardHandler.keyMap.push({k: mapping.k, v: action});
+            }
+            if (mapping.s == "-") {
+                KeyboardHandler.keyMap = KeyboardHandler.keyMap.filter(a => !(a.k == mapping.k && a.v == action));
+            }
+        }
+    }
+
     // TODO, Get all death counts on app load
 
 }

@@ -24,10 +24,8 @@ var Prickle = /** @class */ (function (_super) {
     }
     Prickle.prototype.Update = function () {
         if (!this.WaitForOnScreen()) {
-            return;
-        }
-        else {
             this.dx = -0.3;
+            return;
         }
         this.GroundPatrol(0.3, true);
         this.ApplyGravity();

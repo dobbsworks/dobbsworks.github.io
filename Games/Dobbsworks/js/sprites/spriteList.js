@@ -88,4 +88,5 @@ var spriteTypes = [
     SpringBox,
     Winch,
     PullSwitch,
+    LittleJelly,
 ];

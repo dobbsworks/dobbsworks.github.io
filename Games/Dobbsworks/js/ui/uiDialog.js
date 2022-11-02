@@ -18,6 +18,7 @@ var UIDialog = /** @class */ (function () {
         this.options = [];
         this.promptText = "";
         this.promptLines = [];
+        this.suppressKeyNavigation = false;
     }
     UIDialog.prototype.Draw = function (ctx) {
         ctx.fillStyle = "#0009";
@@ -70,6 +71,7 @@ var UIDialog = /** @class */ (function () {
                     option.action.apply(option, this.GetButtonActionParameters());
                     this.OnAnyAction();
                     MenuHandler.Dialog = null;
+                    mouseHandler.isMouseDown = false;
                 }
             }
         }
@@ -78,12 +80,12 @@ var UIDialog = /** @class */ (function () {
         }
         if (MenuHandler.Dialog == this) {
             // no options clicked
-            if (KeyboardHandler.IsKeyPressed(KeyAction.Cancel, true)) {
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Cancel, true) && !this.suppressKeyNavigation) {
                 this.OnKeyboardCancel();
                 this.OnAnyAction();
                 MenuHandler.Dialog = null;
             }
-            if (KeyboardHandler.IsKeyPressed(KeyAction.Confirm, true)) {
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Confirm, true) && !this.suppressKeyNavigation) {
                 this.OnKeyboardConfirm();
                 this.OnAnyAction();
                 MenuHandler.Dialog = null;
@@ -105,6 +107,9 @@ var UIDialog = /** @class */ (function () {
     UIDialog.SmallPrompt = function (info, confirmButtonText, maxLength, confirmAction, allowedCharacters) {
         if (allowedCharacters === void 0) { allowedCharacters = ""; }
         MenuHandler.Dialog = new UISmallPrompt(info, confirmButtonText, maxLength, confirmAction, allowedCharacters);
+    };
+    UIDialog.ReadKey = function (info, confirmButtonText, rejectButtonText, confirmAction) {
+        MenuHandler.Dialog = new UIReadKey(info, confirmButtonText, rejectButtonText, confirmAction);
     };
     return UIDialog;
 }());
@@ -255,3 +260,31 @@ var UIConfirm = /** @class */ (function (_super) {
     UIConfirm.prototype.OnKeyboardConfirm = function () { this.onConfirmAction(); };
     return UIConfirm;
 }(UIDialog));
+var UIReadKey = /** @class */ (function (_super) {
+    __extends(UIReadKey, _super);
+    function UIReadKey(messageText, confirmText, rejectText, onConfirmAction) {
+        if (onConfirmAction === void 0) { onConfirmAction = function () { }; }
+        var _this = _super.call(this, messageText, confirmText, rejectText, onConfirmAction) || this;
+        _this.isLastLineAdded = false;
+        _this.suppressKeyNavigation = true;
+        KeyboardHandler.lastPressedKeyCode = "";
+        return _this;
+    }
+    UIReadKey.prototype.Update = function () {
+        _super.prototype.Update.call(this);
+        if (!this.isLastLineAdded && this.promptLines.length) {
+            this.promptLines.push("", "");
+            this.isLastLineAdded = true;
+        }
+        var keyCode = KeyboardHandler.lastPressedKeyCode || "no key";
+        if (Object.keys(KeyboardHandler.gamepadMap).indexOf(keyCode) > -1) {
+            keyCode = KeyboardHandler.gamepadMap[keyCode];
+        }
+        this.promptLines[this.promptLines.length - 1] = "<" + keyCode + ">";
+    };
+    UIReadKey.prototype.OnKeyboardConfirm = function () { };
+    ;
+    UIReadKey.prototype.OnKeyboardCancel = function () { };
+    ;
+    return UIReadKey;
+}(UIConfirm));

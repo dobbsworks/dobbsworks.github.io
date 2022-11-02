@@ -7,9 +7,8 @@ class Prickle extends Enemy {
 
     Update(): void {
         if (!this.WaitForOnScreen()) {
-            return; 
-        } else {
             this.dx = -0.3;
+            return; 
         }
         this.GroundPatrol(0.3, true);
         this.ApplyGravity();

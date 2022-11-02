@@ -128,7 +128,7 @@ abstract class Enemy extends Sprite {
     }
 
     public SkyPatrol(speed: number) {
-        this.dx = speed * this.direction;
+        this.AccelerateHorizontally(0.3, speed * this.direction);
         if (this.isTouchingLeftWall) {
             this.direction = 1;
         } else if (this.isTouchingRightWall) {

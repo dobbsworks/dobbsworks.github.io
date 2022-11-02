@@ -26,7 +26,8 @@ class MyLevelsMenu extends Menu {
     baseY = 70;
     basePanelHeight = 400;
 
-    backgroundColor = "#022";
+    backgroundColor = "#03ddde";
+    backgroundColor2 = "#335";
 
     ResetLocalSavesPanel(): void {
         MyLevelsMenu.selectedLocalSlot = -1;

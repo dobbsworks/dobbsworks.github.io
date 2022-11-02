@@ -48,6 +48,7 @@ var UiHandler = /** @class */ (function () {
                 document.body.style.cursor = "pointer";
                 if (mouseHandler.isMouseClicked()) {
                     el.Click();
+                    break;
                 }
             }
         }

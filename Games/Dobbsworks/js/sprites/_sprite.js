@@ -811,11 +811,13 @@ var Sprite = /** @class */ (function () {
         return imageTile;
     };
     Sprite.prototype.AccelerateHorizontally = function (acceleration, targetDx) {
+        var absoluteDistanceToMaxSpeed = Math.abs(targetDx - this.dx);
+        if (absoluteDistanceToMaxSpeed <= acceleration) {
+            this.dx = targetDx;
+            return;
+        }
+        // move speed towards targetDx
         this.dx += acceleration * (targetDx > this.dx ? 1 : -1);
-        if (this.dx > targetDx && targetDx >= 0 && Math.abs(this.dx - targetDx) < acceleration)
-            this.dx = targetDx;
-        if (this.dx < targetDx && targetDx <= 0 && Math.abs(this.dx - targetDx) < acceleration)
-            this.dx = targetDx;
     };
     Sprite.prototype.AccelerateVertically = function (acceleration, targetDy) {
         this.dy += acceleration * (targetDy > this.dy ? 1 : -1);

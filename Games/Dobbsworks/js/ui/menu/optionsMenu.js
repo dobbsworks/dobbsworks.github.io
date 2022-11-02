@@ -18,6 +18,7 @@ var OptionsMenu = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.stopsMapUpdate = true;
         _this.backgroundColor = "#0005";
+        _this.backgroundColor2 = "#000D";
         return _this;
     }
     OptionsMenu.prototype.CreateElements = function () {
@@ -30,6 +31,11 @@ var OptionsMenu = /** @class */ (function (_super) {
         container.AddChild(profileButton);
         profileButton.onClickEvents.push(function () {
             MenuHandler.SubMenu(AvatarCustomizationMenu);
+        });
+        var controlsButton = this.CreateButton("Edit Controls");
+        container.AddChild(controlsButton);
+        controlsButton.onClickEvents.push(function () {
+            MenuHandler.SubMenu(ControlMapMenu);
         });
         var musicVol = this.CreateSlider("Music Volume", StorageService.GetMusicVolume(), function (newVal) {
             audioHandler.SetMusicVolume(newVal);
@@ -47,7 +53,7 @@ var OptionsMenu = /** @class */ (function (_super) {
         return ret;
     };
     OptionsMenu.prototype.CreateSlider = function (header, initialValue, onChange) {
-        var panel = new Panel(0, 0, camera.canvas.width / 2, 150);
+        var panel = new Panel(0, 0, camera.canvas.width / 2, 110);
         panel.margin = 15;
         panel.AddChild(new Spacer(0, 0, 0, 0));
         var buttonText = new UIText(0, 0, header, 30, "#000");
@@ -63,7 +69,6 @@ var OptionsMenu = /** @class */ (function (_super) {
         var slider = new Slider(0, 0, camera.canvas.width / 2 - 30, 40, onChange);
         slider.value = initialValue;
         panel.AddChild(slider);
-        panel.AddChild(new Spacer(0, 0, 0, 0));
         return panel;
     };
     OptionsMenu.prototype.CreateButton = function (text) {

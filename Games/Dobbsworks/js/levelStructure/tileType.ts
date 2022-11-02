@@ -20,10 +20,12 @@ class TileType {
     public conveyorSpeed: number = 0; // positive = clockwise
     public drainsAir: boolean = false;
     public canWalkOn: boolean = true; //sticky honey blocks
+    public canJumpFrom: boolean = true; //sticky slime blocks
     public isStickyWall: boolean = false;
     public isJumpWall: boolean = false;
     public isWarpWall: boolean = false;
     public isTrack: boolean = false;
+    public isExemptFromSlime = false;
     public isTrackCap: boolean = false;
     public trackEquation: (x: number, y: number) => { x: number, y: number } = (x: number, y: number) => ({ x: x, y: y });
     public trackCrossedEquation: (x1: number, y1: number, x2: number, y2: number) => boolean = (x1: number, y1: number, x2: number, y2: number) => false;
@@ -314,6 +316,8 @@ class TileType {
         TileType.WallJumpLeft;
         TileType.WallJumpRight;
 
+        TileType.Slime;
+
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
     }
@@ -513,10 +517,19 @@ class TileType {
         })
     }
 
+    public static get Slime(): TileType {
+        return TileType.GetTileType("Slime", "water", 7, 2, Solidity.Top, TargetLayer.semisolid, (tileType: TileType) => {
+            tileType.imageTile.yOffset = -2;
+            tileType.canJumpFrom = false;
+            tileType.isExemptFromSlime = true;
+        })
+    }
+
     public static get HoneyLeft(): TileType {
         return TileType.GetTileType("HoneyLeft", "water", 5, 2, Solidity.LeftWall, TargetLayer.semisolid, (tileType: TileType) => {
             tileType.imageTile.xOffset = 8;
             tileType.isStickyWall = true;
+            tileType.isExemptFromSlime = true;
         })
     }
 
@@ -524,6 +537,7 @@ class TileType {
         return TileType.GetTileType("HoneyRight", "water", 6, 2, Solidity.RightWall, TargetLayer.semisolid, (tileType: TileType) => {
             tileType.imageTile.xOffset = -8;
             tileType.isStickyWall = true;
+            tileType.isExemptFromSlime = true;
         })
     }
 
@@ -802,6 +816,7 @@ class TileType {
         return TileType.GetTileType("DisappearingBlockOff", "wire", 4, 1, Solidity.Block, TargetLayer.main, tileType => {
             tileType.canBePowered = true;
             tileType.poweredTileName = "DisappearingBlockOn"
+            tileType.isExemptFromSlime = true;
         });
     }
     public static get DisappearingBlockOn(): TileType {
@@ -907,6 +922,7 @@ class TileType {
         frames.push({ x: 0, y: 0 });
         return TileType.GetAnimatedTileType("Barrel", "barrel", frames, 1, Solidity.Block, TargetLayer.main, tileType => {
             tileType.pickUpSprite = Barrel;
+            tileType.isExemptFromSlime = true;
         });
     }
 
@@ -921,6 +937,7 @@ class TileType {
         frames.push({ x: 0, y: 2 });
         return TileType.GetAnimatedTileType("SteelBarrel", "barrel", frames, 1, Solidity.Block, TargetLayer.main, tileType => {
             tileType.pickUpSprite = SteelBarrel;
+            tileType.isExemptFromSlime = true;
         });
     }
 
@@ -935,6 +952,7 @@ class TileType {
         frames.push({ x: 0, y: 0 });
         return TileType.GetAnimatedTileType("Pumpkin", "pumpkin", frames, 1, Solidity.Block, TargetLayer.main, tileType => {
             tileType.pickUpSprite = Pumpkin;
+            tileType.isExemptFromSlime = true;
         });
     }
 
@@ -969,6 +987,7 @@ class TileType {
                     delay: 30
                 }
             }
+            tileType.isExemptFromSlime = true;
         });
     }
 
@@ -977,12 +996,14 @@ class TileType {
         return TileType.GetTileType("HangingVine", "hanging", 0, 0, Solidity.Bottom, TargetLayer.semisolid, (tileType: TileType) => {
             tileType.imageTile.yOffset = 3;
             tileType.isHangable = true;
+            tileType.isExemptFromSlime = true;
         })
     }
     public static get HangingBars(): TileType {
         return TileType.GetTileType("HangingBars", "hanging", 1, 0, Solidity.Bottom, TargetLayer.semisolid, (tileType: TileType) => {
             tileType.imageTile.yOffset = 3;
             tileType.isHangable = true;
+            tileType.isExemptFromSlime = true;
         })
     }
 
@@ -1140,7 +1161,9 @@ class TileType {
             {x: 2, y: y},
         ]
         let solidity = [Solidity.LeftWall, Solidity.Bottom, Solidity.RightWall, Solidity.Top][y];
-        return TileType.GetAnimatedTileType("OneWay" + direction.name, "oneway", frames, 4, solidity, TargetLayer.semisolid, tileType => {});
+        return TileType.GetAnimatedTileType("OneWay" + direction.name, "oneway", frames, 4, solidity, TargetLayer.semisolid, tileType => {
+            tileType.isExemptFromSlime = true;
+        });
     }
 
     public static get OneWayRight(): TileType { return this.OneWay(Direction.Right)};
@@ -1173,24 +1196,28 @@ class TileType {
     public static get WallJumpLeft(): TileType {
         return TileType.GetTileType("WallJumpLeft", "wallJump", 0, 0, Solidity.LeftWall, TargetLayer.semisolid, (tileType: TileType) => {
             tileType.isJumpWall = true;
+            tileType.isExemptFromSlime = true;
         })
     }
 
     public static get WallJumpRight(): TileType {
         return TileType.GetTileType("WallJumpRight", "wallJump", 1, 0, Solidity.RightWall, TargetLayer.semisolid, (tileType: TileType) => {
             tileType.isJumpWall = true;
+            tileType.isExemptFromSlime = true;
         })
     }
 
     public static get WallWarpLeft(): TileType {
         return TileType.GetAnimatedTileType("WallWarpLeft", "warpWall", [0,1,2,3,4,5,6,7,8,9,10,11].map(y => ({x: 0, y: y})), 6, Solidity.LeftWall, TargetLayer.semisolid, (tileType: TileType) => {
             tileType.isWarpWall = true;
+            tileType.isExemptFromSlime = true;
         })
     }
 
     public static get WallWarpRight(): TileType {
         return TileType.GetAnimatedTileType("WallWarpRight", "warpWall", [0,1,2,3,4,5,6,7,8,9,10,11].map(y => ({x: 1, y: y})), 6, Solidity.RightWall, TargetLayer.semisolid, (tileType: TileType) => {
             tileType.isWarpWall = true;
+            tileType.isExemptFromSlime = true;
         })
     }
 

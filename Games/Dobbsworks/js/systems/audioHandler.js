@@ -24,6 +24,7 @@ var AudioHandler = /** @class */ (function () {
             "faire",
             "choir",
             "meditate",
+            "slime",
         ];
     }
     AudioHandler.prototype.Initialize = function () {

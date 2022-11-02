@@ -78,7 +78,7 @@ var MainMenu = /** @class */ (function (_super) {
             MenuHandler.SubMenu(MyLevelsMenu);
         });
         recentLevelsButton.onClickEvents.push(function () {
-            MenuHandler.SubMenu(RecentLevelsMenu);
+            MenuHandler.SubMenu(LevelBrowseMenu);
             audioHandler.SetBackgroundMusic("menuJazz");
         });
         demoLevelsButton.onClickEvents.push(function () {
