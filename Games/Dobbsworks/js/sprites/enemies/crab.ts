@@ -4,6 +4,7 @@ class DrSnips extends Enemy {
     public width: number = 13;
     respectsSolidTiles = true;
     canBeBouncedOn = false;
+    canSpinBounceOn = true;
 
     clawsUp: boolean = true;
 
@@ -18,6 +19,8 @@ class DrSnips extends Enemy {
         this.clawsUp = Math.floor(this.age / 120) % 2 == 0;
         this.canBeBouncedOn = !this.clawsUp;
     }
+    
+    OnSpinBounce(): void { this.ReplaceWithSpriteType(Poof); }
 
     OnBounce(): void {
         if (!this.clawsUp) {

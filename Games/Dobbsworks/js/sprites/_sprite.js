@@ -35,6 +35,7 @@ var Sprite = /** @class */ (function () {
         this.canHangFrom = false;
         this.canBeBouncedOn = false;
         this.hurtsEnemies = false;
+        this.isInTractorBeam = false;
         this.onScreenTimer = 0;
         // used for editor
         this.anchor = Direction.Down;
@@ -130,6 +131,7 @@ var Sprite = /** @class */ (function () {
         var _a, _b;
         if (this instanceof Enemy && this.stackedOn)
             return;
+        this.isInTractorBeam = false;
         // move towards maxFallSpeed at rate of fallAccel
         var targetFallSpeed = this.maxDY;
         // ORGINAL: 1.5
@@ -152,6 +154,16 @@ var Sprite = /** @class */ (function () {
         if (this.isInQuicksand) {
             targetFallSpeed = 0.1;
             fallAccel = 0.05;
+        }
+        var bigYufos = this.layer.sprites.filter(function (a) { return a instanceof BigYufo; });
+        for (var _i = 0, bigYufos_1 = bigYufos; _i < bigYufos_1.length; _i++) {
+            var bigYufo = bigYufos_1[_i];
+            var inTractor = bigYufo.IsSpriteInTractorBeam(this);
+            if (inTractor) {
+                this.isInTractorBeam = true;
+                targetFallSpeed *= -1;
+                break;
+            }
         }
         if (this.gustUpTimer > 0) {
             targetFallSpeed = -0.8;
@@ -180,6 +192,7 @@ var Sprite = /** @class */ (function () {
         }
     };
     Sprite.prototype.OnBounce = function () { };
+    Sprite.prototype.OnSpinBounce = function () { this.OnBounce(); };
     Sprite.prototype.OnThrow = function (thrower, direction) {
         this.dx = direction * 1 + thrower.GetTotalDx();
         this.dy = -1;
@@ -222,7 +235,7 @@ var Sprite = /** @class */ (function () {
                 if (Math.abs(this.dyFromPlatform) < 0.015)
                     this.dyFromPlatform = 0;
             }
-            if (this.dxFromPlatform > 0) {
+            if (Math.abs(this.dxFromPlatform) > 0) {
                 this.dxFromPlatform *= inertiaRatio;
             }
             if (this.isOnGround) {
@@ -419,9 +432,9 @@ var Sprite = /** @class */ (function () {
                     this.standingOn = grounds.tiles;
                     if (this.parentSprite && this.parentSprite.GetTotalDy() > 0)
                         this.parentSprite = null;
-                    var conveyorSpeed = Math.max.apply(Math, this.standingOn.map(function (a) { return a.tileType.conveyorSpeed; }));
-                    if (conveyorSpeed)
-                        this.dxFromPlatform = conveyorSpeed;
+                    var conveyorSpeeds = this.standingOn.map(function (a) { return a.tileType.conveyorSpeed; }).filter(function (a) { return a !== 0; });
+                    if (conveyorSpeeds.length)
+                        this.dxFromPlatform = Math.max.apply(Math, conveyorSpeeds);
                     this.dy = grounds.yPixel - this.y - this.height;
                     if (this.dy < 0)
                         this.dy = 0;
@@ -555,7 +568,7 @@ var Sprite = /** @class */ (function () {
         this.y += this.GetTotalDy();
         this.x = +(this.x.toFixed(3));
         this.y = +(this.y.toFixed(3));
-        if (this.parentSprite) {
+        if (this.parentSprite && this.standingOn.length == 0) {
             this.y = this.parentSprite.y - this.height;
         }
         if (this.isPlatform && this.GetTotalDy() > 0) {
@@ -727,6 +740,10 @@ var Sprite = /** @class */ (function () {
         for (var _i = 0, pixelsToCheck_2 = pixelsToCheck; _i < pixelsToCheck_2.length; _i++) {
             var yPixel = pixelsToCheck_2[_i];
             var rowIndex = Math.floor((yPixel + yOffset) / this.layer.tileHeight);
+            var numColumnsToCheck = 2;
+            if (this.width > 24) {
+                numColumnsToCheck = Math.ceil(this.width / 12);
+            }
             var _loop_2 = function (colIndex) {
                 // only checking next few cols
                 if (!this_2.layer.tiles[colIndex])
@@ -768,7 +785,7 @@ var Sprite = /** @class */ (function () {
                 }
             };
             var this_2 = this;
-            for (var colIndex = startColIndex; colIndex !== startColIndex + 2 * direction; colIndex += direction) {
+            for (var colIndex = startColIndex; colIndex !== startColIndex + numColumnsToCheck * direction; colIndex += direction) {
                 _loop_2(colIndex);
             }
         }
@@ -874,6 +891,9 @@ var Sprite = /** @class */ (function () {
             if (sprite instanceof RollingSnailShell)
                 sprite.direction = direction;
         }
+    };
+    Sprite.prototype.CanInteractWithSpringBox = function () {
+        return this.respectsSolidTiles || this instanceof SapphireSnail || (this instanceof BasePlatform && !(this instanceof FloatingPlatform));
     };
     return Sprite;
 }());

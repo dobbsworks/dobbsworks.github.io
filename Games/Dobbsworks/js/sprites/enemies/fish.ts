@@ -41,6 +41,8 @@ class AFish extends Enemy {
 
         this.canBeBouncedOn = (player && !player.isInWater);
     }
+    
+    OnSpinBounce(): void { this.ReplaceWithSpriteType(Poof); }
 
     OnBounce(): void {
         this.ReplaceWithSprite(new DeadEnemy(this));

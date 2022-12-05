@@ -23,6 +23,7 @@ var Clammy = /** @class */ (function (_super) {
         _this.isPlatform = true;
         _this.canStandOn = true;
         _this.damagesPlayer = false;
+        _this.canSpinBounceOn = true;
         _this.stateTimer = 0;
         _this.state = "idle";
         _this.timerMap = [

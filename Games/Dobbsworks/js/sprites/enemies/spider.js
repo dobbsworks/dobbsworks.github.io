@@ -73,6 +73,7 @@ var Spurpider = /** @class */ (function (_super) {
             this.ReactToWater();
         }
     };
+    Spurpider.prototype.OnSpinBounce = function () { this.ReplaceWithSpriteType(Poof); };
     Spurpider.prototype.OnBounce = function () {
         this.canBeBouncedOn = false;
         this.isInDeathAnimation = true;

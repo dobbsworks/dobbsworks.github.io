@@ -4,11 +4,18 @@ class Prickle extends Enemy {
     public width: number = 12;
     respectsSolidTiles = true;
     canBeBouncedOn = false;
+    canSpinBounceOn = true;
+
+    isInitialized = false;
 
     Update(): void {
         if (!this.WaitForOnScreen()) {
-            this.dx = -0.3;
             return; 
+        }
+
+        if (!this.isInitialized) {
+            this.dx = -0.3;
+            this.isInitialized = true;
         }
         this.GroundPatrol(0.3, true);
         this.ApplyGravity();

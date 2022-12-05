@@ -17,14 +17,19 @@ class Winch extends Motor {
     winchSpeed = 0.2;
     isWinding = false;
 
+    windsDown = false;
+
     Update(): void {
+        this.dx *= 0.9;
+        this.dy *= 0.9;
+        
         if (!this.isInitialized) {
             this.isInitialized = true;
             this.Initialize();
             this.maxConnectionDistance = this.connectionDistance;
         }
 
-        if (this.GetIsPowered()) {
+        if ( Utility.Xor(this.GetIsPowered(), this.windsDown )) {
             this.connectionDistance -= this.winchSpeed;
             this.isWinding = true;
         } else {
@@ -41,7 +46,16 @@ class Winch extends Motor {
             this.isWinding = false;
         }
 
-        this.MoveConnectedSprite();
+        if (this.connectedSprite) {
+            this.UpdateConnectedSprite(this.connectedSprite);
+            this.MoveConnectedSprite(this.connectedSprite);
+            let playerGrabbed = this.HandlePlayerGrab(this.connectedSprite);
+            if (playerGrabbed) {
+                this.connectedSprite = null;
+            } else {
+                this.MoveConnectedSprite(this.connectedSprite);
+            }
+        }
     }
     
     GetIsPowered(): boolean { 
@@ -63,4 +77,8 @@ class Winch extends Motor {
             yOffset: 1
         };
     }
+}
+
+class ReverseWinch extends Winch {
+    windsDown = true;
 }

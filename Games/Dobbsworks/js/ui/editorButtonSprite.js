@@ -29,6 +29,14 @@ var EditorButtonSprite = /** @class */ (function (_super) {
         copy.linkedTool = this.linkedTool;
         return copy;
     };
+    EditorButtonSprite.prototype.AppendImage = function (imageTile) {
+        this.AddChild(new ImageFromTile(0, 0, 50, 50, imageTile));
+        return this;
+    };
+    EditorButtonSprite.prototype.ChangeTooltip = function (newTooltip) {
+        this.tooltip = newTooltip;
+        return this;
+    };
     EditorButtonSprite.prototype.Update = function () {
         _super.prototype.Update.call(this);
         var isSelected = editorHandler.currentTool === this.linkedTool;

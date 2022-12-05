@@ -23,6 +23,7 @@ var ShakyPlatform = /** @class */ (function (_super) {
     }
     ShakyPlatform.prototype.Update = function () {
         var _this = this;
+        this.dx *= 0.95;
         if (this.isFalling) {
             this.ApplyGravity();
             this.MoveByVelocity();

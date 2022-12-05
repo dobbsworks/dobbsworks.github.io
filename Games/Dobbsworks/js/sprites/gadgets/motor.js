@@ -43,8 +43,8 @@ var Motor = /** @class */ (function (_super) {
             this.isOnTrack = true;
         // find closest non-player sprite below motor
         var possibleConnectionSprites = this.connectionDirectionY == 1 ?
-            this.layer.sprites.filter(function (a) { return a.x < _this.xRight && a.xRight > _this.x && a.y > _this.yBottom && a.canMotorHold; }) :
-            this.layer.sprites.filter(function (a) { return a.x < _this.xRight && a.xRight > _this.x && a.yBottom < _this.y && a.canMotorHold; });
+            this.layer.sprites.filter(function (a) { return a.x < _this.xRight && a.xRight > _this.x && a.y >= _this.yBottom && a.canMotorHold; }) :
+            this.layer.sprites.filter(function (a) { return a.x < _this.xRight && a.xRight > _this.x && a.yBottom <= _this.y && a.canMotorHold; });
         if (possibleConnectionSprites.length == 0) {
             return;
         }
@@ -134,33 +134,47 @@ var Motor = /** @class */ (function (_super) {
         }
         if (!this.trackTile)
             this.isOnTrack = false;
-        this.MoveConnectedSprite();
-    };
-    Motor.prototype.MoveConnectedSprite = function () {
-        if (!this.connectedSprite)
-            return;
-        if (!this.connectedSprite.updatedThisFrame) {
-            this.connectedSprite.SharedUpdate();
-            this.connectedSprite.Update();
-            if (this.connectedSprite instanceof Enemy) {
-                this.connectedSprite.EnemyUpdate();
+        if (this.connectedSprite) {
+            this.UpdateConnectedSprite(this.connectedSprite);
+            this.MoveConnectedSprite(this.connectedSprite);
+            var playerGrabbed = this.HandlePlayerGrab(this.connectedSprite);
+            if (playerGrabbed) {
+                this.connectedSprite = null;
             }
-            this.connectedSprite.updatedThisFrame = true;
+            else {
+                this.MoveConnectedSprite(this.connectedSprite);
+            }
         }
+    };
+    Motor.prototype.UpdateConnectedSprite = function (sprite) {
+        if (!sprite)
+            return;
+        if (!sprite.updatedThisFrame) {
+            sprite.SharedUpdate();
+            sprite.Update();
+            if (sprite instanceof Enemy) {
+                sprite.EnemyUpdate();
+            }
+            sprite.updatedThisFrame = true;
+        }
+    };
+    Motor.prototype.HandlePlayerGrab = function (sprite) {
         var player = this.layer.sprites.find(function (a) { return a instanceof Player; });
         if (player) {
-            if (player.heldItem == this.connectedSprite && player.heldItem.canBeHeld) {
-                this.connectedSprite = null;
-                return;
+            if (player.heldItem == sprite && player.heldItem.canBeHeld) {
+                return true;
             }
         }
-        if (this.connectedSprite instanceof Enemy) {
-            this.connectedSprite.direction = this.horizontalDirection;
+        return false;
+    };
+    Motor.prototype.MoveConnectedSprite = function (sprite) {
+        if (sprite instanceof Enemy) {
+            sprite.direction = this.horizontalDirection;
         }
-        this.connectedSprite.x = this.xMid - this.connectedSprite.width / 2;
-        this.connectedSprite.y = this.y + this.connectionDistance;
-        this.connectedSprite.dx = this.dx;
-        this.connectedSprite.dy = this.dy;
+        sprite.x = this.xMid - sprite.width / 2;
+        sprite.y = this.y + this.connectionDistance;
+        sprite.dx = this.dx;
+        sprite.dy = this.dy;
     };
     Motor.prototype.GetFrameData = function (frameNum) {
         var col = Math.floor(Math.abs(this.frame) / 4) % 2;
@@ -172,7 +186,7 @@ var Motor = /** @class */ (function (_super) {
             yOffset: 0
         };
     };
-    Motor.prototype.OnAfterDraw = function (camera) {
+    Motor.prototype.OnBeforeDraw = function (camera) {
         if (this.connectionDistance == 0 || this.connectedSprite == null)
             return;
         var x = (this.xMid - camera.x) * camera.scale + camera.canvas.width / 2;
@@ -219,3 +233,122 @@ var UpwardMotor = /** @class */ (function (_super) {
     }
     return UpwardMotor;
 }(Motor));
+var FerrisMotorRight = /** @class */ (function (_super) {
+    __extends(FerrisMotorRight, _super);
+    function FerrisMotorRight() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.connectedSprites = [];
+        _this.angle = 0;
+        _this.direction = 1;
+        return _this;
+    }
+    FerrisMotorRight.prototype.Initialize = function () {
+        var _this = this;
+        _super.prototype.Initialize.call(this);
+        if (this.connectedSprite) {
+            if (!(this.connectedSprite instanceof Checkpoint)) {
+                this.connectionDistance = this.connectedSprite.yMid - this.yMid;
+                this.connectedSprites.push(this.connectedSprite);
+                var spriteFromEditor = editorHandler.sprites.find(function (a) { return a.spriteInstance == _this.connectedSprite; });
+                if (spriteFromEditor) {
+                    for (var i = 1; i < 4; i++) {
+                        var spriteType = this.connectedSprite.constructor;
+                        var instance = new spriteType(spriteFromEditor.tileCoord.tileX * this.layer.tileWidth, spriteFromEditor.tileCoord.tileY * this.layer.tileHeight, currentMap.mainLayer, spriteFromEditor.editorProps);
+                        this.connectedSprites.push(instance);
+                        this.layer.sprites.push(instance);
+                    }
+                }
+            }
+            this.spinSpeed = 0.02 / this.connectionDistance * 24 * this.direction;
+        }
+    };
+    FerrisMotorRight.prototype.Update = function () {
+        if (!this.isInitialized) {
+            this.isInitialized = true;
+            this.Initialize();
+        }
+        this.angle += this.spinSpeed;
+        for (var _i = 0, _a = this.connectedSprites; _i < _a.length; _i++) {
+            var sprite = _a[_i];
+            if (!sprite)
+                continue;
+            this.UpdateConnectedSprite(sprite);
+            this.MoveConnectedSprite(sprite);
+            var spriteIndex = this.connectedSprites.indexOf(sprite);
+            var playerGrabbed = this.HandlePlayerGrab(sprite);
+            if (playerGrabbed) {
+                this.connectedSprites[spriteIndex] = null;
+            }
+            else {
+                this.MoveConnectedSpriteToAngle(sprite, this.angle + (Math.PI / 2 * spriteIndex));
+            }
+        }
+    };
+    FerrisMotorRight.prototype.MoveConnectedSpriteToAngle = function (sprite, angle) {
+        var x = Math.cos(angle) * this.connectionDistance;
+        var y = Math.sin(angle) * this.connectionDistance;
+        var speed = this.connectionDistance * this.spinSpeed;
+        var dx = Math.cos(angle + Math.PI / 2) * speed;
+        var dy = Math.sin(angle + Math.PI / 2) * speed;
+        if (sprite instanceof Enemy) {
+            sprite.direction = dx > 0 ? 1 : -1;
+        }
+        sprite.x = this.xMid - sprite.width / 2 + x;
+        sprite.y = this.yMid - sprite.height / 2 + y;
+        sprite.dx = this.dx + dx;
+        sprite.dy = this.dy + dy;
+    };
+    FerrisMotorRight.prototype.GetFrameData = function (frameNum) {
+        return {
+            imageTile: tiles["motorTrack"][2][4],
+            xFlip: false,
+            yFlip: false,
+            xOffset: 0,
+            yOffset: 0
+        };
+    };
+    FerrisMotorRight.prototype.OnBeforeDraw = function (camera) {
+        if (this.connectionDistance == 0 || this.connectedSprites.length == 0)
+            return;
+        camera.ctx.fillStyle = "#724200";
+        for (var i = 0; i < 4; i++) {
+            var angle = this.angle + i * Math.PI / 2;
+            //let sprite = this.connectedSprites[i];
+            for (var r = 6; r < this.connectionDistance; r += 6) {
+                var gameX = r * Math.cos(angle) + this.xMid - 1;
+                var gameY = r * Math.sin(angle) + this.yMid - 1;
+                var destX = (gameX - camera.x) * camera.scale + camera.canvas.width / 2;
+                var destY = (gameY - camera.y) * camera.scale + camera.canvas.height / 2;
+                camera.ctx.fillRect(destX, destY, 2 * camera.scale, 2 * camera.scale);
+            }
+        }
+    };
+    return FerrisMotorRight;
+}(Motor));
+var FerrisMotorLeft = /** @class */ (function (_super) {
+    __extends(FerrisMotorLeft, _super);
+    function FerrisMotorLeft() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.direction = -1;
+        return _this;
+    }
+    return FerrisMotorLeft;
+}(FerrisMotorRight));
+var FastFerrisMotorLeft = /** @class */ (function (_super) {
+    __extends(FastFerrisMotorLeft, _super);
+    function FastFerrisMotorLeft() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.direction = -2;
+        return _this;
+    }
+    return FastFerrisMotorLeft;
+}(FerrisMotorRight));
+var FastFerrisMotorRight = /** @class */ (function (_super) {
+    __extends(FastFerrisMotorRight, _super);
+    function FastFerrisMotorRight() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.direction = 2;
+        return _this;
+    }
+    return FastFerrisMotorRight;
+}(FerrisMotorRight));

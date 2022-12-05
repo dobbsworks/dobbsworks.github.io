@@ -45,7 +45,17 @@ var RedBalloon = /** @class */ (function (_super) {
         this.Movement();
         this.horizontalDirection = this.dx <= 0 ? -1 : 1;
         this.MoveByVelocity();
-        this.MoveConnectedSprite();
+        if (this.connectedSprite) {
+            this.UpdateConnectedSprite(this.connectedSprite);
+            this.MoveConnectedSprite(this.connectedSprite);
+            var playerGrabbed = this.HandlePlayerGrab(this.connectedSprite);
+            if (playerGrabbed) {
+                this.connectedSprite = null;
+            }
+            else {
+                this.MoveConnectedSprite(this.connectedSprite);
+            }
+        }
     };
     RedBalloon.prototype.Movement = function () {
         if (this.WaitForOnScreen()) {

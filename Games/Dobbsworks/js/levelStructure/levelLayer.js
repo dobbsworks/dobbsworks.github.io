@@ -280,6 +280,7 @@ var LevelLayer = /** @class */ (function () {
         if (!ctx)
             return;
         var imgTile = frameData.imageTile;
+        //if (sprite.isInTractorBeam) frameData.yFlip = !frameData.yFlip;
         imgTile.Draw(ctx, (sprite.x - camera.x - frameData.xOffset) * scale + camera.canvas.width / 2, (sprite.y - camera.y - frameData.yOffset) * scale + camera.canvas.height / 2, scale, frameData.xFlip, frameData.yFlip);
         if (debugMode) {
             ctx.lineWidth = 1;

@@ -41,7 +41,7 @@ var SpringBox = /** @class */ (function (_super) {
         }
         var bounceSpeed = 2;
         var timerResetValue = 30;
-        var overlappingSprites = this.layer.sprites.filter(function (a) { return !(a instanceof SpringBox) && a.Overlaps(_this); });
+        var overlappingSprites = this.layer.sprites.filter(function (a) { return a.CanInteractWithSpringBox() && a.Overlaps(_this); });
         for (var _i = 0, overlappingSprites_1 = overlappingSprites; _i < overlappingSprites_1.length; _i++) {
             var sprite = overlappingSprites_1[_i];
             // check if sprite is fully in a quadrant relative to spring's center

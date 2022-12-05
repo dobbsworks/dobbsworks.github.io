@@ -14,6 +14,15 @@ class EditorButtonSprite extends EditorButton {
         copy.linkedTool = this.linkedTool;
         return copy;
     }
+    AppendImage(imageTile: ImageTile): EditorButtonSprite {
+        this.AddChild(new ImageFromTile(0, 0, 50, 50, imageTile));
+        return this;
+    }
+
+    ChangeTooltip(newTooltip: string): EditorButtonSprite {
+        this.tooltip = newTooltip;
+        return this;
+    }
 
     linkedTool!: SpritePlacer;
 

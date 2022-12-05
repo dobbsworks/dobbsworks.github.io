@@ -44,4 +44,5 @@ class PricklySnouterBullet extends SnouterBullet {
     frameCols = [0,1,2,3,2,1];
     frameRow = 0;
     canBeBouncedOn = false;
+    canSpinBounceOn = true;
 }

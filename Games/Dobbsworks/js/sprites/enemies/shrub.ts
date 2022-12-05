@@ -30,6 +30,8 @@ class Shrubbert extends Enemy {
         this.ReactToWater();
     }
     
+    OnSpinBounce(): void { this.ReplaceWithSpriteType(Poof); }
+    
     OnBounce(): void {
         if (this.state == "normal") {
             this.state = "stunned";

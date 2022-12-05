@@ -57,6 +57,7 @@ var Snouter = /** @class */ (function (_super) {
             this.ReactToWater();
         }
     };
+    Snouter.prototype.OnSpinBounce = function () { this.ReplaceWithSpriteType(Poof); };
     Snouter.prototype.OnBounce = function () {
         this.canBeBouncedOn = false;
         this.isInDeathAnimation = true;

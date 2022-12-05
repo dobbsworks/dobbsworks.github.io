@@ -4,13 +4,15 @@ class PrickleShell extends Enemy {
     public width: number = 10;
     respectsSolidTiles = true;
     canBeBouncedOn = false;
+    canSpinBounceOn = true;
 
     jumpTimer = 0;
 
     Update(): void {
-        if (this.isOnGround) {
+        if (this.isOnGround || this.parentSprite) {
             this.direction *= -1;
             this.dy = -1;
+            this.parentSprite = null;
             this.jumpTimer = 0;
         }
         if (this.isOnCeiling) {
@@ -22,7 +24,8 @@ class PrickleShell extends Enemy {
             this.ApplyGravity();
         }
 
-        this.ApplyInertia();
+        // removing inertia, let em ride
+        //this.ApplyInertia();
         this.ReactToWater();
     }
     
@@ -94,6 +97,7 @@ class PrickleRock extends Enemy {
     canBeBouncedOn = false;
     initialized = false;
     killedByProjectiles = false;
+    canSpinBounceOn = true;
 
     Update(): void {
         if (!this.initialized && player) {

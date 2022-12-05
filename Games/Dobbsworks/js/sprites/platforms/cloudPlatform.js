@@ -33,6 +33,7 @@ var CloudPlatform = /** @class */ (function (_super) {
                 else
                     this.dy += Math.abs(fallAccel);
             }
+            this.dx *= 0.95;
             this.MoveByVelocity();
         }
         else {

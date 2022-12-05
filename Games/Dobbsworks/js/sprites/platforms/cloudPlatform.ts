@@ -14,6 +14,7 @@ class CloudPlatform extends BasePlatform {
                 else this.dy += Math.abs(fallAccel);
             }
 
+            this.dx *= 0.95;
             this.MoveByVelocity();
         } else {
             if (this.IsPlayerStandingOn()) {

@@ -17,8 +17,8 @@ var PauseMenu = /** @class */ (function (_super) {
     function PauseMenu() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.stopsMapUpdate = true;
-        _this.backgroundColor = "#0005";
-        _this.backgroundColor2 = "#000D";
+        _this.backgroundColor = "#0007";
+        _this.backgroundColor2 = "#000E";
         return _this;
     }
     PauseMenu.prototype.CreateElements = function () {
@@ -27,7 +27,7 @@ var PauseMenu = /** @class */ (function (_super) {
         audioHandler.SetLowPass(true);
         PauseMenu.IsPaused = true;
         ret.push(OptionsMenu.CreateOptionsButton());
-        var container = new Panel(camera.canvas.width * 0.15, camera.canvas.height / 2 - 150, camera.canvas.width * 0.7, 300);
+        var container = new Panel(camera.canvas.width * 0.15, camera.canvas.height / 2 - 150, camera.canvas.width * 0.7, 360);
         container.margin = 0;
         container.layout = "vertical";
         ret.push(container);
@@ -51,24 +51,19 @@ var PauseMenu = /** @class */ (function (_super) {
                 editorHandler.grabbedCheckpointLocation = null;
             });
         }
-        else {
-            // exit button
-            var exitButton = this.CreateButton("Exit Level");
-            container.AddChild(exitButton);
-            exitButton.onClickEvents.push(function () {
+        // RESTART BUTTONS
+        if (levelGenerator) {
+            var retryButton = this.CreateButton("Restart Challenge");
+            container.AddChild(retryButton);
+            retryButton.onClickEvents.push(function () {
                 _this.Dispose();
                 PauseMenu.UnpauseTime = new Date();
                 audioHandler.SetLowPass(false);
                 PauseMenu.IsPaused = false;
-                MenuHandler.GoBack();
-                currentLevelCode = "";
-                audioHandler.SetBackgroundMusic("menuJazz");
-                editorHandler.grabbedCheckpointLocation = null;
-                DeathLogService.LogDeathCounts();
-                currentDemoIndex = -1;
+                LevelGenerator.Restart();
             });
         }
-        if (!editorHandler.grabbedCheckpointLocation) {
+        else if (!editorHandler.grabbedCheckpointLocation) {
             var retryButton = this.CreateButton("Retry");
             container.AddChild(retryButton);
             retryButton.onClickEvents.push(function () {
@@ -102,6 +97,90 @@ var PauseMenu = /** @class */ (function (_super) {
                 PauseMenu.IsPaused = false;
                 player.OnPlayerDead();
             });
+        }
+        // EXIT BUTTON
+        if (levelGenerator) {
+            var exitButton = this.CreateButton("Quit Challenge");
+            container.AddChild(exitButton);
+            exitButton.onClickEvents.push(function () {
+                _this.Dispose();
+                PauseMenu.UnpauseTime = new Date();
+                audioHandler.SetLowPass(false);
+                PauseMenu.IsPaused = false;
+                MenuHandler.GoBack();
+                if (levelGenerator)
+                    levelGenerator.LogRun();
+                levelGenerator = null;
+            });
+        }
+        else if (!editorHandler.isEditorAllowed) {
+            var exitButton = this.CreateButton("Exit Level");
+            container.AddChild(exitButton);
+            exitButton.onClickEvents.push(function () {
+                _this.Dispose();
+                PauseMenu.UnpauseTime = new Date();
+                audioHandler.SetLowPass(false);
+                PauseMenu.IsPaused = false;
+                MenuHandler.GoBack();
+                currentLevelListing = null;
+                audioHandler.SetBackgroundMusic("menuJazz");
+                editorHandler.grabbedCheckpointLocation = null;
+                DeathLogService.LogDeathCounts();
+                currentDemoIndex = -1;
+            });
+        }
+        if (currentLevelListing) {
+            var levelTitle = new UIText(20, 20 + 36, currentLevelListing.level.name, 36, "white");
+            levelTitle.textAlign = "left";
+            levelTitle.strokeColor = "black";
+            ret.push(levelTitle);
+            var byText = new UIText(20, levelTitle.y + 18 + 10, "Created by " + currentLevelListing.author.username, 18, "white");
+            byText.textAlign = "left";
+            ret.push(byText);
+            var recordText = new UIText(20, byText.y + 18 + 10, "WR: " + Utility.FramesToTimeText(currentLevelListing.level.recordFrames) + " by " + currentLevelListing.wrHolder.username, 18, "white");
+            recordText.textAlign = "left";
+            ret.push(recordText);
+            var opinionContainer = new Panel(0, 0, container.width, 60);
+            if (!currentLevelListing.isLiked && !currentLevelListing.isDisliked) {
+                var opinionButtonSize = 120;
+                var dislikeButton_1 = new Button(container.x, 0, opinionButtonSize, opinionButtonSize);
+                opinionContainer.AddChild(dislikeButton_1);
+                var likeButton_1 = new Button(container.x + container.width + 10 - opinionButtonSize, 0, opinionButtonSize, opinionButtonSize);
+                opinionContainer.AddChild(likeButton_1);
+                var likeImage = new ImageFromTile(0, 0, 110, 110, tiles["menuButtons"][0][0]);
+                likeButton_1.AddChild(likeImage);
+                var dislikeImage = new ImageFromTile(0, 0, 110, 110, tiles["menuButtons"][1][0]);
+                dislikeButton_1.AddChild(dislikeImage);
+                likeButton_1.onClickEvents.push(function () {
+                    if (currentLevelListing) {
+                        if (currentLevelListing.isLiked || currentLevelListing.isDisliked)
+                            return;
+                        currentLevelListing.isLiked = true;
+                        likeButton_1.normalBackColor = "#0000";
+                        likeButton_1.mouseoverBackColor = "#0000";
+                        dislikeButton_1.isHidden = true;
+                        DataService.LikeLevel(currentLevelListing.level.code || "");
+                        var listing = LevelBrowseMenu.GetListing((currentLevelListing === null || currentLevelListing === void 0 ? void 0 : currentLevelListing.level.code) || "");
+                        if (listing)
+                            listing.isLiked = true;
+                    }
+                });
+                dislikeButton_1.onClickEvents.push(function () {
+                    if (currentLevelListing) {
+                        if (currentLevelListing.isLiked || currentLevelListing.isDisliked)
+                            return;
+                        currentLevelListing.isDisliked = true;
+                        dislikeButton_1.normalBackColor = "#0000";
+                        dislikeButton_1.mouseoverBackColor = "#0000";
+                        likeButton_1.isHidden = true;
+                        DataService.DislikeLevel((currentLevelListing === null || currentLevelListing === void 0 ? void 0 : currentLevelListing.level.code) || "");
+                        var listing = LevelBrowseMenu.GetListing((currentLevelListing === null || currentLevelListing === void 0 ? void 0 : currentLevelListing.level.code) || "");
+                        if (listing)
+                            listing.isLiked = false;
+                    }
+                });
+            }
+            container.AddChild(opinionContainer);
         }
         return ret;
     };

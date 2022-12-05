@@ -18,7 +18,7 @@ class SpringBox extends Sprite {
 
         let bounceSpeed = 2;
         let timerResetValue = 30;
-        let overlappingSprites = this.layer.sprites.filter(a => !(a instanceof SpringBox) && a.Overlaps(this));
+        let overlappingSprites = this.layer.sprites.filter(a => a.CanInteractWithSpringBox() && a.Overlaps(this));
         for (let sprite of overlappingSprites) {
 
             // check if sprite is fully in a quadrant relative to spring's center

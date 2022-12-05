@@ -9,6 +9,7 @@ abstract class Enemy extends Sprite {
     killedByProjectiles: boolean = true;
     canStandOn: boolean = false;
     damagesPlayer: boolean = true;
+    canSpinBounceOn: boolean = false;
 
     bounceSoundId: string = "bop";
 
@@ -173,13 +174,13 @@ abstract class Enemy extends Sprite {
 
                     if (!isGroundToRight) {
                         //console.log(belowTile, rightFootTile)
-                        isGroundToRight = this.layer.sprites.some(a => a.isPlatform && Math.abs(a.y - this.yBottom) <= 0.11 && this.xRight >= a.x && this.xRight < a.xRight);
+                        isGroundToRight = this.layer.sprites.some(a => a.isPlatform && Math.abs(a.y - this.yBottom) <= 0.11 && this.xRight >= a.x - 2 && this.xRight < a.xRight);
                         if (!isGroundToRight) {
                             if (belowTile.tileType.solidity == Solidity.HalfSlopeUpLeft && rightFootTile.tileType.solidity == Solidity.HalfSlopeUpRight) isGroundToRight = true;
                         }
                     }
                     if (!isGroundToLeft) {
-                        isGroundToLeft = this.layer.sprites.some(a => a.isPlatform && Math.abs(a.y - this.yBottom) <= 0.11 && this.x <= a.xRight && this.x > a.x);
+                        isGroundToLeft = this.layer.sprites.some(a => a.isPlatform && Math.abs(a.y - this.yBottom) <= 0.11 && this.x <= a.xRight + 2 && this.x > a.x);
                         if (!isGroundToLeft) {
                             if (belowTile.tileType.solidity == Solidity.HalfSlopeDownRight && leftFootTile.tileType.solidity == Solidity.HalfSlopeDownLeft) isGroundToLeft = true;
                         }

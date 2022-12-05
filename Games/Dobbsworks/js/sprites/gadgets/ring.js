@@ -24,7 +24,12 @@ var Ring = /** @class */ (function (_super) {
         return _this;
     }
     Ring.prototype.Update = function () {
-        this.ApplyInertia();
+        var _this = this;
+        var parentMotor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == _this; });
+        if (!parentMotor) {
+            this.dx *= 0.9;
+            this.dy *= 0.9;
+        }
         this.MoveByVelocity();
     };
     Ring.prototype.GetFrameData = function (frameNum) {
@@ -53,7 +58,12 @@ var PullSwitch = /** @class */ (function (_super) {
         return _this;
     }
     PullSwitch.prototype.Update = function () {
-        this.ApplyInertia();
+        var _this = this;
+        var parentMotor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == _this; });
+        if (!parentMotor) {
+            this.dx *= 0.9;
+            this.dy *= 0.9;
+        }
         this.MoveByVelocity();
         this.isOn = (player && player.heldItem == this);
     };

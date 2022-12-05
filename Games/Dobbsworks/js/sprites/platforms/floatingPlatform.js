@@ -34,6 +34,7 @@ var FloatingPlatform = /** @class */ (function (_super) {
             if ((((_a = this.layer.map) === null || _a === void 0 ? void 0 : _a.waterLevel.currentY) || 0) > this.yBottom && (((_b = this.layer.map) === null || _b === void 0 ? void 0 : _b.purpleWaterLevel.currentY) || 0) > this.yBottom)
                 this.dy = 0.3;
         }
+        this.dx *= 0.95;
         this.ReactToWater();
         this.MoveByVelocity();
     };

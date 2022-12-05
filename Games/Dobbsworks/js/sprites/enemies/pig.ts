@@ -29,6 +29,8 @@ class Piggle extends Enemy {
         }
     }
 
+    OnSpinBounce(): void { this.ReplaceWithSpriteType(Poof); }
+
     OnBounce(): void {
         this.canBeBouncedOn = false;
         this.isInDeathAnimation = true;
@@ -77,6 +79,7 @@ class PogoPiggle extends Enemy {
                 if (this.pogoTimer > 10) {
                     this.pogoTimer = 0;
                     this.dy = -2.5;
+                    this.parentSprite = null;
                 }
             }
 
@@ -91,6 +94,8 @@ class PogoPiggle extends Enemy {
             this.ReactToWater();
         }
     }
+    
+    OnSpinBounce(): void { this.ReplaceWithSpriteType(Poof); }
 
     OnBounce(): void {
         if (this.iFrames > 0) {

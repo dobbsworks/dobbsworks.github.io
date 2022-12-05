@@ -24,7 +24,7 @@ var MainMenu = /** @class */ (function (_super) {
         var logo = new Logo(262, 30);
         ret.push(logo);
         var centerX = camera.canvas.width / 2;
-        var playButtonWidth = camera.canvas.width / 4;
+        var playButtonWidth = camera.canvas.width / 3;
         var playButtonHeight = 60;
         var playButtonX = centerX - playButtonWidth / 2;
         var playButtonY = logo.y + logo.height + 15;
@@ -59,7 +59,15 @@ var MainMenu = /** @class */ (function (_super) {
         recentLevelsButton.isNoisy = true;
         if (!isDemoMode)
             ret.push(recentLevelsButton);
-        [playButton, myLevelsButton, recentLevelsButton, demoLevelsButton].forEach(function (b) {
+        var singlePlayerButton = new Button(playButtonX, playButtonY + (playButtonHeight + 10) * 3, playButtonWidth, playButtonHeight);
+        var singlePlayerText = new UIText(centerX, playButtonY + 40, "Barker's Carnival", 30, "#000");
+        singlePlayerButton.AddChild(singlePlayerText);
+        singlePlayerText.xOffset = playButtonWidth / 2 - 5;
+        singlePlayerText.yOffset = 40;
+        singlePlayerButton.isNoisy = true;
+        if (!isDemoMode)
+            ret.push(singlePlayerButton);
+        [playButton, myLevelsButton, recentLevelsButton, demoLevelsButton, singlePlayerButton].forEach(function (b) {
             b.normalBackColor = "#fff8";
             b.mouseoverBackColor = "#f73738";
             b.borderColor = "#000";
@@ -80,6 +88,10 @@ var MainMenu = /** @class */ (function (_super) {
         recentLevelsButton.onClickEvents.push(function () {
             MenuHandler.SubMenu(LevelBrowseMenu);
             audioHandler.SetBackgroundMusic("menuJazz");
+        });
+        singlePlayerButton.onClickEvents.push(function () {
+            MenuHandler.SubMenu(CarnivalMenu);
+            audioHandler.SetBackgroundMusic("carnival");
         });
         demoLevelsButton.onClickEvents.push(function () {
             currentDemoIndex = 0;

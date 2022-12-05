@@ -41,6 +41,9 @@ class Snouter extends Enemy {
         }
     }
 
+    
+    OnSpinBounce(): void { this.ReplaceWithSpriteType(Poof); }
+
     OnBounce(): void {
         this.canBeBouncedOn = false;
         this.isInDeathAnimation = true;

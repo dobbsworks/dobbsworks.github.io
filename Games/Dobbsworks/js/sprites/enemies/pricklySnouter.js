@@ -19,6 +19,7 @@ var PricklySnouter = /** @class */ (function (_super) {
         _this.canBeBouncedOn = false;
         _this.ammo = PricklySnouterBullet;
         _this.frameCol = 1;
+        _this.canSpinBounceOn = true;
         return _this;
     }
     return PricklySnouter;

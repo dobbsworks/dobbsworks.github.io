@@ -3,7 +3,7 @@ class LevelSuccessMenu extends Menu {
     private container: Panel | null = null;
     private minigameContainer: Panel | null = null;
     public collectedGear: GoldGear | null = null;
-    private timer: number = 0;
+    public timer: number = 0;
 
     public deathCount: number = 0;
     private gear: EndOfLevelMinigameGear | null = null;
@@ -12,6 +12,14 @@ class LevelSuccessMenu extends Menu {
     private disliked: boolean = false;
     private likeButton: Button | null = null;
     private dislikeButton: Button | null = null;
+
+
+    protected showLikeButtons = true;
+
+    protected topButtonText = "Continue";
+    protected bottomButtonText = "Start Over";
+
+
 
     CreateElements(): UIElement[] {
         let ret: UIElement[] = [];
@@ -25,7 +33,7 @@ class LevelSuccessMenu extends Menu {
         ret.push(this.minigameContainer);
 
         let buttonWidth = 350;
-        let continueButton = new Button(camera.canvas.width / 2 - buttonWidth/2, 430, buttonWidth, 55);
+        let continueButton = new Button(camera.canvas.width / 2 - buttonWidth / 2, 430, buttonWidth, 55);
         let restartButton = new Button(continueButton.x, continueButton.y + continueButton.height + 10, buttonWidth, 55);
         let opinionButtonSize = continueButton.height * 2 + 10;
         this.likeButton = new Button(continueButton.x + continueButton.width + 10, continueButton.y, opinionButtonSize, opinionButtonSize);
@@ -33,14 +41,14 @@ class LevelSuccessMenu extends Menu {
         let buttons = [continueButton, restartButton, this.likeButton, this.dislikeButton];
         buttons.forEach(a => a.isNoisy = true);
         ret.push(...buttons);
+        
 
-        let continueText = new UIText(camera.canvas.width / 2, continueButton.y + 20, "Continue", 20, "#FFF");
+
+        let continueText = new UIText(camera.canvas.width / 2, continueButton.y + 20, this.topButtonText, 20, "#FFF");
         continueButton.AddChild(continueText);
         continueText.xOffset = buttonWidth / 2 - 5;
         continueText.yOffset = 30;
-        continueButton.onClickEvents.push(() => {
-            this.gear?.DoneWithLevel();
-        })
+        continueButton.onClickEvents.push(() => {this.OnClickTopButton() })
 
         if (isDemoMode) {
             this.likeButton.isHidden = true;
@@ -48,16 +56,21 @@ class LevelSuccessMenu extends Menu {
             restartButton.isHidden = true;
         }
 
-        let restartText = new UIText(camera.canvas.width / 2, continueButton.y + 20, "Start Over", 20, "#FFF");
+        let restartText = new UIText(camera.canvas.width / 2, continueButton.y + 20, this.bottomButtonText, 20, "#FFF");
         restartButton.AddChild(restartText);
         restartText.xOffset = buttonWidth / 2 - 5;
         restartText.yOffset = 30;
-        restartButton.onClickEvents.push(() => {
-            this.Dispose();
-            editorHandler.SwitchToEditMode();
-            editorHandler.SwitchToPlayMode();
-        })
-        
+        restartButton.onClickEvents.push(() => { this.OnClickBottomButton() });
+
+
+        if (!this.showLikeButtons) {
+            this.likeButton.isHidden = true;
+            this.dislikeButton.isHidden = true;
+        }
+        if (this.bottomButtonText == "") {
+            restartButton.isHidden = true;
+        }
+
         let likeImage = new ImageFromTile(0, 0, 110, 110, tiles["menuButtons"][0][0]);
         this.likeButton.AddChild(likeImage);
         let dislikeImage = new ImageFromTile(0, 0, 110, 110, tiles["menuButtons"][1][0]);
@@ -69,8 +82,8 @@ class LevelSuccessMenu extends Menu {
             if (this.likeButton) this.likeButton.normalBackColor = "#0000";
             if (this.likeButton) this.likeButton.mouseoverBackColor = "#0000";
             if (this.dislikeButton) this.dislikeButton.isHidden = true;
-            DataService.LikeLevel(currentLevelCode);
-            let listing = LevelBrowseMenu.GetListing(currentLevelCode);
+            DataService.LikeLevel(currentLevelListing?.level.code || "");
+            let listing = LevelBrowseMenu.GetListing(currentLevelListing?.level.code || "");
             if (listing) listing.isLiked = true;
         });
 
@@ -80,13 +93,27 @@ class LevelSuccessMenu extends Menu {
             if (this.dislikeButton) this.dislikeButton.normalBackColor = "#0000";
             if (this.dislikeButton) this.dislikeButton.mouseoverBackColor = "#0000";
             if (this.likeButton) this.likeButton.isHidden = true;
-            DataService.DislikeLevel(currentLevelCode);
-            let listing = LevelBrowseMenu.GetListing(currentLevelCode);
+            DataService.DislikeLevel(currentLevelListing?.level.code || "");
+            let listing = LevelBrowseMenu.GetListing(currentLevelListing?.level.code || "");
             if (listing) listing.isLiked = false;
         });
 
         return ret;
     }
+
+
+    protected OnClickTopButton(): void {
+        // Continue
+        this.gear?.DoneWithLevel();
+    }
+
+    protected OnClickBottomButton(): void {
+        // Start Over
+        this.Dispose();
+        editorHandler.SwitchToEditMode();
+        editorHandler.SwitchToPlayMode();
+    }
+
 
     Update(): void {
         this.timer++;
@@ -110,12 +137,12 @@ class LevelSuccessMenu extends Menu {
     }
 
     SetLevelCompletionTime(frameCount: number): void {
-        let deaths = StorageService.PopDeathCounter(currentLevelCode);
-        let progressModel = new LevelProgressModel(currentLevelCode, frameCount, deaths + 1);
+        let deaths = StorageService.PopDeathCounter(currentLevelListing?.level.code || "");
+        let progressModel = new LevelProgressModel(currentLevelListing?.level.code || "", frameCount, deaths + 1);
         this.deathCount = deaths;
         if (!isDemoMode) {
             DataService.LogLevelPlayDone(progressModel).then((awardsModel) => { this.PopulateTimes(awardsModel, frameCount) });
-            let listing = LevelBrowseMenu.GetListing(currentLevelCode);
+            let listing = LevelBrowseMenu.GetListing(currentLevelListing?.level.code || "");
             if (listing) {
                 listing.level.numberOfAttempts += deaths + 1;
                 listing.level.numberOfClears += 1;
@@ -172,6 +199,55 @@ class LevelSuccessMenu extends Menu {
 }
 
 
+class MarathonThreeClearsMenu extends LevelSuccessMenu {
+    showLikeButtons = false;
+    protected topButtonText = "Claim Winnings";
+    protected bottomButtonText = "Double Multiplier (costs " + levelGenerator?.earnedPoints + ")";
+
+    protected OnClickTopButton(): void {
+        MenuHandler.GoBack();
+        LevelMap.BlankOutMap();
+        audioHandler.SetBackgroundMusic("carnival");
+        if (levelGenerator) {
+            levelGenerator.LogRun();
+            moneyService.fundsToAnimate += levelGenerator.earnedPoints;
+        }
+        levelGenerator = null;
+        MenuHandler.SubMenu(BankMenu);
+    }
+
+    protected OnClickBottomButton(): void {
+        levelGenerator?.ActivateDoubleOrNothing();
+        MenuHandler.GoBack();
+        MenuHandler.SubMenu(BlankMenu);
+        levelGenerator?.NextLevel();
+    }
+}
+
+
+class MarathonDeathMenu extends LevelSuccessMenu {
+    showLikeButtons = false;
+    protected topButtonText = levelGenerator?.earnedPoints == 0 ? "Return to Menu" : "Claim Winnings";
+    protected bottomButtonText = levelGenerator?.earnedPoints == 0 ? "Try Again" : "";
+
+    protected OnClickTopButton(): void {
+        MenuHandler.GoBack();
+        LevelMap.BlankOutMap();
+        audioHandler.SetBackgroundMusic("carnival");
+        if (levelGenerator && levelGenerator.earnedPoints > 0) {
+            DataService.LogMarathonRun(levelGenerator.difficulty.difficultyNumber, levelGenerator.levelsCleared, levelGenerator.bankedClearTime, levelGenerator.earnedPoints);
+            moneyService.fundsToAnimate += levelGenerator.earnedPoints;
+            MenuHandler.SubMenu(BankMenu);
+        }
+        levelGenerator = null;
+    }
+
+    protected OnClickBottomButton(): void {
+        LevelGenerator.Restart();
+    }
+}
+
+
 class EndOfLevelMinigameGear extends UIElement {
     frameRow!: number;
     targetScore!: number;
@@ -184,7 +260,7 @@ class EndOfLevelMinigameGear extends UIElement {
         this.height = tiles["logo"][0][0].height * 8;
         this.targetWidth = this.width;
         this.targetHeight = this.height;
-        
+
         currentMap.fullDarknessRatio = 0;
         currentMap.bgDarknessRatio = 0;
         currentMap.mainLayer.sprites = currentMap.mainLayer.sprites.filter(a => !(a instanceof Player));
@@ -214,7 +290,7 @@ class EndOfLevelMinigameGear extends UIElement {
         this.age++;
         this.frame += this.spinSpeed;
         this.y = camera.canvas.height - this.age * 2;
-        if (this.y < 50) this.y = 50;
+        if (this.y < 30) this.y = 30;
 
         if (this.age < 300) {
             this.dScore = this.targetScore / 600;
@@ -274,18 +350,18 @@ class EndOfLevelMinigameGear extends UIElement {
                 MenuHandler.GoBack();
             }
         } else {
-            let listing = LevelBrowseMenu.GetListing(currentLevelCode);
+            let listing = LevelBrowseMenu.GetListing(currentLevelListing?.level.code || "");
             if (listing) {
                 listing.isCleared = true;
             }
-            let listing2 = MyLevelsMenu.GetListing(currentLevelCode);
+            let listing2 = MyLevelsMenu.GetListing(currentLevelListing?.level.code || "");
             if (listing2) {
                 listing2.levelState = LevelState.cleared;
                 MyLevelsMenu.Reset();
             }
             LevelBrowseMenu.Reset();
             MenuHandler.GoBack();
-            currentLevelCode = "";
+            currentLevelListing = null;
             // menu music
             audioHandler.SetBackgroundMusic("menuJazz");
         }
@@ -298,35 +374,11 @@ class EndOfLevelMinigameGear extends UIElement {
         ctx.fillStyle = `hsla(${this.h.toFixed(0)},${this.s.toFixed(0)}%,${this.l.toFixed(0)}%,${this.a.toFixed(2)})`;
         ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
 
-        // ctx.textAlign = "right";
-
-        // let ticks = [];
-        // for (let i = 500; i < this.targetScore + 1000; i += 250) { ticks.push(i); }
-
-        // ctx.textAlign = "center";
-        // ctx.font = `24px grobold`;
-        // for (let tick of ticks) {
-        //     let textY = this.y - (tick - this.displayedScore);
-        //     if (textY < -100 || textY > 800) continue;
-
-        //     ctx.fillStyle = "#333";
-        //     ctx.fillRect(50 - 5 * this.tickXOffset, textY - 36, 100, 50);
-        //     ctx.fillRect(0, textY, camera.canvas.width * (50 - this.tickXOffset) / 50, 2);
-
-        //     ctx.fillStyle = "white";
-        //     ctx.fillText(tick.toString(), 100 - this.tickXOffset * 5, textY);
-        // }
-
-        // ctx.font = `42px grobold`;
-        // ctx.textAlign = "right";
-        // ctx.fillStyle = "white";
-        // ctx.fillText(this.displayedScore.toFixed(1), camera.canvas.width - 10 + this.tickXOffset * 3, camera.canvas.height - 10);
-
         let frameCol = Math.floor(this.frame) % 6;
         let imageTile = tiles["gears"][frameCol][this.frameRow];
         let scale = 8;
         ctx.drawImage(imageTile.src, imageTile.xSrc, imageTile.ySrc, imageTile.width, imageTile.height, this.x, this.y, imageTile.width * scale, imageTile.height * scale);
-        
+
         let playerCol = this.age < 650 ? 3 : 0;
         let imageTilePlayer = tiles["dobbs"][playerCol][0];
         let playerY = (this.age - 650) * 10 + 150;
@@ -346,10 +398,18 @@ class EndOfLevelMinigameGear extends UIElement {
             ctx.lineWidth = 10;
             ctx.font = `70px grobold`;
             let x = camera.canvas.width / 2 + (this.age < 700 ? (700 - this.age) * 20 : 0);
-            strokeFillText("LEVEL CLEAR!", x, this.y + 220);
+            let textString = "LEVEL CLEAR!";
+            if (levelGenerator) {
+                if (levelGenerator.earnedPoints) {
+                    textString = "COMPLETE!";
+                } else {
+                    textString = "GOOD TRY!";
+                }
+            }
+            strokeFillText(textString, x, this.y + 220);
         }
 
-        let yIter = this.y + 290;
+        let yIter = this.y + 280;
         var makeTextLine = (age: number, textLeft: string, textRight: string, extraText: string, extraTextColor: string): void => {
             if (this.age > age) {
                 ctx.textAlign = "left";
@@ -369,23 +429,31 @@ class EndOfLevelMinigameGear extends UIElement {
             yIter += 50;
         }
 
-        if (this.awardsModel) {
+        if (levelGenerator) {
+            makeTextLine(675, "Total Time", Utility.FramesToTimeText(levelGenerator.bankedClearTime), "", "cyan");
+            makeTextLine(700, "Total Clears", (levelGenerator.levelsCleared).toString(), "", "cyan");
             let extraText = "";
-            let extraColor = "red";
-            if (this.awardsModel.isFC) {
-                extraText = "First Clear!";
-                extraColor = "yellow";
-            } else if (this.awardsModel.isWR) {
-                extraText = "World Record!";
-            } else if (this.awardsModel.isPB) {
-                extraText = "Personal best!";
-                extraColor = "cyan";
+            if (levelGenerator.difficulty.difficultyNumber != 1) {
+                extraText = "Difficulty Multiplier x" + levelGenerator.difficulty.difficultyNumber;
             }
-            makeTextLine(675, "Clear Time", Utility.FramesToTimeText(this.frameCount), extraText, extraColor);
+            makeTextLine(725, "Winnings", (levelGenerator.earnedPoints).toString(), extraText, "cyan");
+        } else {
+            if (this.awardsModel) {
+                let extraText = "";
+                let extraColor = "red";
+                if (this.awardsModel.isFC) {
+                    extraText = "First Clear!";
+                    extraColor = "yellow";
+                } else if (this.awardsModel.isWR) {
+                    extraText = "World Record!";
+                } else if (this.awardsModel.isPB) {
+                    extraText = "Personal best!";
+                    extraColor = "cyan";
+                }
+                makeTextLine(675, "Clear Time", Utility.FramesToTimeText(this.frameCount), extraText, extraColor);
+            }
+            makeTextLine(700, "Attempts", (this.deathCount + 1).toString(), "", "cyan");
         }
-
-        makeTextLine(700, "Attempts", (this.deathCount + 1).toString(), "", "cyan");
-        //makeTextLine(725, "Bonus Score", this.displayedScore.toFixed(1), "", "cyan");
 
     }
 }

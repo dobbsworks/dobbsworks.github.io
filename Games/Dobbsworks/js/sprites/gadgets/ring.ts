@@ -8,7 +8,11 @@ class Ring extends Sprite {
 
 
     Update(): void {
-        this.ApplyInertia();
+        let parentMotor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == this);
+        if (!parentMotor) {
+            this.dx *= 0.9;
+            this.dy *= 0.9;
+        }
         this.MoveByVelocity();
     }
     
@@ -34,7 +38,11 @@ class PullSwitch extends Ring {
     isPowerSource = true;
 
     Update(): void {
-        this.ApplyInertia();
+        let parentMotor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == this);
+        if (!parentMotor) {
+            this.dx *= 0.9;
+            this.dy *= 0.9;
+        }
         this.MoveByVelocity();
 
         this.isOn = (player && player.heldItem == this);

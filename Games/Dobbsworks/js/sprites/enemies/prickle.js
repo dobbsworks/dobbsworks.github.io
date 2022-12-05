@@ -20,12 +20,17 @@ var Prickle = /** @class */ (function (_super) {
         _this.width = 12;
         _this.respectsSolidTiles = true;
         _this.canBeBouncedOn = false;
+        _this.canSpinBounceOn = true;
+        _this.isInitialized = false;
         return _this;
     }
     Prickle.prototype.Update = function () {
         if (!this.WaitForOnScreen()) {
-            this.dx = -0.3;
             return;
+        }
+        if (!this.isInitialized) {
+            this.dx = -0.3;
+            this.isInitialized = true;
         }
         this.GroundPatrol(0.3, true);
         this.ApplyGravity();

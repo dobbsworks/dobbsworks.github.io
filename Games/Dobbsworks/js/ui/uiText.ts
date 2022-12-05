@@ -8,7 +8,7 @@ class UIText extends UIElement {
 
     strokeColor: string = "transparent";
     strokeWidth: number = 4;
-    font: "grobold" | "arial" = "grobold";
+    font: "grobold" | "arial" | "courier" = "grobold";
 
     constructor(x: number, y: number, public text: string, public fontSize: number, public fillColor: string) {
         super(x, y);

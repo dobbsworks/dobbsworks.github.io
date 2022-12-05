@@ -48,6 +48,7 @@ var Shrubbert = /** @class */ (function (_super) {
         this.ApplyInertia();
         this.ReactToWater();
     };
+    Shrubbert.prototype.OnSpinBounce = function () { this.ReplaceWithSpriteType(Poof); };
     Shrubbert.prototype.OnBounce = function () {
         if (this.state == "normal") {
             this.state = "stunned";

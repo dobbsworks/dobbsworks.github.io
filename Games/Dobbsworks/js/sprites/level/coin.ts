@@ -21,7 +21,7 @@ class Coin extends Sprite {
             if (player && player.Overlaps(this)) {
                 this.isTouched = true;
                 audioHandler.PlaySound(this.sound, false);
-                if (this instanceof Dobbloon) {
+                if (this instanceof Dabbloon) {
                     this.layer.sprites.push(new Points(this.xMid - 15/2, this.y, this.layer, []))
                 }
             }
@@ -47,7 +47,7 @@ class Coin extends Sprite {
 
 }
 
-class Dobbloon extends Coin {
+class Dabbloon extends Coin {
     public height: number = 14;
     public width: number = 14;
     border = 2;

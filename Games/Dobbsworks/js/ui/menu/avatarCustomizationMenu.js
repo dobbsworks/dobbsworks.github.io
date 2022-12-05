@@ -202,7 +202,7 @@ var AvatarCustomizationMenu = /** @class */ (function (_super) {
     };
     AvatarCustomizationMenu.prototype.GetAllFocusElements = function () {
         var ret = [];
-        for (var i = 0; i < 21; i++) {
+        for (var i = 0; i < 29; i++) {
             ret.push(new AvatarLayerElement(i, AvatarCustomizationMenu.GetFocusImage(i)));
         }
         return ret;
@@ -220,6 +220,14 @@ var AvatarCustomizationMenu = /** @class */ (function (_super) {
             ret.push(new AvatarLayerElement(i, AvatarCustomizationMenu.GetBackImage(i)));
         }
         return ret;
+    };
+    AvatarCustomizationMenu.GetImageFrom3CharCode = function (code) {
+        if (code.length != 3)
+            throw "Invalid avatar code [" + code + "]";
+        var segmentIndex = +(code[0]);
+        var func = [AvatarCustomizationMenu.GetBackImage, AvatarCustomizationMenu.GetFocusImage, AvatarCustomizationMenu.GetFrameImage][segmentIndex];
+        var id = Utility.IntFromB64(code.substring(1));
+        return func(id);
     };
     AvatarCustomizationMenu.GetFocusImage = function (id) {
         return tiles["avatars"][id % 16][Math.floor(id / 16)];

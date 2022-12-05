@@ -20,15 +20,17 @@ var PrickleShell = /** @class */ (function (_super) {
         _this.width = 10;
         _this.respectsSolidTiles = true;
         _this.canBeBouncedOn = false;
+        _this.canSpinBounceOn = true;
         _this.jumpTimer = 0;
         _this.frameCols = [0, 1, 2, 3, 2, 1];
         _this.frameRow = 0;
         return _this;
     }
     PrickleShell.prototype.Update = function () {
-        if (this.isOnGround) {
+        if (this.isOnGround || this.parentSprite) {
             this.direction *= -1;
             this.dy = -1;
+            this.parentSprite = null;
             this.jumpTimer = 0;
         }
         if (this.isOnCeiling) {
@@ -38,7 +40,8 @@ var PrickleShell = /** @class */ (function (_super) {
         if (this.jumpTimer > 24) {
             this.ApplyGravity();
         }
-        this.ApplyInertia();
+        // removing inertia, let em ride
+        //this.ApplyInertia();
         this.ReactToWater();
     };
     PrickleShell.prototype.GetFrameData = function (frameNum) {
@@ -115,6 +118,7 @@ var PrickleRock = /** @class */ (function (_super) {
         _this.canBeBouncedOn = false;
         _this.initialized = false;
         _this.killedByProjectiles = false;
+        _this.canSpinBounceOn = true;
         return _this;
     }
     PrickleRock.prototype.Update = function () {

@@ -47,6 +47,8 @@ class RollingSnailShell extends Enemy {
             this.rotation -= this.GetTotalDx() / 2
         }
     }
+    
+    OnSpinBounce(): void { this.ReplaceWithSpriteType(Poof); }
 
     OnBounce(): void {
         this.isActive = false;

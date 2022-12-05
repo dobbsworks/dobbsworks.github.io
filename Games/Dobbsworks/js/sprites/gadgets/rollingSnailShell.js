@@ -65,6 +65,7 @@ var RollingSnailShell = /** @class */ (function (_super) {
             this.rotation -= this.GetTotalDx() / 2;
         }
     };
+    RollingSnailShell.prototype.OnSpinBounce = function () { this.ReplaceWithSpriteType(Poof); };
     RollingSnailShell.prototype.OnBounce = function () {
         this.isActive = false;
         var shell = new SnailShell(this.x, this.y, this.layer, []);

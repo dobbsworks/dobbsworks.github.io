@@ -155,7 +155,8 @@ class MyLevelsMenu extends Menu {
                 editorHandler.SwitchToPlayMode();
                 MenuHandler.SubMenu(BlankMenu);
                 DataService.LogLevelPlayStarted(level.code);
-                currentLevelCode = level.code;
+                let listing = new LevelListing(level, new UserDT(0, "", "", ""), new UserDT(0, "", "", ""), false, false, false, false, 0)
+                currentLevelListing = listing;
             }
         });
         this.cloudSavesOptionsPanel.AddChild(cloudPlayButton);

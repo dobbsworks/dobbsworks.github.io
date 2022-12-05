@@ -42,3 +42,52 @@ var MushroomPlatform = /** @class */ (function (_super) {
     };
     return MushroomPlatform;
 }(BasePlatform));
+var MushroomSpring = /** @class */ (function (_super) {
+    __extends(MushroomSpring, _super);
+    function MushroomSpring() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.height = 10;
+        _this.width = 10;
+        _this.respectsSolidTiles = true;
+        _this.isPlatform = true;
+        _this.canBeHeld = true;
+        _this.bouncetimer = 0;
+        _this.yRenderOffset = 0;
+        return _this;
+    }
+    MushroomSpring.prototype.Update = function () {
+        var _this = this;
+        var riders = this.layer.sprites.filter(function (a) { return a.parentSprite == _this; });
+        for (var _i = 0, riders_2 = riders; _i < riders_2.length; _i++) {
+            var rider = riders_2[_i];
+            rider.dy = -3.3;
+            if (rider instanceof Player) {
+                rider.forcedJumpTimer = 28;
+            }
+            rider.parentSprite = null;
+            this.bouncetimer = 30;
+            audioHandler.PlaySound("boing", true);
+        }
+        if (this.bouncetimer > 0) {
+            this.bouncetimer--;
+            this.yRenderOffset = Math.floor(Math.sin(this.bouncetimer) / (31 - this.bouncetimer) * 2);
+        }
+        this.dx *= 0.95;
+        this.ApplyGravity();
+        this.ApplyInertia();
+        this.ReactToWater();
+        this.ReactToPlatformsAndSolids();
+        this.MoveByVelocity();
+    };
+    MushroomSpring.prototype.GetFrameData = function (frameNum) {
+        var col = 2 - this.yRenderOffset;
+        return {
+            imageTile: tiles["mushroomSpring"][col][0],
+            xFlip: false,
+            yFlip: false,
+            xOffset: 1,
+            yOffset: 2
+        };
+    };
+    return MushroomSpring;
+}(Sprite));

@@ -163,5 +163,27 @@ var DataService = /** @class */ (function () {
             DataService.BaseGet("Users/GetUserData", resolve, reject);
         });
     };
+    DataService.LogMarathonRun = function (difficulty, levelsCleared, finalFrameCount, winnings) {
+        return new Promise(function (resolve, reject) {
+            DataService.BasePost("Marathon/LogRun?difficulty=" + difficulty +
+                "&levelsCleared=" + levelsCleared + "&finalFrameCount=" + finalFrameCount +
+                "&winnings=" + winnings, {}, resolve, reject);
+        });
+    };
+    DataService.CheckFor3RingUnlock = function (difficulty) {
+        return new Promise(function (resolve, reject) {
+            DataService.BasePost("Marathon/Log3RingRun?difficulty=" + difficulty, {}, resolve, reject);
+        });
+    };
+    DataService.GetUserCurrency = function () {
+        return new Promise(function (resolve, reject) {
+            DataService.BaseGet("Currency/GetCurrency", resolve, reject);
+        });
+    };
+    DataService.RollForUnlock = function (cost) {
+        return new Promise(function (resolve, reject) {
+            DataService.BaseGet("Carnival/RollForUnlock?cost=" + cost, resolve, reject);
+        });
+    };
     return DataService;
 }());

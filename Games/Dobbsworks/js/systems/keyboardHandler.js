@@ -43,6 +43,7 @@ var KeyAction = /** @class */ (function () {
     KeyAction.Fullscreen = new KeyAction("fullscreen");
     KeyAction.Reset = new KeyAction("reset");
     KeyAction.EditToggle = new KeyAction("editToggle");
+    KeyAction.EditorRotateHotkey = new KeyAction("EditorRotateHotkey");
     KeyAction.EditorMinimize = new KeyAction("editorMinimize");
     KeyAction.EditorPlayerHotkey = new KeyAction("EditorPlayerHotkey");
     KeyAction.EditorEraseHotkey = new KeyAction("editorEraseHotkey");
@@ -282,8 +283,10 @@ var KeyboardHandler = /** @class */ (function () {
         //{k: "Backspace", v: KeyAction.Debug3},
         { k: "F11", v: KeyAction.Fullscreen },
         { k: "Tab", v: KeyAction.EditToggle },
+        { k: "GpButton8", v: KeyAction.EditToggle },
         { k: "KeyX", v: KeyAction.EditorMinimize },
         { k: "KeyE", v: KeyAction.EditorEraseHotkey },
+        { k: "KeyR", v: KeyAction.EditorRotateHotkey },
         { k: "KeyZ", v: KeyAction.EditorUndo },
         { k: "KeyY", v: KeyAction.EditorRedo },
         { k: "KeyT", v: KeyAction.Reset },

@@ -173,6 +173,8 @@ class AudioHandler {
         "choir",
         "meditate",
         "slime",
+        "chipper",
+        "jungle",
     ]
 }
 

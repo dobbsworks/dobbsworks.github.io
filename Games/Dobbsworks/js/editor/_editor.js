@@ -101,7 +101,12 @@ var EditorHandler = /** @class */ (function () {
             var block = tileRowBlocks_1[_i];
             var startIndex = Object.values(TileType.TileMap).indexOf(block);
             var tileTypeRow = (Object.values(TileType.TileMap).slice(startIndex, startIndex + 8));
-            tilePanelButtons.push.apply(tilePanelButtons, tileTypeRow.map(function (a, col) { return new EditorButtonTile(a, tooltips[col]); }));
+            var editorButtons = tileTypeRow.map(function (a, col) {
+                if (a.clockWiseRotationTileName)
+                    return new EditorButtonTile(a, tooltips[col]).AppendImage(tiles["uiButtonAdd"][0][0]);
+                return new EditorButtonTile(a, tooltips[col]);
+            });
+            tilePanelButtons.push.apply(tilePanelButtons, editorButtons);
             if (block == TileType.Dirt) {
                 hotbarDefaults.push(tilePanelButtons[0]);
                 hotbarDefaults.push(tilePanelButtons[3]);
@@ -116,13 +121,13 @@ var EditorHandler = /** @class */ (function () {
         var tilePanel = this.CreateFloatingButtonPanel(tilePanelButtons, 5, 9);
         /* ENEMY PANEL */
         var enemyTypes = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, Wooly, WoolyBooly, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
-            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, LittleJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Yufo];
+            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster,];
         var enemyButtons = enemyTypes.map(function (a) { return new EditorButtonSprite(a); });
         enemyButtons.filter(function (a) { return a.spriteType == Piggle || a.spriteType == Snail; }).forEach(function (a) { return hotbarDefaults.push(a); });
         var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 7);
         var gizmoTypes = [
-            BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform,
-            Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, RedCannon, BlueCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon
+            BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform,
+            MushroomSpring, Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, RedCannon, BlueCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon, SpinRing, FragileSpinRing,
         ];
         var gizmoButtons = gizmoTypes.map(function (a) { return new EditorButtonSprite(a); });
         var keyIndex = gizmoButtons.findIndex(function (a) { return a instanceof EditorButtonSprite && a.spriteType == FlatKey; });
@@ -131,6 +136,8 @@ var EditorHandler = /** @class */ (function () {
         gizmoButtons.push(new EditorButtonTile(TileType.ConveyorRight, "Conveyor (right)").AppendImage(tiles["editor"][2][2]));
         gizmoButtons.push(new EditorButtonTile(TileType.ConveyorLeftFast, "Fast conveyor (left)").AppendImage(tiles["editor"][5][2]));
         gizmoButtons.push(new EditorButtonTile(TileType.ConveyorRightFast, "Fast conveyor (right)").AppendImage(tiles["editor"][6][2]));
+        gizmoButtons.push(new EditorButtonTile(TileType.HangingConveyorLeft, "Hanging Conveyor (left)"));
+        gizmoButtons.push(new EditorButtonTile(TileType.HangingConveyorRight, "Hanging Conveyor (right)"));
         gizmoButtons.push(new EditorButtonTile(TileType.Barrel, "Barrel"));
         gizmoButtons.push(new EditorButtonTile(TileType.SteelBarrel, "Steel Barrel"));
         gizmoButtons.push(new EditorButtonTile(TileType.Pumpkin, "Pumpkin"));
@@ -139,18 +146,18 @@ var EditorHandler = /** @class */ (function () {
         gizmoButtons.push(new EditorButtonTile(TileType.HangingBars, "Hanging bars"));
         gizmoButtons.push(new EditorButtonTile(TileType.Ice, "Ice Block"));
         gizmoButtons.push(new EditorButtonTile(TileType.IceTop, "Ice Top"));
-        gizmoButtons.push(new EditorButtonTile(TileType.OneWayRight, "One-way (right)"));
-        gizmoButtons.push(new EditorButtonTile(TileType.OneWayDown, "One-way (down)"));
-        gizmoButtons.push(new EditorButtonTile(TileType.OneWayLeft, "One-way (left)"));
-        gizmoButtons.push(new EditorButtonTile(TileType.OneWayUp, "One-way (up)"));
-        gizmoButtons.push(new EditorButtonTile(TileType.ArrowRight, "Arrow (right)"));
-        gizmoButtons.push(new EditorButtonTile(TileType.ArrowUpRight, "Arrow (up-right)"));
-        gizmoButtons.push(new EditorButtonTile(TileType.ArrowUp, "Arrow (up)"));
-        gizmoButtons.push(new EditorButtonTile(TileType.ArrowUpLeft, "Arrow (up-left)"));
-        gizmoButtons.push(new EditorButtonTile(TileType.ArrowLeft, "Arrow (left)"));
-        gizmoButtons.push(new EditorButtonTile(TileType.ArrowDownLeft, "Arrow (down-left)"));
-        gizmoButtons.push(new EditorButtonTile(TileType.ArrowDown, "Arrow (down)"));
-        gizmoButtons.push(new EditorButtonTile(TileType.ArrowDownRight, "Arrow (down-right)"));
+        gizmoButtons.push(new EditorButtonTile(TileType.OneWayRight, "One-way").AppendImage(tiles["uiButtonAdd"][0][0]));
+        // gizmoButtons.push(new EditorButtonTile(TileType.OneWayDown, "One-way (down)"));
+        // gizmoButtons.push(new EditorButtonTile(TileType.OneWayLeft, "One-way (left)"));
+        // gizmoButtons.push(new EditorButtonTile(TileType.OneWayUp, "One-way (up)"));
+        gizmoButtons.push(new EditorButtonTile(TileType.ArrowRight, "Arrow").AppendImage(tiles["uiButtonAdd"][0][0]));
+        // gizmoButtons.push(new EditorButtonTile(TileType.ArrowUpRight, "Arrow (up-right)"));
+        // gizmoButtons.push(new EditorButtonTile(TileType.ArrowUp, "Arrow (up)"));
+        // gizmoButtons.push(new EditorButtonTile(TileType.ArrowUpLeft, "Arrow (up-left)"));
+        // gizmoButtons.push(new EditorButtonTile(TileType.ArrowLeft, "Arrow (left)"));
+        // gizmoButtons.push(new EditorButtonTile(TileType.ArrowDownLeft, "Arrow (down-left)"));
+        // gizmoButtons.push(new EditorButtonTile(TileType.ArrowDown, "Arrow (down)"));
+        // gizmoButtons.push(new EditorButtonTile(TileType.ArrowDownRight, "Arrow (down-right)"));
         gizmoButtons.push(new EditorButtonTile(TileType.SolidForPlayer, "Player Blocker"));
         gizmoButtons.push(new EditorButtonTile(TileType.SolidForNonplayer, "Sprite Blocker"));
         gizmoButtons.push(new EditorButtonTile(TileType.SpriteKiller, "Sprite Killer"));
@@ -187,40 +194,45 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonSprite(LeftSideButton),
             new EditorButtonSprite(RightSideButton),
             new EditorButtonSprite(CeilingButton),
-            new EditorButtonTile(TileType.DiodeRightOff, "Diode (right)"),
-            new EditorButtonTile(TileType.DiodeDownOff, "Diode (down)"),
-            new EditorButtonTile(TileType.DiodeLeftOff, "Diode (left)"),
-            new EditorButtonTile(TileType.DiodeUpOff, "Diode (up)"),
-            new EditorButtonTile(TileType.AndGateRightOff, "And gate (right)"),
-            new EditorButtonTile(TileType.AndGateDownOff, "And gate (down)"),
-            new EditorButtonTile(TileType.AndGateLeftOff, "And gate (left)"),
-            new EditorButtonTile(TileType.AndGateUpOff, "And gate (up)"),
-            new EditorButtonTile(TileType.InverterRightOff, "Inverter (right)"),
-            new EditorButtonTile(TileType.InverterDownOff, "Inverter (down)"),
-            new EditorButtonTile(TileType.InverterLeftOff, "Inverter (left)"),
-            new EditorButtonTile(TileType.InverterUpOff, "Inverter (up)"),
+            new EditorButtonTile(TileType.DiodeRightOff, "Diode").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.DiodeDownOff, "Diode (down)"),
+            // new EditorButtonTile(TileType.DiodeLeftOff, "Diode (left)"),
+            // new EditorButtonTile(TileType.DiodeUpOff, "Diode (up)"),
+            new EditorButtonTile(TileType.AndGateRightOff, "And gate").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.AndGateDownOff, "And gate (down)"),
+            // new EditorButtonTile(TileType.AndGateLeftOff, "And gate (left)"),
+            // new EditorButtonTile(TileType.AndGateUpOff, "And gate (up)"),
+            new EditorButtonTile(TileType.InverterRightOff, "Inverter").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.InverterDownOff, "Inverter (down)"),
+            // new EditorButtonTile(TileType.InverterLeftOff, "Inverter (left)"),
+            // new EditorButtonTile(TileType.InverterUpOff, "Inverter (up)"),
             new EditorButtonTile(TileType.PowerBlock, "Power source"),
             new EditorButtonTile(TileType.CircuitHurtOff, "Zappy wire"),
             new EditorButtonTile(TileType.CircuitHurtSolidOff, "Zappy block"),
             //new EditorButtonTile(TileType.CircuitMusicOff, "Music block"),
             new EditorButtonSprite(Winch),
+            new EditorButtonSprite(ReverseWinch),
             new EditorButtonSprite(PullSwitch),
             new EditorButtonSprite(SlowMotor),
             new EditorButtonSprite(Motor),
             new EditorButtonSprite(FastMotor),
             new EditorButtonSprite(UpwardMotor),
-            new EditorButtonTile(TileType.TrackHorizontal, "Horizontal Track"),
-            new EditorButtonTile(TileType.TrackVertical, "Vertical Track"),
-            new EditorButtonTile(TileType.TrackCurveDownRight, "Track Curve"),
-            new EditorButtonTile(TileType.TrackCurveDownLeft, "TrackCurve"),
-            new EditorButtonTile(TileType.TrackCurveUpLeft, "Track Curve"),
-            new EditorButtonTile(TileType.TrackCurveUpRight, "Track Curve"),
-            new EditorButtonTile(TileType.TrackLeftCap, "Track Cap"),
-            new EditorButtonTile(TileType.TrackTopCap, "Track Cap"),
-            new EditorButtonTile(TileType.TrackRightCap, "Track Cap"),
-            new EditorButtonTile(TileType.TrackBottomCap, "Track Cap"),
+            new EditorButtonSprite(FerrisMotorRight).AppendImage(tiles["editor"][2][2]).ChangeTooltip("Ferris Motor (clockwise)"),
+            new EditorButtonSprite(FerrisMotorLeft).AppendImage(tiles["editor"][0][2]).ChangeTooltip("Ferris Motor (counter-clockwise)"),
+            new EditorButtonSprite(FastFerrisMotorRight).AppendImage(tiles["editor"][6][2]).ChangeTooltip("Fast Ferris Motor (clockwise)"),
+            new EditorButtonSprite(FastFerrisMotorLeft).AppendImage(tiles["editor"][5][2]).ChangeTooltip("Fast Ferris Motor (counter-clockwise)"),
+            new EditorButtonTile(TileType.TrackHorizontal, "Straight Track").AppendImage(tiles["uiButtonAdd"][0][0]),
+            //new EditorButtonTile(TileType.TrackVertical, "Vertical Track"),
+            new EditorButtonTile(TileType.TrackCurveDownRight, "Track Curve").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.TrackCurveDownLeft, "TrackCurve"),
+            // new EditorButtonTile(TileType.TrackCurveUpLeft, "Track Curve"),
+            // new EditorButtonTile(TileType.TrackCurveUpRight, "Track Curve"),
+            new EditorButtonTile(TileType.TrackLeftCap, "Track Cap").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.TrackTopCap, "Track Cap"),
+            // new EditorButtonTile(TileType.TrackRightCap, "Track Cap"),
+            // new EditorButtonTile(TileType.TrackBottomCap, "Track Cap"),
             new EditorButtonSprite(Lever),
-        ], 5, 8);
+        ], 4, 8);
         var backgroundHandle = new EditorButtonDrawerHandle(tiles["editor"][0][3], "Background customization", []);
         this.skyEditor = new SkyEditor(this.mainPanel.x - 70 - 10, 110, 700, 300);
         for (var _b = 0, _c = [0, 1, 2, 3]; _b < _c.length; _b++) {
@@ -268,7 +280,7 @@ var EditorHandler = /** @class */ (function () {
             this.playerButton,
             new EditorButtonSprite(GoldGear),
             new EditorButtonSprite(Coin),
-            new EditorButtonSprite(Dobbloon),
+            new EditorButtonSprite(Dabbloon),
             new EditorButtonSprite(ExtraHitHeart),
             new EditorButtonSprite(GoldHeart),
             new EditorButtonSprite(Checkpoint),
@@ -366,7 +378,7 @@ var EditorHandler = /** @class */ (function () {
         var honeyLeftBrush = new EditorButtonTile(TileType.HoneyLeft, "Honey wall (left)");
         var honeyRightBrush = new EditorButtonTile(TileType.HoneyRight, "Honey wall (right)");
         var ret = this.CreateFloatingButtonPanel([
-            waterBrush, waterfallBrush, quickSandBrush, purpleWaterBrush, bubbleButton,
+            waterBrush, waterfallBrush, quickSandBrush, purpleWaterBrush, poisonGasBrush, bubbleButton,
             lavaBrush, slimeBrush, honeyBrush, honeyLeftBrush, honeyRightBrush,
             new EditorButtonTile(TileType.InitialWaterLevel, "Initial water level"),
             new EditorButtonTile(TileType.InitialPurpleWaterLevel, "Initial purple water level"),
@@ -543,6 +555,8 @@ var EditorHandler = /** @class */ (function () {
             this.history.Undo();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorRedo, true))
             this.history.Redo();
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorRotateHotkey, true))
+            this.RotateCurrentTool();
         if (KeyboardHandler.IsKeyPressed(KeyAction.Cancel, true)) {
             this.currentTool = this.selectionTool;
             this.selectionTool.OnCancel();
@@ -640,6 +654,29 @@ var EditorHandler = /** @class */ (function () {
                     a.isSelected = false;
             });
         });
+    };
+    EditorHandler.prototype.RotateCurrentTool = function () {
+        if (this.currentTool instanceof FillBrush) {
+            var fillType = this.currentTool.fillType;
+            if (fillType instanceof SimpleFill) {
+                var oldTiletype_1 = fillType.fillTile;
+                if (oldTiletype_1.clockWiseRotationTileName != "") {
+                    var newTileType_1 = TileType[oldTiletype_1.clockWiseRotationTileName];
+                    if (newTileType_1) {
+                        fillType.fillTile = newTileType_1;
+                        var buttons = EditorButtonTile.AllTileButtons.filter(function (a) { return a.tileType == oldTiletype_1; });
+                        buttons.forEach(function (button) {
+                            button.tileType = newTileType_1;
+                            button.children = button.children.filter(function (a) { return !(a instanceof ImageFromTile) || (a instanceof ImageFromTile && a.imageTile == tiles["uiButtonAdd"][0][0]); });
+                            button.AddChild(new ImageFromTile(0, 0, 50, 50, newTileType_1.imageTile));
+                        });
+                    }
+                    else {
+                        console.error("Missing tile rotation: " + oldTiletype_1.clockWiseRotationTileName);
+                    }
+                }
+            }
+        }
     };
     EditorHandler.prototype.DrawGridlines = function (camera, map) {
         var transitionRatio = this.transitionValue / this.maxTransitionValue;

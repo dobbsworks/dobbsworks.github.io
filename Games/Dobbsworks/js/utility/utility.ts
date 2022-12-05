@@ -78,4 +78,14 @@ class Utility {
 
         return currentClosest;
     }
+
+
+    public static RandFrom<T>(list: T[]): T {
+        if (list.length == 0) {
+            throw "RandFrom called on empty list";
+        }
+        if (list.length == 0) return list[0];
+        let index = Math.floor(Math.random() * list.length)
+        return list[index];
+    }
 }

@@ -60,6 +60,7 @@ var AFish = /** @class */ (function (_super) {
         }
         this.canBeBouncedOn = (player && !player.isInWater);
     };
+    AFish.prototype.OnSpinBounce = function () { this.ReplaceWithSpriteType(Poof); };
     AFish.prototype.OnBounce = function () {
         this.ReplaceWithSprite(new DeadEnemy(this));
         this.OnDead();

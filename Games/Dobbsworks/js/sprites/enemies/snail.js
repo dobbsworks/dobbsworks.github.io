@@ -29,6 +29,7 @@ var Snail = /** @class */ (function (_super) {
         this.ApplyGravity();
         this.ApplyInertia();
     };
+    Snail.prototype.OnSpinBounce = function () { this.ReplaceWithSpriteType(Poof); };
     Snail.prototype.OnBounce = function () {
         this.isActive = false;
         var shell = new SnailShell(this.x + 1, this.y, this.layer, []);

@@ -26,6 +26,9 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
         _this.disliked = false;
         _this.likeButton = null;
         _this.dislikeButton = null;
+        _this.showLikeButtons = true;
+        _this.topButtonText = "Continue";
+        _this.bottomButtonText = "Start Over";
         return _this;
     }
     LevelSuccessMenu.prototype.CreateElements = function () {
@@ -46,28 +49,28 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
         var buttons = [continueButton, restartButton, this.likeButton, this.dislikeButton];
         buttons.forEach(function (a) { return a.isNoisy = true; });
         ret.push.apply(ret, buttons);
-        var continueText = new UIText(camera.canvas.width / 2, continueButton.y + 20, "Continue", 20, "#FFF");
+        var continueText = new UIText(camera.canvas.width / 2, continueButton.y + 20, this.topButtonText, 20, "#FFF");
         continueButton.AddChild(continueText);
         continueText.xOffset = buttonWidth / 2 - 5;
         continueText.yOffset = 30;
-        continueButton.onClickEvents.push(function () {
-            var _a;
-            (_a = _this.gear) === null || _a === void 0 ? void 0 : _a.DoneWithLevel();
-        });
+        continueButton.onClickEvents.push(function () { _this.OnClickTopButton(); });
         if (isDemoMode) {
             this.likeButton.isHidden = true;
             this.dislikeButton.isHidden = true;
             restartButton.isHidden = true;
         }
-        var restartText = new UIText(camera.canvas.width / 2, continueButton.y + 20, "Start Over", 20, "#FFF");
+        var restartText = new UIText(camera.canvas.width / 2, continueButton.y + 20, this.bottomButtonText, 20, "#FFF");
         restartButton.AddChild(restartText);
         restartText.xOffset = buttonWidth / 2 - 5;
         restartText.yOffset = 30;
-        restartButton.onClickEvents.push(function () {
-            _this.Dispose();
-            editorHandler.SwitchToEditMode();
-            editorHandler.SwitchToPlayMode();
-        });
+        restartButton.onClickEvents.push(function () { _this.OnClickBottomButton(); });
+        if (!this.showLikeButtons) {
+            this.likeButton.isHidden = true;
+            this.dislikeButton.isHidden = true;
+        }
+        if (this.bottomButtonText == "") {
+            restartButton.isHidden = true;
+        }
         var likeImage = new ImageFromTile(0, 0, 110, 110, tiles["menuButtons"][0][0]);
         this.likeButton.AddChild(likeImage);
         var dislikeImage = new ImageFromTile(0, 0, 110, 110, tiles["menuButtons"][1][0]);
@@ -82,8 +85,8 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
                 _this.likeButton.mouseoverBackColor = "#0000";
             if (_this.dislikeButton)
                 _this.dislikeButton.isHidden = true;
-            DataService.LikeLevel(currentLevelCode);
-            var listing = LevelBrowseMenu.GetListing(currentLevelCode);
+            DataService.LikeLevel((currentLevelListing === null || currentLevelListing === void 0 ? void 0 : currentLevelListing.level.code) || "");
+            var listing = LevelBrowseMenu.GetListing((currentLevelListing === null || currentLevelListing === void 0 ? void 0 : currentLevelListing.level.code) || "");
             if (listing)
                 listing.isLiked = true;
         });
@@ -97,12 +100,23 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
                 _this.dislikeButton.mouseoverBackColor = "#0000";
             if (_this.likeButton)
                 _this.likeButton.isHidden = true;
-            DataService.DislikeLevel(currentLevelCode);
-            var listing = LevelBrowseMenu.GetListing(currentLevelCode);
+            DataService.DislikeLevel((currentLevelListing === null || currentLevelListing === void 0 ? void 0 : currentLevelListing.level.code) || "");
+            var listing = LevelBrowseMenu.GetListing((currentLevelListing === null || currentLevelListing === void 0 ? void 0 : currentLevelListing.level.code) || "");
             if (listing)
                 listing.isLiked = false;
         });
         return ret;
+    };
+    LevelSuccessMenu.prototype.OnClickTopButton = function () {
+        var _a;
+        // Continue
+        (_a = this.gear) === null || _a === void 0 ? void 0 : _a.DoneWithLevel();
+    };
+    LevelSuccessMenu.prototype.OnClickBottomButton = function () {
+        // Start Over
+        this.Dispose();
+        editorHandler.SwitchToEditMode();
+        editorHandler.SwitchToPlayMode();
     };
     LevelSuccessMenu.prototype.Update = function () {
         var _a;
@@ -126,12 +140,12 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
     };
     LevelSuccessMenu.prototype.SetLevelCompletionTime = function (frameCount) {
         var _this = this;
-        var deaths = StorageService.PopDeathCounter(currentLevelCode);
-        var progressModel = new LevelProgressModel(currentLevelCode, frameCount, deaths + 1);
+        var deaths = StorageService.PopDeathCounter((currentLevelListing === null || currentLevelListing === void 0 ? void 0 : currentLevelListing.level.code) || "");
+        var progressModel = new LevelProgressModel((currentLevelListing === null || currentLevelListing === void 0 ? void 0 : currentLevelListing.level.code) || "", frameCount, deaths + 1);
         this.deathCount = deaths;
         if (!isDemoMode) {
             DataService.LogLevelPlayDone(progressModel).then(function (awardsModel) { _this.PopulateTimes(awardsModel, frameCount); });
-            var listing = LevelBrowseMenu.GetListing(currentLevelCode);
+            var listing = LevelBrowseMenu.GetListing((currentLevelListing === null || currentLevelListing === void 0 ? void 0 : currentLevelListing.level.code) || "");
             if (listing) {
                 listing.level.numberOfAttempts += deaths + 1;
                 listing.level.numberOfClears += 1;
@@ -182,6 +196,59 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
     };
     return LevelSuccessMenu;
 }(Menu));
+var MarathonThreeClearsMenu = /** @class */ (function (_super) {
+    __extends(MarathonThreeClearsMenu, _super);
+    function MarathonThreeClearsMenu() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.showLikeButtons = false;
+        _this.topButtonText = "Claim Winnings";
+        _this.bottomButtonText = "Double Multiplier (costs " + (levelGenerator === null || levelGenerator === void 0 ? void 0 : levelGenerator.earnedPoints) + ")";
+        return _this;
+    }
+    MarathonThreeClearsMenu.prototype.OnClickTopButton = function () {
+        MenuHandler.GoBack();
+        LevelMap.BlankOutMap();
+        audioHandler.SetBackgroundMusic("carnival");
+        if (levelGenerator) {
+            levelGenerator.LogRun();
+            moneyService.fundsToAnimate += levelGenerator.earnedPoints;
+        }
+        levelGenerator = null;
+        MenuHandler.SubMenu(BankMenu);
+    };
+    MarathonThreeClearsMenu.prototype.OnClickBottomButton = function () {
+        levelGenerator === null || levelGenerator === void 0 ? void 0 : levelGenerator.ActivateDoubleOrNothing();
+        MenuHandler.GoBack();
+        MenuHandler.SubMenu(BlankMenu);
+        levelGenerator === null || levelGenerator === void 0 ? void 0 : levelGenerator.NextLevel();
+    };
+    return MarathonThreeClearsMenu;
+}(LevelSuccessMenu));
+var MarathonDeathMenu = /** @class */ (function (_super) {
+    __extends(MarathonDeathMenu, _super);
+    function MarathonDeathMenu() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.showLikeButtons = false;
+        _this.topButtonText = (levelGenerator === null || levelGenerator === void 0 ? void 0 : levelGenerator.earnedPoints) == 0 ? "Return to Menu" : "Claim Winnings";
+        _this.bottomButtonText = (levelGenerator === null || levelGenerator === void 0 ? void 0 : levelGenerator.earnedPoints) == 0 ? "Try Again" : "";
+        return _this;
+    }
+    MarathonDeathMenu.prototype.OnClickTopButton = function () {
+        MenuHandler.GoBack();
+        LevelMap.BlankOutMap();
+        audioHandler.SetBackgroundMusic("carnival");
+        if (levelGenerator && levelGenerator.earnedPoints > 0) {
+            DataService.LogMarathonRun(levelGenerator.difficulty.difficultyNumber, levelGenerator.levelsCleared, levelGenerator.bankedClearTime, levelGenerator.earnedPoints);
+            moneyService.fundsToAnimate += levelGenerator.earnedPoints;
+            MenuHandler.SubMenu(BankMenu);
+        }
+        levelGenerator = null;
+    };
+    MarathonDeathMenu.prototype.OnClickBottomButton = function () {
+        LevelGenerator.Restart();
+    };
+    return MarathonDeathMenu;
+}(LevelSuccessMenu));
 var EndOfLevelMinigameGear = /** @class */ (function (_super) {
     __extends(EndOfLevelMinigameGear, _super);
     function EndOfLevelMinigameGear(x, y, collectedGear) {
@@ -220,8 +287,8 @@ var EndOfLevelMinigameGear = /** @class */ (function (_super) {
         this.age++;
         this.frame += this.spinSpeed;
         this.y = camera.canvas.height - this.age * 2;
-        if (this.y < 50)
-            this.y = 50;
+        if (this.y < 30)
+            this.y = 30;
         if (this.age < 300) {
             this.dScore = this.targetScore / 600;
         }
@@ -279,18 +346,18 @@ var EndOfLevelMinigameGear = /** @class */ (function (_super) {
             }
         }
         else {
-            var listing = LevelBrowseMenu.GetListing(currentLevelCode);
+            var listing = LevelBrowseMenu.GetListing((currentLevelListing === null || currentLevelListing === void 0 ? void 0 : currentLevelListing.level.code) || "");
             if (listing) {
                 listing.isCleared = true;
             }
-            var listing2 = MyLevelsMenu.GetListing(currentLevelCode);
+            var listing2 = MyLevelsMenu.GetListing((currentLevelListing === null || currentLevelListing === void 0 ? void 0 : currentLevelListing.level.code) || "");
             if (listing2) {
                 listing2.levelState = LevelState.cleared;
                 MyLevelsMenu.Reset();
             }
             LevelBrowseMenu.Reset();
             MenuHandler.GoBack();
-            currentLevelCode = "";
+            currentLevelListing = null;
             // menu music
             audioHandler.SetBackgroundMusic("menuJazz");
         }
@@ -301,24 +368,6 @@ var EndOfLevelMinigameGear = /** @class */ (function (_super) {
         var _this = this;
         ctx.fillStyle = "hsla(" + this.h.toFixed(0) + "," + this.s.toFixed(0) + "%," + this.l.toFixed(0) + "%," + this.a.toFixed(2) + ")";
         ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
-        // ctx.textAlign = "right";
-        // let ticks = [];
-        // for (let i = 500; i < this.targetScore + 1000; i += 250) { ticks.push(i); }
-        // ctx.textAlign = "center";
-        // ctx.font = `24px grobold`;
-        // for (let tick of ticks) {
-        //     let textY = this.y - (tick - this.displayedScore);
-        //     if (textY < -100 || textY > 800) continue;
-        //     ctx.fillStyle = "#333";
-        //     ctx.fillRect(50 - 5 * this.tickXOffset, textY - 36, 100, 50);
-        //     ctx.fillRect(0, textY, camera.canvas.width * (50 - this.tickXOffset) / 50, 2);
-        //     ctx.fillStyle = "white";
-        //     ctx.fillText(tick.toString(), 100 - this.tickXOffset * 5, textY);
-        // }
-        // ctx.font = `42px grobold`;
-        // ctx.textAlign = "right";
-        // ctx.fillStyle = "white";
-        // ctx.fillText(this.displayedScore.toFixed(1), camera.canvas.width - 10 + this.tickXOffset * 3, camera.canvas.height - 10);
         var frameCol = Math.floor(this.frame) % 6;
         var imageTile = tiles["gears"][frameCol][this.frameRow];
         var scale = 8;
@@ -341,9 +390,18 @@ var EndOfLevelMinigameGear = /** @class */ (function (_super) {
             ctx.lineWidth = 10;
             ctx.font = "70px grobold";
             var x = camera.canvas.width / 2 + (this.age < 700 ? (700 - this.age) * 20 : 0);
-            strokeFillText("LEVEL CLEAR!", x, this.y + 220);
+            var textString = "LEVEL CLEAR!";
+            if (levelGenerator) {
+                if (levelGenerator.earnedPoints) {
+                    textString = "COMPLETE!";
+                }
+                else {
+                    textString = "GOOD TRY!";
+                }
+            }
+            strokeFillText(textString, x, this.y + 220);
         }
-        var yIter = this.y + 290;
+        var yIter = this.y + 280;
         var makeTextLine = function (age, textLeft, textRight, extraText, extraTextColor) {
             if (_this.age > age) {
                 ctx.textAlign = "left";
@@ -363,24 +421,34 @@ var EndOfLevelMinigameGear = /** @class */ (function (_super) {
             }
             yIter += 50;
         };
-        if (this.awardsModel) {
+        if (levelGenerator) {
+            makeTextLine(675, "Total Time", Utility.FramesToTimeText(levelGenerator.bankedClearTime), "", "cyan");
+            makeTextLine(700, "Total Clears", (levelGenerator.levelsCleared).toString(), "", "cyan");
             var extraText = "";
-            var extraColor = "red";
-            if (this.awardsModel.isFC) {
-                extraText = "First Clear!";
-                extraColor = "yellow";
+            if (levelGenerator.difficulty.difficultyNumber != 1) {
+                extraText = "Difficulty Multiplier x" + levelGenerator.difficulty.difficultyNumber;
             }
-            else if (this.awardsModel.isWR) {
-                extraText = "World Record!";
-            }
-            else if (this.awardsModel.isPB) {
-                extraText = "Personal best!";
-                extraColor = "cyan";
-            }
-            makeTextLine(675, "Clear Time", Utility.FramesToTimeText(this.frameCount), extraText, extraColor);
+            makeTextLine(725, "Winnings", (levelGenerator.earnedPoints).toString(), extraText, "cyan");
         }
-        makeTextLine(700, "Attempts", (this.deathCount + 1).toString(), "", "cyan");
-        //makeTextLine(725, "Bonus Score", this.displayedScore.toFixed(1), "", "cyan");
+        else {
+            if (this.awardsModel) {
+                var extraText = "";
+                var extraColor = "red";
+                if (this.awardsModel.isFC) {
+                    extraText = "First Clear!";
+                    extraColor = "yellow";
+                }
+                else if (this.awardsModel.isWR) {
+                    extraText = "World Record!";
+                }
+                else if (this.awardsModel.isPB) {
+                    extraText = "Personal best!";
+                    extraColor = "cyan";
+                }
+                makeTextLine(675, "Clear Time", Utility.FramesToTimeText(this.frameCount), extraText, extraColor);
+            }
+            makeTextLine(700, "Attempts", (this.deathCount + 1).toString(), "", "cyan");
+        }
     };
     return EndOfLevelMinigameGear;
 }(UIElement));

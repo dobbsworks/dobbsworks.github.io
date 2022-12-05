@@ -36,7 +36,8 @@ class TileType {
 
     public isSlippery = false;
 
-    public hurtOnSides: boolean = false;
+    public hurtOnLeft: boolean = false;
+    public hurtOnRight: boolean = false;
     public hurtOnTop: boolean = false;
     public hurtOnBottom: boolean = false;
     public hurtOnOverlap: boolean = false; // other hurtOn props only activate on solid interaction
@@ -45,6 +46,7 @@ class TileType {
     public pickUpSprite: SpriteType | null = null;
     public autoChange: TileTypeChange | null = null;
     public standChange: TileTypeChange | null = null;
+    public clockWiseRotationTileName: string = "";
 
     public requiredPowerDelay: number = 1;
     public canBePowered: boolean = false;
@@ -136,7 +138,7 @@ class TileType {
         TileType.MetalPlate;
         TileType.BrownBack;
         TileType.Rigging;
-        TileType.Spears;
+        TileType.SpearsUp;
         TileType.RopeRail;
         TileType.RegisterSlope("Plank", 4);
 
@@ -318,6 +320,17 @@ class TileType {
 
         TileType.Slime;
 
+        TileType.MetalSpikesDown;
+        TileType.MetalSpikesLeft;
+        TileType.MetalSpikesRight;
+
+        TileType.SpearsDown;
+        TileType.SpearsLeft;
+        TileType.SpearsRight;
+
+        TileType.HangingConveyorRight;
+        TileType.HangingConveyorLeft;
+
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
     }
@@ -355,7 +368,7 @@ class TileType {
     public static get Ladder(): TileType { return TileType.GetTileType("Ladder", "terrain", 5, 0, Solidity.None, TargetLayer.main, tileType => { tileType.isClimbable = true; }); }
     public static get SpikeBlock(): TileType {
         return TileType.GetTileType("SpikeBlock", "terrain", 6, 0, Solidity.Block, TargetLayer.main, tileType => {
-            tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnSides = true;
+            tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnLeft = true; tileType.hurtOnRight = true;
         });
     }
     public static get Flower(): TileType { return TileType.GetTileType("Flower", "terrain", 7, 0, Solidity.None, TargetLayer.main); }
@@ -381,7 +394,7 @@ class TileType {
     public static get RoughLadder(): TileType { return TileType.GetTileType("RoughLadder", "terrain", 5, 2, Solidity.None, TargetLayer.main, tileType => { tileType.isClimbable = true; }); }
     public static get Cactus(): TileType {
         return TileType.GetTileType("Cactus", "terrain", 6, 2, Solidity.Block, TargetLayer.main, tileType => {
-            tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnSides = true;
+            tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnLeft = true; tileType.hurtOnRight = true;
         });
     }
     public static get Rock(): TileType { return TileType.GetTileType("Rock", "terrain", 7, 2, Solidity.None, TargetLayer.main); }
@@ -405,9 +418,28 @@ class TileType {
     public static get MetalPlate(): TileType { return TileType.GetTileType("MetalPlate", "terrain", 3, 4, Solidity.Top, TargetLayer.semisolid); }
     public static get BrownBack(): TileType { return TileType.GetTileType("BrownBack", "terrain", 4, 4, Solidity.None, TargetLayer.backdrop); }
     public static get Rigging(): TileType { return TileType.GetTileType("Rigging", "terrain", 5, 4, Solidity.None, TargetLayer.main, tileType => { tileType.isClimbable = true; }); }
-    public static get Spears(): TileType {
-        return TileType.GetTileType("Spears", "terrain", 6, 4, Solidity.Top, TargetLayer.main, tileType => {
+    public static get SpearsUp(): TileType {
+        return TileType.GetTileType("SpearsUp", "terrain", 6, 4, Solidity.Top, TargetLayer.main, tileType => {
             tileType.hurtOnTop = true;
+            tileType.clockWiseRotationTileName = "SpearsRight";
+        });
+    }
+    public static get SpearsLeft(): TileType {
+        return TileType.GetTileType("SpearsLeft", "terrain", 7, 19, Solidity.RightWall, TargetLayer.main, tileType => {
+            tileType.hurtOnLeft = true;
+            tileType.clockWiseRotationTileName = "SpearsUp";
+        });
+    }
+    public static get SpearsRight(): TileType {
+        return TileType.GetTileType("SpearsRight", "terrain", 8, 19, Solidity.LeftWall, TargetLayer.main, tileType => {
+            tileType.hurtOnRight = true;
+            tileType.clockWiseRotationTileName = "SpearsDown";
+        });
+    }
+    public static get SpearsDown(): TileType {
+        return TileType.GetTileType("SpearsDown", "terrain", 9, 19, Solidity.Bottom, TargetLayer.main, tileType => {
+            tileType.hurtOnBottom = true;
+            tileType.clockWiseRotationTileName = "SpearsLeft";
         });
     }
     public static get RopeRail(): TileType { return TileType.GetTileType("RopeRail", "terrain", 7, 4, Solidity.None, TargetLayer.main); }
@@ -420,7 +452,7 @@ class TileType {
     public static get RedLadder(): TileType { return TileType.GetTileType("RedLadder", "terrain", 5, 5, Solidity.None, TargetLayer.main, tileType => { tileType.isClimbable = true; }); }
     public static get Icicles(): TileType {
         return TileType.GetTileType("Icicles", "terrain", 6, 5, Solidity.Block, TargetLayer.main, tileType => {
-            tileType.hurtOnBottom = true; tileType.hurtOnSides = true;
+            tileType.hurtOnBottom = true; tileType.hurtOnLeft = true; tileType.hurtOnRight = true;
             tileType.isSlippery = true;
         });
     }
@@ -434,7 +466,7 @@ class TileType {
     public static get PurpleLadder(): TileType { return TileType.GetTileType("PurpleLadder", "terrain", 5, 6, Solidity.None, TargetLayer.main, tileType => { tileType.isClimbable = true; }); }
     public static get DeathBlock(): TileType {
         return TileType.GetTileType("DeathBlock", "terrain", 6, 6, Solidity.Block, TargetLayer.main, tileType => {
-            tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnSides = true; tileType.instaKill = true;
+            tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnLeft = true; tileType.hurtOnRight = true; tileType.instaKill = true;
         });
     }
     public static get Lantern(): TileType { return TileType.GetTileType("Lantern", "terrain", 7, 6, Solidity.None, TargetLayer.main); }
@@ -448,6 +480,25 @@ class TileType {
     public static get MetalSpikes(): TileType {
         return TileType.GetTileType("MetalSpikes", "terrain", 6, 7, Solidity.Block, TargetLayer.main, tileType => {
             tileType.hurtOnTop = true;
+            tileType.clockWiseRotationTileName = "MetalSpikesRight";
+        });
+    }
+    public static get MetalSpikesDown(): TileType {
+        return TileType.GetTileType("MetalSpikesDown", "terrain", 6, 19, Solidity.Block, TargetLayer.main, tileType => {
+            tileType.hurtOnBottom = true;
+            tileType.clockWiseRotationTileName = "MetalSpikesLeft";
+        });
+    }
+    public static get MetalSpikesRight(): TileType {
+        return TileType.GetTileType("MetalSpikesRight", "terrain", 5, 19, Solidity.Block, TargetLayer.main, tileType => {
+            tileType.hurtOnRight = true;
+            tileType.clockWiseRotationTileName = "MetalSpikesDown";
+        });
+    }
+    public static get MetalSpikesLeft(): TileType {
+        return TileType.GetTileType("MetalSpikesLeft", "terrain", 4, 19, Solidity.Block, TargetLayer.main, tileType => {
+            tileType.hurtOnLeft = true;
+            tileType.clockWiseRotationTileName = "MetalSpikes";
         });
     }
     public static get DecorChain(): TileType { return TileType.GetTileType("DecorChain", "terrain", 7, 7, Solidity.None, TargetLayer.main); }
@@ -461,7 +512,7 @@ class TileType {
     public static get CaveLadder(): TileType { return TileType.GetTileType("CaveLadder", "terrain", 5, 8, Solidity.None, TargetLayer.main, tileType => { tileType.isClimbable = true; }); }
     public static get CaveSpikes(): TileType {
         return TileType.GetTileType("CaveSpikes", "terrain", 6, 8, Solidity.Block, TargetLayer.main, tileType => {
-            tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnSides = true;
+            tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnLeft = true; tileType.hurtOnRight = true;
         });
     }
     public static get DecorCave(): TileType { return TileType.GetTileType("DecorCave", "terrain", 7, 8, Solidity.None, TargetLayer.main); }
@@ -505,7 +556,8 @@ class TileType {
     }
 
     public static get PoisonGas(): TileType {
-        return TileType.GetAnimatedTileType("PoisonGas", "water", [{ x: 0, y: 7 }, { x: 1, y: 7 }, { x: 2, y: 7 }, { x: 3, y: 7 }, { x: 4, y: 7 }, { x: 5, y: 7 }], 35, Solidity.None, TargetLayer.water, tileType => {
+        let frames = [0,0,0,1,1,2,3,4,4,5,5,5,4,4,3,2,1,1].map(a => ({x: a, y: 7}));
+        return TileType.GetAnimatedTileType("PoisonGas", "water", frames, 6, Solidity.None, TargetLayer.water, tileType => {
             tileType.drainsAir = true;
         });
     }
@@ -733,7 +785,8 @@ class TileType {
             tileType.unpoweredTileName = "CircuitHurtSolidOff";
             tileType.canBePowered = true;
             tileType.hurtOnBottom = true;
-            tileType.hurtOnSides = true;
+            tileType.hurtOnLeft = true; 
+            tileType.hurtOnRight = true;
             tileType.hurtOnTop = true;
         });
     }
@@ -747,6 +800,7 @@ class TileType {
             tileType.powerInputDirection = direction.Opposite();
             tileType.canBePowered = true;
             tileType.calcPowerFromNeighbors = CircuitHandler.DiodePowerCalc;
+            tileType.clockWiseRotationTileName = `Diode${direction.Clockwise().name}Off`;
         });
     }
     public static get DiodeRightOff(): TileType { return TileType.GetDiode(Direction.Right, 0, false); }
@@ -766,6 +820,7 @@ class TileType {
             tileType.powerOutputDirection = direction;
             tileType.calcPowerFromNeighbors = CircuitHandler.AndGatePowerCalc;
             tileType.canBePowered = true;
+            tileType.clockWiseRotationTileName = `AndGate${direction.Clockwise().name}Off`;
         });
     }
     public static get AndGateRightOff(): TileType { return TileType.GetAndGate(Direction.Right, 0, false); }
@@ -786,6 +841,7 @@ class TileType {
             tileType.powerInputDirection = direction.Opposite();
             tileType.calcPowerFromNeighbors = CircuitHandler.InverterPowerCalc;
             tileType.canBePowered = true;
+            tileType.clockWiseRotationTileName = `Inverter${direction.Clockwise().name}Off`;
         });
     }
     public static get InverterRightOff(): TileType { return TileType.GetInverter(Direction.Right, 0, false); }
@@ -1007,6 +1063,26 @@ class TileType {
         })
     }
 
+    public static get HangingConveyorRight(): TileType {
+        return TileType.GetAnimatedTileType("HangingConveyorRight", "hanging", [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }], 2.5, Solidity.Bottom, TargetLayer.semisolid, tileType => {
+            (<AnimatedTileType>tileType).imageTiles.forEach(a => a.yOffset = 3);
+            tileType.isHangable = true;
+            tileType.isExemptFromSlime = true;
+            tileType.conveyorSpeed = -0.6;
+            // bottom conveyor speed is inverted
+        });
+    }
+
+    public static get HangingConveyorLeft(): TileType {
+        return TileType.GetAnimatedTileType("HangingConveyorLeft", "hanging", [{ x: 0, y: 2 }, { x: 1, y: 2 }, { x: 2, y: 2 }], 2.5, Solidity.Bottom, TargetLayer.semisolid, tileType => {
+            (<AnimatedTileType>tileType).imageTiles.forEach(a => a.yOffset = 3);
+            tileType.isHangable = true;
+            tileType.isExemptFromSlime = true;
+            tileType.conveyorSpeed = 0.6;
+            // bottom conveyor speed is inverted
+        });
+    }
+
 
     public static get TrackHorizontal(): TileType {
         return TileType.GetTileType("TrackHorizontal", "motorTrack", 2, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
@@ -1014,6 +1090,7 @@ class TileType {
             tileType.trackEquation = (x, y) => ({ x: x, y: 0.5 });
             tileType.trackCrossedEquation = (x1, y1, x2, y2) => (y1 >= 0.5 && y2 <= 0.5) || (y1 <= 0.5 && y2 >= 0.5);
             tileType.trackDirectionEquation = (x, y) => ({ dx: 1, dy: 0 });
+            tileType.clockWiseRotationTileName = "TrackVertical";
             // track direction equation assumes traveling clock-wise from bottom-right
         })
     }
@@ -1023,6 +1100,7 @@ class TileType {
             tileType.trackEquation = (x, y) => ({ x: 0.5, y: y });
             tileType.trackCrossedEquation = (x1, y1, x2, y2) => (x1 >= 0.5 && x2 <= 0.5) || (x1 <= 0.5 && x2 >= 0.5);
             tileType.trackDirectionEquation = (x, y) => ({ dx: 0, dy: -1 });
+            tileType.clockWiseRotationTileName = "TrackHorizontal";
         })
     }
     static GetCurveTrackEquation(innerXDirection: -1 | 1, innerYDirection: -1 | 1): (x: number, y: number) => { x: number, y: number } {
@@ -1083,6 +1161,7 @@ class TileType {
             tileType.trackDirectionEquation = TileType.GetCurveTrackDirectionEquation(1, 1);
             tileType.trackCurveHorizontalDirection = 1;
             tileType.trackCurveVerticalDirection = 1;
+            tileType.clockWiseRotationTileName = "TrackCurveDownLeft";
         })
     }
     public static get TrackCurveDownLeft(): TileType {
@@ -1093,6 +1172,7 @@ class TileType {
             tileType.trackDirectionEquation = TileType.GetCurveTrackDirectionEquation(-1, 1);
             tileType.trackCurveHorizontalDirection = -1;
             tileType.trackCurveVerticalDirection = 1;
+            tileType.clockWiseRotationTileName = "TrackCurveUpLeft";
         })
     }
     public static get TrackCurveUpLeft(): TileType {
@@ -1103,6 +1183,7 @@ class TileType {
             tileType.trackDirectionEquation = TileType.GetCurveTrackDirectionEquation(-1, -1);
             tileType.trackCurveHorizontalDirection = -1;
             tileType.trackCurveVerticalDirection = -1;
+            tileType.clockWiseRotationTileName = "TrackCurveUpRight";
         })
     }
     public static get TrackCurveUpRight(): TileType {
@@ -1113,6 +1194,7 @@ class TileType {
             tileType.trackDirectionEquation = TileType.GetCurveTrackDirectionEquation(1, -1);
             tileType.trackCurveHorizontalDirection = 1;
             tileType.trackCurveVerticalDirection = -1;
+            tileType.clockWiseRotationTileName = "TrackCurveDownRight";
         })
     }
     public static get TrackLeftCap(): TileType {
@@ -1122,6 +1204,7 @@ class TileType {
             tileType.trackCrossedEquation = (x1, y1, x2, y2) => ((y1 >= 0.5 && y2 <= 0.5) || (y1 <= 0.5 && y2 >= 0.5)) && x1 >= 0.5 && x2 >= 0.5;
             tileType.trackDirectionEquation = (x, y) => ({ dx: 1, dy: 0 });
             tileType.isTrackCap = true;
+            tileType.clockWiseRotationTileName = "TrackTopCap";
         })
     }
     public static get TrackTopCap(): TileType {
@@ -1131,6 +1214,7 @@ class TileType {
             tileType.trackCrossedEquation = (x1, y1, x2, y2) => ((x1 >= 0.5 && x2 <= 0.5) || (x1 <= 0.5 && x2 >= 0.5)) && y1 >= 0.5 && y2 >= 0.5;
             tileType.trackDirectionEquation = (x, y) => ({ dx: 0, dy: -1 });
             tileType.isTrackCap = true;
+            tileType.clockWiseRotationTileName = "TrackRightCap";
         })
     }
     public static get TrackRightCap(): TileType {
@@ -1140,6 +1224,7 @@ class TileType {
             tileType.trackCrossedEquation = (x1, y1, x2, y2) => ((y1 >= 0.5 && y2 <= 0.5) || (y1 <= 0.5 && y2 >= 0.5)) && x1 <= 0.5 && x2 <= 0.5;
             tileType.trackDirectionEquation = (x, y) => ({ dx: 1, dy: 0 });
             tileType.isTrackCap = true;
+            tileType.clockWiseRotationTileName = "TrackBottomCap";
         })
     }
     public static get TrackBottomCap(): TileType {
@@ -1149,6 +1234,7 @@ class TileType {
             tileType.trackCrossedEquation = (x1, y1, x2, y2) => ((x1 >= 0.5 && x2 <= 0.5) || (x1 <= 0.5 && x2 >= 0.5)) && y1 <= 0.5 && y2 <= 0.5;
             tileType.trackDirectionEquation = (x, y) => ({ dx: 0, dy: -1 });
             tileType.isTrackCap = true;
+            tileType.clockWiseRotationTileName = "TrackLeftCap";
         })
     }
 
@@ -1162,7 +1248,8 @@ class TileType {
         ]
         let solidity = [Solidity.LeftWall, Solidity.Bottom, Solidity.RightWall, Solidity.Top][y];
         return TileType.GetAnimatedTileType("OneWay" + direction.name, "oneway", frames, 4, solidity, TargetLayer.semisolid, tileType => {
-            tileType.isExemptFromSlime = true;
+            tileType.isExemptFromSlime = true; 
+            tileType.clockWiseRotationTileName = "OneWay" + direction.Clockwise().name;
         });
     }
 
@@ -1178,14 +1265,14 @@ class TileType {
     }
 
 
-    public static get ArrowRight(): TileType { return TileType.GetTileType("ArrowRight", "arrows", 0, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {}) }
-    public static get ArrowUpRight(): TileType { return TileType.GetTileType("ArrowUpRight", "arrows", 1, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {}) }
-    public static get ArrowUp(): TileType { return TileType.GetTileType("ArrowUp", "arrows", 2, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {}) }
-    public static get ArrowUpLeft(): TileType { return TileType.GetTileType("ArrowUpLeft", "arrows", 3, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {}) }
-    public static get ArrowLeft(): TileType { return TileType.GetTileType("ArrowLeft", "arrows", 4, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {}) }
-    public static get ArrowDownLeft(): TileType { return TileType.GetTileType("ArrowDownLeft", "arrows", 5, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {}) }
-    public static get ArrowDown(): TileType { return TileType.GetTileType("ArrowDown", "arrows", 6, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {}) }
-    public static get ArrowDownRight(): TileType { return TileType.GetTileType("ArrowDownRight", "arrows", 7, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {}) }
+    public static get ArrowRight(): TileType { return TileType.GetTileType("ArrowRight", "arrows", 0, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => { tileType.clockWiseRotationTileName = "ArrowDownRight" }) }
+    public static get ArrowUpRight(): TileType { return TileType.GetTileType("ArrowUpRight", "arrows", 1, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => { tileType.clockWiseRotationTileName = "ArrowRight" }) }
+    public static get ArrowUp(): TileType { return TileType.GetTileType("ArrowUp", "arrows", 2, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => { tileType.clockWiseRotationTileName = "ArrowUpRight" }) }
+    public static get ArrowUpLeft(): TileType { return TileType.GetTileType("ArrowUpLeft", "arrows", 3, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => { tileType.clockWiseRotationTileName = "ArrowUp" }) }
+    public static get ArrowLeft(): TileType { return TileType.GetTileType("ArrowLeft", "arrows", 4, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => { tileType.clockWiseRotationTileName = "ArrowUpLeft" }) }
+    public static get ArrowDownLeft(): TileType { return TileType.GetTileType("ArrowDownLeft", "arrows", 5, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => { tileType.clockWiseRotationTileName = "ArrowLeft" }) }
+    public static get ArrowDown(): TileType { return TileType.GetTileType("ArrowDown", "arrows", 6, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => { tileType.clockWiseRotationTileName = "ArrowDownLeft" }) }
+    public static get ArrowDownRight(): TileType { return TileType.GetTileType("ArrowDownRight", "arrows", 7, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => { tileType.clockWiseRotationTileName = "ArrowDown" }) }
 
 
     public static get SolidForPlayer(): TileType { return TileType.GetTileType("SolidForPlayer", "misc", 1, 4, Solidity.SolidForPlayer, TargetLayer.main, (tileType: TileType) => {}) }

@@ -15,6 +15,7 @@ class FloatingPlatform extends BasePlatform {
         if (isRidersChanges) {
             if ((this.layer.map?.waterLevel.currentY || 0) > this.yBottom && (this.layer.map?.purpleWaterLevel.currentY || 0) > this.yBottom) this.dy = 0.3;
         }
+        this.dx *= 0.95;
         this.ReactToWater();
         this.MoveByVelocity();
     }

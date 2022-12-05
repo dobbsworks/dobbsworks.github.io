@@ -19,6 +19,7 @@ class BouncePlatform extends BasePlatform {
         if (!isCompressing) {
             this.dy = -1;
         }
+        this.dx *= 0.95;
         this.MoveByVelocity();
 
         if (yDelta >= 4 && isCompressing) {

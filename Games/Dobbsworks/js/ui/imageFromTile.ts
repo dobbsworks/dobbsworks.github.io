@@ -20,6 +20,7 @@ class ImageFromTile extends UIElement {
     Draw(ctx: CanvasRenderingContext2D): void {
         let zoom = this.zoom;
         if (!this.imageTile) return;
+        if (this.parentElement && this.parentElement.targetY < -10) return; 
         //this.imageTile.Draw(ctx, this.x, this.y, 4, false, false);
         let fullImageWidth = this.imageTile.width * zoom;
         let widthClipScale = Math.min(1, this.width / fullImageWidth);

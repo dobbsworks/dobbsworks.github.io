@@ -12,6 +12,8 @@ class Snail extends Enemy {
         this.ApplyInertia();
     }
     
+    OnSpinBounce(): void { this.ReplaceWithSpriteType(Poof); }
+    
     OnBounce(): void {
         this.isActive = false;
         let shell = new SnailShell(this.x + 1, this.y, this.layer, []);

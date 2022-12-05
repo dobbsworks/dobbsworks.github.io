@@ -20,6 +20,7 @@ var DrSnips = /** @class */ (function (_super) {
         _this.width = 13;
         _this.respectsSolidTiles = true;
         _this.canBeBouncedOn = false;
+        _this.canSpinBounceOn = true;
         _this.clawsUp = true;
         return _this;
     }
@@ -34,6 +35,7 @@ var DrSnips = /** @class */ (function (_super) {
         this.clawsUp = Math.floor(this.age / 120) % 2 == 0;
         this.canBeBouncedOn = !this.clawsUp;
     };
+    DrSnips.prototype.OnSpinBounce = function () { this.ReplaceWithSpriteType(Poof); };
     DrSnips.prototype.OnBounce = function () {
         if (!this.clawsUp) {
             this.isActive = false;

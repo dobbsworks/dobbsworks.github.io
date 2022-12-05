@@ -36,6 +36,7 @@ var BouncePlatform = /** @class */ (function (_super) {
         if (!isCompressing) {
             this.dy = -1;
         }
+        this.dx *= 0.95;
         this.MoveByVelocity();
         if (yDelta >= 4 && isCompressing) {
             this.y = this.originalY + 4;

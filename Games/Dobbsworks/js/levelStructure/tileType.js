@@ -41,7 +41,8 @@ var TileType = /** @class */ (function () {
         this.trackCurveVerticalDirection = 0;
         // track equation maps based on ratio within block [0,1]=>[0,1]
         this.isSlippery = false;
-        this.hurtOnSides = false;
+        this.hurtOnLeft = false;
+        this.hurtOnRight = false;
         this.hurtOnTop = false;
         this.hurtOnBottom = false;
         this.hurtOnOverlap = false; // other hurtOn props only activate on solid interaction
@@ -49,6 +50,7 @@ var TileType = /** @class */ (function () {
         this.pickUpSprite = null;
         this.autoChange = null;
         this.standChange = null;
+        this.clockWiseRotationTileName = "";
         this.requiredPowerDelay = 1;
         this.canBePowered = false;
         this.isPowerSource = false;
@@ -132,7 +134,7 @@ var TileType = /** @class */ (function () {
         TileType.MetalPlate;
         TileType.BrownBack;
         TileType.Rigging;
-        TileType.Spears;
+        TileType.SpearsUp;
         TileType.RopeRail;
         TileType.RegisterSlope("Plank", 4);
         TileType.BlueGround;
@@ -287,6 +289,14 @@ var TileType = /** @class */ (function () {
         TileType.WallJumpLeft;
         TileType.WallJumpRight;
         TileType.Slime;
+        TileType.MetalSpikesDown;
+        TileType.MetalSpikesLeft;
+        TileType.MetalSpikesRight;
+        TileType.SpearsDown;
+        TileType.SpearsLeft;
+        TileType.SpearsRight;
+        TileType.HangingConveyorRight;
+        TileType.HangingConveyorLeft;
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
     };
@@ -348,7 +358,8 @@ var TileType = /** @class */ (function () {
             return TileType.GetTileType("SpikeBlock", "terrain", 6, 0, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.hurtOnBottom = true;
                 tileType.hurtOnTop = true;
-                tileType.hurtOnSides = true;
+                tileType.hurtOnLeft = true;
+                tileType.hurtOnRight = true;
             });
         },
         enumerable: false,
@@ -438,7 +449,8 @@ var TileType = /** @class */ (function () {
             return TileType.GetTileType("Cactus", "terrain", 6, 2, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.hurtOnBottom = true;
                 tileType.hurtOnTop = true;
-                tileType.hurtOnSides = true;
+                tileType.hurtOnLeft = true;
+                tileType.hurtOnRight = true;
             });
         },
         enumerable: false,
@@ -523,10 +535,41 @@ var TileType = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(TileType, "Spears", {
+    Object.defineProperty(TileType, "SpearsUp", {
         get: function () {
-            return TileType.GetTileType("Spears", "terrain", 6, 4, Solidity.Top, TargetLayer.main, function (tileType) {
+            return TileType.GetTileType("SpearsUp", "terrain", 6, 4, Solidity.Top, TargetLayer.main, function (tileType) {
                 tileType.hurtOnTop = true;
+                tileType.clockWiseRotationTileName = "SpearsRight";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "SpearsLeft", {
+        get: function () {
+            return TileType.GetTileType("SpearsLeft", "terrain", 7, 19, Solidity.RightWall, TargetLayer.main, function (tileType) {
+                tileType.hurtOnLeft = true;
+                tileType.clockWiseRotationTileName = "SpearsUp";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "SpearsRight", {
+        get: function () {
+            return TileType.GetTileType("SpearsRight", "terrain", 8, 19, Solidity.LeftWall, TargetLayer.main, function (tileType) {
+                tileType.hurtOnRight = true;
+                tileType.clockWiseRotationTileName = "SpearsDown";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "SpearsDown", {
+        get: function () {
+            return TileType.GetTileType("SpearsDown", "terrain", 9, 19, Solidity.Bottom, TargetLayer.main, function (tileType) {
+                tileType.hurtOnBottom = true;
+                tileType.clockWiseRotationTileName = "SpearsLeft";
             });
         },
         enumerable: false,
@@ -571,7 +614,8 @@ var TileType = /** @class */ (function () {
         get: function () {
             return TileType.GetTileType("Icicles", "terrain", 6, 5, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.hurtOnBottom = true;
-                tileType.hurtOnSides = true;
+                tileType.hurtOnLeft = true;
+                tileType.hurtOnRight = true;
                 tileType.isSlippery = true;
             });
         },
@@ -618,7 +662,8 @@ var TileType = /** @class */ (function () {
             return TileType.GetTileType("DeathBlock", "terrain", 6, 6, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.hurtOnBottom = true;
                 tileType.hurtOnTop = true;
-                tileType.hurtOnSides = true;
+                tileType.hurtOnLeft = true;
+                tileType.hurtOnRight = true;
                 tileType.instaKill = true;
             });
         },
@@ -664,6 +709,37 @@ var TileType = /** @class */ (function () {
         get: function () {
             return TileType.GetTileType("MetalSpikes", "terrain", 6, 7, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.hurtOnTop = true;
+                tileType.clockWiseRotationTileName = "MetalSpikesRight";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "MetalSpikesDown", {
+        get: function () {
+            return TileType.GetTileType("MetalSpikesDown", "terrain", 6, 19, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.hurtOnBottom = true;
+                tileType.clockWiseRotationTileName = "MetalSpikesLeft";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "MetalSpikesRight", {
+        get: function () {
+            return TileType.GetTileType("MetalSpikesRight", "terrain", 5, 19, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.hurtOnRight = true;
+                tileType.clockWiseRotationTileName = "MetalSpikesDown";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "MetalSpikesLeft", {
+        get: function () {
+            return TileType.GetTileType("MetalSpikesLeft", "terrain", 4, 19, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.hurtOnLeft = true;
+                tileType.clockWiseRotationTileName = "MetalSpikes";
             });
         },
         enumerable: false,
@@ -709,7 +785,8 @@ var TileType = /** @class */ (function () {
             return TileType.GetTileType("CaveSpikes", "terrain", 6, 8, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.hurtOnBottom = true;
                 tileType.hurtOnTop = true;
-                tileType.hurtOnSides = true;
+                tileType.hurtOnLeft = true;
+                tileType.hurtOnRight = true;
             });
         },
         enumerable: false,
@@ -800,7 +877,8 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "PoisonGas", {
         get: function () {
-            return TileType.GetAnimatedTileType("PoisonGas", "water", [{ x: 0, y: 7 }, { x: 1, y: 7 }, { x: 2, y: 7 }, { x: 3, y: 7 }, { x: 4, y: 7 }, { x: 5, y: 7 }], 35, Solidity.None, TargetLayer.water, function (tileType) {
+            var frames = [0, 0, 0, 1, 1, 2, 3, 4, 4, 5, 5, 5, 4, 4, 3, 2, 1, 1].map(function (a) { return ({ x: a, y: 7 }); });
+            return TileType.GetAnimatedTileType("PoisonGas", "water", frames, 6, Solidity.None, TargetLayer.water, function (tileType) {
                 tileType.drainsAir = true;
             });
         },
@@ -1118,7 +1196,8 @@ var TileType = /** @class */ (function () {
                 tileType.unpoweredTileName = "CircuitHurtSolidOff";
                 tileType.canBePowered = true;
                 tileType.hurtOnBottom = true;
-                tileType.hurtOnSides = true;
+                tileType.hurtOnLeft = true;
+                tileType.hurtOnRight = true;
                 tileType.hurtOnTop = true;
             });
         },
@@ -1135,6 +1214,7 @@ var TileType = /** @class */ (function () {
             tileType.powerInputDirection = direction.Opposite();
             tileType.canBePowered = true;
             tileType.calcPowerFromNeighbors = CircuitHandler.DiodePowerCalc;
+            tileType.clockWiseRotationTileName = "Diode" + direction.Clockwise().name + "Off";
         });
     };
     Object.defineProperty(TileType, "DiodeRightOff", {
@@ -1186,6 +1266,7 @@ var TileType = /** @class */ (function () {
             tileType.powerOutputDirection = direction;
             tileType.calcPowerFromNeighbors = CircuitHandler.AndGatePowerCalc;
             tileType.canBePowered = true;
+            tileType.clockWiseRotationTileName = "AndGate" + direction.Clockwise().name + "Off";
         });
     };
     Object.defineProperty(TileType, "AndGateRightOff", {
@@ -1238,6 +1319,7 @@ var TileType = /** @class */ (function () {
             tileType.powerInputDirection = direction.Opposite();
             tileType.calcPowerFromNeighbors = CircuitHandler.InverterPowerCalc;
             tileType.canBePowered = true;
+            tileType.clockWiseRotationTileName = "Inverter" + direction.Clockwise().name + "Off";
         });
     };
     Object.defineProperty(TileType, "InverterRightOff", {
@@ -1581,6 +1663,32 @@ var TileType = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(TileType, "HangingConveyorRight", {
+        get: function () {
+            return TileType.GetAnimatedTileType("HangingConveyorRight", "hanging", [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }], 2.5, Solidity.Bottom, TargetLayer.semisolid, function (tileType) {
+                tileType.imageTiles.forEach(function (a) { return a.yOffset = 3; });
+                tileType.isHangable = true;
+                tileType.isExemptFromSlime = true;
+                tileType.conveyorSpeed = -0.6;
+                // bottom conveyor speed is inverted
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "HangingConveyorLeft", {
+        get: function () {
+            return TileType.GetAnimatedTileType("HangingConveyorLeft", "hanging", [{ x: 0, y: 2 }, { x: 1, y: 2 }, { x: 2, y: 2 }], 2.5, Solidity.Bottom, TargetLayer.semisolid, function (tileType) {
+                tileType.imageTiles.forEach(function (a) { return a.yOffset = 3; });
+                tileType.isHangable = true;
+                tileType.isExemptFromSlime = true;
+                tileType.conveyorSpeed = 0.6;
+                // bottom conveyor speed is inverted
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(TileType, "TrackHorizontal", {
         get: function () {
             return TileType.GetTileType("TrackHorizontal", "motorTrack", 2, 0, Solidity.None, TargetLayer.wire, function (tileType) {
@@ -1588,6 +1696,7 @@ var TileType = /** @class */ (function () {
                 tileType.trackEquation = function (x, y) { return ({ x: x, y: 0.5 }); };
                 tileType.trackCrossedEquation = function (x1, y1, x2, y2) { return (y1 >= 0.5 && y2 <= 0.5) || (y1 <= 0.5 && y2 >= 0.5); };
                 tileType.trackDirectionEquation = function (x, y) { return ({ dx: 1, dy: 0 }); };
+                tileType.clockWiseRotationTileName = "TrackVertical";
                 // track direction equation assumes traveling clock-wise from bottom-right
             });
         },
@@ -1601,6 +1710,7 @@ var TileType = /** @class */ (function () {
                 tileType.trackEquation = function (x, y) { return ({ x: 0.5, y: y }); };
                 tileType.trackCrossedEquation = function (x1, y1, x2, y2) { return (x1 >= 0.5 && x2 <= 0.5) || (x1 <= 0.5 && x2 >= 0.5); };
                 tileType.trackDirectionEquation = function (x, y) { return ({ dx: 0, dy: -1 }); };
+                tileType.clockWiseRotationTileName = "TrackHorizontal";
             });
         },
         enumerable: false,
@@ -1669,6 +1779,7 @@ var TileType = /** @class */ (function () {
                 tileType.trackDirectionEquation = TileType.GetCurveTrackDirectionEquation(1, 1);
                 tileType.trackCurveHorizontalDirection = 1;
                 tileType.trackCurveVerticalDirection = 1;
+                tileType.clockWiseRotationTileName = "TrackCurveDownLeft";
             });
         },
         enumerable: false,
@@ -1683,6 +1794,7 @@ var TileType = /** @class */ (function () {
                 tileType.trackDirectionEquation = TileType.GetCurveTrackDirectionEquation(-1, 1);
                 tileType.trackCurveHorizontalDirection = -1;
                 tileType.trackCurveVerticalDirection = 1;
+                tileType.clockWiseRotationTileName = "TrackCurveUpLeft";
             });
         },
         enumerable: false,
@@ -1697,6 +1809,7 @@ var TileType = /** @class */ (function () {
                 tileType.trackDirectionEquation = TileType.GetCurveTrackDirectionEquation(-1, -1);
                 tileType.trackCurveHorizontalDirection = -1;
                 tileType.trackCurveVerticalDirection = -1;
+                tileType.clockWiseRotationTileName = "TrackCurveUpRight";
             });
         },
         enumerable: false,
@@ -1711,6 +1824,7 @@ var TileType = /** @class */ (function () {
                 tileType.trackDirectionEquation = TileType.GetCurveTrackDirectionEquation(1, -1);
                 tileType.trackCurveHorizontalDirection = 1;
                 tileType.trackCurveVerticalDirection = -1;
+                tileType.clockWiseRotationTileName = "TrackCurveDownRight";
             });
         },
         enumerable: false,
@@ -1724,6 +1838,7 @@ var TileType = /** @class */ (function () {
                 tileType.trackCrossedEquation = function (x1, y1, x2, y2) { return ((y1 >= 0.5 && y2 <= 0.5) || (y1 <= 0.5 && y2 >= 0.5)) && x1 >= 0.5 && x2 >= 0.5; };
                 tileType.trackDirectionEquation = function (x, y) { return ({ dx: 1, dy: 0 }); };
                 tileType.isTrackCap = true;
+                tileType.clockWiseRotationTileName = "TrackTopCap";
             });
         },
         enumerable: false,
@@ -1737,6 +1852,7 @@ var TileType = /** @class */ (function () {
                 tileType.trackCrossedEquation = function (x1, y1, x2, y2) { return ((x1 >= 0.5 && x2 <= 0.5) || (x1 <= 0.5 && x2 >= 0.5)) && y1 >= 0.5 && y2 >= 0.5; };
                 tileType.trackDirectionEquation = function (x, y) { return ({ dx: 0, dy: -1 }); };
                 tileType.isTrackCap = true;
+                tileType.clockWiseRotationTileName = "TrackRightCap";
             });
         },
         enumerable: false,
@@ -1750,6 +1866,7 @@ var TileType = /** @class */ (function () {
                 tileType.trackCrossedEquation = function (x1, y1, x2, y2) { return ((y1 >= 0.5 && y2 <= 0.5) || (y1 <= 0.5 && y2 >= 0.5)) && x1 <= 0.5 && x2 <= 0.5; };
                 tileType.trackDirectionEquation = function (x, y) { return ({ dx: 1, dy: 0 }); };
                 tileType.isTrackCap = true;
+                tileType.clockWiseRotationTileName = "TrackBottomCap";
             });
         },
         enumerable: false,
@@ -1763,6 +1880,7 @@ var TileType = /** @class */ (function () {
                 tileType.trackCrossedEquation = function (x1, y1, x2, y2) { return ((x1 >= 0.5 && x2 <= 0.5) || (x1 <= 0.5 && x2 >= 0.5)) && y1 <= 0.5 && y2 <= 0.5; };
                 tileType.trackDirectionEquation = function (x, y) { return ({ dx: 0, dy: -1 }); };
                 tileType.isTrackCap = true;
+                tileType.clockWiseRotationTileName = "TrackLeftCap";
             });
         },
         enumerable: false,
@@ -1778,6 +1896,7 @@ var TileType = /** @class */ (function () {
         var solidity = [Solidity.LeftWall, Solidity.Bottom, Solidity.RightWall, Solidity.Top][y];
         return TileType.GetAnimatedTileType("OneWay" + direction.name, "oneway", frames, 4, solidity, TargetLayer.semisolid, function (tileType) {
             tileType.isExemptFromSlime = true;
+            tileType.clockWiseRotationTileName = "OneWay" + direction.Clockwise().name;
         });
     };
     Object.defineProperty(TileType, "OneWayRight", {
@@ -1814,42 +1933,42 @@ var TileType = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(TileType, "ArrowRight", {
-        get: function () { return TileType.GetTileType("ArrowRight", "arrows", 0, 0, Solidity.None, TargetLayer.wire, function (tileType) { }); },
+        get: function () { return TileType.GetTileType("ArrowRight", "arrows", 0, 0, Solidity.None, TargetLayer.wire, function (tileType) { tileType.clockWiseRotationTileName = "ArrowDownRight"; }); },
         enumerable: false,
         configurable: true
     });
     Object.defineProperty(TileType, "ArrowUpRight", {
-        get: function () { return TileType.GetTileType("ArrowUpRight", "arrows", 1, 0, Solidity.None, TargetLayer.wire, function (tileType) { }); },
+        get: function () { return TileType.GetTileType("ArrowUpRight", "arrows", 1, 0, Solidity.None, TargetLayer.wire, function (tileType) { tileType.clockWiseRotationTileName = "ArrowRight"; }); },
         enumerable: false,
         configurable: true
     });
     Object.defineProperty(TileType, "ArrowUp", {
-        get: function () { return TileType.GetTileType("ArrowUp", "arrows", 2, 0, Solidity.None, TargetLayer.wire, function (tileType) { }); },
+        get: function () { return TileType.GetTileType("ArrowUp", "arrows", 2, 0, Solidity.None, TargetLayer.wire, function (tileType) { tileType.clockWiseRotationTileName = "ArrowUpRight"; }); },
         enumerable: false,
         configurable: true
     });
     Object.defineProperty(TileType, "ArrowUpLeft", {
-        get: function () { return TileType.GetTileType("ArrowUpLeft", "arrows", 3, 0, Solidity.None, TargetLayer.wire, function (tileType) { }); },
+        get: function () { return TileType.GetTileType("ArrowUpLeft", "arrows", 3, 0, Solidity.None, TargetLayer.wire, function (tileType) { tileType.clockWiseRotationTileName = "ArrowUp"; }); },
         enumerable: false,
         configurable: true
     });
     Object.defineProperty(TileType, "ArrowLeft", {
-        get: function () { return TileType.GetTileType("ArrowLeft", "arrows", 4, 0, Solidity.None, TargetLayer.wire, function (tileType) { }); },
+        get: function () { return TileType.GetTileType("ArrowLeft", "arrows", 4, 0, Solidity.None, TargetLayer.wire, function (tileType) { tileType.clockWiseRotationTileName = "ArrowUpLeft"; }); },
         enumerable: false,
         configurable: true
     });
     Object.defineProperty(TileType, "ArrowDownLeft", {
-        get: function () { return TileType.GetTileType("ArrowDownLeft", "arrows", 5, 0, Solidity.None, TargetLayer.wire, function (tileType) { }); },
+        get: function () { return TileType.GetTileType("ArrowDownLeft", "arrows", 5, 0, Solidity.None, TargetLayer.wire, function (tileType) { tileType.clockWiseRotationTileName = "ArrowLeft"; }); },
         enumerable: false,
         configurable: true
     });
     Object.defineProperty(TileType, "ArrowDown", {
-        get: function () { return TileType.GetTileType("ArrowDown", "arrows", 6, 0, Solidity.None, TargetLayer.wire, function (tileType) { }); },
+        get: function () { return TileType.GetTileType("ArrowDown", "arrows", 6, 0, Solidity.None, TargetLayer.wire, function (tileType) { tileType.clockWiseRotationTileName = "ArrowDownLeft"; }); },
         enumerable: false,
         configurable: true
     });
     Object.defineProperty(TileType, "ArrowDownRight", {
-        get: function () { return TileType.GetTileType("ArrowDownRight", "arrows", 7, 0, Solidity.None, TargetLayer.wire, function (tileType) { }); },
+        get: function () { return TileType.GetTileType("ArrowDownRight", "arrows", 7, 0, Solidity.None, TargetLayer.wire, function (tileType) { tileType.clockWiseRotationTileName = "ArrowDown"; }); },
         enumerable: false,
         configurable: true
     });

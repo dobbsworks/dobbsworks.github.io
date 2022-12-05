@@ -8,6 +8,9 @@ class LittleJelly extends Enemy {
     frameCounter = 0;
     animateTimer = 0;
     wasOnGround = false;
+    rowNumber = 0;
+
+    numberOfGroundFrames = 20;
 
     Update(): void {
         if (!this.WaitForOnScreen()) return;
@@ -22,16 +25,18 @@ class LittleJelly extends Enemy {
             if (this.isOnGround) {
                 if (!this.wasOnGround) {
                     // just landed
-                    audioHandler.PlaySound("stuck-jump", true);
-                    this.CreateSlimeGround();
+                    this.OnGroundLanding();
                     this.animateTimer = 1;
                 }
                 this.jumpPrepTimer++;
                 this.dx *= 0.5;
-                if (this.jumpPrepTimer > 20) {
+
+                this.WhileOnGround();
+
+                if (this.jumpPrepTimer > this.numberOfGroundFrames) {
                     this.jumpPrepTimer = 0;
                     this.dy = -2.5;
-                    //this.animateTimer = 1;
+                    this.parentSprite = null;
                 }
                 this.wasOnGround = true;
                 if (player) {
@@ -57,13 +62,23 @@ class LittleJelly extends Enemy {
         }
     }
 
-    CreateSlimeGround(): void {
-        let xs = [this.xMid, this.xMid - 6, this.xMid + 6].map(a => Math.floor(a / this.layer.tileWidth)).filter(Utility.OnlyUnique);
-        let y = Math.floor((this.yBottom + 1) / this.layer.tileHeight);
-        xs.forEach(x => this.AttemptToSlime(x, y));
+    WhileOnGround(): void { }
+    OnGroundLanding(): void {
+        audioHandler.PlaySound("stuck-jump", true);
+        this.CreateSlimeGround(TileType.Slime);
     }
 
-    AttemptToSlime(xIndex: number, yIndex: number) {
+    CreateSlimeGround(slimeGround: TileType): void {
+        let xs = [this.xMid, this.xMid - 6, this.xMid + 6].map(a => Math.floor(a / this.layer.tileWidth)).filter(Utility.OnlyUnique);
+        let y = Math.floor((this.yBottom + 1) / this.layer.tileHeight);
+        xs.forEach(x => this.AttemptToSlime(x, y, slimeGround));
+    }
+
+    CanSlimeTile(tile: LevelTile): boolean {
+        return !tile.tileType.isExemptFromSlime;
+    }
+
+    AttemptToSlime(xIndex: number, yIndex: number, slimeGround: TileType) {
         let tile = this.layer.GetTileByIndex(xIndex, yIndex);
         let semisolid = tile.GetSemisolidNeighbor();
 
@@ -72,13 +87,13 @@ class LittleJelly extends Enemy {
 
         if (tile.tileType == TileType.Air) {
             if (semisolid && semisolid.tileType.solidity == Solidity.Top) {
-                if (!semisolid.tileType.isExemptFromSlime) {
-                    semisolid.layer.SetTile(xIndex, yIndex, TileType.Slime);
+                if (this.CanSlimeTile(semisolid)) {
+                    semisolid.layer.SetTile(xIndex, yIndex, slimeGround);
                 }
             }
         } else {
-            if (tile.tileType.solidity == Solidity.Block && !tile.tileType.isExemptFromSlime) {
-                tile.layer.map?.semisolidLayer.SetTile(xIndex, yIndex, TileType.Slime);
+            if (tile.tileType.solidity == Solidity.Block && this.CanSlimeTile(tile)) {
+                tile.layer.map?.semisolidLayer.SetTile(xIndex, yIndex, slimeGround);
             }
         }
     }
@@ -89,6 +104,8 @@ class LittleJelly extends Enemy {
         this.dx = 0;
         this.dy = 0;
         this.OnDead();
+
+        if (player) player.isSpinJumping = false;
     }
 
     GetFrameData(frameNum: number): FrameData {
@@ -99,7 +116,7 @@ class LittleJelly extends Enemy {
             if (frame > 9) frame = 9;
         }
         return {
-            imageTile: tiles["slime"][frame][0],
+            imageTile: tiles["slime"][frame][this.rowNumber],
             xFlip: this.direction == 1,
             yFlip: false,
             xOffset: 1,
@@ -107,4 +124,63 @@ class LittleJelly extends Enemy {
         };
     }
 
+}
+
+class ChillyJelly extends LittleJelly {
+    numberOfGroundFrames = 150;
+    rowNumber = 1;
+    WhileOnGround(): void {
+        if (this.jumpPrepTimer == 1) {
+            let frost = this.layer.sprites.filter(a => a instanceof FrostEffect && a.targetSprite == this);
+            if (frost.length == 0) {
+                let frostSprite = new FrostEffect(this.x, this.y, this.layer, []);
+                frostSprite.targetSprite = this;
+                this.layer.sprites.push(frostSprite);
+            }
+        }
+    }
+    OnGroundLanding(): void {
+        audioHandler.PlaySound("stuck-jump", true);
+        this.CreateSlimeGround(TileType.IceTop);
+        // let frost = this.layer.sprites.filter(a => a instanceof FrostEffect && a.targetSprite == this);
+        // if (player) {
+        //     let frostSpeed = (player.xMid < this.xMid ? -1 : 1)
+        //     frost.forEach(a => a.dx = frostSpeed * 1);
+        //     frost.forEach(a => { if (a instanceof FrostEffect) a.targetSprite = null });
+        // }
+    }
+}
+
+class FrostEffect extends Enemy {
+    height = 18;
+    width = 25;
+    killedByProjectiles = false;
+    respectsSolidTiles = false;
+
+    timer = 0;
+    targetSprite: Sprite | null = null;
+
+    Update(): void {
+        if (this.targetSprite) {
+            this.x = this.targetSprite.xMid - this.width / 2;
+            this.y = this.targetSprite.yMid - this.height / 2;
+            if (!this.targetSprite.isActive) this.isActive = false;
+        } else {
+            this.timer++;
+            this.ApplyInertia();
+            if (this.timer > 60) {
+                this.isActive = false;
+            }
+        }
+    }
+
+    GetFrameData(frameNum: number): FrameData {
+        return {
+            imageTile: tiles["frostEffect"][Math.floor(frameNum / 5) % 8][0],
+            xFlip: false,
+            yFlip: false,
+            xOffset: 0,
+            yOffset: 3
+        }
+    }
 }

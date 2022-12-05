@@ -212,7 +212,7 @@ class AvatarCustomizationMenu extends Menu {
 
     GetAllFocusElements(): AvatarLayerElement[] {
         let ret: AvatarLayerElement[] = []
-        for (let i = 0; i < 21; i++) {
+        for (let i = 0; i < 29; i++) {
             ret.push(new AvatarLayerElement(i, AvatarCustomizationMenu.GetFocusImage(i)));
         }
         return ret;
@@ -234,6 +234,14 @@ class AvatarCustomizationMenu extends Menu {
         return ret;
     }
 
+    static GetImageFrom3CharCode(code: string): ImageTile {
+        if (code.length != 3) throw "Invalid avatar code [" + code + "]";
+        let segmentIndex = +(code[0]);
+        let func = [AvatarCustomizationMenu.GetBackImage, AvatarCustomizationMenu.GetFocusImage, AvatarCustomizationMenu.GetFrameImage][segmentIndex];
+        
+        let id = Utility.IntFromB64(code.substring(1));
+        return func(id);
+    }
 
     static GetFocusImage(id: number): ImageTile {
         return tiles["avatars"][id % 16][Math.floor(id / 16)]

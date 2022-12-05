@@ -35,6 +35,7 @@ var Biggle = /** @class */ (function (_super) {
         this.ApplyInertia();
         this.ReactToWater();
     };
+    Biggle.prototype.OnSpinBounce = function () { this.ReplaceWithSpriteType(Poof); };
     Biggle.prototype.OnBounce = function () {
         var _this = this;
         this.isActive = false;

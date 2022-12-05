@@ -23,6 +23,7 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
         _this.levelOptionsPanel = null;
         _this.searchButtons = [];
         _this.isDataLoadInProgress = false;
+        _this.toggles = [];
         _this.backgroundColor = "#2171cc";
         _this.backgroundColor2 = "#677327";
         _this.includeGlitchLevels = false;
@@ -63,14 +64,15 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
         this.levelOptionsPanel.backColor = "#1138";
         this.levelOptionsPanel.layout = "vertical";
         ret.push(this.levelOptionsPanel);
-        ret.push(new FilterToggle(this, tiles["spider"][0][0], tiles["spider"][0][1], function (isOn) {
+        this.toggles.push(new FilterToggle(this, tiles["spider"][0][0], tiles["spider"][0][1], function (isOn) {
             _this.includeGlitchLevels = isOn;
         }, this.includeGlitchLevels));
         var clearedToggle = new FilterToggle(this, tiles["pig"][5][0], tiles["pig"][0][0], function (isOn) {
             _this.includeClearedLevels = isOn;
         }, this.includeClearedLevels);
         clearedToggle.targetX -= 200;
-        ret.push(clearedToggle);
+        this.toggles.push(clearedToggle);
+        ret.push.apply(ret, this.toggles);
         return ret;
     };
     LevelBrowseMenu.Reset = function () {
@@ -118,6 +120,7 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
             this.levelOptionsPanel.targetX = 1000;
         if (this.levelPanel)
             this.levelPanel.targetX = this.baseX;
+        this.toggles.forEach(function (a) { return a.targetX += 1000; });
         this.backButton.isHidden = false;
     };
     LevelBrowseMenu.prototype.ShowLevelDetails = function () {
@@ -128,6 +131,7 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
             this.levelPanel.targetX = this.baseLeftX;
             this.levelOptionsPanel.targetX = this.baseRightX;
             this.levelOptionsPanel.children = [];
+            this.toggles.forEach(function (a) { return a.targetX -= 1000; });
             var buttons = new Panel(0, 0, this.levelOptionsPanel.width, 50);
             buttons.margin = 0;
             var backButton = new Button(0, 0, 200, 50);
@@ -178,7 +182,7 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
                         editorHandler.SwitchToPlayMode();
                         MenuHandler.SubMenu(BlankMenu);
                         DataService.LogLevelPlayStarted(levelListing.level.code);
-                        currentLevelCode = levelListing.level.code;
+                        currentLevelListing = levelListing;
                         levelListing.isStarted = true;
                         _this.PopulateLevelPanel();
                     }

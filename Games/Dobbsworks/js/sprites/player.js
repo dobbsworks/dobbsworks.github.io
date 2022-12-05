@@ -35,10 +35,13 @@ var Player = /** @class */ (function (_super) {
         _this.dxFromBumper = 0;
         _this.dyFromBumper = 0;
         _this.bumperTimer = 0;
+        _this.isSpinJumping = false;
         _this.isTouchingStickyWall = false;
         _this.wallClingDirection = -1;
         _this.wallDragDirection = 0;
         _this.canMotorHold = false;
+        _this.twinkleCount = 0;
+        _this.twinleTimer = 0;
         _this.maxBreath = 600;
         _this.currentBreath = 600;
         _this.breathTimer = 0; // current breath only recovers after breath timer runs out
@@ -88,7 +91,7 @@ var Player = /** @class */ (function (_super) {
         this.PushByAutoscroll();
         this.ReactToPlatformsAndSolids();
         this.SlideDownSlopes();
-        if (!this.yoyoTarget)
+        if (!this.yoyoTarget || !this.yoyoTarget.isActive)
             this.MoveByVelocity();
         this.UpdateHeldItemLocation();
         this.ReactToSpikes();
@@ -101,11 +104,23 @@ var Player = /** @class */ (function (_super) {
         // }
         if (!this.yoyoTarget)
             this.HandleDoors();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true))
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true) && this.age > 1)
             this.OnPlayerDead();
         this.replayHandler.StoreFrame();
+        if (this.twinkleCount > 0) {
+            if (this.twinleTimer <= 0) {
+                this.twinkleCount--;
+                this.twinleTimer = 4;
+                var twinkle = new Twinkle(this.x + Math.random() * this.width - 5, this.yBottom - Math.random() * 5, this.layer, []);
+                this.layer.sprites.push(twinkle);
+            }
+            else {
+                this.twinleTimer--;
+            }
+        }
     };
     Player.prototype.PlayerMovement = function () {
+        var _this = this;
         var _a, _b, _c, _d, _e;
         if (this.yoyoTimer > 0) {
             this.yoyoTimer--;
@@ -163,12 +178,12 @@ var Player = /** @class */ (function (_super) {
             if (map.lavaLevel.currentY !== -1) {
                 if (this.yBottom + this.floatingPointOffset > map.lavaLevel.currentY) {
                     this.dy -= 3;
-                    this.OnPlayerDead();
+                    this.OnPlayerHurt();
                 }
             }
         }
         if (this.isInWater && !wasInWater) {
-            if (waterTileAtFoot || (globalWaterHeight != -1 && globalWaterHeight < this.yBottom)) {
+            if ((waterTileAtFoot === null || waterTileAtFoot === void 0 ? void 0 : waterTileAtFoot.isSwimmable) || (globalWaterHeight !== -1 && globalWaterHeight < this.yBottom)) {
                 this.dy = 0;
             }
             else {
@@ -180,6 +195,7 @@ var Player = /** @class */ (function (_super) {
         if (this.isOnGround || this.isClimbing || ((this.isInWater || this.isInQuicksand) && this.heldItem == null) || this.isTouchingStickyWall || ((_d = this.heldItem) === null || _d === void 0 ? void 0 : _d.canHangFrom)) {
             if (this.age > 1)
                 this.coyoteTimer = 0;
+            this.isSpinJumping = false;
         }
         this.coyoteTimer++;
         var isJumpHeld = KeyboardHandler.IsKeyPressed(KeyAction.Action1, false);
@@ -192,7 +208,8 @@ var Player = /** @class */ (function (_super) {
                     this.dy = -1;
             }
             // below controls how many frames of upward velocity we get
-            if (this.jumpTimer > 18)
+            var numJumpFrames = 18;
+            if (this.jumpTimer > numJumpFrames)
                 this.jumpTimer = -1;
             // jumptimer 14
         }
@@ -214,7 +231,17 @@ var Player = /** @class */ (function (_super) {
             this.jumpBufferTimer = 0;
         if (this.jumpBufferTimer > 3)
             this.jumpBufferTimer = -1;
-        if (this.jumpBufferTimer > -1 && (this.coyoteTimer < 5 || this.IsNeighboringWallJumpTiles()) && this.forcedJumpTimer <= 0) {
+        var spinJumper = this.layer.sprites.find(function (a) { return a instanceof SpinRing && a.Overlaps(_this); });
+        if (this.jumpBufferTimer > -1 && (this.coyoteTimer < 5 || this.IsNeighboringWallJumpTiles() || (spinJumper && this.heldItem == null)) && this.forcedJumpTimer <= 0) {
+            if (spinJumper) {
+                this.isSpinJumping = true;
+                audioHandler.PlaySound("spinRing", true);
+                this.twinkleCount = 4;
+                spinJumper.OnPlayerUseSpinRing();
+            }
+            else {
+                this.isSpinJumping = false;
+            }
             this.Jump();
             this.isSliding = false;
         }
@@ -262,12 +289,16 @@ var Player = /** @class */ (function (_super) {
         if (this.touchedCeilings.some(function (a) { return a.tileType.isHangable; })) {
             if (KeyboardHandler.IsKeyPressed(KeyAction.Action2, false) && this.heldItem == null) {
                 this.isHanging = true;
+                this.dxFromPlatform = 0;
                 this.isSliding = false;
                 this.dy = 0;
                 if (!leftPressed && this.dx < 0)
                     this.dx *= 0.8;
                 if (!rightPressed && this.dx > 0)
                     this.dx *= 0.8;
+                var conveyorSpeeds = this.touchedCeilings.map(function (a) { return a.tileType.conveyorSpeed; }).filter(function (a) { return a !== 0; });
+                if (conveyorSpeeds.length)
+                    this.dxFromPlatform = -Math.max.apply(Math, conveyorSpeeds);
             }
         }
         if (this.isTouchingStickyWall) {
@@ -292,6 +323,7 @@ var Player = /** @class */ (function (_super) {
         }
         else if (!this.isSliding) {
             if (this.isClimbing) {
+                this.dxFromPlatform = 0;
                 this.parentSprite = null;
                 var canClimbUp = this.layer.GetTileByPixel(this.xMid, this.yMid - 0.5).tileType.isClimbable;
                 if (!canClimbUp && isAtLadderTop)
@@ -353,6 +385,9 @@ var Player = /** @class */ (function (_super) {
                 }
             }
         }
+        if (this.isInWater && Math.abs(this.dy) > this.moveSpeed) {
+            this.dy *= 0.9;
+        }
         if (this.isInQuicksand) {
             this.dx *= 0.8;
             this.dy *= 0.8;
@@ -401,8 +436,15 @@ var Player = /** @class */ (function (_super) {
         // if (this.coyoteTimer > 0) console.log("COYOTE TIME", this.coyoteTimer);
         this.jumpBufferTimer = -1;
         this.coyoteTimer = 999999;
-        this.dy = Math.abs(this.dx) > 0.3 ? -1.5 : -1.2;
+        this.dy = (Math.abs(this.dx) > 0.3 || this.isSpinJumping) ? -1.5 : -1.2;
         var isOnSlime = this.standingOn.some(function (a) { return !a.tileType.canJumpFrom; });
+        if (this.parentSprite instanceof Splatform) {
+            isOnSlime = true;
+            if (this.standingOn.every(function (a) { return !a.tileType.canJumpFrom; })) {
+                // ONLY standing on slime tiles
+                this.parentSprite.PlayerAttemptJump();
+            }
+        }
         if (this.isInWater) {
             this.swimTimer = 0;
             if (KeyboardHandler.IsKeyPressed(KeyAction.Down, false))
@@ -584,14 +626,27 @@ var Player = /** @class */ (function (_super) {
             if (!aboutToOverlapFromAbove && sprite instanceof RollingSnailShell) {
                 aboutToOverlapFromAbove = this.yBottom > sprite.y && this.yBottom - 3 < sprite.y;
             }
-            var landingOnTop = sprite.canBeBouncedOn && aboutToOverlapFromAbove && isHorizontalOverlap;
+            var landingOnTop = aboutToOverlapFromAbove && isHorizontalOverlap;
             if (sprite instanceof Enemy) {
                 if (sprite.framesSinceThrown > 0 && sprite.framesSinceThrown < 25)
                     continue; // can't bounce on items that have just been thrown
-                if (landingOnTop) {
+                if (landingOnTop && sprite.canBeBouncedOn) {
                     this.Bounce();
-                    sprite.OnBounce();
+                    if (this.isSpinJumping) {
+                        sprite.OnSpinBounce();
+                    }
+                    else {
+                        sprite.OnBounce();
+                    }
                     sprite.SharedOnBounce(); //enemy-specific method
+                }
+                else if (landingOnTop && sprite.canSpinBounceOn && this.isSpinJumping) {
+                    this.Bounce();
+                    audioHandler.PlaySound("spinBounce", true);
+                    var particle = new Pow(this.x, this.y, this.layer, []);
+                    particle.x = this.xMid - particle.width / 2;
+                    particle.y = this.yBottom - particle.height / 2;
+                    this.layer.sprites.push(particle);
                 }
                 else if (sprite.canStandOn && currentlyAbove && isHorizontalOverlap) {
                 }
@@ -609,7 +664,7 @@ var Player = /** @class */ (function (_super) {
                 }
             }
             else {
-                if (landingOnTop) {
+                if (landingOnTop && sprite.canBeBouncedOn) {
                     this.Bounce();
                     sprite.OnBounce();
                 }
@@ -630,12 +685,12 @@ var Player = /** @class */ (function (_super) {
             if (this.standingOn.every(function (a) { return a.tileType.instaKill; }))
                 isDead = true;
         }
-        if (this.touchedLeftWalls.length > 0 && this.touchedLeftWalls.every(function (a) { return a instanceof LevelTile && a.tileType.hurtOnSides; })) {
+        if (this.touchedLeftWalls.length > 0 && this.touchedLeftWalls.every(function (a) { return a instanceof LevelTile && a.tileType.hurtOnRight; })) {
             isHurt = true;
             if (this.touchedLeftWalls.every(function (a) { return a instanceof LevelTile && a.tileType.instaKill; }))
                 isDead = true;
         }
-        if (this.touchedRightWalls.length > 0 && this.touchedRightWalls.every(function (a) { return a instanceof LevelTile && a.tileType.hurtOnSides; })) {
+        if (this.touchedRightWalls.length > 0 && this.touchedRightWalls.every(function (a) { return a instanceof LevelTile && a.tileType.hurtOnLeft; })) {
             isHurt = true;
             if (this.touchedRightWalls.every(function (a) { return a instanceof LevelTile && a.tileType.instaKill; }))
                 isDead = true;
@@ -696,9 +751,11 @@ var Player = /** @class */ (function (_super) {
         this.OnDead();
         this.isActive = false;
         // log player death
-        var newDeathCount = StorageService.IncrementDeathCounter(currentLevelCode);
+        var newDeathCount = StorageService.IncrementDeathCounter((currentLevelListing === null || currentLevelListing === void 0 ? void 0 : currentLevelListing.level.code) || "");
         var deadPlayer = new DeadPlayer(this, newDeathCount);
         editorHandler.bankedCheckpointTime += this.age;
+        if (levelGenerator)
+            levelGenerator.bankedClearTime += this.age;
         this.layer.sprites.push(deadPlayer);
         audioHandler.PlaySound("dead", true);
         camera.autoscrollX = 0;
@@ -831,6 +888,7 @@ var Player = /** @class */ (function (_super) {
                     this.heldItem = null;
                     this.throwTimer = 0;
                     audioHandler.PlaySound("throw", true);
+                    this.isSpinJumping = false;
                 }
             }
             else if (this.heldItem && this.heldItem.canHangFrom) {
@@ -937,6 +995,17 @@ var Player = /** @class */ (function (_super) {
             }
             else {
                 tile = tiles[sourceImage][3][row];
+                if (this.isSpinJumping) {
+                    var spinTiles = [
+                        tiles[sourceImage][3][row],
+                        tiles[sourceImage][0][3],
+                        tiles[sourceImage][3][row],
+                        tiles[sourceImage][1][4],
+                    ];
+                    tile = spinTiles[Math.floor(frameNum / 4) % 4];
+                    if (Math.floor(frameNum / 4) % 4 == 2)
+                        xFlip = !xFlip;
+                }
             }
         }
         if (this.isOnGround && this.targetDirection == 0 && !this.heldItem) {
@@ -1004,14 +1073,20 @@ var DeadPlayer = /** @class */ (function (_super) {
             currentMap.fadeOutRatio = (this.age - 45) / 14;
         }
         if (this.age > 60) {
-            editorHandler.SwitchToEditMode(true);
-            editorHandler.SwitchToPlayMode();
-            if (camera.target) {
-                camera.x = camera.target.xMid;
-                camera.y = camera.target.yMid;
+            if (levelGenerator) {
+                this.isActive = false;
+                levelGenerator.OnLose();
             }
-            camera.targetX = camera.x;
-            camera.targetY = camera.y;
+            else {
+                editorHandler.SwitchToEditMode(true);
+                editorHandler.SwitchToPlayMode();
+                if (camera.target) {
+                    camera.x = camera.target.xMid;
+                    camera.y = camera.target.yMid;
+                }
+                camera.targetX = camera.x;
+                camera.targetY = camera.y;
+            }
         }
     };
     DeadPlayer.prototype.GetFrameData = function (frameNum) {

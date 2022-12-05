@@ -23,11 +23,23 @@ var Sparky = /** @class */ (function (_super) {
         _this.anchor = null;
         _this.killedByProjectiles = false;
         _this.timer = 0;
+        _this.pathingType = null;
         return _this;
     }
     Sparky.prototype.Update = function () {
         if (!this.WaitForOnScreen()) {
             return;
+        }
+        if (this.pathingType == null) {
+            var currentTile = this.layer.GetTileByPixel(this.xMid, this.yMid).GetWireNeighbor();
+            if (currentTile && currentTile.tileType !== TileType.Air) {
+                if (currentTile.tileType.canBePowered) {
+                    this.pathingType = "wire";
+                }
+                else if (currentTile.tileType.isTrack) {
+                    this.pathingType = "track";
+                }
+            }
         }
         var speed = 0.5;
         if (this.timer % 24 === 0) {
@@ -39,35 +51,28 @@ var Sparky = /** @class */ (function (_super) {
                 var targetX = Math.floor(this.xMid / 12) + dir.x;
                 var targetY = Math.floor(this.yMid / 12) + dir.y;
                 var tile = this.layer.GetTileByIndex(targetX, targetY).GetWireNeighbor();
-                if ((tile === null || tile === void 0 ? void 0 : tile.tileType) != TileType.Air) {
-                    this.dir = dir;
-                    break;
+                if (tile && tile.tileType != TileType.Air) {
+                    if (this.pathingType == "wire" && tile.tileType.canBePowered) {
+                        this.dir = dir;
+                        break;
+                    }
+                    if (this.pathingType == "track" && tile.tileType.isTrack) {
+                        var xPoint = 1 - ((dir.x + 1) / 2);
+                        var yPoint = 1 - ((dir.y + 1) / 2);
+                        var landingPoint = tile.tileType.trackEquation(xPoint, yPoint);
+                        if (landingPoint.x == xPoint && landingPoint.y == yPoint) {
+                            this.dir = dir;
+                            break;
+                        }
+                        else {
+                        }
+                    }
                 }
             }
         }
         this.timer++;
-        // let targetX = +((this.x + this.dir.x * speed).toFixed(3));
-        // let targetY = +((this.y + this.dir.y * speed).toFixed(3));
-        // let currentTileX = Math.floor((this.x + this.width/2 + this.dir.x * 3) / 12);
-        // let currentTileY = Math.floor((this.y + this.height/2 + this.dir.x * 3) / 12);
-        // let targetTileX = Math.floor((targetX + this.width/2 + this.dir.x * 3) / 12);
-        // let targetTileY = Math.floor((targetY + this.height/2 + this.dir.y * 3) / 12);
-        // let targetTile = this.layer.GetTileByIndex(targetTileX, targetTileY).GetWireNeighbor();
-        // let hitEndOfLine = false;
-        // let changingTile = currentTileX != targetTileX || currentTileY != targetTileY;
-        // console.log(currentTileX, targetTileX )
-        // if (changingTile && targetTile?.tileType == TileType.Air) {
-        //     hitEndOfLine = true;
-        // }
-        // if (hitEndOfLine) {
-        //     this.dir = this.dir.Clockwise();
-        //     hitEndOfLine = true;
-        //     this.dx = currentTileX * 12 + 3 - this.x;
-        //     this.dy = currentTileY * 12 + 3 - this.y;
-        // } else {
         this.dx = speed * this.dir.x;
         this.dy = speed * this.dir.y;
-        //}
     };
     Sparky.prototype.GetFrameData = function (frameNum) {
         var frame = Math.floor(frameNum / 4) % 4;

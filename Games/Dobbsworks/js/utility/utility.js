@@ -68,6 +68,15 @@ var Utility = /** @class */ (function () {
         }
         return currentClosest;
     };
+    Utility.RandFrom = function (list) {
+        if (list.length == 0) {
+            throw "RandFrom called on empty list";
+        }
+        if (list.length == 0)
+            return list[0];
+        var index = Math.floor(Math.random() * list.length);
+        return list[index];
+    };
     Utility.b64Str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     return Utility;
 }());

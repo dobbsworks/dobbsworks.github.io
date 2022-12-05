@@ -4,6 +4,7 @@ class Lurchin extends Enemy {
     public width: number = 24;
     respectsSolidTiles = true;
     canBeBouncedOn = false;
+    canSpinBounceOn = true;
 
     facing: Direction = Direction.Left;
     wallPauseTimer = 0;

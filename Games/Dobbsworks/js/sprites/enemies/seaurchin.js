@@ -20,6 +20,7 @@ var Lurchin = /** @class */ (function (_super) {
         _this.width = 24;
         _this.respectsSolidTiles = true;
         _this.canBeBouncedOn = false;
+        _this.canSpinBounceOn = true;
         _this.facing = Direction.Left;
         _this.wallPauseTimer = 0;
         return _this;

@@ -40,7 +40,7 @@ var Coin = /** @class */ (function (_super) {
             if (player_1 && player_1.Overlaps(this)) {
                 this.isTouched = true;
                 audioHandler.PlaySound(this.sound, false);
-                if (this instanceof Dobbloon) {
+                if (this instanceof Dabbloon) {
                     this.layer.sprites.push(new Points(this.xMid - 15 / 2, this.y, this.layer, []));
                 }
             }
@@ -65,9 +65,9 @@ var Coin = /** @class */ (function (_super) {
     };
     return Coin;
 }(Sprite));
-var Dobbloon = /** @class */ (function (_super) {
-    __extends(Dobbloon, _super);
-    function Dobbloon() {
+var Dabbloon = /** @class */ (function (_super) {
+    __extends(Dabbloon, _super);
+    function Dabbloon() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.height = 14;
         _this.width = 14;
@@ -76,5 +76,5 @@ var Dobbloon = /** @class */ (function (_super) {
         _this.sound = "dobbloon";
         return _this;
     }
-    return Dobbloon;
+    return Dabbloon;
 }(Coin));

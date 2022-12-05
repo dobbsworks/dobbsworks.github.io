@@ -19,10 +19,14 @@ class Player extends Sprite {
     private dxFromBumper = 0;
     private dyFromBumper = 0;
     private bumperTimer = 0;
+    public isSpinJumping = false;
     private isTouchingStickyWall = false;
     private wallClingDirection: -1 | 1 = -1;
     private wallDragDirection: -1 | 1 | 0 = 0;
     canMotorHold = false;
+
+    twinkleCount = 0;
+    twinleTimer = 0;
 
     public maxBreath: number = 600;
     public currentBreath: number = 600;
@@ -77,7 +81,7 @@ class Player extends Sprite {
         this.PushByAutoscroll();
         this.ReactToPlatformsAndSolids();
         this.SlideDownSlopes();
-        if (!this.yoyoTarget) this.MoveByVelocity();
+        if (!this.yoyoTarget || !this.yoyoTarget.isActive) this.MoveByVelocity();
         this.UpdateHeldItemLocation();
         this.ReactToSpikes();
         this.KeepInBounds();
@@ -88,8 +92,19 @@ class Player extends Sprite {
         //     this.dx *= 0.5;
         // }
         if (!this.yoyoTarget) this.HandleDoors();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true)) this.OnPlayerDead();
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true) && this.age > 1) this.OnPlayerDead();
         this.replayHandler.StoreFrame()
+
+        if (this.twinkleCount > 0) {
+            if (this.twinleTimer <= 0) {
+                this.twinkleCount--;
+                this.twinleTimer = 4;
+                let twinkle = new Twinkle(this.x + Math.random() * this.width - 5, this.yBottom - Math.random() * 5, this.layer, []);
+                this.layer.sprites.push(twinkle);
+            } else {
+                this.twinleTimer--;
+            }
+        }
     }
 
     PlayerMovement(): void {
@@ -151,14 +166,14 @@ class Player extends Sprite {
             if (map.lavaLevel.currentY !== -1) {
                 if (this.yBottom + this.floatingPointOffset > map.lavaLevel.currentY) {
                     this.dy -= 3;
-                    this.OnPlayerDead();
+                    this.OnPlayerHurt();
                 }
             }
         }
 
 
         if (this.isInWater && !wasInWater) {
-            if (waterTileAtFoot || (globalWaterHeight != -1 && globalWaterHeight < this.yBottom)) {
+            if ((waterTileAtFoot?.isSwimmable) || (globalWaterHeight !== -1 && globalWaterHeight < this.yBottom)) {
                 this.dy = 0;
             } else {
                 this.dy *= 0.5;
@@ -172,6 +187,7 @@ class Player extends Sprite {
 
         if (this.isOnGround || this.isClimbing || ((this.isInWater || this.isInQuicksand) && this.heldItem == null) || this.isTouchingStickyWall || (this.heldItem?.canHangFrom)) {
             if (this.age > 1) this.coyoteTimer = 0;
+            this.isSpinJumping = false;
         }
         this.coyoteTimer++;
 
@@ -183,7 +199,9 @@ class Player extends Sprite {
                 if (this.dy < -1) this.dy = -1;
             }
             // below controls how many frames of upward velocity we get
-            if (this.jumpTimer > 18) this.jumpTimer = -1;
+
+            let numJumpFrames = 18;
+            if (this.jumpTimer > numJumpFrames) this.jumpTimer = -1;
             // jumptimer 14
         }
 
@@ -201,7 +219,17 @@ class Player extends Sprite {
         if (isJumpInitialPressed) this.jumpBufferTimer = 0;
         if (this.jumpBufferTimer > 3) this.jumpBufferTimer = -1;
 
-        if (this.jumpBufferTimer > -1 && (this.coyoteTimer < 5 || this.IsNeighboringWallJumpTiles()) && this.forcedJumpTimer <= 0) {
+        let spinJumper = <SpinRing>this.layer.sprites.find(a => a instanceof SpinRing && a.Overlaps(this));
+
+        if (this.jumpBufferTimer > -1 && (this.coyoteTimer < 5 || this.IsNeighboringWallJumpTiles() || (spinJumper && this.heldItem == null)) && this.forcedJumpTimer <= 0) {
+            if (spinJumper) {
+                this.isSpinJumping = true;
+                audioHandler.PlaySound("spinRing", true);
+                this.twinkleCount = 4;
+                spinJumper.OnPlayerUseSpinRing();
+            } else {
+                this.isSpinJumping = false;
+            }
             this.Jump();
             this.isSliding = false;
         }
@@ -250,10 +278,14 @@ class Player extends Sprite {
         if (this.touchedCeilings.some(a => a.tileType.isHangable)) {
             if (KeyboardHandler.IsKeyPressed(KeyAction.Action2, false) && this.heldItem == null) {
                 this.isHanging = true;
+                this.dxFromPlatform = 0;
                 this.isSliding = false;
                 this.dy = 0;
                 if (!leftPressed && this.dx < 0) this.dx *= 0.8;
                 if (!rightPressed && this.dx > 0) this.dx *= 0.8;
+                
+                let conveyorSpeeds = this.touchedCeilings.map(a => a.tileType.conveyorSpeed).filter(a => a !== 0);
+                if (conveyorSpeeds.length) this.dxFromPlatform = -Math.max(...conveyorSpeeds);
             }
         }
 
@@ -275,6 +307,7 @@ class Player extends Sprite {
             }
         } else if (!this.isSliding) {
             if (this.isClimbing) {
+                this.dxFromPlatform = 0;
                 this.parentSprite = null;
                 let canClimbUp = this.layer.GetTileByPixel(this.xMid, this.yMid - 0.5).tileType.isClimbable;
                 if (!canClimbUp && isAtLadderTop) canClimbUp = true;
@@ -328,6 +361,10 @@ class Player extends Sprite {
             }
         }
 
+        if (this.isInWater && Math.abs(this.dy) > this.moveSpeed) {
+            this.dy *= 0.9;
+        }
+
         if (this.isInQuicksand) {
             this.dx *= 0.8;
             this.dy *= 0.8;
@@ -379,9 +416,16 @@ class Player extends Sprite {
         // if (this.coyoteTimer > 0) console.log("COYOTE TIME", this.coyoteTimer);
         this.jumpBufferTimer = -1;
         this.coyoteTimer = 999999;
-        this.dy = Math.abs(this.dx) > 0.3 ? -1.5 : -1.2;
+        this.dy = (Math.abs(this.dx) > 0.3 || this.isSpinJumping) ? -1.5 : -1.2;
 
         let isOnSlime = this.standingOn.some(a => !a.tileType.canJumpFrom);
+        if (this.parentSprite instanceof Splatform) {
+            isOnSlime = true;
+            if (this.standingOn.every(a => !a.tileType.canJumpFrom)) {
+                // ONLY standing on slime tiles
+                this.parentSprite.PlayerAttemptJump();
+            }
+        }
         if (this.isInWater) {
             this.swimTimer = 0;
             if (KeyboardHandler.IsKeyPressed(KeyAction.Down, false)) this.dy = -0.2;
@@ -561,15 +605,28 @@ class Player extends Sprite {
                 aboutToOverlapFromAbove = this.yBottom > sprite.y && this.yBottom - 3 < sprite.y;
             }
 
-            let landingOnTop = sprite.canBeBouncedOn && aboutToOverlapFromAbove && isHorizontalOverlap;
+            let landingOnTop = aboutToOverlapFromAbove && isHorizontalOverlap;
 
             if (sprite instanceof Enemy) {
 
                 if (sprite.framesSinceThrown > 0 && sprite.framesSinceThrown < 25) continue; // can't bounce on items that have just been thrown
-                if (landingOnTop) {
+                if (landingOnTop && sprite.canBeBouncedOn) {
                     this.Bounce();
-                    sprite.OnBounce();
+                    if (this.isSpinJumping) {
+                        sprite.OnSpinBounce();
+                    } else {
+                        sprite.OnBounce();
+                    }
                     sprite.SharedOnBounce(); //enemy-specific method
+                } else if (landingOnTop && sprite.canSpinBounceOn && this.isSpinJumping) {
+                    this.Bounce();
+                    audioHandler.PlaySound("spinBounce", true);
+
+                    let particle = new Pow(this.x, this.y, this.layer, []);
+                    particle.x = this.xMid - particle.width / 2;
+                    particle.y = this.yBottom - particle.height / 2;
+                    this.layer.sprites.push(particle);
+
                 } else if (sprite.canStandOn && currentlyAbove && isHorizontalOverlap) {
 
                 } else if (!sprite.isInDeathAnimation && this.xRight > sprite.x && this.x < sprite.xRight && this.yBottom > sprite.y && this.y < sprite.yBottom) {
@@ -584,7 +641,7 @@ class Player extends Sprite {
                     }
                 }
             } else {
-                if (landingOnTop) {
+                if (landingOnTop && sprite.canBeBouncedOn) {
                     this.Bounce();
                     sprite.OnBounce();
                 }
@@ -605,11 +662,11 @@ class Player extends Sprite {
             isHurt = true;
             if (this.standingOn.every(a => a.tileType.instaKill)) isDead = true;
         }
-        if (this.touchedLeftWalls.length > 0 && this.touchedLeftWalls.every(a => a instanceof LevelTile && a.tileType.hurtOnSides)) {
+        if (this.touchedLeftWalls.length > 0 && this.touchedLeftWalls.every(a => a instanceof LevelTile && a.tileType.hurtOnRight)) {
             isHurt = true;
             if (this.touchedLeftWalls.every(a => a instanceof LevelTile && a.tileType.instaKill)) isDead = true;
         }
-        if (this.touchedRightWalls.length > 0 && this.touchedRightWalls.every(a => a instanceof LevelTile && a.tileType.hurtOnSides)) {
+        if (this.touchedRightWalls.length > 0 && this.touchedRightWalls.every(a => a instanceof LevelTile && a.tileType.hurtOnLeft)) {
             isHurt = true;
             if (this.touchedRightWalls.every(a => a instanceof LevelTile && a.tileType.instaKill)) isDead = true;
         }
@@ -663,9 +720,10 @@ class Player extends Sprite {
         this.OnDead();
         this.isActive = false;
         // log player death
-        let newDeathCount = StorageService.IncrementDeathCounter(currentLevelCode);
+        let newDeathCount = StorageService.IncrementDeathCounter(currentLevelListing?.level.code || "");
         let deadPlayer = new DeadPlayer(this, newDeathCount);
         editorHandler.bankedCheckpointTime += this.age;
+        if (levelGenerator) levelGenerator.bankedClearTime += this.age;
         this.layer.sprites.push(deadPlayer);
         audioHandler.PlaySound("dead", true);
         camera.autoscrollX = 0;
@@ -796,6 +854,7 @@ class Player extends Sprite {
                     this.heldItem = null;
                     this.throwTimer = 0;
                     audioHandler.PlaySound("throw", true);
+                    this.isSpinJumping = false;
 
                 }
             } else if (this.heldItem && this.heldItem.canHangFrom) {
@@ -904,6 +963,17 @@ class Player extends Sprite {
                 else tile = tiles[sourceImage][2][3];
             } else {
                 tile = tiles[sourceImage][3][row];
+
+                if (this.isSpinJumping) {
+                    let spinTiles = [
+                        tiles[sourceImage][3][row],
+                        tiles[sourceImage][0][3],
+                        tiles[sourceImage][3][row],
+                        tiles[sourceImage][1][4],
+                    ];
+                    tile = spinTiles[Math.floor(frameNum / 4) % 4];
+                    if (Math.floor(frameNum / 4) % 4 == 2) xFlip = !xFlip;
+                }
             }
         }
 
@@ -978,14 +1048,19 @@ class DeadPlayer extends Sprite {
             currentMap.fadeOutRatio = (this.age - 45) / 14;
         }
         if (this.age > 60) {
-            editorHandler.SwitchToEditMode(true);
-            editorHandler.SwitchToPlayMode();
-            if (camera.target) {
-                camera.x = camera.target.xMid;
-                camera.y = camera.target.yMid;
+            if (levelGenerator) {
+                this.isActive = false;
+                levelGenerator.OnLose();
+            } else {
+                editorHandler.SwitchToEditMode(true);
+                editorHandler.SwitchToPlayMode();
+                if (camera.target) {
+                    camera.x = camera.target.xMid;
+                    camera.y = camera.target.yMid;
+                }
+                camera.targetX = camera.x;
+                camera.targetY = camera.y;
             }
-            camera.targetX = camera.x;
-            camera.targetY = camera.y;
         }
     }
     GetFrameData(frameNum: number): FrameData | FrameData[] {

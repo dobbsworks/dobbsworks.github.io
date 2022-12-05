@@ -32,6 +32,8 @@ class PorcoRosso extends Enemy {
         this.SkyPatrol(0.3);
     }
     
+    OnSpinBounce(): void { this.ReplaceWithSpriteType(Poof); }
+    
     OnBounce(): void {
         this.squishTimer = 1;
         this.dy = 0.5;

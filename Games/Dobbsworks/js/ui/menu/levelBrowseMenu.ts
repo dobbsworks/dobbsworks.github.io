@@ -8,6 +8,7 @@ class LevelBrowseMenu extends Menu {
     searchButtons: LevelBrowseSortButton[] = []
     currentSearchButton!: LevelBrowseSortButton;
     isDataLoadInProgress = false;
+    toggles: FilterToggle[] = [];
 
     backgroundColor = "#2171cc";
     backgroundColor2 = "#677327";
@@ -55,7 +56,7 @@ class LevelBrowseMenu extends Menu {
         this.levelOptionsPanel.layout = "vertical";
         ret.push(this.levelOptionsPanel);
 
-        ret.push(new FilterToggle(this, tiles["spider"][0][0], tiles["spider"][0][1], (isOn) => {
+        this.toggles.push(new FilterToggle(this, tiles["spider"][0][0], tiles["spider"][0][1], (isOn) => {
             this.includeGlitchLevels = isOn;
         }, this.includeGlitchLevels));
 
@@ -63,7 +64,9 @@ class LevelBrowseMenu extends Menu {
             this.includeClearedLevels = isOn;
         }, this.includeClearedLevels);
         clearedToggle.targetX -= 200;
-        ret.push(clearedToggle);
+        this.toggles.push(clearedToggle);
+
+        ret.push(...this.toggles);
 
         return ret;
     }
@@ -114,6 +117,7 @@ class LevelBrowseMenu extends Menu {
     HideLevelDetails(): void {
         if (this.levelOptionsPanel) this.levelOptionsPanel.targetX = 1000;
         if (this.levelPanel) this.levelPanel.targetX = this.baseX;
+        this.toggles.forEach(a => a.targetX += 1000);
         this.backButton.isHidden = false;
     }
 
@@ -125,6 +129,7 @@ class LevelBrowseMenu extends Menu {
             this.levelPanel.targetX = this.baseLeftX;
             this.levelOptionsPanel.targetX = this.baseRightX;
             this.levelOptionsPanel.children = [];
+            this.toggles.forEach(a => a.targetX -= 1000);
 
 
             let buttons = new Panel(0, 0, this.levelOptionsPanel.width, 50);
@@ -181,7 +186,7 @@ class LevelBrowseMenu extends Menu {
                         editorHandler.SwitchToPlayMode();
                         MenuHandler.SubMenu(BlankMenu);
                         DataService.LogLevelPlayStarted(levelListing.level.code);
-                        currentLevelCode = levelListing.level.code;
+                        currentLevelListing = levelListing;
                         levelListing.isStarted = true;
                         this.PopulateLevelPanel();
                     }

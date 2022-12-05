@@ -4,6 +4,7 @@ class Pufferfish extends Enemy {
     public width: number = 12;
     respectsSolidTiles = true;
     canBeBouncedOn = false;
+    canSpinBounceOn = true;
 
     verticalDirection: -1|1 = 1;
 

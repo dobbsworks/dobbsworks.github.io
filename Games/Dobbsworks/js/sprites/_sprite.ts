@@ -56,6 +56,7 @@ abstract class Sprite {
     public canHangFrom: boolean = false;
     public canBeBouncedOn: boolean = false;
     public hurtsEnemies: boolean = false;
+    public isInTractorBeam: boolean = false;
     onScreenTimer: number = 0;
 
     // used for editor
@@ -96,10 +97,10 @@ abstract class Sprite {
         this.gustUpTimer--;
         if (!this.respectsSolidTiles) this.isOnGround = false;
 
-// ISSUES WITH WARP WALL:
-// 1. momentum! Wall reaction is what triggers "touching wall", but that also reduces velocity
-// 2. clearance! Need to check if there's enough room on the other side!
-// 3. what in the world was happening with shells
+        // ISSUES WITH WARP WALL:
+        // 1. momentum! Wall reaction is what triggers "touching wall", but that also reduces velocity
+        // 2. clearance! Need to check if there's enough room on the other side!
+        // 3. what in the world was happening with shells
 
         //TODO: repeat this for sprites that never touch wall
         let leftWarpWall = <LevelTile>this.touchedLeftWalls.find(a => a instanceof LevelTile && a.tileType.isWarpWall)
@@ -123,6 +124,7 @@ abstract class Sprite {
 
     ApplyGravity(): void {
         if (this instanceof Enemy && this.stackedOn) return;
+        this.isInTractorBeam = false;
 
         // move towards maxFallSpeed at rate of fallAccel
         let targetFallSpeed = this.maxDY;
@@ -150,6 +152,16 @@ abstract class Sprite {
             fallAccel = 0.05;
         }
 
+        let bigYufos = < BigYufo[]>this.layer.sprites.filter(a => a instanceof BigYufo);
+        for (let bigYufo of bigYufos) {
+            let inTractor = bigYufo.IsSpriteInTractorBeam(this);
+            if (inTractor) {
+                this.isInTractorBeam = true;
+                targetFallSpeed *= -1;
+                break;
+            }
+        }
+
         if (this.gustUpTimer > 0) {
             targetFallSpeed = -0.8;
             if (this instanceof Player) {
@@ -163,7 +175,7 @@ abstract class Sprite {
                 }
             }
         }
-
+        
         // adjust dy
         if (Math.abs(this.dy - targetFallSpeed) < fallAccel) {
             // speeds are close, just set value
@@ -175,6 +187,7 @@ abstract class Sprite {
     }
 
     OnBounce(): void { }
+    OnSpinBounce(): void { this.OnBounce(); }
 
     OnThrow(thrower: Sprite, direction: -1 | 1) {
         this.dx = direction * 1 + thrower.GetTotalDx();
@@ -220,7 +233,7 @@ abstract class Sprite {
                 this.dyFromPlatform *= inertiaRatio;
                 if (Math.abs(this.dyFromPlatform) < 0.015) this.dyFromPlatform = 0;
             }
-            if (this.dxFromPlatform > 0) {
+            if (Math.abs(this.dxFromPlatform) > 0) {
                 this.dxFromPlatform *= inertiaRatio;
             }
             if (this.isOnGround) {
@@ -413,8 +426,8 @@ abstract class Sprite {
                     this.standingOn = grounds.tiles;
                     if (this.parentSprite && this.parentSprite.GetTotalDy() > 0) this.parentSprite = null;
 
-                    let conveyorSpeed = Math.max(...this.standingOn.map(a => a.tileType.conveyorSpeed));
-                    if (conveyorSpeed) this.dxFromPlatform = conveyorSpeed;
+                    let conveyorSpeeds = this.standingOn.map(a => a.tileType.conveyorSpeed).filter(a => a !== 0);
+                    if (conveyorSpeeds.length) this.dxFromPlatform = Math.max(...conveyorSpeeds);
 
                     this.dy = grounds.yPixel - this.y - this.height;
                     if (this.dy < 0) this.dy = 0;
@@ -546,7 +559,7 @@ abstract class Sprite {
         this.x = +(this.x.toFixed(3));
         this.y = +(this.y.toFixed(3));
 
-        if (this.parentSprite) {
+        if (this.parentSprite && this.standingOn.length == 0) {
             this.y = this.parentSprite.y - this.height;
         }
         if (this.isPlatform && this.GetTotalDy() > 0) {
@@ -665,7 +678,7 @@ abstract class Sprite {
                             preceedingSolidity.verticalSolidDirection == direction) {
                             continue;
                         }
-    
+
                         // Bumped floor/ceil
                         grounds.push({ tile: tile, yPixel: yPixelOfEdge });
                     }
@@ -716,13 +729,18 @@ abstract class Sprite {
         for (let yPixel of pixelsToCheck) {
             let rowIndex = Math.floor((yPixel + yOffset) / this.layer.tileHeight);
 
-            for (let colIndex = startColIndex; colIndex !== startColIndex + 2 * direction; colIndex += direction) {
+            let numColumnsToCheck = 2;
+            if (this.width > 24) {
+                numColumnsToCheck = Math.ceil(this.width / 12);
+            }
+
+            for (let colIndex = startColIndex; colIndex !== startColIndex + numColumnsToCheck * direction; colIndex += direction) {
                 // only checking next few cols
                 if (!this.layer.tiles[colIndex]) continue;
                 let tile = this.layer.GetTileByIndex(colIndex, rowIndex);
                 let semisolidTile = null;
-                
-                if (this.layer.map?.semisolidLayer.tiles[colIndex]) { 
+
+                if (this.layer.map?.semisolidLayer.tiles[colIndex]) {
                     semisolidTile = this.layer.map?.semisolidLayer.tiles[colIndex][rowIndex];
                 }
                 let pixel = (colIndex + (direction == 1 ? 0 : 1)) * this.layer.tileWidth;
@@ -751,7 +769,7 @@ abstract class Sprite {
                             preceedingSolidity.horizontalSolidDirection == direction) {
                             continue;
                         }
-    
+
                         // Bumped wall
                         wallPixels.push({ tile: tile, x: pixel });
                     }
@@ -837,7 +855,7 @@ abstract class Sprite {
         let hearts = <GoldHeart[]>this.layer.sprites.filter(a => a instanceof GoldHeart);
         hearts.forEach(a => a.isBroken = true);
     }
-    
+
 
     LaunchSprite(sprite: Sprite, direction: -1 | 1): void {
         let parentMotor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == sprite);
@@ -862,5 +880,9 @@ abstract class Sprite {
             if (!(sprite instanceof SapphireSnail)) sprite.dy = -2;
             if (sprite instanceof RollingSnailShell) sprite.direction = direction;
         }
+    }
+
+    CanInteractWithSpringBox(): boolean {
+        return this.respectsSolidTiles || this instanceof SapphireSnail || (this instanceof BasePlatform && !(this instanceof FloatingPlatform));
     }
 }

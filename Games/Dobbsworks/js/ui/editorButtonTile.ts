@@ -1,12 +1,15 @@
 class EditorButtonTile extends EditorButton {
 
+    static AllTileButtons: EditorButtonTile[] = [];
+
     constructor(public tileType: TileType, public tooltip: string) {
         super(tileType.imageTile, tooltip);
         this.linkedFillType = new SimpleFill(tileType);
         this.onClickEvents.push(() => {
             editorHandler.currentTool = new editorHandler.selectedFillBrush(this.linkedFillType);
             editorHandler.hotbar.OnToolSelect(this);
-        })
+        });
+        EditorButtonTile.AllTileButtons.push(this);
     }
 
     linkedFillType!: FillType;
@@ -18,7 +21,13 @@ class EditorButtonTile extends EditorButton {
     }
 
     AppendImage(imageTile: ImageTile): EditorButtonTile {
-        this.AddChild(new ImageFromTile(0, 0, 50, 50, imageTile));
+        if (imageTile == tiles["uiButtonAdd"][0][0]) {
+            let image = new ImageFromTile(0, 0, 60, 60, imageTile);
+            image.zoom = 1;
+            this.AddChild(image);
+        } else {
+            this.AddChild(new ImageFromTile(0, 0, 50, 50, imageTile));
+        }
         return this;
     }
 

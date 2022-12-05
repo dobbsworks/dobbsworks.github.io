@@ -19,6 +19,8 @@ class Biggle extends Enemy {
         this.ReactToWater();
     }
 
+    OnSpinBounce(): void { this.ReplaceWithSpriteType(Poof); }
+
     OnBounce(): void {
         this.isActive = false;
         [1, -1].forEach(dir => {

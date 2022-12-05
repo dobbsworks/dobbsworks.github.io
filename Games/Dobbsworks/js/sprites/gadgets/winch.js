@@ -31,15 +31,18 @@ var Winch = /** @class */ (function (_super) {
         _this.maxConnectionDistance = 0;
         _this.winchSpeed = 0.2;
         _this.isWinding = false;
+        _this.windsDown = false;
         return _this;
     }
     Winch.prototype.Update = function () {
+        this.dx *= 0.9;
+        this.dy *= 0.9;
         if (!this.isInitialized) {
             this.isInitialized = true;
             this.Initialize();
             this.maxConnectionDistance = this.connectionDistance;
         }
-        if (this.GetIsPowered()) {
+        if (Utility.Xor(this.GetIsPowered(), this.windsDown)) {
             this.connectionDistance -= this.winchSpeed;
             this.isWinding = true;
         }
@@ -55,7 +58,17 @@ var Winch = /** @class */ (function (_super) {
             this.connectionDistance = this.minConnectionDistance;
             this.isWinding = false;
         }
-        this.MoveConnectedSprite();
+        if (this.connectedSprite) {
+            this.UpdateConnectedSprite(this.connectedSprite);
+            this.MoveConnectedSprite(this.connectedSprite);
+            var playerGrabbed = this.HandlePlayerGrab(this.connectedSprite);
+            if (playerGrabbed) {
+                this.connectedSprite = null;
+            }
+            else {
+                this.MoveConnectedSprite(this.connectedSprite);
+            }
+        }
     };
     Winch.prototype.GetIsPowered = function () {
         var _a;
@@ -80,3 +93,12 @@ var Winch = /** @class */ (function (_super) {
     };
     return Winch;
 }(Motor));
+var ReverseWinch = /** @class */ (function (_super) {
+    __extends(ReverseWinch, _super);
+    function ReverseWinch() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.windsDown = true;
+        return _this;
+    }
+    return ReverseWinch;
+}(Winch));

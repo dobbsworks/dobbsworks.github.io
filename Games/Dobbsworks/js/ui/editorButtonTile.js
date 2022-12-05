@@ -23,6 +23,7 @@ var EditorButtonTile = /** @class */ (function (_super) {
             editorHandler.currentTool = new editorHandler.selectedFillBrush(_this.linkedFillType);
             editorHandler.hotbar.OnToolSelect(_this);
         });
+        EditorButtonTile.AllTileButtons.push(_this);
         return _this;
     }
     EditorButtonTile.prototype.Update = function () {
@@ -31,7 +32,14 @@ var EditorButtonTile = /** @class */ (function (_super) {
         this.borderColor = isSelected ? "#FF2E" : "#FF20";
     };
     EditorButtonTile.prototype.AppendImage = function (imageTile) {
-        this.AddChild(new ImageFromTile(0, 0, 50, 50, imageTile));
+        if (imageTile == tiles["uiButtonAdd"][0][0]) {
+            var image = new ImageFromTile(0, 0, 60, 60, imageTile);
+            image.zoom = 1;
+            this.AddChild(image);
+        }
+        else {
+            this.AddChild(new ImageFromTile(0, 0, 50, 50, imageTile));
+        }
         return this;
     };
     EditorButtonTile.prototype.CreateCopy = function () {
@@ -46,5 +54,6 @@ var EditorButtonTile = /** @class */ (function (_super) {
         }
         return copy;
     };
+    EditorButtonTile.AllTileButtons = [];
     return EditorButtonTile;
 }(EditorButton));

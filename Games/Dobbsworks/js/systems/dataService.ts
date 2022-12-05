@@ -14,9 +14,9 @@ class DataService {
 
         let baseUrl = "https://dabbleworlds1.azurewebsites.net/api/";
         if (window.location.href.indexOf("localhost") > -1) {
-                baseUrl = "https://localhost:7121/api/";
+            baseUrl = "https://localhost:7121/api/";
         }
-        if (window.location.href.startsWith("http://127.0.0.1/") ) {
+        if (window.location.href.startsWith("http://127.0.0.1/")) {
             return;
         }
         let endpoint = baseUrl + urlAction;
@@ -179,7 +179,7 @@ class DataService {
 
     static LogLevelPlayStarted(levelCode: string): Promise<number> {
         return new Promise<number>((resolve, reject) => {
-            DataService.BasePost("Levels/LogLevelPlayStarted", {levelCode: levelCode}, resolve, reject);
+            DataService.BasePost("Levels/LogLevelPlayStarted", { levelCode: levelCode }, resolve, reject);
         })
     }
 
@@ -188,16 +188,42 @@ class DataService {
             DataService.BasePost("Levels/LogLevelPlayDone", progress, resolve, reject);
         })
     }
-        
+
     static UpdateNameAndAvatar(avatarCode: string, newName: string): Promise<number> {
         return new Promise<number>((resolve, reject) => {
             DataService.BasePost("Users/UpdateNameAndAvatar?avatarCode=" + avatarCode + "&name=" + newName, {}, resolve, reject);
         })
     }
-    
+
     static GetUserData(): Promise<UserDT> {
         return new Promise<UserDT>((resolve, reject) => {
             DataService.BaseGet("Users/GetUserData", resolve, reject);
+        })
+    }
+
+    static LogMarathonRun(difficulty: number, levelsCleared: number, finalFrameCount: number, winnings: number): Promise<number> {
+        return new Promise<number>((resolve, reject) => {
+            DataService.BasePost("Marathon/LogRun?difficulty=" + difficulty +
+                "&levelsCleared=" + levelsCleared + "&finalFrameCount=" + finalFrameCount +
+                "&winnings=" + winnings, {}, resolve, reject);
+        })
+    }
+
+    static CheckFor3RingUnlock(difficulty: number): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            DataService.BasePost("Marathon/Log3RingRun?difficulty=" + difficulty, {}, resolve, reject);
+        })
+    }
+
+    static GetUserCurrency(): Promise<number> {
+        return new Promise<number>((resolve, reject) => {
+            DataService.BaseGet("Currency/GetCurrency", resolve, reject);
+        })
+    }
+
+    static RollForUnlock(cost: number): Promise<AvatarUnlockResultDt> {
+        return new Promise<AvatarUnlockResultDt>((resolve, reject) => {
+            DataService.BasePost("Carnival/RollForUnlock?cost=" + cost, {}, resolve, reject);
         })
     }
 }

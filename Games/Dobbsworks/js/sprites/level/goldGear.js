@@ -47,7 +47,7 @@ var GoldGear = /** @class */ (function (_super) {
             if (player_1 && player_1.IsGoingToOverlapSprite(this)) {
                 this.isTouched = true;
                 camera.Reset();
-                this.playerAge = player_1.age + editorHandler.bankedCheckpointTime;
+                this.playerAge = player_1.age + editorHandler.bankedCheckpointTime + ((levelGenerator === null || levelGenerator === void 0 ? void 0 : levelGenerator.bankedClearTime) || 0);
                 //console.log(player.replayHandler.ExportToBase64());
             }
         }
@@ -74,10 +74,29 @@ var GoldGear = /** @class */ (function (_super) {
             currentMap.fullDarknessRatio += 0.02;
             if (currentMap.fullDarknessRatio > 1) {
                 this.isActive = false;
-                MenuHandler.GoBack();
-                var successMenu = MenuHandler.SubMenu(LevelSuccessMenu);
-                successMenu.collectedGear = this;
-                successMenu.SetLevelCompletionTime(this.playerAge);
+                if (levelGenerator) {
+                    levelGenerator.OnLevelWin();
+                    if (levelGenerator.levelsCleared == 3) {
+                        MenuHandler.GoBack();
+                        var successMenu = MenuHandler.SubMenu(MarathonThreeClearsMenu);
+                        successMenu.collectedGear = this;
+                        audioHandler.SetBackgroundMusic("levelEnd");
+                        DataService.CheckFor3RingUnlock(levelGenerator.difficulty.difficultyNumber).then(function (unlock) {
+                            if (unlock) {
+                                toastService.AnnounceAvatarUnlock(AvatarCustomizationMenu.GetImageFrom3CharCode(unlock));
+                            }
+                        });
+                    }
+                    else {
+                        levelGenerator.NextLevel();
+                    }
+                }
+                else {
+                    MenuHandler.GoBack();
+                    var successMenu = MenuHandler.SubMenu(LevelSuccessMenu);
+                    successMenu.collectedGear = this;
+                    successMenu.SetLevelCompletionTime(this.playerAge);
+                }
             }
         }
         if (this.isTouched) {
@@ -114,7 +133,13 @@ var GoldGear = /** @class */ (function (_super) {
                     this.disappearMode = true;
                     camera.target = this;
                     camera.targetScale = 8;
-                    audioHandler.SetBackgroundMusic("levelEnd");
+                    if (levelGenerator) {
+                        audioHandler.SetBackgroundMusic("silence");
+                        audioHandler.PlaySound("carnivalVictoryShort", true);
+                    }
+                    else {
+                        audioHandler.SetBackgroundMusic("levelEnd");
+                    }
                 }
             }
         }

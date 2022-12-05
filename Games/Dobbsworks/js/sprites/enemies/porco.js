@@ -47,6 +47,7 @@ var PorcoRosso = /** @class */ (function (_super) {
     PorcoRosso.prototype.PorcoMovement = function () {
         this.SkyPatrol(0.3);
     };
+    PorcoRosso.prototype.OnSpinBounce = function () { this.ReplaceWithSpriteType(Poof); };
     PorcoRosso.prototype.OnBounce = function () {
         this.squishTimer = 1;
         this.dy = 0.5;

@@ -59,5 +59,6 @@ var Menu = /** @class */ (function () {
             MenuHandler.CurrentMenu = null;
         }
     };
+    Menu.prototype.OnAfterDraw = function (camera) { };
     return Menu;
 }());

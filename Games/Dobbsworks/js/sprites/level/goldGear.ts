@@ -35,7 +35,7 @@ class GoldGear extends Sprite {
             if (player && player.IsGoingToOverlapSprite(this)) {
                 this.isTouched = true;
                 camera.Reset();
-                this.playerAge = player.age + editorHandler.bankedCheckpointTime;
+                this.playerAge = player.age + editorHandler.bankedCheckpointTime + (levelGenerator?.bankedClearTime || 0);
                 //console.log(player.replayHandler.ExportToBase64());
             }
         }
@@ -63,10 +63,30 @@ class GoldGear extends Sprite {
             currentMap.fullDarknessRatio += 0.02;
             if (currentMap.fullDarknessRatio > 1) {
                 this.isActive = false;
-                MenuHandler.GoBack();
-                let successMenu = <LevelSuccessMenu>MenuHandler.SubMenu(LevelSuccessMenu);
-                successMenu.collectedGear = this;
-                successMenu.SetLevelCompletionTime(this.playerAge);
+
+                if (levelGenerator) {
+                    levelGenerator.OnLevelWin();
+                    if (levelGenerator.levelsCleared == 3) {
+                        MenuHandler.GoBack();
+                        let successMenu = <MarathonThreeClearsMenu>MenuHandler.SubMenu(MarathonThreeClearsMenu);
+                        successMenu.collectedGear = this;
+                        audioHandler.SetBackgroundMusic("levelEnd");
+
+                        DataService.CheckFor3RingUnlock(levelGenerator.difficulty.difficultyNumber).then(unlock => {
+                            if (unlock) {
+                                toastService.AnnounceAvatarUnlock(AvatarCustomizationMenu.GetImageFrom3CharCode(unlock));
+                            }
+                        })
+
+                    } else {
+                        levelGenerator.NextLevel();
+                    }
+                } else {
+                    MenuHandler.GoBack();
+                    let successMenu = <LevelSuccessMenu>MenuHandler.SubMenu(LevelSuccessMenu);
+                    successMenu.collectedGear = this;
+                    successMenu.SetLevelCompletionTime(this.playerAge);
+                }
             }
         }
 
@@ -106,7 +126,12 @@ class GoldGear extends Sprite {
                     this.disappearMode = true;
                     camera.target = this;
                     camera.targetScale = 8;
-                    audioHandler.SetBackgroundMusic("levelEnd");
+                    if (levelGenerator) {
+                        audioHandler.SetBackgroundMusic("silence");
+                        audioHandler.PlaySound("carnivalVictoryShort", true);
+                    } else {
+                        audioHandler.SetBackgroundMusic("levelEnd");
+                    }
                 }
             }
         }

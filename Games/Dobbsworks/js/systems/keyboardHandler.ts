@@ -17,6 +17,7 @@ class KeyAction {
     static Fullscreen = new KeyAction("fullscreen");
     static Reset = new KeyAction("reset");
     static EditToggle = new KeyAction("editToggle");
+    static EditorRotateHotkey = new KeyAction("EditorRotateHotkey");
     static EditorMinimize = new KeyAction("editorMinimize");
     static EditorPlayerHotkey = new KeyAction("EditorPlayerHotkey");
     static EditorEraseHotkey = new KeyAction("editorEraseHotkey");
@@ -104,8 +105,10 @@ class KeyboardHandler {
 
         { k: "F11", v: KeyAction.Fullscreen },
         { k: "Tab", v: KeyAction.EditToggle },
+        { k: "GpButton8", v: KeyAction.EditToggle },
         { k: "KeyX", v: KeyAction.EditorMinimize },
         { k: "KeyE", v: KeyAction.EditorEraseHotkey },
+        { k: "KeyR", v: KeyAction.EditorRotateHotkey },
         { k: "KeyZ", v: KeyAction.EditorUndo },
         { k: "KeyY", v: KeyAction.EditorRedo },
         { k: "KeyT", v: KeyAction.Reset },

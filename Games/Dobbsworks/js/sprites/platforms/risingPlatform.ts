@@ -27,6 +27,7 @@ class RisingPlatform extends BasePlatform {
             this.isStarted = true;
             this.dy = 1.2;
         }
+        this.dx *= 0.95;
         this.MoveByVelocity();
         if (this.y < (this.layer.tiles[0][0].tileY * this.layer.tileHeight) - 12) {
             this.isActive = false;

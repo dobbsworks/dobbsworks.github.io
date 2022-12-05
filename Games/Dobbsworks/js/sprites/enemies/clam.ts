@@ -8,6 +8,7 @@ class Clammy extends Enemy {
     isPlatform = true;
     canStandOn = true;
     damagesPlayer: boolean = false;
+    canSpinBounceOn = true;
 
     stateTimer = 0;
     state: ClamState = "idle";

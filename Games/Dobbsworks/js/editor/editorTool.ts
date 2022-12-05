@@ -249,7 +249,7 @@ abstract class FillType {
 }
 
 class SimpleFill extends FillType {
-    constructor(private fillTile: TileType) { super(); }
+    constructor(public fillTile: TileType) { super(); }
     FillTiles(tileCoordinates: TileCoordinate[]): void {
         for (let tileCoord of tileCoordinates) {
             if (this.fillTile.targetLayer == TargetLayer.backdrop) currentMap.backdropLayer.SetTile(tileCoord.tileX, tileCoord.tileY, this.fillTile);

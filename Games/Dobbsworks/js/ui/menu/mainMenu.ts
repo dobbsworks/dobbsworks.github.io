@@ -8,7 +8,7 @@ class MainMenu extends Menu {
         ret.push(logo);
 
         let centerX = camera.canvas.width / 2;
-        let playButtonWidth = camera.canvas.width / 4;
+        let playButtonWidth = camera.canvas.width / 3;
         let playButtonHeight = 60;
         let playButtonX = centerX - playButtonWidth / 2;
         let playButtonY = logo.y + logo.height + 15;
@@ -44,7 +44,15 @@ class MainMenu extends Menu {
         recentLevelsButton.isNoisy = true;
         if (!isDemoMode) ret.push(recentLevelsButton);
 
-        [playButton, myLevelsButton, recentLevelsButton, demoLevelsButton].forEach(b => {
+        let singlePlayerButton = new Button(playButtonX, playButtonY + (playButtonHeight + 10)*3, playButtonWidth, playButtonHeight);
+        let singlePlayerText = new UIText(centerX, playButtonY + 40, "Barker's Carnival", 30, "#000");
+        singlePlayerButton.AddChild(singlePlayerText);
+        singlePlayerText.xOffset = playButtonWidth / 2 - 5;
+        singlePlayerText.yOffset = 40;
+        singlePlayerButton.isNoisy = true;
+        if (!isDemoMode) ret.push(singlePlayerButton);
+
+        [playButton, myLevelsButton, recentLevelsButton, demoLevelsButton, singlePlayerButton].forEach(b => {
             b.normalBackColor = "#fff8";
             b.mouseoverBackColor = "#f73738";
             b.borderColor = "#000";
@@ -68,6 +76,11 @@ class MainMenu extends Menu {
         recentLevelsButton.onClickEvents.push(() => {
             MenuHandler.SubMenu(LevelBrowseMenu);
             audioHandler.SetBackgroundMusic("menuJazz");
+        });
+
+        singlePlayerButton.onClickEvents.push(() => {
+            MenuHandler.SubMenu(CarnivalMenu);
+            audioHandler.SetBackgroundMusic("carnival");
         });
         
         demoLevelsButton.onClickEvents.push(() => {

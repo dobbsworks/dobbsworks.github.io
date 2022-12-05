@@ -31,7 +31,16 @@ class RedBalloon extends Motor {
         this.Movement();
         this.horizontalDirection = this.dx <= 0 ? -1 : 1;
         this.MoveByVelocity();
-        this.MoveConnectedSprite();
+        if (this.connectedSprite) {
+            this.UpdateConnectedSprite(this.connectedSprite);
+            this.MoveConnectedSprite(this.connectedSprite);
+            let playerGrabbed = this.HandlePlayerGrab(this.connectedSprite);
+            if (playerGrabbed) {
+                this.connectedSprite = null;
+            } else {
+                this.MoveConnectedSprite(this.connectedSprite);
+            }
+        }
     }
 
     Movement(): void {

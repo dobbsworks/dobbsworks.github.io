@@ -46,6 +46,7 @@ var Piggle = /** @class */ (function (_super) {
             this.ReactToWater();
         }
     };
+    Piggle.prototype.OnSpinBounce = function () { this.ReplaceWithSpriteType(Poof); };
     Piggle.prototype.OnBounce = function () {
         this.canBeBouncedOn = false;
         this.isInDeathAnimation = true;
@@ -99,6 +100,7 @@ var PogoPiggle = /** @class */ (function (_super) {
                 if (this.pogoTimer > 10) {
                     this.pogoTimer = 0;
                     this.dy = -2.5;
+                    this.parentSprite = null;
                 }
             }
             if (this.iFrames > 0) {
@@ -112,6 +114,7 @@ var PogoPiggle = /** @class */ (function (_super) {
             this.ReactToWater();
         }
     };
+    PogoPiggle.prototype.OnSpinBounce = function () { this.ReplaceWithSpriteType(Poof); };
     PogoPiggle.prototype.OnBounce = function () {
         if (this.iFrames > 0) {
             return;

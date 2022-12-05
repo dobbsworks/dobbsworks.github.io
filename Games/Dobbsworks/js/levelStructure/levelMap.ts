@@ -65,7 +65,7 @@ class LevelMap {
         if (this.fadeOutRatio < 0) this.fadeOutRatio = 0;
         camera.Update();
         this.fluidLevels.forEach(a => {
-            if (a.currentY == -1) a.currentY = (this.mapHeight + 1) * 12;
+            if (a.currentY == -1) a.currentY = (this.mapHeight + 10) * 12;
             a.Update();
         })
         player = <Player>(this.mainLayer.sprites.find(a => a instanceof Player));
@@ -126,6 +126,14 @@ class LevelMap {
                     }
                 }
                 if (deletedSprite) audioHandler.PlaySound("erase", true);
+            }
+        }
+
+        if (levelGenerator) {
+            let gear = <GoldGear>this.mainLayer.sprites.find(a => a instanceof GoldGear);
+            if (gear && !gear.isTouched) {
+                this.fullDarknessRatio -= 0.02;
+                if (this.fullDarknessRatio < 0) this.fullDarknessRatio = 0;
             }
         }
 
@@ -191,6 +199,11 @@ class LevelMap {
 
         if (player) {
             this.timerText = Utility.FramesToTimeText(player.age + (player.isActive ? editorHandler.bankedCheckpointTime : 0));
+            if (levelGenerator) {
+                this.timerText = Utility.FramesToTimeText(player.age +  + (levelGenerator?.bankedClearTime || 0));
+            }
+        } else {
+            if (levelGenerator) this.timerText = "";
         }
         if (this.timerText && !editorHandler.isInEditMode && !(MenuHandler.CurrentMenu instanceof MainMenu)) {
             let fontsize = 16;

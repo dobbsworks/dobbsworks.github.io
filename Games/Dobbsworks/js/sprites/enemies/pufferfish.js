@@ -20,6 +20,7 @@ var Pufferfish = /** @class */ (function (_super) {
         _this.width = 12;
         _this.respectsSolidTiles = true;
         _this.canBeBouncedOn = false;
+        _this.canSpinBounceOn = true;
         _this.verticalDirection = 1;
         return _this;
     }

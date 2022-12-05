@@ -26,6 +26,7 @@ var Enemy = /** @class */ (function (_super) {
         _this.killedByProjectiles = true;
         _this.canStandOn = false;
         _this.damagesPlayer = true;
+        _this.canSpinBounceOn = false;
         _this.bounceSoundId = "bop";
         return _this;
     }
@@ -206,14 +207,14 @@ var Enemy = /** @class */ (function (_super) {
                     var isGroundToLeft = belowTile == leftFootTile || leftFootTile.tileType.solidity.IsSolidFromTop(this.direction) || ((_b = leftFootTile.GetSemisolidNeighbor()) === null || _b === void 0 ? void 0 : _b.tileType.solidity.IsSolidFromTop(this.direction));
                     if (!isGroundToRight) {
                         //console.log(belowTile, rightFootTile)
-                        isGroundToRight = this.layer.sprites.some(function (a) { return a.isPlatform && Math.abs(a.y - _this.yBottom) <= 0.11 && _this.xRight >= a.x && _this.xRight < a.xRight; });
+                        isGroundToRight = this.layer.sprites.some(function (a) { return a.isPlatform && Math.abs(a.y - _this.yBottom) <= 0.11 && _this.xRight >= a.x - 2 && _this.xRight < a.xRight; });
                         if (!isGroundToRight) {
                             if (belowTile.tileType.solidity == Solidity.HalfSlopeUpLeft && rightFootTile.tileType.solidity == Solidity.HalfSlopeUpRight)
                                 isGroundToRight = true;
                         }
                     }
                     if (!isGroundToLeft) {
-                        isGroundToLeft = this.layer.sprites.some(function (a) { return a.isPlatform && Math.abs(a.y - _this.yBottom) <= 0.11 && _this.x <= a.xRight && _this.x > a.x; });
+                        isGroundToLeft = this.layer.sprites.some(function (a) { return a.isPlatform && Math.abs(a.y - _this.yBottom) <= 0.11 && _this.x <= a.xRight + 2 && _this.x > a.x; });
                         if (!isGroundToLeft) {
                             if (belowTile.tileType.solidity == Solidity.HalfSlopeDownRight && leftFootTile.tileType.solidity == Solidity.HalfSlopeDownLeft)
                                 isGroundToLeft = true;

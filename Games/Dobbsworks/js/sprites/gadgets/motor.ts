@@ -26,8 +26,8 @@ class Motor extends Sprite {
         if (currentTile?.tileType.isTrack) this.isOnTrack = true;
         // find closest non-player sprite below motor
         let possibleConnectionSprites = this.connectionDirectionY == 1 ?
-            this.layer.sprites.filter(a => a.x < this.xRight && a.xRight > this.x && a.y > this.yBottom && a.canMotorHold) :
-            this.layer.sprites.filter(a => a.x < this.xRight && a.xRight > this.x && a.yBottom < this.y && a.canMotorHold);
+            this.layer.sprites.filter(a => a.x < this.xRight && a.xRight > this.x && a.y >= this.yBottom && a.canMotorHold) :
+            this.layer.sprites.filter(a => a.x < this.xRight && a.xRight > this.x && a.yBottom <= this.y && a.canMotorHold);
         if (possibleConnectionSprites.length == 0) {
             return;
         }
@@ -121,36 +121,49 @@ class Motor extends Sprite {
         }
         if (!this.trackTile) this.isOnTrack = false;
 
-        this.MoveConnectedSprite();
+        if (this.connectedSprite) {
+            this.UpdateConnectedSprite(this.connectedSprite);
+            this.MoveConnectedSprite(this.connectedSprite);
+            let playerGrabbed = this.HandlePlayerGrab(this.connectedSprite);
+            if (playerGrabbed) {
+                this.connectedSprite = null;
+            } else {
+                this.MoveConnectedSprite(this.connectedSprite);
+            }
+        }
     }
 
-    MoveConnectedSprite(): void {
-        if (!this.connectedSprite) return;
-        if (!this.connectedSprite.updatedThisFrame) {
-            this.connectedSprite.SharedUpdate();
-            this.connectedSprite.Update();
-            if (this.connectedSprite instanceof Enemy) {
-                this.connectedSprite.EnemyUpdate();
+    UpdateConnectedSprite(sprite: Sprite): void {
+        if (!sprite) return;
+        if (!sprite.updatedThisFrame) {
+            sprite.SharedUpdate();
+            sprite.Update();
+            if (sprite instanceof Enemy) {
+                sprite.EnemyUpdate();
             }
-            this.connectedSprite.updatedThisFrame = true;
+            sprite.updatedThisFrame = true;
         }
+    }
 
+    HandlePlayerGrab(sprite: Sprite): boolean {
         let player = <Player>this.layer.sprites.find(a => a instanceof Player);
         if (player) {
-            if (player.heldItem == this.connectedSprite && player.heldItem.canBeHeld) {
-                this.connectedSprite = null;
-                return;
+            if (player.heldItem == sprite && player.heldItem.canBeHeld) {
+                return true;
             }
         }
+        return false;
+    }
 
-        if (this.connectedSprite instanceof Enemy) {
-            this.connectedSprite.direction = this.horizontalDirection;
+    MoveConnectedSprite(sprite: Sprite): void {
+        if (sprite instanceof Enemy) {
+            sprite.direction = this.horizontalDirection;
         }
 
-        this.connectedSprite.x = this.xMid - this.connectedSprite.width / 2;
-        this.connectedSprite.y = this.y + this.connectionDistance;
-        this.connectedSprite.dx = this.dx;
-        this.connectedSprite.dy = this.dy;
+        sprite.x = this.xMid - sprite.width / 2;
+        sprite.y = this.y + this.connectionDistance;
+        sprite.dx = this.dx;
+        sprite.dy = this.dy;
     }
 
     GetFrameData(frameNum: number): FrameData {
@@ -164,7 +177,7 @@ class Motor extends Sprite {
         };
     }
 
-    OnAfterDraw(camera: Camera): void {
+    OnBeforeDraw(camera: Camera): void {
         if (this.connectionDistance == 0 || this.connectedSprite == null) return;
         let x = (this.xMid - camera.x) * camera.scale + camera.canvas.width / 2;
         let yGameStart = (this.connectionDirectionY == 1) ? (this.y + this.wireDrawBottomSpace) : this.y + 2;
@@ -194,5 +207,118 @@ class UpwardMotor extends Motor {
     protected motorSpeed: number = 0.5;
     protected frameX: number = 0;
     protected frameY: number = 4;
-    protected connectionDirectionY: -1|1 = -1
+    protected connectionDirectionY: -1 | 1 = -1
+}
+
+class FerrisMotorRight extends Motor {
+    public connectedSprites: (Sprite | null)[] = [];
+    public angle = 0;
+    private spinSpeed!: number; // rads per frame
+    protected direction: number = 1;
+
+    Initialize(): void {
+        super.Initialize();
+
+        if (this.connectedSprite) {
+            if (!(this.connectedSprite instanceof Checkpoint)) {
+                this.connectionDistance = this.connectedSprite.yMid - this.yMid;
+                this.connectedSprites.push(this.connectedSprite);
+
+                let spriteFromEditor = editorHandler.sprites.find(a => a.spriteInstance == this.connectedSprite);
+                if (spriteFromEditor) {
+                    for (let i = 1; i < 4; i++) {
+                        let spriteType = <SpriteType>this.connectedSprite.constructor;
+                        let instance = new spriteType(
+                            spriteFromEditor.tileCoord.tileX * this.layer.tileWidth,
+                            spriteFromEditor.tileCoord.tileY * this.layer.tileHeight,
+                            currentMap.mainLayer, spriteFromEditor.editorProps);
+                        this.connectedSprites.push(instance);
+                        this.layer.sprites.push(instance);
+                    }
+                }
+            }
+            this.spinSpeed = 0.02 / this.connectionDistance * 24 * this.direction;
+        }
+    }
+
+    Update(): void {
+        if (!this.isInitialized) {
+            this.isInitialized = true;
+            this.Initialize();
+        }
+
+        this.angle += this.spinSpeed;
+
+        for (let sprite of this.connectedSprites) {
+            if (!sprite) continue;
+            this.UpdateConnectedSprite(sprite);
+            this.MoveConnectedSprite(sprite);
+            let spriteIndex = this.connectedSprites.indexOf(sprite);
+            let playerGrabbed = this.HandlePlayerGrab(sprite);
+            if (playerGrabbed) {
+                this.connectedSprites[spriteIndex] = null;
+            } else {
+                this.MoveConnectedSpriteToAngle(sprite, this.angle + (Math.PI / 2 * spriteIndex));
+            }
+        }
+    }
+
+    MoveConnectedSpriteToAngle(sprite: Sprite, angle: number): void {
+        let x = Math.cos(angle) * this.connectionDistance;
+        let y = Math.sin(angle) * this.connectionDistance;
+        let speed = this.connectionDistance * this.spinSpeed;
+        let dx = Math.cos(angle + Math.PI / 2) * speed;
+        let dy = Math.sin(angle + Math.PI / 2) * speed;
+
+        if (sprite instanceof Enemy) {
+            sprite.direction = dx > 0 ? 1 : -1;
+        }
+
+        sprite.x = this.xMid - sprite.width / 2 + x;
+        sprite.y = this.yMid - sprite.height / 2 + y;
+        sprite.dx = this.dx + dx;
+        sprite.dy = this.dy + dy;
+    }
+
+    GetFrameData(frameNum: number): FrameData {
+        return {
+            imageTile: tiles["motorTrack"][2][4],
+            xFlip: false,
+            yFlip: false,
+            xOffset: 0,
+            yOffset: 0
+        };
+    }
+
+    OnBeforeDraw(camera: Camera): void {
+        if (this.connectionDistance == 0 || this.connectedSprites.length == 0) return;
+
+        camera.ctx.fillStyle = "#724200";
+        for (let i = 0; i < 4; i++) {
+            let angle = this.angle + i * Math.PI / 2;
+            //let sprite = this.connectedSprites[i];
+
+            for (let r = 6; r < this.connectionDistance; r += 6) {
+                let gameX = r * Math.cos(angle) + this.xMid - 1;
+                let gameY = r * Math.sin(angle) + this.yMid - 1;
+
+                let destX = (gameX - camera.x) * camera.scale + camera.canvas.width / 2;
+                let destY = (gameY - camera.y) * camera.scale + camera.canvas.height / 2;
+
+                camera.ctx.fillRect(destX, destY, 2 * camera.scale, 2 * camera.scale)
+            }
+        }
+    }
+}
+
+class FerrisMotorLeft extends FerrisMotorRight {
+    protected direction: number = -1;
+}
+
+class FastFerrisMotorLeft extends FerrisMotorRight {
+    protected direction: number = -2;
+}
+
+class FastFerrisMotorRight extends FerrisMotorRight {
+    protected direction: number = 2;
 }

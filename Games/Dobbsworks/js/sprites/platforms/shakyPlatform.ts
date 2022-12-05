@@ -5,6 +5,7 @@ class ShakyPlatform extends BasePlatform {
     public isFalling: boolean = false;
 
     Update(): void {
+        this.dx *= 0.95;
         if (this.isFalling) {
             this.ApplyGravity();
             this.MoveByVelocity();

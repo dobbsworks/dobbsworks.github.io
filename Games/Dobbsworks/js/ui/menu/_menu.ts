@@ -64,6 +64,7 @@ abstract class Menu {
         }
     }
 
+    public OnAfterDraw(camera: Camera): void {}
 
     abstract CreateElements(): UIElement[];
 }
