@@ -21,7 +21,7 @@ var CarnivalPrizeMenu = /** @class */ (function (_super) {
         _this.timer = 0;
         _this.bank = new PiggleBank(camera.canvas.width / 4, 0);
         _this.gameState = "paying";
-        _this.playCost = 10;
+        _this.playCost = 1;
         _this.unlockResult = null;
         return _this;
     }
@@ -133,10 +133,10 @@ var CarnivalPrizeMenu = /** @class */ (function (_super) {
     CarnivalPrizeMenu.prototype.PrizeUpdate = function () {
         var _a;
         if (this.timer == 1 && this.unlockResult) {
-            this.prizeDisplay.avatarCode = this.unlockResult.ItemCode;
-            this.prizeDisplay.isNew = this.unlockResult.Success;
-            if ((_a = this.unlockResult) === null || _a === void 0 ? void 0 : _a.Success) {
-                toastService.AnnounceAvatarUnlock(AvatarCustomizationMenu.GetImageFrom3CharCode(this.unlockResult.ItemCode));
+            this.prizeDisplay.avatarCode = this.unlockResult.itemCode;
+            this.prizeDisplay.isNew = this.unlockResult.success;
+            if ((_a = this.unlockResult) === null || _a === void 0 ? void 0 : _a.success) {
+                toastService.AnnounceAvatarUnlock(AvatarCustomizationMenu.GetImageFrom3CharCode(this.unlockResult.itemCode));
             }
         }
         var targetY = camera.canvas.height / 2;
@@ -193,7 +193,7 @@ var CarnivalPrizeMenu = /** @class */ (function (_super) {
         // wheel waits until over correct slice, then slows down at predefined intervals
         if (this.wheel.targetTheta == -1 && this.unlockResult) {
             var isOnPrize = this.wheel.IsThetaOnPrize(this.wheel.theta);
-            var isOnCorrectSlice = isOnPrize && this.unlockResult.ItemCode;
+            var isOnCorrectSlice = (isOnPrize && this.unlockResult.itemCode) || (!isOnPrize && !this.unlockResult.itemCode);
             if (isOnCorrectSlice) {
                 this.wheel.targetTheta = this.wheel.theta + (4 * Math.PI);
             }

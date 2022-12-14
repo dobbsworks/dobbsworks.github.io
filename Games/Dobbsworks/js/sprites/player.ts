@@ -92,7 +92,7 @@ class Player extends Sprite {
         //     this.dx *= 0.5;
         // }
         if (!this.yoyoTarget) this.HandleDoors();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true) && this.age > 1) this.OnPlayerDead();
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true) && this.age > 1 && !levelGenerator) this.OnPlayerDead();
         this.replayHandler.StoreFrame()
 
         if (this.twinkleCount > 0) {

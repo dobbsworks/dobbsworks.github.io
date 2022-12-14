@@ -1,8 +1,8 @@
 "use strict";
 var AvatarUnlockResultDt = /** @class */ (function () {
-    function AvatarUnlockResultDt(ItemCode, Success) {
-        this.ItemCode = ItemCode;
-        this.Success = Success;
+    function AvatarUnlockResultDt(itemCode, success) {
+        this.itemCode = itemCode;
+        this.success = success;
     }
     return AvatarUnlockResultDt;
 }());

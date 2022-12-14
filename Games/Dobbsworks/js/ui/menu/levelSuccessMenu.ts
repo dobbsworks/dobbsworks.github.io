@@ -129,7 +129,7 @@ class LevelSuccessMenu extends Menu {
             this.gear?.DoneWithLevel();
         }
 
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, false) && this.timer > 60) {
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, false) && this.timer > 60 && !levelGenerator) {
             this.Dispose();
             editorHandler.SwitchToEditMode();
             editorHandler.SwitchToPlayMode();
@@ -207,6 +207,7 @@ class MarathonThreeClearsMenu extends LevelSuccessMenu {
     protected OnClickTopButton(): void {
         MenuHandler.GoBack();
         LevelMap.BlankOutMap();
+        editorHandler.exportString = "";
         audioHandler.SetBackgroundMusic("carnival");
         if (levelGenerator) {
             levelGenerator.LogRun();

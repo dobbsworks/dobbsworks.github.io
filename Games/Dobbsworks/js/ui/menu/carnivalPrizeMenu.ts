@@ -11,7 +11,7 @@ class CarnivalPrizeMenu extends Menu {
     private bank = new PiggleBank(camera.canvas.width / 4, 0);
     protected gameState: "paying" | "starting" | "waiting" | "running" | "prize" | "done" = "paying";
 
-    playCost = 10;
+    playCost = 1;
     unlockResult: null | AvatarUnlockResultDt = null;
 
     CreateElements(): UIElement[] {

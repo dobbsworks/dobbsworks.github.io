@@ -104,7 +104,7 @@ var Player = /** @class */ (function (_super) {
         // }
         if (!this.yoyoTarget)
             this.HandleDoors();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true) && this.age > 1)
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true) && this.age > 1 && !levelGenerator)
             this.OnPlayerDead();
         this.replayHandler.StoreFrame();
         if (this.twinkleCount > 0) {

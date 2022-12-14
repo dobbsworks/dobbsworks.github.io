@@ -111,6 +111,8 @@ var PauseMenu = /** @class */ (function (_super) {
                 if (levelGenerator)
                     levelGenerator.LogRun();
                 levelGenerator = null;
+                LevelMap.BlankOutMap();
+                editorHandler.exportString = "";
             });
         }
         else if (!editorHandler.isEditorAllowed) {

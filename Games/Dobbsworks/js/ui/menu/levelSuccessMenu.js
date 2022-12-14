@@ -132,7 +132,7 @@ var LevelSuccessMenu = /** @class */ (function (_super) {
         if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true) && this.timer > 60) {
             (_a = this.gear) === null || _a === void 0 ? void 0 : _a.DoneWithLevel();
         }
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, false) && this.timer > 60) {
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, false) && this.timer > 60 && !levelGenerator) {
             this.Dispose();
             editorHandler.SwitchToEditMode();
             editorHandler.SwitchToPlayMode();
@@ -208,6 +208,7 @@ var MarathonThreeClearsMenu = /** @class */ (function (_super) {
     MarathonThreeClearsMenu.prototype.OnClickTopButton = function () {
         MenuHandler.GoBack();
         LevelMap.BlankOutMap();
+        editorHandler.exportString = "";
         audioHandler.SetBackgroundMusic("carnival");
         if (levelGenerator) {
             levelGenerator.LogRun();

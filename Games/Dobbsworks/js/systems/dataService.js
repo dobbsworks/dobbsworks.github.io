@@ -182,7 +182,7 @@ var DataService = /** @class */ (function () {
     };
     DataService.RollForUnlock = function (cost) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("Carnival/RollForUnlock?cost=" + cost, resolve, reject);
+            DataService.BasePost("Carnival/RollForUnlock?cost=" + cost, {}, resolve, reject);
         });
     };
     return DataService;
