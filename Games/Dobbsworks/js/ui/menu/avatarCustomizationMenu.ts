@@ -4,8 +4,8 @@ class AvatarLayerElement {
 }
 
 class AvatarPanel extends Panel {
-    constructor(avatarCode: string) {
-        super(0, 0, 40, 40);
+    constructor(avatarCode: string, scale: number = 2) {
+        super(0, 0, 20 * scale, 20 * scale);
         this.margin = 0;
         this.backColor = "#F00D";
         if (avatarCode) {
@@ -15,8 +15,8 @@ class AvatarPanel extends Panel {
                 let id = Utility.IntFromB64(codeSegment);
                 let func = [AvatarCustomizationMenu.GetBackImage, AvatarCustomizationMenu.GetFocusImage, AvatarCustomizationMenu.GetFrameImage][segmentIndex];
                 let imageTile = func(id);
-                let imageFromTile = new ImageFromTile(0, 0, 40, 40, imageTile);
-                imageFromTile.zoom = 2;
+                let imageFromTile = new ImageFromTile(0, 0, 20 * scale, 20 * scale, imageTile);
+                imageFromTile.zoom = scale;
                 this.AddChild(imageFromTile);
             }
         }
@@ -212,7 +212,7 @@ class AvatarCustomizationMenu extends Menu {
 
     GetAllFocusElements(): AvatarLayerElement[] {
         let ret: AvatarLayerElement[] = []
-        for (let i = 0; i < 29; i++) {
+        for (let i = 0; i < 96; i++) {
             ret.push(new AvatarLayerElement(i, AvatarCustomizationMenu.GetFocusImage(i)));
         }
         return ret;
@@ -220,7 +220,7 @@ class AvatarCustomizationMenu extends Menu {
 
     GetAllFrameElements(): AvatarLayerElement[] {
         let ret: AvatarLayerElement[] = []
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 48; i++) {
             ret.push(new AvatarLayerElement(i, AvatarCustomizationMenu.GetFrameImage(i)));
         }
         return ret;
@@ -228,7 +228,7 @@ class AvatarCustomizationMenu extends Menu {
 
     GetAllBackElements(): AvatarLayerElement[] {
         let ret: AvatarLayerElement[] = []
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 48; i++) {
             ret.push(new AvatarLayerElement(i, AvatarCustomizationMenu.GetBackImage(i)));
         }
         return ret;

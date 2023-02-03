@@ -21,6 +21,7 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
         _this.levels = [];
         _this.levelPanel = null;
         _this.levelOptionsPanel = null;
+        _this.userDetailsPanel = null;
         _this.searchButtons = [];
         _this.isDataLoadInProgress = false;
         _this.toggles = [];
@@ -42,6 +43,15 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
         var ret = [];
         this.backButton = this.CreateBackButton();
         ret.push(this.backButton);
+        this.backButtonUserPanel = new Button(0, camera.canvas.height - 40, 70, 40);
+        var backButtonText = new UIText(0, 0, "Back", 16, "white");
+        backButtonText.xOffset = 25;
+        backButtonText.yOffset = 20;
+        this.backButtonUserPanel.AddChild(backButtonText);
+        this.backButtonUserPanel.onClickEvents.push(function () {
+            _this.ShowLevelDetails();
+        });
+        ret.push(this.backButtonUserPanel);
         var getLevelsPromise = DataService.GetRecentLevels();
         getLevelsPromise.then(function (levels) {
             _this.levels = levels;
@@ -64,6 +74,10 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
         this.levelOptionsPanel.backColor = "#1138";
         this.levelOptionsPanel.layout = "vertical";
         ret.push(this.levelOptionsPanel);
+        this.userDetailsPanel = new Panel(this.baseX + 2000, this.baseY, this.bigPanelWidth, this.basePanelHeight);
+        this.userDetailsPanel.backColor = "#1138";
+        this.userDetailsPanel.layout = "vertical";
+        ret.push(this.userDetailsPanel);
         this.toggles.push(new FilterToggle(this, tiles["spider"][0][0], tiles["spider"][0][1], function (isOn) {
             _this.includeGlitchLevels = isOn;
         }, this.includeGlitchLevels));
@@ -72,6 +86,7 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
         }, this.includeClearedLevels);
         clearedToggle.targetX -= 200;
         this.toggles.push(clearedToggle);
+        this.toggles.forEach(function (a) { return a.originalX = a.targetX; });
         ret.push.apply(ret, this.toggles);
         return ret;
     };
@@ -115,20 +130,28 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
             }
         }
     };
-    LevelBrowseMenu.prototype.HideLevelDetails = function () {
+    LevelBrowseMenu.prototype.ShowMainPanel = function () {
+        if (this.userDetailsPanel)
+            this.userDetailsPanel.targetX = 2000;
         if (this.levelOptionsPanel)
             this.levelOptionsPanel.targetX = 1000;
         if (this.levelPanel)
             this.levelPanel.targetX = this.baseX;
-        this.toggles.forEach(function (a) { return a.targetX += 1000; });
+        this.toggles.forEach(function (a) { return a.targetX = a.originalX; });
         this.backButton.isHidden = false;
+        this.backButtonUserPanel.isHidden = true;
     };
     LevelBrowseMenu.prototype.ShowLevelDetails = function () {
         var _this = this;
+        this.backButtonUserPanel.isHidden = true;
         var levelListing = this.levels.find(function (a) { return a.level.code == _this.selectedCloudCode; });
+        if (this.levelPanel)
+            this.levelPanel.targetX = this.baseLeftX;
+        if (this.userDetailsPanel)
+            this.userDetailsPanel.targetX = 2000;
+        this.toggles.forEach(function (a) { return a.targetX = a.originalX - 1000; });
         if (levelListing && this.levelPanel && this.levelOptionsPanel) {
             this.backButton.isHidden = true;
-            this.levelPanel.targetX = this.baseLeftX;
             this.levelOptionsPanel.targetX = this.baseRightX;
             this.levelOptionsPanel.children = [];
             this.toggles.forEach(function (a) { return a.targetX -= 1000; });
@@ -137,7 +160,7 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
             var backButton = new Button(0, 0, 200, 50);
             backButton.onClickEvents.push(function () {
                 _this.selectedCloudCode = "";
-                _this.HideLevelDetails();
+                _this.ShowMainPanel();
             });
             var backButtonText = new UIText(0, 0, "Back", 20, "white");
             backButton.AddChild(backButtonText);
@@ -247,7 +270,7 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
             midPanel.AddChild(rightPanel);
             rightPanel.layout = "vertical";
             var CreateTimePanel = function (labelText, frames, holder) {
-                var panel = new Panel(0, 0, rightPanelWidth_1, frames == 0 ? 50 : 100);
+                var panel = new Button(0, 0, rightPanelWidth_1, frames == 0 ? 50 : 100);
                 panel.layout = "vertical";
                 panel.backColor = "#0008";
                 panel.margin = 0;
@@ -274,6 +297,9 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
                 if (holder)
                     bottomLine.AddChild(new Spacer(0, 0, 40, 40));
                 panel.AddChild(bottomLine);
+                panel.onClickEvents.push(function () {
+                    _this.LoadUserDetailsPanel(holder ? holder.id : -1);
+                });
                 return panel;
             };
             //rightPanel.AddChild(new Spacer(0, 0, 10, 5));
@@ -305,8 +331,111 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
             this.levelOptionsPanel.AddChild(buttons);
         }
     };
+    LevelBrowseMenu.prototype.LoadUserDetailsPanel = function (userId) {
+        var _this = this;
+        if (this.userDetailsPanel) {
+            this.userDetailsPanel.children = [];
+            DataService.GetUserStatsByUserId(userId).then(function (userStats) {
+                _this.PopulateUserPanel(userStats);
+            });
+            this.ShowUserPanel();
+        }
+    };
+    LevelBrowseMenu.prototype.PopulateUserPanel = function (userStats) {
+        if (this.userDetailsPanel) {
+            this.userDetailsPanel.layout = "vertical";
+            this.userDetailsPanel.margin = 0;
+            var headerRow = new Panel(0, 0, 900, 100);
+            headerRow.AddChild(new AvatarPanel(userStats.avatar, 4));
+            var username = new UIText(0, 0, userStats.username, 50, "white");
+            username.textAlign = "left";
+            username.yOffset = 60;
+            username.xOffset = -780;
+            headerRow.AddChild(username);
+            this.userDetailsPanel.AddChild(headerRow);
+            var lowerRow = new Panel(0, 0, 900, 350);
+            this.userDetailsPanel.AddChild(lowerRow);
+            var leftPanel = new Panel(0, 0, 400, 350);
+            leftPanel.layout = "vertical";
+            leftPanel.margin = 0;
+            var rightPanel = new Panel(0, 0, 400, 350);
+            rightPanel.layout = "vertical";
+            rightPanel.margin = 0;
+            lowerRow.AddChild(new Spacer(0, 0, 0, 0));
+            lowerRow.AddChild(leftPanel);
+            lowerRow.AddChild(new Spacer(0, 0, 0, 0));
+            lowerRow.AddChild(rightPanel);
+            lowerRow.AddChild(new Spacer(0, 0, 0, 0));
+            var stats = [
+                ["Stats", ""],
+                ["     World records", userStats.wRs.toString()],
+                ["     Unique clears", userStats.clears.toString()],
+                ["     Uploads", userStats.levels.toString()],
+                ["     Likes earned", userStats.likes.toString()],
+                ["3-Ring Bests", ""],
+                ["     Easy", userStats.bestMarathonEasy.toString()],
+                ["     Normal", userStats.bestMarathonNormal.toString()],
+                ["     Hard", userStats.bestMarathonHard.toString()],
+                ["     Kaizo", userStats.bestMarathonKaizo.toString()],
+                ["", ""],
+            ];
+            for (var _i = 0, stats_1 = stats; _i < stats_1.length; _i++) {
+                var statRowContent = stats_1[_i];
+                var statRow = new Panel(0, 0, 400, 30);
+                statRow.margin = 0;
+                var leftText = new UIText(0, 0, statRowContent[0], 25, "white");
+                leftText.yOffset = 25;
+                leftText.textAlign = "left";
+                var rightText = new UIText(0, 0, statRowContent[1], 25, "white");
+                rightText.yOffset = 25;
+                rightText.textAlign = "right";
+                statRow.AddChild(leftText);
+                statRow.AddChild(rightText);
+                leftPanel.AddChild(statRow);
+            }
+            var trophyPanel = new Panel(0, 0, 400, 100);
+            rightPanel.AddChild(trophyPanel);
+            for (var _a = 0, _b = userStats.trophies; _a < _b.length; _a++) {
+                var trophy = _b[_a];
+                var trophyElement = new TrophyImage(trophy.name, trophy.displayFrame);
+                trophyPanel.AddChild(trophyElement);
+            }
+        }
+    };
+    LevelBrowseMenu.prototype.ShowUserPanel = function () {
+        if (this.userDetailsPanel)
+            this.userDetailsPanel.targetX = this.baseX - 214;
+        if (this.levelOptionsPanel)
+            this.levelOptionsPanel.targetX = -1000;
+        if (this.levelPanel)
+            this.levelPanel.targetX = -2000;
+        this.toggles.forEach(function (a) { return a.targetX = a.originalX - 2000; });
+        this.backButton.isHidden = true;
+        this.backButtonUserPanel.isHidden = false;
+    };
     return LevelBrowseMenu;
 }(Menu));
+var TrophyImage = /** @class */ (function (_super) {
+    __extends(TrophyImage, _super);
+    function TrophyImage(name, displayFrame) {
+        var _this = _super.call(this, 0, 0, 100, 100, tiles["trophies"][displayFrame % 5][Math.floor(displayFrame / 5)]) || this;
+        _this.name = name;
+        _this.displayFrame = displayFrame;
+        return _this;
+    }
+    TrophyImage.prototype.Draw = function (ctx) {
+        ctx.fillStyle = this.IsMouseOver() ? "#0009" : "#0003";
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+        _super.prototype.Draw.call(this, ctx);
+        if (this.IsMouseOver()) {
+            ctx.fillStyle = "white";
+            ctx.font = 30 + "px " + "grobold";
+            ctx.textAlign = "left";
+            ctx.fillText(this.name, 530, 160);
+        }
+    };
+    return TrophyImage;
+}(ImageFromTile));
 var LevelBrowseButton = /** @class */ (function (_super) {
     __extends(LevelBrowseButton, _super);
     function LevelBrowseButton(levelListing, containingMenu) {
@@ -456,6 +585,7 @@ var FilterToggle = /** @class */ (function (_super) {
     function FilterToggle(parentMenu, selectedImage, unselectedImage, onToggle, initialState) {
         var _this = _super.call(this, 700, 530, 150, 50) || this;
         _this.parentMenu = parentMenu;
+        _this.originalX = 0;
         _this.image = new ImageFromTile(0, 0, 48, 48, unselectedImage);
         _this.image.zoom = 2;
         _this.AddChild(_this.image);

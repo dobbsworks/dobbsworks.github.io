@@ -463,11 +463,15 @@ var LevelMap = /** @class */ (function () {
         }
     };
     LevelMap.BlankOutMap = function () {
+        currentMap.waterLevel = new FluidLevel(TileType.WaterSurface, TileType.Water, 0);
+        currentMap.purpleWaterLevel = new FluidLevel(TileType.PurpleWaterSurface, TileType.PurpleWater, 1);
+        currentMap.lavaLevel = new FluidLevel(TileType.LavaSurface, TileType.Lava, 2);
         editorHandler.playerWaterModeToggle.isSelected = false;
         editorHandler.spriteWaterModeToggle.isSelected = false;
         currentMap.playerWaterMode = false;
         currentMap.spriteWaterMode = false;
         currentMap.mapHeight = 12;
+        currentMap.cameraLocksHorizontal = [];
         editorHandler.sprites = [];
         currentMap.GetLayerList().forEach(function (layer, index) {
             var newLayer = LevelLayer.FromImportString("AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AAP", index, currentMap.mapHeight, currentMap);

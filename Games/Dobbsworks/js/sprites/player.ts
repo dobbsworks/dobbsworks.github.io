@@ -447,7 +447,7 @@ class Player extends Sprite {
         this.jumpTimer = 0;
         this.isClimbing = false;
         this.climbCooldownTimer = 0;
-        this.parentSprite = null;
+        if (!isOnSlime) this.parentSprite = null;
 
         let jumpWallLeft = this.IsNeighboringWallJumpTilesSide(-1);
         let jumpWallRight = this.IsNeighboringWallJumpTilesSide(1);

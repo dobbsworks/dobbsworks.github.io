@@ -331,6 +331,16 @@ class TileType {
         TileType.HangingConveyorRight;
         TileType.HangingConveyorLeft;
 
+        TileType.CandyGround;
+        TileType.CandyBrick;
+        TileType.CandyBlock;
+        TileType.CandyTop;
+        TileType.CandyBack;
+        TileType.CandyLadder;
+        TileType.CandySpikes;
+        TileType.DecorCandy;
+        TileType.RegisterSlope("Candy", 10);
+
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
     }
@@ -530,6 +540,31 @@ class TileType {
         });
     }
     public static get DecorWhite(): TileType { return TileType.GetTileType("DecorWhite", "terrain", 7, 9, Solidity.None, TargetLayer.wire); }
+
+
+    public static get CandyGround(): TileType { return TileType.GetTileType("CandyGround", "terrain", 0, 10, Solidity.Block, TargetLayer.main); }
+    public static get CandyBrick(): TileType { return TileType.GetTileType("CandyBrick", "terrain", 1, 10, Solidity.Block, TargetLayer.main); }
+    public static get CandyBlock(): TileType { return TileType.GetTileType("CandyBlock", "terrain", 2, 10, Solidity.Block, TargetLayer.main); }
+    public static get CandyTop(): TileType { return TileType.GetTileType("CandyTop", "terrain", 3, 10, Solidity.Top, TargetLayer.semisolid); }
+    public static get CandyBack(): TileType { return TileType.GetTileType("CandyBack", "terrain", 4, 10, Solidity.None, TargetLayer.backdrop); }
+    public static get CandyLadder(): TileType { return TileType.GetTileType("CandyLadder", "terrain", 5, 10, Solidity.None, TargetLayer.main, tileType => { tileType.isClimbable = true; }); }
+    public static get CandySpikes(): TileType {
+        return TileType.GetTileType("CandySpikes", "terrain", 6, 10, Solidity.Block, TargetLayer.main, tileType => {
+            tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnLeft = true; tileType.hurtOnRight = true;
+        });
+    }
+    public static get DecorCandy(): TileType { return TileType.GetTileType("DecorCandy", "terrain", 7, 10, Solidity.None, TargetLayer.main, tileType => {
+        tileType.clockWiseRotationTileName = "DecorCandyRight";
+    }); }
+    public static get DecorCandyRight(): TileType { return TileType.GetTileType("DecorCandyRight", "terrain", 10, 19, Solidity.None, TargetLayer.main, tileType => {
+        tileType.clockWiseRotationTileName = "DecorCandyDown";
+    }); }
+    public static get DecorCandyLeft(): TileType { return TileType.GetTileType("DecorCandyLeft", "terrain", 11, 19, Solidity.None, TargetLayer.main, tileType => {
+        tileType.clockWiseRotationTileName = "DecorCandy";
+    }); }
+    public static get DecorCandyDown(): TileType { return TileType.GetTileType("DecorCandyDown", "terrain", 12, 19, Solidity.None, TargetLayer.main, tileType => {
+        tileType.clockWiseRotationTileName = "DecorCandyLeft";
+    }); }
 
 
 
@@ -1065,7 +1100,7 @@ class TileType {
 
     public static get HangingConveyorRight(): TileType {
         return TileType.GetAnimatedTileType("HangingConveyorRight", "hanging", [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }], 2.5, Solidity.Bottom, TargetLayer.semisolid, tileType => {
-            (<AnimatedTileType>tileType).imageTiles.forEach(a => a.yOffset = 3);
+            //(<AnimatedTileType>tileType).imageTiles.forEach(a => a.yOffset = 3);
             tileType.isHangable = true;
             tileType.isExemptFromSlime = true;
             tileType.conveyorSpeed = -0.6;
@@ -1075,7 +1110,7 @@ class TileType {
 
     public static get HangingConveyorLeft(): TileType {
         return TileType.GetAnimatedTileType("HangingConveyorLeft", "hanging", [{ x: 0, y: 2 }, { x: 1, y: 2 }, { x: 2, y: 2 }], 2.5, Solidity.Bottom, TargetLayer.semisolid, tileType => {
-            (<AnimatedTileType>tileType).imageTiles.forEach(a => a.yOffset = 3);
+            //(<AnimatedTileType>tileType).imageTiles.forEach(a => a.yOffset = 3);
             tileType.isHangable = true;
             tileType.isExemptFromSlime = true;
             tileType.conveyorSpeed = 0.6;

@@ -297,6 +297,15 @@ var TileType = /** @class */ (function () {
         TileType.SpearsRight;
         TileType.HangingConveyorRight;
         TileType.HangingConveyorLeft;
+        TileType.CandyGround;
+        TileType.CandyBrick;
+        TileType.CandyBlock;
+        TileType.CandyTop;
+        TileType.CandyBack;
+        TileType.CandyLadder;
+        TileType.CandySpikes;
+        TileType.DecorCandy;
+        TileType.RegisterSlope("Candy", 10);
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
     };
@@ -839,6 +848,84 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "DecorWhite", {
         get: function () { return TileType.GetTileType("DecorWhite", "terrain", 7, 9, Solidity.None, TargetLayer.wire); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "CandyGround", {
+        get: function () { return TileType.GetTileType("CandyGround", "terrain", 0, 10, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "CandyBrick", {
+        get: function () { return TileType.GetTileType("CandyBrick", "terrain", 1, 10, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "CandyBlock", {
+        get: function () { return TileType.GetTileType("CandyBlock", "terrain", 2, 10, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "CandyTop", {
+        get: function () { return TileType.GetTileType("CandyTop", "terrain", 3, 10, Solidity.Top, TargetLayer.semisolid); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "CandyBack", {
+        get: function () { return TileType.GetTileType("CandyBack", "terrain", 4, 10, Solidity.None, TargetLayer.backdrop); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "CandyLadder", {
+        get: function () { return TileType.GetTileType("CandyLadder", "terrain", 5, 10, Solidity.None, TargetLayer.main, function (tileType) { tileType.isClimbable = true; }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "CandySpikes", {
+        get: function () {
+            return TileType.GetTileType("CandySpikes", "terrain", 6, 10, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.hurtOnBottom = true;
+                tileType.hurtOnTop = true;
+                tileType.hurtOnLeft = true;
+                tileType.hurtOnRight = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DecorCandy", {
+        get: function () {
+            return TileType.GetTileType("DecorCandy", "terrain", 7, 10, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.clockWiseRotationTileName = "DecorCandyRight";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DecorCandyRight", {
+        get: function () {
+            return TileType.GetTileType("DecorCandyRight", "terrain", 10, 19, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.clockWiseRotationTileName = "DecorCandyDown";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DecorCandyLeft", {
+        get: function () {
+            return TileType.GetTileType("DecorCandyLeft", "terrain", 11, 19, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.clockWiseRotationTileName = "DecorCandy";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DecorCandyDown", {
+        get: function () {
+            return TileType.GetTileType("DecorCandyDown", "terrain", 12, 19, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.clockWiseRotationTileName = "DecorCandyLeft";
+            });
+        },
         enumerable: false,
         configurable: true
     });
@@ -1666,7 +1753,7 @@ var TileType = /** @class */ (function () {
     Object.defineProperty(TileType, "HangingConveyorRight", {
         get: function () {
             return TileType.GetAnimatedTileType("HangingConveyorRight", "hanging", [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }], 2.5, Solidity.Bottom, TargetLayer.semisolid, function (tileType) {
-                tileType.imageTiles.forEach(function (a) { return a.yOffset = 3; });
+                //(<AnimatedTileType>tileType).imageTiles.forEach(a => a.yOffset = 3);
                 tileType.isHangable = true;
                 tileType.isExemptFromSlime = true;
                 tileType.conveyorSpeed = -0.6;
@@ -1679,7 +1766,7 @@ var TileType = /** @class */ (function () {
     Object.defineProperty(TileType, "HangingConveyorLeft", {
         get: function () {
             return TileType.GetAnimatedTileType("HangingConveyorLeft", "hanging", [{ x: 0, y: 2 }, { x: 1, y: 2 }, { x: 2, y: 2 }], 2.5, Solidity.Bottom, TargetLayer.semisolid, function (tileType) {
-                tileType.imageTiles.forEach(function (a) { return a.yOffset = 3; });
+                //(<AnimatedTileType>tileType).imageTiles.forEach(a => a.yOffset = 3);
                 tileType.isHangable = true;
                 tileType.isExemptFromSlime = true;
                 tileType.conveyorSpeed = 0.6;

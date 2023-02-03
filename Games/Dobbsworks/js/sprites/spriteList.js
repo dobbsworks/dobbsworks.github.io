@@ -103,4 +103,7 @@ var spriteTypes = [
     Orbbit,
     Keplurk,
     Blaster,
+    BaddleTrigger,
+    Saw,
+    SmallSaw,
 ];

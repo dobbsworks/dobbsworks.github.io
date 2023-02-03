@@ -175,6 +175,8 @@ class AudioHandler {
         "slime",
         "chipper",
         "jungle",
+        "clocktower",
+        "overdue",
     ]
 }
 

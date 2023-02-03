@@ -21,8 +21,9 @@ var AvatarLayerElement = /** @class */ (function () {
 }());
 var AvatarPanel = /** @class */ (function (_super) {
     __extends(AvatarPanel, _super);
-    function AvatarPanel(avatarCode) {
-        var _this = _super.call(this, 0, 0, 40, 40) || this;
+    function AvatarPanel(avatarCode, scale) {
+        if (scale === void 0) { scale = 2; }
+        var _this = _super.call(this, 0, 0, 20 * scale, 20 * scale) || this;
         _this.margin = 0;
         _this.backColor = "#F00D";
         if (avatarCode) {
@@ -32,8 +33,8 @@ var AvatarPanel = /** @class */ (function (_super) {
                 var id = Utility.IntFromB64(codeSegment);
                 var func = [AvatarCustomizationMenu.GetBackImage, AvatarCustomizationMenu.GetFocusImage, AvatarCustomizationMenu.GetFrameImage][segmentIndex];
                 var imageTile = func(id);
-                var imageFromTile = new ImageFromTile(0, 0, 40, 40, imageTile);
-                imageFromTile.zoom = 2;
+                var imageFromTile = new ImageFromTile(0, 0, 20 * scale, 20 * scale, imageTile);
+                imageFromTile.zoom = scale;
                 _this.AddChild(imageFromTile);
             }
         }
@@ -202,21 +203,21 @@ var AvatarCustomizationMenu = /** @class */ (function (_super) {
     };
     AvatarCustomizationMenu.prototype.GetAllFocusElements = function () {
         var ret = [];
-        for (var i = 0; i < 29; i++) {
+        for (var i = 0; i < 96; i++) {
             ret.push(new AvatarLayerElement(i, AvatarCustomizationMenu.GetFocusImage(i)));
         }
         return ret;
     };
     AvatarCustomizationMenu.prototype.GetAllFrameElements = function () {
         var ret = [];
-        for (var i = 0; i < 5; i++) {
+        for (var i = 0; i < 48; i++) {
             ret.push(new AvatarLayerElement(i, AvatarCustomizationMenu.GetFrameImage(i)));
         }
         return ret;
     };
     AvatarCustomizationMenu.prototype.GetAllBackElements = function () {
         var ret = [];
-        for (var i = 0; i < 8; i++) {
+        for (var i = 0; i < 48; i++) {
             ret.push(new AvatarLayerElement(i, AvatarCustomizationMenu.GetBackImage(i)));
         }
         return ret;

@@ -96,6 +96,7 @@ class EditorHandler {
             new SlopeFill("Metal", TileType.MetalBrick),
             new SlopeFill("Cave", TileType.CaveGround),
             new SlopeFill("White", TileType.WhiteGround),
+            new SlopeFill("Candy", TileType.CandyGround),
         ];
         let tileRowBlocks: TileType[] = [
             TileType.Dirt,
@@ -108,6 +109,7 @@ class EditorHandler {
             TileType.MetalGround,
             TileType.CaveGround,
             TileType.WhiteGround,
+            TileType.CandyGround,
         ]
         let tilePanelButtons: EditorButton[] = [];
         let tooltips = ["Solid ground", "Solid ground", "Solid ground", "Semisolid", "Backdrop", "Ladder", "Deadly block", "Decor"];
@@ -136,14 +138,18 @@ class EditorHandler {
 
         /* ENEMY PANEL */
         let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, Wooly, WoolyBooly, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
-            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster,  /*, BigYufo */ ];
+            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, /*, BigYufo */ ];
         let enemyButtons = enemyTypes.map(a => new EditorButtonSprite(a));
+
+        let baddleTriggerButton = new EditorButtonSprite(BaddleTrigger).AppendImage(tiles["baddle"][0][0]);
+        enemyButtons.push(baddleTriggerButton);
+        
         enemyButtons.filter(a => a.spriteType == Piggle || a.spriteType == Snail).forEach(a => hotbarDefaults.push(a));
         let enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 7);
 
         let gizmoTypes: (SpriteType)[] = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform,
-            MushroomSpring, Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, RedCannon, BlueCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon, SpinRing, FragileSpinRing, 
+            MushroomSpring, Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon, SpinRing, FragileSpinRing, 
         ];
         let gizmoButtons: EditorButton[] = gizmoTypes.map(a => new EditorButtonSprite(a));
         let keyIndex = gizmoButtons.findIndex(a => a instanceof EditorButtonSprite && a.spriteType == FlatKey);

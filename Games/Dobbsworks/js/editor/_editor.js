@@ -82,6 +82,7 @@ var EditorHandler = /** @class */ (function () {
             new SlopeFill("Metal", TileType.MetalBrick),
             new SlopeFill("Cave", TileType.CaveGround),
             new SlopeFill("White", TileType.WhiteGround),
+            new SlopeFill("Candy", TileType.CandyGround),
         ];
         var tileRowBlocks = [
             TileType.Dirt,
@@ -94,6 +95,7 @@ var EditorHandler = /** @class */ (function () {
             TileType.MetalGround,
             TileType.CaveGround,
             TileType.WhiteGround,
+            TileType.CandyGround,
         ];
         var tilePanelButtons = [];
         var tooltips = ["Solid ground", "Solid ground", "Solid ground", "Semisolid", "Backdrop", "Ladder", "Deadly block", "Decor"];
@@ -123,11 +125,13 @@ var EditorHandler = /** @class */ (function () {
         var enemyTypes = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, Wooly, WoolyBooly, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
             Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster,];
         var enemyButtons = enemyTypes.map(function (a) { return new EditorButtonSprite(a); });
+        var baddleTriggerButton = new EditorButtonSprite(BaddleTrigger).AppendImage(tiles["baddle"][0][0]);
+        enemyButtons.push(baddleTriggerButton);
         enemyButtons.filter(function (a) { return a.spriteType == Piggle || a.spriteType == Snail; }).forEach(function (a) { return hotbarDefaults.push(a); });
         var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 7);
         var gizmoTypes = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform,
-            MushroomSpring, Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, RedCannon, BlueCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon, SpinRing, FragileSpinRing,
+            MushroomSpring, Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon, SpinRing, FragileSpinRing,
         ];
         var gizmoButtons = gizmoTypes.map(function (a) { return new EditorButtonSprite(a); });
         var keyIndex = gizmoButtons.findIndex(function (a) { return a instanceof EditorButtonSprite && a.spriteType == FlatKey; });

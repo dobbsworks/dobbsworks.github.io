@@ -4,7 +4,9 @@ class LevelBrowseMenu extends Menu {
     levels: LevelListing[] = [];
     levelPanel: Panel | null = null;
     levelOptionsPanel: Panel | null = null;
+    userDetailsPanel: Panel | null = null;
     backButton!: Button;
+    backButtonUserPanel!: Button;
     searchButtons: LevelBrowseSortButton[] = []
     currentSearchButton!: LevelBrowseSortButton;
     isDataLoadInProgress = false;
@@ -28,6 +30,15 @@ class LevelBrowseMenu extends Menu {
 
         this.backButton = this.CreateBackButton();
         ret.push(this.backButton);
+        this.backButtonUserPanel = new Button(0, camera.canvas.height - 40, 70, 40);
+        let backButtonText = new UIText(0, 0, "Back", 16, "white");
+        backButtonText.xOffset = 25;
+        backButtonText.yOffset = 20;
+        this.backButtonUserPanel.AddChild(backButtonText);
+        this.backButtonUserPanel.onClickEvents.push(() => {
+            this.ShowLevelDetails();
+        })
+        ret.push(this.backButtonUserPanel);
 
         let getLevelsPromise = DataService.GetRecentLevels();
         getLevelsPromise.then(levels => {
@@ -56,6 +67,11 @@ class LevelBrowseMenu extends Menu {
         this.levelOptionsPanel.layout = "vertical";
         ret.push(this.levelOptionsPanel);
 
+        this.userDetailsPanel = new Panel(this.baseX + 2000, this.baseY, this.bigPanelWidth, this.basePanelHeight);
+        this.userDetailsPanel.backColor = "#1138";
+        this.userDetailsPanel.layout = "vertical";
+        ret.push(this.userDetailsPanel);
+
         this.toggles.push(new FilterToggle(this, tiles["spider"][0][0], tiles["spider"][0][1], (isOn) => {
             this.includeGlitchLevels = isOn;
         }, this.includeGlitchLevels));
@@ -65,6 +81,7 @@ class LevelBrowseMenu extends Menu {
         }, this.includeClearedLevels);
         clearedToggle.targetX -= 200;
         this.toggles.push(clearedToggle);
+        this.toggles.forEach(a => a.originalX = a.targetX);
 
         ret.push(...this.toggles);
 
@@ -114,19 +131,24 @@ class LevelBrowseMenu extends Menu {
         }
     }
 
-    HideLevelDetails(): void {
+    ShowMainPanel(): void {
+        if (this.userDetailsPanel) this.userDetailsPanel.targetX = 2000;
         if (this.levelOptionsPanel) this.levelOptionsPanel.targetX = 1000;
         if (this.levelPanel) this.levelPanel.targetX = this.baseX;
-        this.toggles.forEach(a => a.targetX += 1000);
+        this.toggles.forEach(a => a.targetX = a.originalX);
         this.backButton.isHidden = false;
+        this.backButtonUserPanel.isHidden = true;
     }
 
     ShowLevelDetails(): void {
+        this.backButtonUserPanel.isHidden = true;
         let levelListing = this.levels.find(a => a.level.code == this.selectedCloudCode);
+        if (this.levelPanel) this.levelPanel.targetX = this.baseLeftX;
+        if (this.userDetailsPanel) this.userDetailsPanel.targetX = 2000;
+        this.toggles.forEach(a => a.targetX = a.originalX - 1000);
         if (levelListing && this.levelPanel && this.levelOptionsPanel) {
             this.backButton.isHidden = true;
 
-            this.levelPanel.targetX = this.baseLeftX;
             this.levelOptionsPanel.targetX = this.baseRightX;
             this.levelOptionsPanel.children = [];
             this.toggles.forEach(a => a.targetX -= 1000);
@@ -138,7 +160,7 @@ class LevelBrowseMenu extends Menu {
             let backButton = new Button(0, 0, 200, 50);
             backButton.onClickEvents.push(() => {
                 this.selectedCloudCode = "";
-                this.HideLevelDetails();
+                this.ShowMainPanel();
             })
             let backButtonText = new UIText(0, 0, "Back", 20, "white");
             backButton.AddChild(backButtonText);
@@ -257,8 +279,8 @@ class LevelBrowseMenu extends Menu {
             midPanel.AddChild(rightPanel);
             rightPanel.layout = "vertical";
 
-            let CreateTimePanel = (labelText: string, frames: number, holder: UserDT | null): Panel => {
-                let panel = new Panel(0, 0, rightPanelWidth, frames == 0 ? 50 : 100);
+            let CreateTimePanel = (labelText: string, frames: number, holder: UserDT | null): Button => {
+                let panel = new Button(0, 0, rightPanelWidth, frames == 0 ? 50 : 100);
                 panel.layout = "vertical";
                 panel.backColor = "#0008";
                 panel.margin = 0;
@@ -286,6 +308,10 @@ class LevelBrowseMenu extends Menu {
                 bottomLine.margin = 0;
                 if (holder) bottomLine.AddChild(new Spacer(0, 0, 40, 40));
                 panel.AddChild(bottomLine);
+
+                panel.onClickEvents.push(() => {
+                    this.LoadUserDetailsPanel(holder ? holder.id : -1)
+                });
 
                 return panel;
             }
@@ -326,6 +352,110 @@ class LevelBrowseMenu extends Menu {
             this.levelOptionsPanel.AddChild(topPanel);
             this.levelOptionsPanel.AddChild(midPanel);
             this.levelOptionsPanel.AddChild(buttons);
+        }
+    }
+
+    LoadUserDetailsPanel(userId: number): void {
+        if (this.userDetailsPanel) {
+            this.userDetailsPanel.children = [];
+            DataService.GetUserStatsByUserId(userId).then((userStats: UserWithStatsDT) => {
+                this.PopulateUserPanel(userStats);
+            });
+            this.ShowUserPanel();
+        }
+    }
+
+    PopulateUserPanel(userStats: UserWithStatsDT): void {
+        if (this.userDetailsPanel) {
+            this.userDetailsPanel.layout = "vertical";
+            this.userDetailsPanel.margin = 0;
+
+            let headerRow = new Panel(0, 0, 900, 100);
+            headerRow.AddChild(new AvatarPanel(userStats.avatar, 4));
+            let username = new UIText(0, 0, userStats.username, 50, "white");
+            username.textAlign = "left";
+            username.yOffset = 60;
+            username.xOffset = -780;
+            headerRow.AddChild(username);
+            this.userDetailsPanel.AddChild(headerRow);
+
+            let lowerRow = new Panel(0, 0, 900, 350)
+            this.userDetailsPanel.AddChild(lowerRow);
+            let leftPanel = new Panel(0, 0, 400, 350);
+            leftPanel.layout = "vertical";
+            leftPanel.margin = 0;
+            let rightPanel = new Panel(0, 0, 400, 350);
+            rightPanel.layout = "vertical";
+            rightPanel.margin = 0;
+            lowerRow.AddChild(new Spacer(0, 0, 0, 0));
+            lowerRow.AddChild(leftPanel);
+            lowerRow.AddChild(new Spacer(0, 0, 0, 0));
+            lowerRow.AddChild(rightPanel);
+            lowerRow.AddChild(new Spacer(0, 0, 0, 0));
+
+            let stats = [
+                ["Stats", ""],
+                ["     World records", userStats.wRs.toString()],
+                ["     Unique clears", userStats.clears.toString()],
+                ["     Uploads", userStats.levels.toString()],
+                ["     Likes earned", userStats.likes.toString()],
+                ["3-Ring Bests", ""],
+                ["     Easy", userStats.bestMarathonEasy.toString()],
+                ["     Normal", userStats.bestMarathonNormal.toString()],
+                ["     Hard", userStats.bestMarathonHard.toString()],
+                ["     Kaizo", userStats.bestMarathonKaizo.toString()],
+                ["", ""],
+            ];
+            for (let statRowContent of stats) {
+                let statRow = new Panel(0, 0, 400, 30);
+                statRow.margin = 0;
+                let leftText = new UIText(0, 0, statRowContent[0], 25, "white");
+                leftText.yOffset = 25;
+                leftText.textAlign = "left";
+                let rightText = new UIText(0, 0, statRowContent[1], 25, "white");
+                rightText.yOffset = 25;
+                rightText.textAlign = "right";
+                statRow.AddChild(leftText);
+                statRow.AddChild(rightText);
+                leftPanel.AddChild(statRow);
+            }
+
+            let trophyPanel = new Panel(0, 0, 400, 100);
+            rightPanel.AddChild(trophyPanel);
+
+            for (let trophy of userStats.trophies) {
+                let trophyElement = new TrophyImage(trophy.name, trophy.displayFrame);
+                trophyPanel.AddChild(trophyElement);
+            }
+        }
+    }
+
+    ShowUserPanel(): void {
+        if (this.userDetailsPanel) this.userDetailsPanel.targetX = this.baseX - 214;
+        if (this.levelOptionsPanel) this.levelOptionsPanel.targetX = -1000;
+        if (this.levelPanel) this.levelPanel.targetX = -2000;
+        this.toggles.forEach(a => a.targetX = a.originalX - 2000);
+        this.backButton.isHidden = true;
+        this.backButtonUserPanel.isHidden = false;
+    }
+}
+
+
+class TrophyImage extends ImageFromTile {
+    constructor(public name: string, public displayFrame: number) {
+        super(0, 0, 100, 100, tiles["trophies"][displayFrame % 5][Math.floor(displayFrame / 5)]);
+    }
+
+    Draw(ctx: CanvasRenderingContext2D): void {
+        ctx.fillStyle = this.IsMouseOver() ? "#0009" : "#0003";
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+        super.Draw(ctx);
+
+        if (this.IsMouseOver()) {
+            ctx.fillStyle = "white";
+            ctx.font = `${30}px ${"grobold"}`;
+            ctx.textAlign = "left";
+            ctx.fillText(this.name, 530, 160);
         }
     }
 }
@@ -499,6 +629,7 @@ class LevelBrowseSortButton extends Button {
 class FilterToggle extends Button {
     text!: UIText;
     image!: ImageFromTile;
+    originalX: number = 0;
 
     constructor(public parentMenu: LevelBrowseMenu, selectedImage: ImageTile, unselectedImage: ImageTile, onToggle: (isOn: boolean) => void, initialState: boolean) {
         super(700, 530, 150, 50);
@@ -525,7 +656,7 @@ class FilterToggle extends Button {
             this.onClickEvents.forEach(a => a());
         }
     }
-    
+
     Update(): void {
         super.Update();
         this.borderColor = this.isSelected ? "#F26E" : "#0000";

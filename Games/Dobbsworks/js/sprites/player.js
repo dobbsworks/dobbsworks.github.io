@@ -471,7 +471,8 @@ var Player = /** @class */ (function (_super) {
         this.jumpTimer = 0;
         this.isClimbing = false;
         this.climbCooldownTimer = 0;
-        this.parentSprite = null;
+        if (!isOnSlime)
+            this.parentSprite = null;
         var jumpWallLeft = this.IsNeighboringWallJumpTilesSide(-1);
         var jumpWallRight = this.IsNeighboringWallJumpTilesSide(1);
         if (this.isTouchingStickyWall || this.wallDragDirection != 0 || jumpWallLeft || jumpWallRight) {

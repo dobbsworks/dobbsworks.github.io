@@ -185,5 +185,10 @@ var DataService = /** @class */ (function () {
             DataService.BasePost("Carnival/RollForUnlock?cost=" + cost, {}, resolve, reject);
         });
     };
+    DataService.GetUserStatsByUserId = function (userId) {
+        return new Promise(function (resolve, reject) {
+            DataService.BaseGet("Users/GetUserStatsByUserId?userId=" + userId, resolve, reject);
+        });
+    };
     return DataService;
 }());

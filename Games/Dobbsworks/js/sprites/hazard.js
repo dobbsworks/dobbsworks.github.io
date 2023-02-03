@@ -20,10 +20,13 @@ var Hazard = /** @class */ (function (_super) {
     Hazard.prototype.Update = function () {
         var player = this.layer.sprites.find(function (a) { return a instanceof Player; });
         if (player) {
-            if (player.Overlaps(this) && this.IsHazardActive()) {
+            if (this.DoesPlayerOverlap(player) && this.IsHazardActive()) {
                 player.OnPlayerHurt();
             }
         }
+    };
+    Hazard.prototype.DoesPlayerOverlap = function (player) {
+        return player.Overlaps(this);
     };
     return Hazard;
 }(Sprite));

@@ -226,4 +226,10 @@ class DataService {
             DataService.BasePost("Carnival/RollForUnlock?cost=" + cost, {}, resolve, reject);
         })
     }
+
+    static GetUserStatsByUserId(userId: number): Promise<UserWithStatsDT> {
+        return new Promise<UserWithStatsDT>((resolve, reject) => {
+            DataService.BaseGet("Users/GetUserStatsByUserId?userId=" + userId, resolve, reject);
+        })
+    }
 }
