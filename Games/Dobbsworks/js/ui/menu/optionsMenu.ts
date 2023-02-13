@@ -33,6 +33,16 @@ class OptionsMenu extends Menu {
         });
         container.AddChild(sfxVol);
 
+        let fullscreenButton = this.CreateButton("Toggle Fullscreen");
+        container.AddChild(fullscreenButton);
+        fullscreenButton.onClickEvents.push(() => {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.getElementById("canvas")?.requestFullscreen();
+            }
+        })
+
         let backButton = this.CreateButton("Back");
         container.AddChild(backButton);
         backButton.onClickEvents.push(() => {

@@ -171,13 +171,14 @@ function Scene2() {
 // others in background
 function Scene3() {
     var cameos = [
-        new StaticImage(images.tank, 10, -600, -100),
-        new StaticImage(images.wagon, 12, -850, -80),
+    //    new StaticImage(images.tank, 10, -600, -100),
+        new StaticImage(images.al, 12, -850, -80),
         new StaticImage(images.gq, 6, -650, 20),
         new StaticImage(images.kirb, 6, -750, 20),
         new StaticImage(images.turtle, 6, -800, 80),
         new StaticImage(images.snek, 6, -700, 80),
         new StaticImage(images.dove, 3, -700, -100),
+        new StaticImage(images.doopu, 6, -850, 20),
     ];
     sprites.push(...cameos);
     cameos.forEach(a => {

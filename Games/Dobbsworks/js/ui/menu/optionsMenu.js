@@ -45,6 +45,17 @@ var OptionsMenu = /** @class */ (function (_super) {
             audioHandler.SetSfxVolume(newVal);
         });
         container.AddChild(sfxVol);
+        var fullscreenButton = this.CreateButton("Toggle Fullscreen");
+        container.AddChild(fullscreenButton);
+        fullscreenButton.onClickEvents.push(function () {
+            var _a;
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            }
+            else {
+                (_a = document.getElementById("canvas")) === null || _a === void 0 ? void 0 : _a.requestFullscreen();
+            }
+        });
         var backButton = this.CreateButton("Back");
         container.AddChild(backButton);
         backButton.onClickEvents.push(function () {

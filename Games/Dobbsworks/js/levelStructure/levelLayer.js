@@ -133,6 +133,8 @@ var LevelLayer = /** @class */ (function () {
             if (this.layerType == TargetLayer.water) {
                 this.isDirty = true;
             }
+            if (!tileType)
+                console.error("Invalid tiletype!");
             this.RedrawTile(xIndex, yIndex, tileType.imageTile);
             if (tileType.autoChange) {
                 currentMap.autoChangeTiles.push({ tile: existingTile, standDuration: 0 });

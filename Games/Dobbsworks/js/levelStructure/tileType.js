@@ -306,6 +306,9 @@ var TileType = /** @class */ (function () {
         TileType.CandySpikes;
         TileType.DecorCandy;
         TileType.RegisterSlope("Candy", 10);
+        TileType.DecorCandyDown;
+        TileType.DecorCandyLeft;
+        TileType.DecorCandyRight;
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
     };
