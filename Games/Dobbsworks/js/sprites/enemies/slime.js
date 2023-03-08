@@ -55,6 +55,7 @@ var LittleJelly = /** @class */ (function (_super) {
                     this.jumpPrepTimer = 0;
                     this.dy = -2.5;
                     this.parentSprite = null;
+                    this.OnJump();
                 }
                 this.wasOnGround = true;
                 if (player) {
@@ -80,6 +81,7 @@ var LittleJelly = /** @class */ (function (_super) {
             }
         }
     };
+    LittleJelly.prototype.OnJump = function () { };
     LittleJelly.prototype.WhileOnGround = function () { };
     LittleJelly.prototype.OnGroundLanding = function () {
         audioHandler.PlaySound("stuck-jump", true);
@@ -148,18 +150,21 @@ var ChillyJelly = /** @class */ (function (_super) {
         _this.rowNumber = 1;
         return _this;
     }
-    ChillyJelly.prototype.WhileOnGround = function () {
+    // WhileOnGround(): void {
+    //     if (this.jumpPrepTimer == 1) {
+    //     }
+    // }
+    ChillyJelly.prototype.OnJump = function () {
         var _this = this;
-        if (this.jumpPrepTimer == 1) {
-            var frost = this.layer.sprites.filter(function (a) { return a instanceof FrostEffect && a.targetSprite == _this; });
-            if (frost.length == 0) {
-                var frostSprite = new FrostEffect(this.x, this.y, this.layer, []);
-                frostSprite.targetSprite = this;
-                this.layer.sprites.push(frostSprite);
-            }
+        var frost = this.layer.sprites.filter(function (a) { return a instanceof FrostEffect && a.targetSprite == _this; });
+        if (frost.length == 0) {
+            var frostSprite = new FrostEffect(this.x, this.y, this.layer, []);
+            frostSprite.targetSprite = this;
+            this.layer.sprites.push(frostSprite);
         }
     };
     ChillyJelly.prototype.OnGroundLanding = function () {
+        var _this = this;
         audioHandler.PlaySound("stuck-jump", true);
         this.CreateSlimeGround(TileType.IceTop);
         // let frost = this.layer.sprites.filter(a => a instanceof FrostEffect && a.targetSprite == this);
@@ -168,6 +173,11 @@ var ChillyJelly = /** @class */ (function (_super) {
         //     frost.forEach(a => a.dx = frostSpeed * 1);
         //     frost.forEach(a => { if (a instanceof FrostEffect) a.targetSprite = null });
         // }
+        var frost = this.layer.sprites.filter(function (a) { return a instanceof FrostEffect && a.targetSprite == _this; });
+        for (var _i = 0, frost_1 = frost; _i < frost_1.length; _i++) {
+            var f = frost_1[_i];
+            f.isActive = false;
+        }
     };
     return ChillyJelly;
 }(LittleJelly));

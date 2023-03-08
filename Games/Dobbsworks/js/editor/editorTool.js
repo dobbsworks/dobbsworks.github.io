@@ -149,7 +149,15 @@ var SpritePlacer = /** @class */ (function (_super) {
             }
             var maxAllowed = this.heldSprite.spriteInstance.maxAllowed;
             if (maxAllowed > 0) {
-                var spritesOnMap = editorHandler.sprites.filter(function (a) { return _this.heldSprite && a.spriteType == _this.heldSprite.spriteType; });
+                var spritesOnMap = editorHandler.sprites.filter(function (a) {
+                    if (!_this.heldSprite)
+                        return false;
+                    if (a.spriteType == Player && _this.heldSprite.spriteType == HoverPlayer)
+                        return true;
+                    if (a.spriteType == HoverPlayer && _this.heldSprite.spriteType == Player)
+                        return true;
+                    return a.spriteType == _this.heldSprite.spriteType;
+                });
                 if (spritesOnMap.length > maxAllowed) {
                     var numberToRemove = spritesOnMap.length - maxAllowed;
                     var spritesToRemove_1 = spritesOnMap.slice(0, numberToRemove);

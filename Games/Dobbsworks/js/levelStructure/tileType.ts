@@ -11,6 +11,8 @@ class TileType {
         public targetLayer: TargetLayer
     ) { }
 
+    public editorTile: ImageTile | null = null;
+
     public isSwimmable: boolean = false;
     public isWaterfall: boolean = false;
     public isQuicksand: boolean = false;
@@ -18,6 +20,8 @@ class TileType {
     public isBumper: boolean = false;
     public isHangable: boolean = false;
     public conveyorSpeed: number = 0; // positive = clockwise
+    public windX: number = 0;
+    public windY: number = 0;
     public drainsAir: boolean = false;
     public canWalkOn: boolean = true; //sticky honey blocks
     public canJumpFrom: boolean = true; //sticky slime blocks
@@ -46,6 +50,7 @@ class TileType {
     public pickUpSprite: SpriteType | null = null;
     public autoChange: TileTypeChange | null = null;
     public standChange: TileTypeChange | null = null;
+    public shimmers: boolean = false;
     public clockWiseRotationTileName: string = "";
 
     public requiredPowerDelay: number = 1;
@@ -344,6 +349,19 @@ class TileType {
         TileType.DecorCandyLeft;
         TileType.DecorCandyRight;
 
+        TileType.ConveyorRightOffFast;
+        TileType.ConveyorLeftOffFast;
+
+        TileType.ShimmerInitial;
+
+        TileType.WindUp;
+        TileType.WindDown;
+        TileType.WindLeft;
+        TileType.WindRight;
+        TileType.FastWindUp;
+        TileType.FastWindDown;
+        TileType.FastWindLeft;
+        TileType.FastWindRight;
 
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
@@ -945,6 +963,34 @@ class TileType {
     }
 
 
+    public static get ConveyorRightOnFast(): AnimatedTileType {
+        return TileType.GetAnimatedTileType("ConveyorRightOnFast", "conveyor", [{ x: 0, y: 3 }, { x: 1, y: 3 }, { x: 2, y: 3 }], 2.5, Solidity.Block, TargetLayer.main, tileType => {
+            tileType.conveyorSpeed = 1;
+            tileType.canBePowered = true;
+            tileType.unpoweredTileName = "ConveyorRightOffFast"
+        });
+    }
+    public static get ConveyorRightOffFast(): TileType {
+        return TileType.GetTileType("ConveyorRightOffFast", "conveyor", 0, 3, Solidity.Block, TargetLayer.main, tileType => {
+            tileType.canBePowered = true;
+            tileType.poweredTileName = "ConveyorRightOnFast";
+        });
+    }
+    public static get ConveyorLeftOnFast(): AnimatedTileType {
+        return TileType.GetAnimatedTileType("ConveyorLeftOnFast", "conveyor", [{ x: 0, y: 3 }, { x: 2, y: 3 }, { x: 1, y: 3 }], 2.5, Solidity.Block, TargetLayer.main, tileType => {
+            tileType.conveyorSpeed = -1;
+            tileType.canBePowered = true;
+            tileType.unpoweredTileName = "ConveyorLeftOffFast"
+        });
+    }
+    public static get ConveyorLeftOffFast(): TileType {
+        return TileType.GetTileType("ConveyorLeftOffFast", "conveyor", 0, 3, Solidity.Block, TargetLayer.main, tileType => {
+            tileType.canBePowered = true;
+            tileType.poweredTileName = "ConveyorLeftOnFast";
+        });
+    }
+
+
     public static get WaterTapOff(): TileType {
         return TileType.GetTileType("WaterTapOff", "pipes", 0, 0, Solidity.Block, TargetLayer.main, tileType => {
             tileType.canBePowered = true;
@@ -1319,6 +1365,22 @@ class TileType {
     public static get SpriteKiller(): TileType { return TileType.GetTileType("SpriteKiller", "misc", 3, 4, Solidity.None, TargetLayer.main, (tileType: TileType) => {}) }
 
 
+
+    public static get ShimmerInitial(): TileType {
+        return TileType.GetTileType("ShimmerInitial", "shimmer", 10, 0, Solidity.Block, TargetLayer.main, tileType => {
+            tileType.autoChange = {
+                tileTypeName: "Shimmer",
+                delay: 0
+            }
+        });
+    }
+
+    public static get Shimmer(): TileType {
+        return TileType.GetTileType("Shimmer", "shimmer", 0, 0, Solidity.Block, TargetLayer.main, tileType => {
+            tileType.shimmers = true;
+        });
+    }
+
     public static get WallJumpLeft(): TileType {
         return TileType.GetTileType("WallJumpLeft", "wallJump", 0, 0, Solidity.LeftWall, TargetLayer.semisolid, (tileType: TileType) => {
             tileType.isJumpWall = true;
@@ -1332,6 +1394,71 @@ class TileType {
             tileType.isExemptFromSlime = true;
         })
     }
+
+
+    public static get WindRight(): TileType {
+        return TileType.GetAnimatedTileType("WindRight", "gust", [0,1,2,3,4,5,6,7,8,9,10,11].map(a => ({x: a, y: 1})), 2, Solidity.None, TargetLayer.main, (tileType: TileType) => {
+            tileType.windX = 0.6;
+            tileType.clockWiseRotationTileName = "WindDown";
+            tileType.editorTile = tiles["gust"][0][2];
+        })
+    }
+    public static get WindLeft(): TileType {
+        return TileType.GetAnimatedTileType("WindLeft", "gust", [0,1,2,3,4,5,6,7,8,9,10,11].map(a => ({x: 11 - a, y: 1})), 2, Solidity.None, TargetLayer.main, (tileType: TileType) => {
+            tileType.windX = -0.6;
+            tileType.clockWiseRotationTileName = "WindUp";
+            tileType.editorTile = tiles["gust"][2][2];
+        })
+    }
+    public static get WindUp(): TileType {
+        return TileType.GetAnimatedTileType("WindUp", "gust", [0,1,2,3,4,5,6,7,8,9,10,11].map(a => ({x: a, y: 0})), 2, Solidity.None, TargetLayer.main, (tileType: TileType) => {
+            tileType.windY = -0.6;
+            tileType.clockWiseRotationTileName = "WindRight";
+            tileType.editorTile = tiles["gust"][1][2];
+        })
+    }
+    public static get WindDown(): TileType {
+        return TileType.GetAnimatedTileType("WindDown", "gust", [0,1,2,3,4,5,6,7,8,9,10,11].map(a => ({x: 11 - a, y: 0})), 2, Solidity.None, TargetLayer.main, (tileType: TileType) => {
+            tileType.windY = 0.6;
+            tileType.clockWiseRotationTileName = "WindLeft";
+            tileType.editorTile = tiles["gust"][3][2];
+        })
+    }
+
+
+    public static get FastWindRight(): TileType {
+        return TileType.GetAnimatedTileType("FastWindRight", "gust", [0,1,2,3,4,5,6,7,8,9,10,11].map(a => ({x: a, y: 1})), 1, Solidity.None, TargetLayer.main, (tileType: TileType) => {
+            tileType.windX = 1.2;
+            tileType.clockWiseRotationTileName = "FastWindDown";
+            tileType.editorTile = tiles["gust"][4][2];
+        })
+    }
+    public static get FastWindLeft(): TileType {
+        return TileType.GetAnimatedTileType("FastWindLeft", "gust", [0,1,2,3,4,5,6,7,8,9,10,11].map(a => ({x: 11 - a, y: 1})), 1, Solidity.None, TargetLayer.main, (tileType: TileType) => {
+            tileType.windX = -1.2;
+            tileType.clockWiseRotationTileName = "FastWindUp";
+            tileType.editorTile = tiles["gust"][6][2];
+        })
+    }
+    public static get FastWindUp(): TileType {
+        return TileType.GetAnimatedTileType("FastWindUp", "gust", [0,1,2,3,4,5,6,7,8,9,10,11].map(a => ({x: a, y: 0})), 1, Solidity.None, TargetLayer.main, (tileType: TileType) => {
+            tileType.windY = -1.2;
+            tileType.clockWiseRotationTileName = "FastWindRight";
+            tileType.editorTile = tiles["gust"][5][2];
+        })
+    }
+    public static get FastWindDown(): TileType {
+        return TileType.GetAnimatedTileType("FastWindDown", "gust", [0,1,2,3,4,5,6,7,8,9,10,11].map(a => ({x: 11 - a, y: 0})), 1, Solidity.None, TargetLayer.main, (tileType: TileType) => {
+            tileType.windY = 1.2;
+            tileType.clockWiseRotationTileName = "FastWindLeft";
+            tileType.editorTile = tiles["gust"][7][2];
+        })
+    }
+
+
+
+
+
 
     public static get WallWarpLeft(): TileType {
         return TileType.GetAnimatedTileType("WallWarpLeft", "warpWall", [0,1,2,3,4,5,6,7,8,9,10,11].map(y => ({x: 0, y: y})), 6, Solidity.LeftWall, TargetLayer.semisolid, (tileType: TileType) => {

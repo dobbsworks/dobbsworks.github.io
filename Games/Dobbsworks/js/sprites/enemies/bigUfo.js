@@ -39,6 +39,7 @@ var BigYufo = /** @class */ (function (_super) {
             return;
         this.SkyPatrol(0.5);
         this.dy *= 0.94;
+        this.ReactToVerticalWind();
     };
     BigYufo.prototype.IsSpriteInTractorBeam = function (sprite) {
         return sprite.x < this.xRight &&

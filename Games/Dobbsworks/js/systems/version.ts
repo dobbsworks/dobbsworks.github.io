@@ -1,5 +1,5 @@
 class Version {
-    static Current = "1.5.2";
+    static Current = "1.6.0";
 
     private static Compare(v1: string, v2: string): number {
         let v1Subs = v1.split(".");
@@ -22,5 +22,10 @@ class Version {
 
     static IsLevelVersionNewerThanClient(levelVersion: string): boolean {
         return Version.Compare(Version.Current, levelVersion) == -1;
+    }
+
+    static DoesCurrentLevelUseOldDoorPairing() {
+        if (!currentMap) return false;
+        return Version.Compare("1.6.0", currentMap.mapVersion) == 1;
     }
 }

@@ -3,7 +3,7 @@ class EditorButtonTile extends EditorButton {
     static AllTileButtons: EditorButtonTile[] = [];
 
     constructor(public tileType: TileType, public tooltip: string) {
-        super(tileType.imageTile, tooltip);
+        super(tileType.editorTile ? tileType.editorTile : tileType.imageTile, tooltip);
         this.linkedFillType = new SimpleFill(tileType);
         this.onClickEvents.push(() => {
             editorHandler.currentTool = new editorHandler.selectedFillBrush(this.linkedFillType);

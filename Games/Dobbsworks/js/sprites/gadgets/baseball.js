@@ -57,6 +57,7 @@ var Baseball = /** @class */ (function (_super) {
             this.rotation -= this.GetTotalDx() / 2;
         }
         this.ReactToPlatformsAndSolids();
+        this.ReactToVerticalWind();
         this.MoveByVelocity();
     };
     Baseball.prototype.GetFrameData = function (frameNum) {

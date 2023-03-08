@@ -22,6 +22,8 @@ class PrickleShell extends Enemy {
         this.jumpTimer++;
         if (this.jumpTimer > 24) {
             this.ApplyGravity();
+        } else {
+            this.ReactToVerticalWind();
         }
 
         // removing inertia, let em ride

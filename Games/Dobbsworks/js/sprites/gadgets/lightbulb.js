@@ -28,6 +28,11 @@ var Lightbulb = /** @class */ (function (_super) {
         this.ReactToWater();
         this.ReactToPlatformsAndSolids();
         this.MoveByVelocity();
+        if (this.GetIsPowered() && this.age % 90 == 0) {
+            var shimmerRipple = new ShimmerRipple(this.xMid, this.yMid, this.layer, []);
+            shimmerRipple.maxRadiusPixels = 160;
+            this.layer.sprites.push(shimmerRipple);
+        }
     };
     Lightbulb.prototype.GetIsPowered = function () {
         var _a;

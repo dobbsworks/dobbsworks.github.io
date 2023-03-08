@@ -37,6 +37,7 @@ class LittleJelly extends Enemy {
                     this.jumpPrepTimer = 0;
                     this.dy = -2.5;
                     this.parentSprite = null;
+                    this.OnJump();
                 }
                 this.wasOnGround = true;
                 if (player) {
@@ -62,6 +63,7 @@ class LittleJelly extends Enemy {
         }
     }
 
+    OnJump(): void { }
     WhileOnGround(): void { }
     OnGroundLanding(): void {
         audioHandler.PlaySound("stuck-jump", true);
@@ -129,14 +131,16 @@ class LittleJelly extends Enemy {
 class ChillyJelly extends LittleJelly {
     numberOfGroundFrames = 150;
     rowNumber = 1;
-    WhileOnGround(): void {
-        if (this.jumpPrepTimer == 1) {
-            let frost = this.layer.sprites.filter(a => a instanceof FrostEffect && a.targetSprite == this);
-            if (frost.length == 0) {
-                let frostSprite = new FrostEffect(this.x, this.y, this.layer, []);
-                frostSprite.targetSprite = this;
-                this.layer.sprites.push(frostSprite);
-            }
+    // WhileOnGround(): void {
+    //     if (this.jumpPrepTimer == 1) {
+    //     }
+    // }
+    OnJump(): void {
+        let frost = this.layer.sprites.filter(a => a instanceof FrostEffect && a.targetSprite == this);
+        if (frost.length == 0) {
+            let frostSprite = new FrostEffect(this.x, this.y, this.layer, []);
+            frostSprite.targetSprite = this;
+            this.layer.sprites.push(frostSprite);
         }
     }
     OnGroundLanding(): void {
@@ -148,6 +152,8 @@ class ChillyJelly extends LittleJelly {
         //     frost.forEach(a => a.dx = frostSpeed * 1);
         //     frost.forEach(a => { if (a instanceof FrostEffect) a.targetSprite = null });
         // }
+        let frost = this.layer.sprites.filter(a => a instanceof FrostEffect && a.targetSprite == this);
+        for (let f of frost) f.isActive = false;
     }
 }
 

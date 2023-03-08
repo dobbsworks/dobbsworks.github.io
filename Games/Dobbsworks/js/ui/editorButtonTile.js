@@ -15,7 +15,7 @@ var __extends = (this && this.__extends) || (function () {
 var EditorButtonTile = /** @class */ (function (_super) {
     __extends(EditorButtonTile, _super);
     function EditorButtonTile(tileType, tooltip) {
-        var _this = _super.call(this, tileType.imageTile, tooltip) || this;
+        var _this = _super.call(this, tileType.editorTile ? tileType.editorTile : tileType.imageTile, tooltip) || this;
         _this.tileType = tileType;
         _this.tooltip = tooltip;
         _this.linkedFillType = new SimpleFill(tileType);

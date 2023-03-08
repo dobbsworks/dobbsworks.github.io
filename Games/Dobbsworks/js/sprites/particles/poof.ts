@@ -5,7 +5,7 @@ class Poof extends Sprite {
     isExemptFromSilhoutte = true;
 
     Update(): void {
-        this.MoveByVelocity();
+        //this.MoveByVelocity();
         if (this.age > 14) this.isActive = false;
     }
 
@@ -48,6 +48,7 @@ class Pow extends Sprite {
         };
     }
 }
+
 
 class Twinkle extends Pow {
     imageName = "twinkle";

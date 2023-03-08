@@ -15,6 +15,7 @@ class BigYufo extends Enemy {
         if (!this.WaitForOnScreen()) return;
         this.SkyPatrol(0.5);
         this.dy *= 0.94;
+        this.ReactToVerticalWind();
     }
 
     IsSpriteInTractorBeam(sprite: Sprite): boolean {

@@ -11,6 +11,9 @@ var Sprite = /** @class */ (function () {
         this.dy = 0;
         this.dxFromPlatform = 0;
         this.dyFromPlatform = 0;
+        this.dxFromWind = 0;
+        this.dyFromWind = 0;
+        this.windDy = 0; // current wind tile's strength, special handling with fan gusts
         this.ledgeGrabDistance = 3;
         this.isOnGround = true;
         this.standingOn = [];
@@ -49,6 +52,11 @@ var Sprite = /** @class */ (function () {
         this.maxDY = 2;
         this.waterMinDy = 0.5;
     }
+    Object.defineProperty(Sprite, "clockwiseRotationSprite", {
+        get: function () { return null; },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(Sprite.prototype, "yBottom", {
         get: function () { return +((this.y + this.height).toFixed(3)); },
         enumerable: false,
@@ -89,11 +97,13 @@ var Sprite = /** @class */ (function () {
     Sprite.prototype.GetTotalDx = function () {
         var ret = this.dx;
         ret += this.dxFromPlatform;
+        ret += this.dxFromWind;
         return ret;
     };
     Sprite.prototype.GetTotalDy = function () {
         var ret = this.dy;
         ret += this.dyFromPlatform;
+        ret += this.dyFromWind;
         return ret;
     };
     Sprite.prototype.SharedUpdate = function () {
@@ -126,6 +136,29 @@ var Sprite = /** @class */ (function () {
                 }
             }
         }
+        var windTile = this.layer.GetTileByPixel(this.xMid, this.yMid).tileType;
+        // if the wind speed is greater than the sprite's speed,
+        // give a bit more dx to the sprite (but don't exceed wind speed?)
+        if (windTile.windX != 0) {
+            //this.dx = (this.dx * 9 + windTile.windX/2) / 10;
+            this.dxFromWind = windTile.windX;
+        }
+        else {
+            if (Math.abs(this.dxFromWind) < 0.1) {
+                this.dx += this.dxFromWind;
+                this.dxFromWind = 0;
+            }
+            else {
+                this.dx += (this.dxFromWind > 0) ? 0.1 : -0.1;
+                this.dxFromWind -= (this.dxFromWind > 0) ? 0.1 : -0.1;
+            }
+        }
+        if (windTile.windY < 0)
+            this.gustUpTimer = 3;
+        this.windDy = windTile.windY;
+    };
+    Sprite.prototype.ReactToVerticalWind = function () {
+        this.dyFromWind = this.windDy;
     };
     Sprite.prototype.ApplyGravity = function () {
         var _a, _b;
@@ -167,17 +200,24 @@ var Sprite = /** @class */ (function () {
         }
         if (this.gustUpTimer > 0) {
             targetFallSpeed = -0.8;
+            if (this.windDy < 0) {
+                targetFallSpeed = this.windDy + 0.4;
+            }
             if (this instanceof Player) {
                 if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, false) || KeyboardHandler.IsKeyPressed(KeyAction.Up, false)) {
-                    targetFallSpeed = -1.5;
+                    targetFallSpeed += -0.7;
                 }
                 else if (KeyboardHandler.IsKeyPressed(KeyAction.Down, false)) {
-                    targetFallSpeed = -0.3;
+                    targetFallSpeed += 0.5;
                 }
                 if ((_b = this.heldItem) === null || _b === void 0 ? void 0 : _b.slowFall) {
-                    targetFallSpeed = -2;
+                    targetFallSpeed += -1.2;
                 }
             }
+        }
+        if (this.windDy > 0) {
+            targetFallSpeed += this.windDy;
+            fallAccel += this.windDy * 0.1;
         }
         // adjust dy
         if (Math.abs(this.dy - targetFallSpeed) < fallAccel) {
@@ -477,7 +517,6 @@ var Sprite = /** @class */ (function () {
                         ((wallLocationIfALittleHigher == -1 || wallLocationIfALittleHigher > wallLocation) && direction == 1);
                     if (sprite.GetTotalDy() >= 0 && heightToNextTile <= sprite.ledgeGrabDistance && isHigherWallFarther) {
                         // ledge grab!
-                        //console.log("LEDGE GRAB", wallLocationIfALittleHigher < wallLocation);
                         sprite.y -= heightToNextTile;
                         sprite.dy = 0;
                     }
@@ -797,9 +836,36 @@ var Sprite = /** @class */ (function () {
     };
     Sprite.prototype.GetThumbnail = function () {
         var frameData = this.GetFrameData(0);
+        if (this instanceof ReviveWings) {
+            frameData = {
+                imageTile: tiles["angelWings"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            };
+        }
+        if (this instanceof BaddleTrigger) {
+            frameData = {
+                imageTile: tiles["baddle"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            };
+        }
         if (this instanceof CameraLockHorizontal) {
             frameData = {
                 imageTile: tiles["camera"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            };
+        }
+        if (this instanceof CameraLockVertical) {
+            frameData = {
+                imageTile: tiles["camera"][1][0],
                 xFlip: false,
                 yFlip: false,
                 xOffset: 0,

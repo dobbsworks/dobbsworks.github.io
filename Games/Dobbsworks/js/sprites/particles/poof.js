@@ -23,7 +23,7 @@ var Poof = /** @class */ (function (_super) {
         return _this;
     }
     Poof.prototype.Update = function () {
-        this.MoveByVelocity();
+        //this.MoveByVelocity();
         if (this.age > 14)
             this.isActive = false;
     };

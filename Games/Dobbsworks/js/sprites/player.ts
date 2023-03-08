@@ -12,6 +12,7 @@ class Player extends Sprite {
     public isClimbing: boolean = false;
     public isHanging: boolean = false;
     public isSliding: boolean = false;
+    public justLanded: boolean = false;
     public slideDirection: -1 | 1 = 1;
     private currentSlope = 0;
     private climbCooldownTimer: number = -1; // how long since climbing (to avoid regrabbing ladder while climbing up)
@@ -50,7 +51,13 @@ class Player extends Sprite {
     private props = ["x", "y", "dx", "dy", "isOnGround"];
     private history: any[] = [];
     zIndex = 1;
-    private moveSpeed = 1.2;
+    protected moveSpeed = 1.2;
+
+    private floatFramesLeftForThisJump = 0;
+    private isFloating = false;
+    private maxFloatDuration = 100;
+    protected canPlayerFloatJump = false;
+    protected sourceImageOffset = 0;
 
     LogProps(): void {
         let obj: any = {}
@@ -79,7 +86,9 @@ class Player extends Sprite {
         this.HandleEnemies(); // includes gravity
         this.PlayerInertia();
         this.PushByAutoscroll();
+        let wasOnGround = this.isOnGround;
         this.ReactToPlatformsAndSolids();
+        this.justLanded = !wasOnGround && this.isOnGround;
         this.SlideDownSlopes();
         if (!this.yoyoTarget || !this.yoyoTarget.isActive) this.MoveByVelocity();
         this.UpdateHeldItemLocation();
@@ -92,7 +101,7 @@ class Player extends Sprite {
         //     this.dx *= 0.5;
         // }
         if (!this.yoyoTarget) this.HandleDoors();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true) && this.age > 1 && !levelGenerator) this.OnPlayerDead();
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true) && this.age > 1 && !levelGenerator) this.OnPlayerDead(false);
         this.replayHandler.StoreFrame()
 
         if (this.twinkleCount > 0) {
@@ -188,11 +197,13 @@ class Player extends Sprite {
         if (this.isOnGround || this.isClimbing || ((this.isInWater || this.isInQuicksand) && this.heldItem == null) || this.isTouchingStickyWall || (this.heldItem?.canHangFrom)) {
             if (this.age > 1) this.coyoteTimer = 0;
             this.isSpinJumping = false;
+            this.floatFramesLeftForThisJump = 0;
         }
         this.coyoteTimer++;
 
         let isJumpHeld = KeyboardHandler.IsKeyPressed(KeyAction.Action1, false);
         if (this.jumpTimer > -1) {
+            if (this.windDy > 0) this.jumpTimer += this.windDy;
             if (isJumpHeld || this.forcedJumpTimer > 0) this.jumpTimer++;
             if (!isJumpHeld && this.forcedJumpTimer <= 0) {
                 this.jumpTimer = -1;
@@ -205,11 +216,22 @@ class Player extends Sprite {
             // jumptimer 14
         }
 
-        if (this.jumpTimer == -1 && !this.isClimbing) {
-            this.ApplyGravity();
-            if (isJumpHeld && this.dy > 0) this.dy *= 0.97;
-            // can call this twice for "heavy" movement
-            //this.ApplyGravity();
+        if (this.isFloating) {
+            if (isJumpHeld) {
+                this.dy = 0;
+                this.floatFramesLeftForThisJump--;
+                if (this.floatFramesLeftForThisJump <= 0) this.isFloating = false;
+            } else {
+                this.isFloating = false;
+                this.floatFramesLeftForThisJump = 0;
+            }
+        } else {
+            if (this.jumpTimer == -1 && !this.isClimbing) {
+                this.ApplyGravity();
+                if (isJumpHeld && this.dy > 0) this.dy *= 0.97;
+                // can call this twice for "heavy" movement
+                //this.ApplyGravity();
+            }
         }
         if (this.dy > this.maxDY) this.dy = this.maxDY;
         if (this.dy > this.maxDY / 2.5 && this.wallDragDirection != 0) this.dy = this.maxDY / 2.5;
@@ -219,7 +241,7 @@ class Player extends Sprite {
         if (isJumpInitialPressed) this.jumpBufferTimer = 0;
         if (this.jumpBufferTimer > 3) this.jumpBufferTimer = -1;
 
-        let spinJumper = <SpinRing>this.layer.sprites.find(a => a instanceof SpinRing && a.Overlaps(this));
+        let spinJumper = <SpinRing>this.layer.sprites.find(a => a instanceof SpinRing && a.Overlaps(this) && a.allowsSpinJump);
 
         if (this.jumpBufferTimer > -1 && (this.coyoteTimer < 5 || this.IsNeighboringWallJumpTiles() || (spinJumper && this.heldItem == null)) && this.forcedJumpTimer <= 0) {
             if (spinJumper) {
@@ -227,10 +249,21 @@ class Player extends Sprite {
                 audioHandler.PlaySound("spinRing", true);
                 this.twinkleCount = 4;
                 spinJumper.OnPlayerUseSpinRing();
+                this.Jump();
+                if (spinJumper.direction.x != 0) {
+                    this.dx = 1.5 * spinJumper.direction.x;
+                    this.dy = -0.5;
+                    player.neutralTimer = 20;
+                    player.forcedJumpTimer = 20;
+                }
+                if (spinJumper.direction == Direction.Down) {
+                    this.dx = 0;
+                    this.dy = 2;
+                }
             } else {
                 this.isSpinJumping = false;
+                this.Jump();
             }
-            this.Jump();
             this.isSliding = false;
         }
 
@@ -258,6 +291,7 @@ class Player extends Sprite {
             this.isClimbing = true;
             this.isSliding = false;
         }
+        let wasClimbing = this.isClimbing;
         if (!isTouchingLadder) {
             this.isClimbing = false;
         }
@@ -283,7 +317,7 @@ class Player extends Sprite {
                 this.dy = 0;
                 if (!leftPressed && this.dx < 0) this.dx *= 0.8;
                 if (!rightPressed && this.dx > 0) this.dx *= 0.8;
-                
+
                 let conveyorSpeeds = this.touchedCeilings.map(a => a.tileType.conveyorSpeed).filter(a => a !== 0);
                 if (conveyorSpeeds.length) this.dxFromPlatform = -Math.max(...conveyorSpeeds);
             }
@@ -351,12 +385,22 @@ class Player extends Sprite {
                         maxSpeed = 0.5;
                     }
 
-                    this.dx += this.targetDirection * accel;
-
-                    // cap speed
-                    if (Math.abs(this.dx) > maxSpeed) {
-                        this.dx = maxSpeed * (this.dx > 0 ? 1 : -1);
+                    let shouldCapSpeed = (leftPressed || rightPressed) && this.dxFromWind == 0;
+                    // only add speed when below max speed
+                    if (this.dx * this.targetDirection < maxSpeed) {
+                        this.dx += this.targetDirection * accel;
+                    } 
+                    if (shouldCapSpeed) {
+                        if (Math.abs(this.dx) > maxSpeed) {
+                            this.dx = maxSpeed * (this.dx > 0 ? 1 : -1);
+                        }
                     }
+
+                    // this.dx += this.targetDirection * accel;
+                    // // cap speed
+                    // if (Math.abs(this.dx) > maxSpeed) {
+                    //     this.dx = maxSpeed * (this.dx > 0 ? 1 : -1);
+                    // }
                 }
             }
         }
@@ -372,6 +416,16 @@ class Player extends Sprite {
 
         if (this.standingOn.some(a => !a.tileType.canWalkOn)) this.dx = 0;
 
+        if (this.dy > 0 && isJumpHeld && this.canPlayerFloatJump && !this.isFloating && this.floatFramesLeftForThisJump > 0) {
+            this.isFloating = true;
+        }
+        if (this.isOnGround || this.isClimbing || wasClimbing || this.isInWater || this.isInQuicksand) {
+            this.RefreshFloatTimer();
+        }
+    }
+
+    RefreshFloatTimer(): void {
+        this.floatFramesLeftForThisJump = this.maxFloatDuration;
     }
 
     SlideDownSlopes() {
@@ -477,6 +531,7 @@ class Player extends Sprite {
             this.dy = 0;
             this.jumpTimer = -1;
         }
+        this.RefreshFloatTimer();
     }
 
     Bounce(): void {
@@ -487,13 +542,14 @@ class Player extends Sprite {
         this.jumpTimer = 0;
         this.isClimbing = false;
         this.parentSprite = null;
+        this.RefreshFloatTimer();
     }
 
     HandleBreath(isLosingBreath: boolean): void {
         if (isLosingBreath) {
             this.breathTimer = 120;
             this.currentBreath -= 1;
-            if (this.currentBreath <= 0) this.OnPlayerDead();
+            if (this.currentBreath <= 0) this.OnPlayerDead(true);
         } else {
             if (this.breathTimer > 0) this.breathTimer -= 1;
             if (this.breathTimer <= 0 && this.currentBreath < this.maxBreath) this.currentBreath += 4;
@@ -567,12 +623,12 @@ class Player extends Sprite {
         if (camera.isAutoscrollingHorizontally || camera.isAutoscrollingVertically) {
             let leftEdge = camera.GetLeftCameraEdge();
             if (this.x < leftEdge) {
-                if (this.isTouchingRightWall && camera.autoscrollX > 0) this.OnPlayerDead();
+                if (this.isTouchingRightWall && camera.autoscrollX > 0) this.OnPlayerDead(false);
                 else this.x = leftEdge;
             }
             let rightEdge = camera.GetRightCameraEdge();
             if (this.xRight > rightEdge) {
-                if (this.isTouchingLeftWall && camera.autoscrollX < 0) this.OnPlayerDead();
+                if (this.isTouchingLeftWall && camera.autoscrollX < 0) this.OnPlayerDead(false);
                 else this.x = rightEdge - this.width;
             }
 
@@ -580,13 +636,13 @@ class Player extends Sprite {
                 // scrolling down
                 if (this.yBottom < camera.GetTopCameraEdge() - 24 && this.standingOn.length) {
                     // more than two tiles above screen, standing on surface
-                    this.OnPlayerDead();
+                    this.OnPlayerDead(false);
                 }
             }
 
             if (this.y > camera.GetBottomCameraEdge() + 12) {
                 // more than one tile below screen edge
-                this.OnPlayerDead();
+                this.OnPlayerDead(false);
             }
 
         }
@@ -654,7 +710,7 @@ class Player extends Sprite {
         let isDead = false;
         if (this.y > this.layer.GetMaxY() + 5) {
             this.dy -= 3;
-            this.OnPlayerDead();
+            this.OnPlayerDead(true);
             return;
         }
 
@@ -676,7 +732,7 @@ class Player extends Sprite {
         }
         if (isDead) {
             this.dy -= 3;
-            this.OnPlayerDead();
+            this.OnPlayerDead(true);
             return;
         }
         if (!isHurt) {
@@ -709,19 +765,19 @@ class Player extends Sprite {
                 nextHeart.isActive = false;
                 nextHeart.ReplaceWithSpriteType(ExtraHitHeartSmallLoss);
             } else {
-                this.OnPlayerDead();
+                this.OnPlayerDead(true);
             }
         }
     }
 
-    OnPlayerDead(): void {
+    OnPlayerDead(canRespawn: boolean): void {
         if (!this.isActive) return;
 
         this.OnDead();
         this.isActive = false;
         // log player death
         let newDeathCount = StorageService.IncrementDeathCounter(currentLevelListing?.level.code || "");
-        let deadPlayer = new DeadPlayer(this, newDeathCount);
+        let deadPlayer = new DeadPlayer(this, newDeathCount, canRespawn);
         editorHandler.bankedCheckpointTime += this.age;
         if (levelGenerator) levelGenerator.bankedClearTime += this.age;
         this.layer.sprites.push(deadPlayer);
@@ -926,6 +982,7 @@ class Player extends Sprite {
 
     GetFrameData(frameNum: number): FrameData {
         let sourceImage = "dobbs";
+        let sourceImageOffset = this.sourceImageOffset;
         if (this.iFrames > 64) {
             if (Math.floor(this.iFrames / 8) % 2 == 0) sourceImage = "dobbsGhost";
         } else if (this.iFrames > 0) {
@@ -952,24 +1009,24 @@ class Player extends Sprite {
         let actualFrame = Math.floor(this.frameNum) % 2;
 
         let row = this.heldItem ? 1 : 0;
-        let tile = tiles[sourceImage][0][row];
+        let tile = tiles[sourceImage][0 + sourceImageOffset][row];
         if (this.dx != 0) {
-            tile = tiles[sourceImage][1 + actualFrame][row]
+            tile = tiles[sourceImage][1 + actualFrame + sourceImageOffset][row]
         }
         if (!this.isOnGround) {
             if (this.isInWater && this.heldItem == null) {
-                if (this.swimTimer <= 2) tile = tiles[sourceImage][2][3];
-                else if (this.swimTimer < 12) tile = tiles[sourceImage][1][3];
-                else tile = tiles[sourceImage][2][3];
+                if (this.swimTimer <= 2) tile = tiles[sourceImage][2 + sourceImageOffset][3];
+                else if (this.swimTimer < 12) tile = tiles[sourceImage][1 + sourceImageOffset][3];
+                else tile = tiles[sourceImage][2 + sourceImageOffset][3];
             } else {
-                tile = tiles[sourceImage][3][row];
+                tile = tiles[sourceImage][3 + sourceImageOffset][row];
 
                 if (this.isSpinJumping) {
                     let spinTiles = [
-                        tiles[sourceImage][3][row],
-                        tiles[sourceImage][0][3],
-                        tiles[sourceImage][3][row],
-                        tiles[sourceImage][1][4],
+                        tiles[sourceImage][3 + sourceImageOffset][row],
+                        tiles[sourceImage][0 + sourceImageOffset][3],
+                        tiles[sourceImage][3 + sourceImageOffset][row],
+                        tiles[sourceImage][1 + sourceImageOffset][4],
                     ];
                     tile = spinTiles[Math.floor(frameNum / 4) % 4];
                     if (Math.floor(frameNum / 4) % 4 == 2) xFlip = !xFlip;
@@ -979,27 +1036,27 @@ class Player extends Sprite {
 
         if (this.isOnGround && this.targetDirection == 0 && !this.heldItem) {
             if (KeyboardHandler.IsKeyPressed(KeyAction.Down, false)) {
-                tile = tiles[sourceImage][2][2];
+                tile = tiles[sourceImage][2 + sourceImageOffset][2];
             } else if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false)) {
-                tile = tiles[sourceImage][3][2];
+                tile = tiles[sourceImage][3 + sourceImageOffset][2];
             }
         }
 
         if (this.isClimbing) {
-            tile = tiles[sourceImage][0][3];
+            tile = tiles[sourceImage][0 + sourceImageOffset][3];
             xFlip = actualFrame % 2 == 0;
         }
 
         if (this.isHanging) {
-            tile = tiles[sourceImage][3][actualFrame % 2 ? 1 : 3];
+            tile = tiles[sourceImage][3 + sourceImageOffset][actualFrame % 2 ? 1 : 3];
         }
 
         if (this.isSliding) {
-            tile = tiles[sourceImage][3][row];
+            tile = tiles[sourceImage][3 + sourceImageOffset][row];
         }
 
         if (this.isTouchingStickyWall || this.wallDragDirection != 0) {
-            tile = tiles[sourceImage][0][4];
+            tile = tiles[sourceImage][0 + sourceImageOffset][4];
         }
 
         return {
@@ -1007,7 +1064,7 @@ class Player extends Sprite {
             xFlip: xFlip,
             yFlip: false,
             xOffset: 1,
-            yOffset: 0
+            yOffset: this.isFloating ? Math.sin(this.floatFramesLeftForThisJump / 20) / 2 : 0
         };
     }
 
@@ -1033,15 +1090,24 @@ class DeadPlayer extends Sprite {
     height = 9;
     width = 9;
     respectsSolidTiles = false;
+    imageOffset = 0;
 
-    constructor(player: Player, private deathCount: number) {
+    constructor(player: Player, private deathCount: number, public canRespawn: boolean) {
         super(player.x, player.y, player.layer, []);
+
+        if (player instanceof HoverPlayer) this.imageOffset = 1;
 
         this.dx = player.dx;
         this.dy = Math.max(0, player.dy) - 1;
     }
 
     Update(): void {
+        let accel = 0.04;
+        let maxSpeed = 2;
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Left, false)) this.dx -= accel;
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Right, false)) this.dx += accel;
+        if (this.dx > maxSpeed) this.dx = maxSpeed;
+        if (this.dx < -maxSpeed) this.dx = -maxSpeed;
         this.ApplyGravity();
         this.MoveByVelocity();
         if (this.age > 45) {
@@ -1062,12 +1128,31 @@ class DeadPlayer extends Sprite {
                 camera.targetY = camera.y;
             }
         }
+
+        let overlappingWings = this.layer.sprites.filter(a => a instanceof ReviveWings && this.Overlaps(a));
+        if (this.age <= 60 && overlappingWings.length > 0 && this.canRespawn) {
+            audioHandler.PlaySound("respawn", true);
+            let newPlayer = this.ReplaceWithSpriteType(this.imageOffset == 1 ? HoverPlayer : Player);
+            let wings = overlappingWings[0];
+            wings.isActive = false;
+            newPlayer.x = wings.xMid - newPlayer.width/2;
+            newPlayer.y = wings.yMid - newPlayer.height/2;
+            newPlayer.dx = 0;
+            newPlayer.dy = 0;
+            camera.target = newPlayer;
+            camera.targetX = newPlayer.xMid;
+            camera.targetY = newPlayer.yBottom - 12;
+            camera.AdjustCameraTargetForMapBounds();
+            camera.transitionTimer = 30;
+            currentMap.fadeOutRatio = 0;
+        }
+
     }
     GetFrameData(frameNum: number): FrameData | FrameData[] {
         let tileCol = Math.floor(frameNum / 5) % 4
 
         return {
-            imageTile: tiles["dead"][tileCol][0],
+            imageTile: tiles["dead"][tileCol][this.imageOffset],
             xFlip: false,
             yFlip: false,
             xOffset: 1,
@@ -1093,4 +1178,10 @@ class DeadPlayer extends Sprite {
         ctx.strokeText(this.deathCount.toString(), camera.canvas.width - 10, 10 + fontsize);
         ctx.fillText(this.deathCount.toString(), camera.canvas.width - 10, 10 + fontsize);
     }
+}
+
+class HoverPlayer extends Player {
+    protected canPlayerFloatJump = true;
+    protected sourceImageOffset = 4;
+    protected moveSpeed = 1;
 }

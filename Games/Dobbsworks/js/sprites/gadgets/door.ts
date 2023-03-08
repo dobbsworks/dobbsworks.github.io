@@ -13,7 +13,12 @@ class Door extends Sprite {
         if (allDoors.length == 0) return null;
         if (allDoors.length == 1) return allDoors[0];
         let doorHorizontalDistances = allDoors.map(a => Math.abs(a.originalX - this.originalX));
-        doorHorizontalDistances.sort();
+        
+        if (Version.DoesCurrentLevelUseOldDoorPairing()) {
+            doorHorizontalDistances.sort();
+        } else {
+            doorHorizontalDistances.sort((a,b) => a - b);
+        }
         let minHorizontalDistance = doorHorizontalDistances[0];
 
         // grab all doors that are tied for closest horizontally
@@ -21,7 +26,12 @@ class Door extends Sprite {
         if (closestDoorsHorizontally.length == 1) return closestDoorsHorizontally[0];
 
         let doorVerticalDistances = allDoors.map(a => Math.abs(a.originalY - this.originalY));
-        doorVerticalDistances.sort();
+        
+        if (Version.DoesCurrentLevelUseOldDoorPairing()) {
+            doorVerticalDistances.sort();
+        } else {
+            doorVerticalDistances.sort((a,b) => a - b);
+        }
         let minVerticalDistance = doorVerticalDistances[0];
 
         // grab all doors that are tied for closest vertically AND horizontally

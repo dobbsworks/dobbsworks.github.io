@@ -116,7 +116,12 @@ class SpritePlacer extends EditorTool {
             
             let maxAllowed = this.heldSprite.spriteInstance.maxAllowed;
             if (maxAllowed > 0) {
-                let spritesOnMap = editorHandler.sprites.filter(a => this.heldSprite && a.spriteType == this.heldSprite.spriteType);
+                let spritesOnMap = editorHandler.sprites.filter(a => {
+                    if (!this.heldSprite) return false;
+                    if (a.spriteType == Player && this.heldSprite.spriteType == HoverPlayer) return true;
+                    if (a.spriteType == HoverPlayer && this.heldSprite.spriteType == Player) return true;
+                    return a.spriteType == this.heldSprite.spriteType
+                });
                 if (spritesOnMap.length > maxAllowed) {
                     let numberToRemove = spritesOnMap.length - maxAllowed;
                     let spritesToRemove = spritesOnMap.slice(0, numberToRemove);

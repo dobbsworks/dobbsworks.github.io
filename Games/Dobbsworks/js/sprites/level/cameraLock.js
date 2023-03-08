@@ -46,3 +46,37 @@ var CameraLockHorizontal = /** @class */ (function (_super) {
     };
     return CameraLockHorizontal;
 }(Sprite));
+var CameraLockVertical = /** @class */ (function (_super) {
+    __extends(CameraLockVertical, _super);
+    function CameraLockVertical() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.height = 12;
+        _this.width = 12;
+        _this.respectsSolidTiles = false;
+        _this.canMotorHold = false;
+        return _this;
+    }
+    CameraLockVertical.prototype.Update = function () {
+    };
+    CameraLockVertical.prototype.GetFrameData = function (frameNum) {
+        if (editorHandler.isInEditMode) {
+            return {
+                imageTile: tiles["camera"][1][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            };
+        }
+        else {
+            return {
+                imageTile: tiles["empty"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            };
+        }
+    };
+    return CameraLockVertical;
+}(Sprite));

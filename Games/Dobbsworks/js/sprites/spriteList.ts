@@ -114,4 +114,22 @@ var spriteTypes: SpriteType[] = [
     BaddleTrigger,
     Saw,
     SmallSaw,
+
+    HoverPlayer,
+    PurpleCannon,
+    ReviveWings,
+
+    SpinRingRight,
+    SpinRingDown,
+    SpinRingLeft,
+    FragileSpinRingRight,
+    FragileSpinRingDown,
+    FragileSpinRingLeft,
+
+    PortalRing,
+    PortalRingRight,
+    PortalRingDown,
+    PortalRingLeft,
+    
+    CameraLockVertical,
 ];

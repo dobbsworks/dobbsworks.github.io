@@ -34,6 +34,7 @@ class AFish extends Enemy {
                 this.dx += (targetDx - this.dx) * 0.1;
             }
             this.dy += Math.cos(this.age / 30) / 1000;
+            this.ReactToVerticalWind();
         } else {
             this.ApplyGravity();
             this.ReplaceWithSpriteType(FloppingFish);

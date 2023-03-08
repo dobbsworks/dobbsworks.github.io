@@ -48,6 +48,7 @@ class RedBalloon extends Motor {
             this.floatTimer++;
             this.dx = -0.25;
             this.dy = Math.cos(this.floatTimer / 30) / 5;
+            this.ReactToVerticalWind();
         }
     }
     

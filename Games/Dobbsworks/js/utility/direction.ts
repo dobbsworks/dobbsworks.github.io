@@ -28,5 +28,5 @@ class Direction {
         throw "uh oh";
     }
 
-    static All: Direction[] = [Direction.Left, Direction.Right, Direction.Down, Direction.Up];
+    static All: Direction[] = [Direction.Up, Direction.Right, Direction.Down, Direction.Left];
 }

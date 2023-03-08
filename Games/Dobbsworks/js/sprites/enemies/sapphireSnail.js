@@ -60,6 +60,7 @@ var SapphireSnail = /** @class */ (function (_super) {
                 this.dy *= 0.95;
             this.wasPlayerOnLastFrame = playerStandingOn;
         }
+        this.ReactToVerticalWind();
     };
     SapphireSnail.prototype.GetFrameData = function (frameNum) {
         var col = Math.floor(this.frame / 10) % 2;

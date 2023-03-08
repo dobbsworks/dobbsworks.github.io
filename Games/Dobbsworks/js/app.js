@@ -197,7 +197,13 @@ function CreateTestMap() {
         currentMap = LevelMap.FromImportString(halloweenLevel);
     }
     else {
-        currentMap = LevelMap.FromImportString(pinkSkyLevel);
+        var color1 = Math.floor(Math.random() * 256 * 256 * 256).toString(16).padStart(6, "000000");
+        var color2 = Math.floor(Math.random() * 256 * 256 * 256).toString(16).padStart(6, "000000");
+        var newSkyColors = "#" + color1 + ",#" + color2;
+        var newSky = newSkyColors + ",0.00,1.00,0.30";
+        var levelComponents = pinkSkyLevel.split("|");
+        var stitchedLevel = levelComponents[0] + "|" + newSky + "|" + levelComponents.slice(2).join("|");
+        currentMap = LevelMap.FromImportString(stitchedLevel);
     }
     editorHandler.SwitchToPlayMode();
     __spreadArrays(editorHandler.editorParentElementsTop, editorHandler.editorParentElementsBottom).forEach(function (a) { return a.SnapToPlace(); });

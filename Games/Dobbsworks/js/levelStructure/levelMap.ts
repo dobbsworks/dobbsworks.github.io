@@ -47,6 +47,7 @@ class LevelMap {
     isInitialized = false;
 
     cameraLocksHorizontal: CameraLockHorizontal[] = [];
+    cameraLocksVertical: CameraLockVertical[] = [];
     spriteKillerCheckComplete = false;
     hasSpriteKillers = false;
 
@@ -58,6 +59,9 @@ class LevelMap {
             this.cameraLocksHorizontal = <CameraLockHorizontal[]>this.mainLayer.sprites.filter(a => a instanceof CameraLockHorizontal);
             this.cameraLocksHorizontal.forEach(a => a.isActive = false);
             this.cameraLocksHorizontal.sort((a, b) => a.x - b.x);
+            this.cameraLocksVertical = <CameraLockVertical[]>this.mainLayer.sprites.filter(a => a instanceof CameraLockVertical);
+            this.cameraLocksVertical.forEach(a => a.isActive = false);
+            this.cameraLocksVertical.sort((a, b) => a.y - b.y);
         }
         if (this.fadeOutRatio > 0) {
             this.fadeOutRatio -= 0.1;
@@ -91,6 +95,22 @@ class LevelMap {
                 }
             }
             this.standChangeTiles = this.standChangeTiles.filter(a => player.standingOn.indexOf(a.tile) > -1);
+
+            if (this.frameNum % 2 == 0) {
+                // only check every other frame to cut down on shimmers
+                let playerTouchingTiles = <LevelTile[]>[...player.standingOn, ...player.touchedCeilings, ...player.touchedLeftWalls, ...player.touchedRightWalls].filter(a => a instanceof LevelTile);
+                for (let tile of playerTouchingTiles) {
+                    if (tile.tileType.shimmers) {
+                        tile.layer.sprites.push(new Shimmer(tile.tileX * tile.layer.tileWidth, tile.tileY * tile.layer.tileHeight, tile.layer, []));
+                    }
+                }
+            }
+            if (player.justLanded && player.standingOn.some(a => a.tileType.shimmers)) {
+                // land down on shimmer
+                let shimmerRipple = new ShimmerRipple(player.xMid, player.yBottom, player.layer, []);
+                player.layer.sprites.push(shimmerRipple);
+            }
+
 
             for (let autoChangeTile of this.autoChangeTiles) {
                 autoChangeTile.standDuration++;
@@ -177,6 +197,40 @@ class LevelMap {
             camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
         }
 
+        if (camera.leftLockTimer > 0) {
+            let width = (1 - Math.cos((camera.leftLockTimer - 1) / 20)) * 12;
+            let cameraLeftEdgeGradient = camera.ctx.createLinearGradient(0, 0, width, 0);
+            cameraLeftEdgeGradient.addColorStop(0, "#FFFF");
+            cameraLeftEdgeGradient.addColorStop(1, "#FFF0");
+            camera.ctx.fillStyle = cameraLeftEdgeGradient;
+            camera.ctx.fillRect(0, 0, width, camera.canvas.height);
+        }
+        if (camera.rightLockTimer > 0) {
+            let width = (1 - Math.cos((camera.rightLockTimer - 1) / 20)) * 12;
+            let cameraRightEdgeGradient = camera.ctx.createLinearGradient(camera.canvas.width, 0, camera.canvas.width - width, 0);
+            cameraRightEdgeGradient.addColorStop(0, "#FFFF");
+            cameraRightEdgeGradient.addColorStop(1, "#FFF0");
+            camera.ctx.fillStyle = cameraRightEdgeGradient;
+            camera.ctx.fillRect(camera.canvas.width, 0, -width, camera.canvas.height);
+        }
+
+        if (camera.upLockTimer > 0) {
+            let height = (1 - Math.cos((camera.upLockTimer - 1) / 20)) * 12;
+            let cameraTopEdgeGradient = camera.ctx.createLinearGradient(0, 0, 0, height);
+            cameraTopEdgeGradient.addColorStop(0, "#FFFF");
+            cameraTopEdgeGradient.addColorStop(1, "#FFF0");
+            camera.ctx.fillStyle = cameraTopEdgeGradient;
+            camera.ctx.fillRect(0, 0, camera.canvas.width, height);
+        }
+        if (camera.downLockTimer > 0) {
+            let height = (1 - Math.cos((camera.downLockTimer - 1) / 20)) * 12;
+            let cameraBottomEdgeGradient = camera.ctx.createLinearGradient(0, camera.canvas.height, 0, camera.canvas.height - height);
+            cameraBottomEdgeGradient.addColorStop(0, "#FFFF");
+            cameraBottomEdgeGradient.addColorStop(1, "#FFF0");
+            camera.ctx.fillStyle = cameraBottomEdgeGradient;
+            camera.ctx.fillRect(0, camera.canvas.height, camera.canvas.width, -height);
+        }
+
         BenchmarkService.Log("DrawLayers");
         this.backdropLayer.DrawTiles(camera, this.frameNum);
         this.waterLayer.DrawTiles(camera, this.frameNum);
@@ -200,7 +254,7 @@ class LevelMap {
         if (player) {
             this.timerText = Utility.FramesToTimeText(player.age + (player.isActive ? editorHandler.bankedCheckpointTime : 0));
             if (levelGenerator) {
-                this.timerText = Utility.FramesToTimeText(player.age +  + (levelGenerator?.bankedClearTime || 0));
+                this.timerText = Utility.FramesToTimeText(player.age + + (levelGenerator?.bankedClearTime || 0));
             }
         } else {
             if (levelGenerator) this.timerText = "";
@@ -262,6 +316,13 @@ class LevelMap {
             doorTransition.spriteToMove.x = doorTransition.destinationDoor.xMid - doorTransition.spriteToMove.width / 2;
             doorTransition.spriteToMove.y = doorTransition.destinationDoor.yBottom - doorTransition.spriteToMove.height;
             doorTransition.destinationDoor.frame = 5;
+            camera.Reset();
+            if (player) {
+                camera.targetX = player.xMid;
+                camera.targetY = player.yBottom - 12;
+                camera.y = camera.targetY;
+                camera.x = camera.targetX;
+            }
         }
         // fade in
         if (doorTransition.timer >= 30 && doorTransition.timer <= 40) {
@@ -330,7 +391,7 @@ class LevelMap {
             this.bgColorBottom = skyDataPieces[1];
             editorHandler.skyEditor.bottomColorPanel.SetColor(this.bgColorBottom);
         }
-        
+
         for (let i = 0; i < importedSections.length; i++) {
             this.backgroundLayers[i] = BackgroundLayer.FromImportString(i, importedSections[i]);
         }
@@ -384,7 +445,7 @@ class LevelMap {
         ret.mapVersion = properties[0];
         let mapHeight = parseInt(properties[1]);
         ret.mapHeight = mapHeight;
-// 134ms
+        // 134ms
         if (isResettingLevel || true) {
             ret.LoadBackgroundsFromImportString(importSegments[1]);
         } else {
@@ -396,13 +457,13 @@ class LevelMap {
             // ret.overlayOpacity = oldMap.overlayOpacity;
             // ret.bgColorBottom = oldMap.bgColorBottom;
         }
-// 482ms
+        // 482ms
 
         ret.GetLayerList().forEach((layer, index) => {
             let newLayer = LevelLayer.FromImportString(importSegments[index + 2], index, mapHeight, ret);
             ((<any>ret)[TargetLayer[index] + "Layer"]) = newLayer;
         })
-// 2947ms
+        // 2947ms
 
         editorHandler.sprites = [];
         LevelMap.ImportSprites(importSegments[7]);
@@ -467,6 +528,7 @@ class LevelMap {
         currentMap.spriteWaterMode = false;
         currentMap.mapHeight = 12;
         currentMap.cameraLocksHorizontal = [];
+        currentMap.cameraLocksVertical = [];
         editorHandler.sprites = [];
 
         currentMap.GetLayerList().forEach((layer, index) => {

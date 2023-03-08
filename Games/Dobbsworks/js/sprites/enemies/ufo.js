@@ -91,6 +91,7 @@ var Yufo = /** @class */ (function (_super) {
                 }
             }
         }
+        this.ReactToVerticalWind();
     };
     Yufo.prototype.OnBounce = function () {
         if (this.state == "flipped" && player) {

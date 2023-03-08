@@ -62,6 +62,7 @@ var RedBalloon = /** @class */ (function (_super) {
             this.floatTimer++;
             this.dx = -0.25;
             this.dy = Math.cos(this.floatTimer / 30) / 5;
+            this.ReactToVerticalWind();
         }
     };
     RedBalloon.prototype.OnBounce = function () {

@@ -54,6 +54,7 @@ var BeeWithSunglasses = /** @class */ (function (_super) {
         }
         this.ApplyInertia();
         this.ReactToWater();
+        this.ReactToVerticalWind();
     };
     BeeWithSunglasses.prototype.OnBounce = function () {
         this.ReplaceWithSprite(new DeadEnemy(this));

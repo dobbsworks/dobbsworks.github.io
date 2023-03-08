@@ -43,6 +43,7 @@ var PorcoRosso = /** @class */ (function (_super) {
             this.dy *= 0.9;
             this.ReactToWater();
         }
+        this.ReactToVerticalWind();
     };
     PorcoRosso.prototype.PorcoMovement = function () {
         this.SkyPatrol(0.3);

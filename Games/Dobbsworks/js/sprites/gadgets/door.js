@@ -32,14 +32,24 @@ var Door = /** @class */ (function (_super) {
         if (allDoors.length == 1)
             return allDoors[0];
         var doorHorizontalDistances = allDoors.map(function (a) { return Math.abs(a.originalX - _this.originalX); });
-        doorHorizontalDistances.sort();
+        if (Version.DoesCurrentLevelUseOldDoorPairing()) {
+            doorHorizontalDistances.sort();
+        }
+        else {
+            doorHorizontalDistances.sort(function (a, b) { return a - b; });
+        }
         var minHorizontalDistance = doorHorizontalDistances[0];
         // grab all doors that are tied for closest horizontally
         var closestDoorsHorizontally = allDoors.filter(function (a) { return Math.abs(a.originalX - _this.originalX) == minHorizontalDistance; });
         if (closestDoorsHorizontally.length == 1)
             return closestDoorsHorizontally[0];
         var doorVerticalDistances = allDoors.map(function (a) { return Math.abs(a.originalY - _this.originalY); });
-        doorVerticalDistances.sort();
+        if (Version.DoesCurrentLevelUseOldDoorPairing()) {
+            doorVerticalDistances.sort();
+        }
+        else {
+            doorVerticalDistances.sort(function (a, b) { return a - b; });
+        }
         var minVerticalDistance = doorVerticalDistances[0];
         // grab all doors that are tied for closest vertically AND horizontally
         var closestDoors = closestDoorsHorizontally.filter(function (a) { return Math.abs(a.originalY - _this.originalY) == minVerticalDistance; });

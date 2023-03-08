@@ -195,7 +195,13 @@ function CreateTestMap() {
     if (SeasonalService.GetEvent() == SeasonalEvent.Halloween) {
         currentMap = LevelMap.FromImportString(halloweenLevel);
     } else {
-        currentMap = LevelMap.FromImportString(pinkSkyLevel);
+        let color1 = Math.floor(Math.random()*256*256*256).toString(16).padStart(6, "000000");
+        let color2 = Math.floor(Math.random()*256*256*256).toString(16).padStart(6, "000000");
+        let newSkyColors = `#${color1},#${color2}`;
+        let newSky = newSkyColors + ",0.00,1.00,0.30";
+        let levelComponents = pinkSkyLevel.split("|");
+        let stitchedLevel = levelComponents[0] + "|" + newSky + "|" + levelComponents.slice(2).join("|");
+        currentMap = LevelMap.FromImportString(stitchedLevel);
     }
 
     editorHandler.SwitchToPlayMode();

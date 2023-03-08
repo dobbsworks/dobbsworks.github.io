@@ -43,6 +43,7 @@ class Baseball extends Sprite {
         }
 
         this.ReactToPlatformsAndSolids();
+        this.ReactToVerticalWind();
         this.MoveByVelocity();
     }
 

@@ -42,6 +42,6 @@ var Direction = /** @class */ (function () {
     Direction.Right = new Direction(1, 0, "Right");
     Direction.Up = new Direction(0, -1, "Up");
     Direction.Down = new Direction(0, 1, "Down");
-    Direction.All = [Direction.Left, Direction.Right, Direction.Down, Direction.Up];
+    Direction.All = [Direction.Up, Direction.Right, Direction.Down, Direction.Left];
     return Direction;
 }());

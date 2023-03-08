@@ -74,6 +74,7 @@ class BlasterBullet extends Enemy {
         if (this.isTouchingLeftWall || this.isTouchingRightWall || this.isOnCeiling || this.standingOn.length) {
             this.ReplaceWithSpriteType(Poof);
         }
+        this.ReactToVerticalWind();
     }
     GetFrameData(frameNum: number): FrameData | FrameData[] {
         let col = Math.floor(frameNum / 10) % 2;

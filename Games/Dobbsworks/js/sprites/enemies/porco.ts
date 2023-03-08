@@ -26,6 +26,7 @@ class PorcoRosso extends Enemy {
             this.dy *= 0.9;
             this.ReactToWater();
         }
+        this.ReactToVerticalWind();
     }
 
     PorcoMovement(): void {

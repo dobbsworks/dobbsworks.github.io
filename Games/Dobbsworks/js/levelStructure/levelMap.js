@@ -39,6 +39,7 @@ var LevelMap = /** @class */ (function () {
         this.songId = 0;
         this.isInitialized = false;
         this.cameraLocksHorizontal = [];
+        this.cameraLocksVertical = [];
         this.spriteKillerCheckComplete = false;
         this.hasSpriteKillers = false;
         mainLayer.map = this;
@@ -59,6 +60,9 @@ var LevelMap = /** @class */ (function () {
             this.cameraLocksHorizontal = this.mainLayer.sprites.filter(function (a) { return a instanceof CameraLockHorizontal; });
             this.cameraLocksHorizontal.forEach(function (a) { return a.isActive = false; });
             this.cameraLocksHorizontal.sort(function (a, b) { return a.x - b.x; });
+            this.cameraLocksVertical = this.mainLayer.sprites.filter(function (a) { return a instanceof CameraLockVertical; });
+            this.cameraLocksVertical.forEach(function (a) { return a.isActive = false; });
+            this.cameraLocksVertical.sort(function (a, b) { return a.y - b.y; });
         }
         if (this.fadeOutRatio > 0) {
             this.fadeOutRatio -= 0.1;
@@ -103,6 +107,21 @@ var LevelMap = /** @class */ (function () {
                 _loop_2(standChangeTile);
             }
             this.standChangeTiles = this.standChangeTiles.filter(function (a) { return player.standingOn.indexOf(a.tile) > -1; });
+            if (this.frameNum % 2 == 0) {
+                // only check every other frame to cut down on shimmers
+                var playerTouchingTiles = __spreadArrays(player.standingOn, player.touchedCeilings, player.touchedLeftWalls, player.touchedRightWalls).filter(function (a) { return a instanceof LevelTile; });
+                for (var _d = 0, playerTouchingTiles_1 = playerTouchingTiles; _d < playerTouchingTiles_1.length; _d++) {
+                    var tile = playerTouchingTiles_1[_d];
+                    if (tile.tileType.shimmers) {
+                        tile.layer.sprites.push(new Shimmer(tile.tileX * tile.layer.tileWidth, tile.tileY * tile.layer.tileHeight, tile.layer, []));
+                    }
+                }
+            }
+            if (player.justLanded && player.standingOn.some(function (a) { return a.tileType.shimmers; })) {
+                // land down on shimmer
+                var shimmerRipple = new ShimmerRipple(player.xMid, player.yBottom, player.layer, []);
+                player.layer.sprites.push(shimmerRipple);
+            }
             var _loop_3 = function (autoChangeTile) {
                 autoChangeTile.standDuration++;
                 var tile = autoChangeTile.tile;
@@ -115,8 +134,8 @@ var LevelMap = /** @class */ (function () {
                 }
             };
             var this_3 = this;
-            for (var _d = 0, _e = this.autoChangeTiles; _d < _e.length; _d++) {
-                var autoChangeTile = _e[_d];
+            for (var _e = 0, _f = this.autoChangeTiles; _e < _f.length; _e++) {
+                var autoChangeTile = _f[_e];
                 _loop_3(autoChangeTile);
             }
             if (!this.spriteKillerCheckComplete) {
@@ -126,16 +145,16 @@ var LevelMap = /** @class */ (function () {
             if (this.hasSpriteKillers) {
                 var onScreenSprites = this.mainLayer.sprites.filter(function (a) { return a.IsOnScreen(); });
                 var deletedSprite = false;
-                for (var _f = 0, onScreenSprites_1 = onScreenSprites; _f < onScreenSprites_1.length; _f++) {
-                    var sprite = onScreenSprites_1[_f];
+                for (var _g = 0, onScreenSprites_1 = onScreenSprites; _g < onScreenSprites_1.length; _g++) {
+                    var sprite = onScreenSprites_1[_g];
                     if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof || sprite instanceof KeyDomino)
                         continue;
                     var xs = [sprite.x, sprite.xRight, sprite.xMid].map(function (a) { return Math.floor(a / _this.mainLayer.tileWidth); }).filter(Utility.OnlyUnique);
                     var ys = [sprite.y, sprite.yBottom, sprite.yMid].map(function (a) { return Math.floor(a / _this.mainLayer.tileHeight); }).filter(Utility.OnlyUnique);
-                    for (var _g = 0, xs_1 = xs; _g < xs_1.length; _g++) {
-                        var tileX = xs_1[_g];
-                        for (var _h = 0, ys_1 = ys; _h < ys_1.length; _h++) {
-                            var tileY = ys_1[_h];
+                    for (var _h = 0, xs_1 = xs; _h < xs_1.length; _h++) {
+                        var tileX = xs_1[_h];
+                        for (var _j = 0, ys_1 = ys; _j < ys_1.length; _j++) {
+                            var tileY = ys_1[_j];
                             var tile = this.mainLayer.GetTileByIndex(tileX, tileY);
                             if (tile.tileType == TileType.SpriteKiller) {
                                 sprite.ReplaceWithSpriteType(Poof);
@@ -199,6 +218,38 @@ var LevelMap = /** @class */ (function () {
                 opacityHex = "FF";
             camera.ctx.fillStyle = "#000000" + opacityHex;
             camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
+        }
+        if (camera.leftLockTimer > 0) {
+            var width = (1 - Math.cos((camera.leftLockTimer - 1) / 20)) * 12;
+            var cameraLeftEdgeGradient = camera.ctx.createLinearGradient(0, 0, width, 0);
+            cameraLeftEdgeGradient.addColorStop(0, "#FFFF");
+            cameraLeftEdgeGradient.addColorStop(1, "#FFF0");
+            camera.ctx.fillStyle = cameraLeftEdgeGradient;
+            camera.ctx.fillRect(0, 0, width, camera.canvas.height);
+        }
+        if (camera.rightLockTimer > 0) {
+            var width = (1 - Math.cos((camera.rightLockTimer - 1) / 20)) * 12;
+            var cameraRightEdgeGradient = camera.ctx.createLinearGradient(camera.canvas.width, 0, camera.canvas.width - width, 0);
+            cameraRightEdgeGradient.addColorStop(0, "#FFFF");
+            cameraRightEdgeGradient.addColorStop(1, "#FFF0");
+            camera.ctx.fillStyle = cameraRightEdgeGradient;
+            camera.ctx.fillRect(camera.canvas.width, 0, -width, camera.canvas.height);
+        }
+        if (camera.upLockTimer > 0) {
+            var height = (1 - Math.cos((camera.upLockTimer - 1) / 20)) * 12;
+            var cameraTopEdgeGradient = camera.ctx.createLinearGradient(0, 0, 0, height);
+            cameraTopEdgeGradient.addColorStop(0, "#FFFF");
+            cameraTopEdgeGradient.addColorStop(1, "#FFF0");
+            camera.ctx.fillStyle = cameraTopEdgeGradient;
+            camera.ctx.fillRect(0, 0, camera.canvas.width, height);
+        }
+        if (camera.downLockTimer > 0) {
+            var height = (1 - Math.cos((camera.downLockTimer - 1) / 20)) * 12;
+            var cameraBottomEdgeGradient = camera.ctx.createLinearGradient(0, camera.canvas.height, 0, camera.canvas.height - height);
+            cameraBottomEdgeGradient.addColorStop(0, "#FFFF");
+            cameraBottomEdgeGradient.addColorStop(1, "#FFF0");
+            camera.ctx.fillStyle = cameraBottomEdgeGradient;
+            camera.ctx.fillRect(0, camera.canvas.height, camera.canvas.width, -height);
         }
         BenchmarkService.Log("DrawLayers");
         this.backdropLayer.DrawTiles(camera, this.frameNum);
@@ -283,6 +334,13 @@ var LevelMap = /** @class */ (function () {
             doorTransition.spriteToMove.x = doorTransition.destinationDoor.xMid - doorTransition.spriteToMove.width / 2;
             doorTransition.spriteToMove.y = doorTransition.destinationDoor.yBottom - doorTransition.spriteToMove.height;
             doorTransition.destinationDoor.frame = 5;
+            camera.Reset();
+            if (player) {
+                camera.targetX = player.xMid;
+                camera.targetY = player.yBottom - 12;
+                camera.y = camera.targetY;
+                camera.x = camera.targetX;
+            }
         }
         // fade in
         if (doorTransition.timer >= 30 && doorTransition.timer <= 40) {
@@ -472,6 +530,7 @@ var LevelMap = /** @class */ (function () {
         currentMap.spriteWaterMode = false;
         currentMap.mapHeight = 12;
         currentMap.cameraLocksHorizontal = [];
+        currentMap.cameraLocksVertical = [];
         editorHandler.sprites = [];
         currentMap.GetLayerList().forEach(function (layer, index) {
             var newLayer = LevelLayer.FromImportString("AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AAP", index, currentMap.mapHeight, currentMap);

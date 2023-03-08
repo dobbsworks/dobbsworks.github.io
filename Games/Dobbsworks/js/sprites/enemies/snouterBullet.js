@@ -31,6 +31,7 @@ var SnouterBullet = /** @class */ (function (_super) {
         if (this.isTouchingLeftWall || this.isTouchingRightWall) {
             this.Crumble();
         }
+        this.ReactToVerticalWind();
     };
     SnouterBullet.prototype.OnBounce = function () {
         this.Crumble();

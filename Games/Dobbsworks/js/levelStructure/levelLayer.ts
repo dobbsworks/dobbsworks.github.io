@@ -39,7 +39,19 @@ class LevelLayer {
         }
         this.isDirty = false;
 
+        // only redraw animated tiles that are on-screen
+        // for a small level covered in wind, drops the DrawLayers from 9.11ms to 1.69ms
+
+        let minXTile = Math.floor(camera.GetLeftCameraEdge() / this.tileWidth);
+        let minYTile = Math.floor(camera.GetTopCameraEdge() / this.tileHeight);
+        let maxXTile = Math.ceil(camera.GetRightCameraEdge() / this.tileWidth);
+        let maxYTile = Math.ceil(camera.GetBottomCameraEdge() / this.tileHeight);
+
         for (let tile of this.animatedTileList) {
+            if (tile.tileX < minXTile) continue;
+            if (tile.tileY < minYTile) continue;
+            if (tile.tileX > maxXTile) continue;
+            if (tile.tileY > maxYTile) continue;
             let tileType = <AnimatedTileType>tile.tileType;
             let imageTiles = tileType.imageTiles;
             if (imageTiles) {

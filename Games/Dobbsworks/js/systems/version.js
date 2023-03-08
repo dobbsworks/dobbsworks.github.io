@@ -25,6 +25,11 @@ var Version = /** @class */ (function () {
     Version.IsLevelVersionNewerThanClient = function (levelVersion) {
         return Version.Compare(Version.Current, levelVersion) == -1;
     };
+    Version.DoesCurrentLevelUseOldDoorPairing = function () {
+        if (!currentMap)
+            return false;
+        return Version.Compare("1.6.0", currentMap.mapVersion) == 1;
+    };
     Version.Current = "1.5.2";
     return Version;
 }());

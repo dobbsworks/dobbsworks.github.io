@@ -123,15 +123,16 @@ var EditorHandler = /** @class */ (function () {
         var tilePanel = this.CreateFloatingButtonPanel(tilePanelButtons, 5, 9);
         /* ENEMY PANEL */
         var enemyTypes = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, Wooly, WoolyBooly, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
-            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster,];
+            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, BaddleTrigger,];
         var enemyButtons = enemyTypes.map(function (a) { return new EditorButtonSprite(a); });
-        var baddleTriggerButton = new EditorButtonSprite(BaddleTrigger).AppendImage(tiles["baddle"][0][0]);
-        enemyButtons.push(baddleTriggerButton);
+        // let baddleTriggerButton = new EditorButtonSprite(BaddleTrigger).AppendImage(tiles["baddle"][0][0]);
+        // enemyButtons.push(baddleTriggerButton);
         enemyButtons.filter(function (a) { return a.spriteType == Piggle || a.spriteType == Snail; }).forEach(function (a) { return hotbarDefaults.push(a); });
         var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 7);
         var gizmoTypes = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform,
-            MushroomSpring, Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon, SpinRing, FragileSpinRing,
+            MushroomSpring, Baseball, Battery, Door, Fan, Lightbulb, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
+            SpinRing, FragileSpinRing, PortalRing,
         ];
         var gizmoButtons = gizmoTypes.map(function (a) { return new EditorButtonSprite(a); });
         var keyIndex = gizmoButtons.findIndex(function (a) { return a instanceof EditorButtonSprite && a.spriteType == FlatKey; });
@@ -150,6 +151,8 @@ var EditorHandler = /** @class */ (function () {
         gizmoButtons.push(new EditorButtonTile(TileType.HangingBars, "Hanging bars"));
         gizmoButtons.push(new EditorButtonTile(TileType.Ice, "Ice Block"));
         gizmoButtons.push(new EditorButtonTile(TileType.IceTop, "Ice Top"));
+        gizmoButtons.push(new EditorButtonTile(TileType.WindRight, "Wind"));
+        gizmoButtons.push(new EditorButtonTile(TileType.FastWindRight, "Fast Wind"));
         gizmoButtons.push(new EditorButtonTile(TileType.OneWayRight, "One-way").AppendImage(tiles["uiButtonAdd"][0][0]));
         // gizmoButtons.push(new EditorButtonTile(TileType.OneWayDown, "One-way (down)"));
         // gizmoButtons.push(new EditorButtonTile(TileType.OneWayLeft, "One-way (left)"));
@@ -165,6 +168,7 @@ var EditorHandler = /** @class */ (function () {
         gizmoButtons.push(new EditorButtonTile(TileType.SolidForPlayer, "Player Blocker"));
         gizmoButtons.push(new EditorButtonTile(TileType.SolidForNonplayer, "Sprite Blocker"));
         gizmoButtons.push(new EditorButtonTile(TileType.SpriteKiller, "Sprite Killer"));
+        gizmoButtons.push(new EditorButtonTile(TileType.ShimmerInitial, "Shimmer Block"));
         gizmoButtons.push(new EditorButtonTile(TileType.WallJumpLeft, "Wall Jump (left)"));
         gizmoButtons.push(new EditorButtonTile(TileType.WallJumpRight, "Wall Jump (right)"));
         // gizmoButtons.push(new EditorButtonTile(TileType.WallWarpLeft, "Warp Wall (left)"));
@@ -192,6 +196,8 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonTile(TileType.ExtraSlowCircuitOff, "Extra slow wire"),
             new EditorButtonTile(TileType.ConveyorLeftOff, "Powered conveyor (left)").AppendImage(tiles["editor"][0][2]),
             new EditorButtonTile(TileType.ConveyorRightOff, "Powered conveyor (right)").AppendImage(tiles["editor"][2][2]),
+            new EditorButtonTile(TileType.ConveyorLeftOffFast, "Powered fast conveyor (left)").AppendImage(tiles["editor"][0][2]),
+            new EditorButtonTile(TileType.ConveyorRightOffFast, "Powered fast conveyor (right)").AppendImage(tiles["editor"][2][2]),
             new EditorButtonTile(TileType.AppearingBlockOff, "Appearing block"),
             new EditorButtonTile(TileType.DisappearingBlockOff, "Disappearing block"),
             new EditorButtonSprite(FloorButton),
@@ -280,15 +286,19 @@ var EditorHandler = /** @class */ (function () {
         var mapSizePanel = new Panel(backgroundLoadPanel.x + 80, backgroundLoadPanel.y, 70, 70);
         mapSizePanel.AddChild(mapSizeHandle);
         this.playerButton = new EditorButtonSprite(Player);
+        this.hoverPlayerButton = new EditorButtonSprite(HoverPlayer);
         var levelFlowPanel = this.CreateFloatingButtonPanel([
             this.playerButton,
+            this.hoverPlayerButton,
             new EditorButtonSprite(GoldGear),
             new EditorButtonSprite(Coin),
             new EditorButtonSprite(Dabbloon),
             new EditorButtonSprite(ExtraHitHeart),
             new EditorButtonSprite(GoldHeart),
+            new EditorButtonSprite(ReviveWings),
             new EditorButtonSprite(Checkpoint),
             new EditorButtonSprite(CameraLockHorizontal),
+            new EditorButtonSprite(CameraLockVertical),
             new EditorButtonSprite(CameraZoomIn),
             new EditorButtonSprite(CameraZoomOut),
             new EditorButtonSprite(CameraScrollRight),
@@ -296,7 +306,7 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonSprite(CameraScrollLeft),
             new EditorButtonSprite(CameraScrollDown),
             new EditorButtonSprite(CameraScrollReset),
-        ], 3, 5);
+        ], 3, 6);
         var levelFlowHandle = new EditorButtonDrawerHandle(tiles["editor"][5][3], "Level flow element", [levelFlowPanel]);
         var levelFlowHandlePanel = new Panel(mapSizePanel.x + 160, mapSizePanel.y, 70, 70);
         levelFlowPanel.targetX = levelFlowHandlePanel.x;
@@ -433,13 +443,22 @@ var EditorHandler = /** @class */ (function () {
         this.transitionValue = this.maxTransitionValue;
         this.isInEditMode = false;
         if (currentMap) {
-            for (var _i = 0, _a = this.sprites; _i < _a.length; _i++) {
-                var sprite = _a[_i];
+            for (var _i = 0, _a = currentMap.mainLayer.tiles; _i < _a.length; _i++) {
+                var tileCol = _a[_i];
+                for (var _b = 0, tileCol_1 = tileCol; _b < tileCol_1.length; _b++) {
+                    var tile = tileCol_1[_b];
+                    if (tile.tileType.autoChange) {
+                        currentMap.autoChangeTiles.push({ tile: tile, standDuration: 0 });
+                    }
+                }
+            }
+            for (var _c = 0, _d = this.sprites; _c < _d.length; _c++) {
+                var sprite = _d[_c];
                 sprite.ResetSprite();
             }
             currentMap.mainLayer.sprites = [];
-            for (var _b = 0, _c = this.sprites; _b < _c.length; _b++) {
-                var sprite = _c[_b];
+            for (var _e = 0, _f = this.sprites; _e < _f.length; _e++) {
+                var sprite = _f[_e];
                 sprite.ResetStack();
                 currentMap.mainLayer.sprites.push(sprite.spriteInstance);
             }
@@ -553,8 +572,15 @@ var EditorHandler = /** @class */ (function () {
             this.ToggleMinimizeMode();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true))
             this.eraserButton.Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorPlayerHotkey, true))
-            this.playerButton.Click();
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorPlayerHotkey, true)) {
+            var isUsingHoverPlayer = editorHandler.sprites.some(function (a) { return a.spriteType == HoverPlayer; });
+            if (isUsingHoverPlayer) {
+                this.hoverPlayerButton.Click();
+            }
+            else {
+                this.playerButton.Click();
+            }
+        }
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorUndo, true))
             this.history.Undo();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorRedo, true))
@@ -672,13 +698,30 @@ var EditorHandler = /** @class */ (function () {
                         buttons.forEach(function (button) {
                             button.tileType = newTileType_1;
                             button.children = button.children.filter(function (a) { return !(a instanceof ImageFromTile) || (a instanceof ImageFromTile && a.imageTile == tiles["uiButtonAdd"][0][0]); });
-                            button.AddChild(new ImageFromTile(0, 0, 50, 50, newTileType_1.imageTile));
+                            button.AddChild(new ImageFromTile(0, 0, 50, 50, newTileType_1.editorTile ? newTileType_1.editorTile : newTileType_1.imageTile));
                         });
                     }
                     else {
                         console.error("Missing tile rotation: " + oldTiletype_1.clockWiseRotationTileName);
                     }
                 }
+            }
+        }
+        if (this.currentTool instanceof SpritePlacer) {
+            var spriteType_1 = this.currentTool.spriteType;
+            var rotationSprite_1 = spriteType_1.clockwiseRotationSprite;
+            if (rotationSprite_1) {
+                var buttons = EditorButtonSprite.AllSpriteButtons.filter(function (a) { return a.spriteType == spriteType_1; });
+                this.currentTool.spriteType = rotationSprite_1;
+                buttons.forEach(function (button) {
+                    if (rotationSprite_1)
+                        button.spriteType = rotationSprite_1;
+                    button.children = button.children.filter(function (a) { return !(a instanceof ImageFromTile) || (a instanceof ImageFromTile && a.imageTile == tiles["uiButtonAdd"][0][0]); });
+                    if (rotationSprite_1) {
+                        var image = (new rotationSprite_1(0, 0, currentMap.mainLayer, [])).GetThumbnail();
+                        button.AddChild(new ImageFromTile(0, 0, 50, 50, image));
+                    }
+                });
             }
         }
     };

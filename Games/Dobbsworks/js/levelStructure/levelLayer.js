@@ -43,8 +43,22 @@ var LevelLayer = /** @class */ (function () {
             this.spriteCanvas.height = camera.canvas.height;
         }
         this.isDirty = false;
+        // only redraw animated tiles that are on-screen
+        // for a small level covered in wind, drops the DrawLayers from 9.11ms to 1.69ms
+        var minXTile = Math.floor(camera.GetLeftCameraEdge() / this.tileWidth);
+        var minYTile = Math.floor(camera.GetTopCameraEdge() / this.tileHeight);
+        var maxXTile = Math.ceil(camera.GetRightCameraEdge() / this.tileWidth);
+        var maxYTile = Math.ceil(camera.GetBottomCameraEdge() / this.tileHeight);
         for (var _i = 0, _a = this.animatedTileList; _i < _a.length; _i++) {
             var tile = _a[_i];
+            if (tile.tileX < minXTile)
+                continue;
+            if (tile.tileY < minYTile)
+                continue;
+            if (tile.tileX > maxXTile)
+                continue;
+            if (tile.tileY > maxYTile)
+                continue;
             var tileType = tile.tileType;
             var imageTiles = tileType.imageTiles;
             if (imageTiles) {

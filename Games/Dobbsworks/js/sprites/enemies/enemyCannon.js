@@ -106,6 +106,7 @@ var BlasterBullet = /** @class */ (function (_super) {
         if (this.isTouchingLeftWall || this.isTouchingRightWall || this.isOnCeiling || this.standingOn.length) {
             this.ReplaceWithSpriteType(Poof);
         }
+        this.ReactToVerticalWind();
     };
     BlasterBullet.prototype.GetFrameData = function (frameNum) {
         var col = Math.floor(frameNum / 10) % 2;

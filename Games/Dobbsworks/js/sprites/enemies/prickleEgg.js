@@ -40,6 +40,9 @@ var PrickleShell = /** @class */ (function (_super) {
         if (this.jumpTimer > 24) {
             this.ApplyGravity();
         }
+        else {
+            this.ReactToVerticalWind();
+        }
         // removing inertia, let em ride
         //this.ApplyInertia();
         this.ReactToWater();

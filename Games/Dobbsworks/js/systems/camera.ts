@@ -28,6 +28,10 @@ class Camera {
     public autoscrollTriggers: CameraScrollTrigger[] = [];
     public cameraZoomTriggers: CameraZoomTrigger[] = [];
 
+    public leftLockTimer = 0;
+    public rightLockTimer = 0;
+    public upLockTimer = 0;
+    public downLockTimer = 0;
 
     public Update(): void {
 
@@ -113,32 +117,7 @@ class Camera {
         }
 
         if (currentMap) {
-            let minScaleForY = camera.canvas.height / currentMap.mainLayer.GetMaxY();
-            let minScaleForX = camera.canvas.width / currentMap.mainLayer.GetMaxX();
-            let minScale = Math.max(minScaleForX, minScaleForY);
-            if (this.targetScale < minScale) this.targetScale = minScale;
-            if (this.scale < minScale) this.scale = minScale;
-
-            this.maxX = currentMap.mainLayer.GetMaxX() - this.canvas.width / 2 / this.scale;
-            this.maxY = currentMap.mainLayer.GetMaxY() - this.canvas.height / 2 / this.scale;
-            if (this.targetX > this.maxX) this.targetX = this.maxX;
-            if (this.targetY > this.maxY) this.targetY = this.maxY;
-
-            let horizontalLocks = currentMap.cameraLocksHorizontal;
-            for (let lock of horizontalLocks) {
-                if (this.targetX > lock.xMid && this.GetLeftCameraEdge() < lock.x) {
-                    this.targetX = lock.x + this.canvas.width / 2 / this.scale;
-                }
-                if (this.targetX < lock.xMid && this.GetRightCameraEdge() > lock.xRight) {
-                    this.targetX = lock.xRight - this.canvas.width / 2 / this.scale;
-                }
-            }
-
-            this.minX = this.canvas.width / 2 / this.scale;
-            this.minY = this.canvas.height / 2 / this.scale;
-            if (this.targetX < this.minX) this.targetX = this.minX;
-            if (this.targetY < this.minY) this.targetY = this.minY;
-
+            this.AdjustCameraTargetForMapBounds();
 
             let xDelta = Math.abs(this.x - this.targetX);
             let yDelta = Math.abs(this.y - this.targetY);
@@ -151,6 +130,76 @@ class Camera {
                 this.y = this.targetY;
             }
         }
+    }
+
+    public AdjustCameraTargetForMapBounds(): void {
+        let minScaleForY = camera.canvas.height / currentMap.mainLayer.GetMaxY();
+        let minScaleForX = camera.canvas.width / currentMap.mainLayer.GetMaxX();
+        let minScale = Math.max(minScaleForX, minScaleForY);
+        if (this.targetScale < minScale) this.targetScale = minScale;
+        if (this.scale < minScale) this.scale = minScale;
+
+        this.maxX = currentMap.mainLayer.GetMaxX() - this.canvas.width / 2 / this.scale;
+        this.maxY = currentMap.mainLayer.GetMaxY() - this.canvas.height / 2 / this.scale;
+        if (this.targetX > this.maxX) this.targetX = this.maxX;
+        if (this.targetY > this.maxY) this.targetY = this.maxY;
+
+        // Handle horizontal screen locks
+        let horizontalLocks = currentMap.cameraLocksHorizontal;
+        let hittingLeftLock = false;
+        let hittingRightLock = false;
+        for (let lock of horizontalLocks) {
+            if (this.targetX > lock.xMid && this.GetLeftCameraEdge() < lock.x) {
+                this.targetX = lock.x + this.canvas.width / 2 / this.scale;
+                hittingLeftLock = true;
+            } else {
+            }
+            if (this.targetX < lock.xMid && this.GetRightCameraEdge() > lock.xRight) {
+                this.targetX = lock.xRight - this.canvas.width / 2 / this.scale;
+                hittingRightLock = true;
+            }
+        }
+        if (hittingLeftLock) {
+            this.leftLockTimer++;
+        } else {
+            this.leftLockTimer = 0;
+        }
+        if (hittingRightLock) {
+            this.rightLockTimer++;
+        } else {
+            this.rightLockTimer = 0;
+        }
+        
+        // Handle vertical screen locks
+        let verticalLocks = currentMap.cameraLocksVertical;
+        let hittingUpLock = false;
+        let hittingDownLock = false;
+        for (let lock of verticalLocks) {
+            if (this.targetY + 7 > lock.yMid && this.GetTopCameraEdge() < lock.y) {
+                this.targetY = lock.y + this.canvas.height / 2 / this.scale;
+                hittingUpLock = true;
+            } else {
+            }
+            if (this.targetY + 7 < lock.yMid && this.GetBottomCameraEdge() > lock.yBottom) {
+                this.targetY = lock.yBottom - this.canvas.height / 2 / this.scale;
+                hittingDownLock = true;
+            }
+        }
+        if (hittingUpLock) {
+            this.upLockTimer++;
+        } else {
+            this.upLockTimer = 0;
+        }
+        if (hittingDownLock) {
+            this.downLockTimer++;
+        } else {
+            this.downLockTimer = 0;
+        }
+
+        this.minX = this.canvas.width / 2 / this.scale;
+        this.minY = this.canvas.height / 2 / this.scale;
+        if (this.targetX < this.minX) this.targetX = this.minX;
+        if (this.targetY < this.minY) this.targetY = this.minY;
     }
 
     public Reset(): void {

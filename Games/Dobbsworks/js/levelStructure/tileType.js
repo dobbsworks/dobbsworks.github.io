@@ -18,6 +18,7 @@ var TileType = /** @class */ (function () {
         this.solidity = solidity;
         this.key = key;
         this.targetLayer = targetLayer;
+        this.editorTile = null;
         this.isSwimmable = false;
         this.isWaterfall = false;
         this.isQuicksand = false;
@@ -25,6 +26,8 @@ var TileType = /** @class */ (function () {
         this.isBumper = false;
         this.isHangable = false;
         this.conveyorSpeed = 0; // positive = clockwise
+        this.windX = 0;
+        this.windY = 0;
         this.drainsAir = false;
         this.canWalkOn = true; //sticky honey blocks
         this.canJumpFrom = true; //sticky slime blocks
@@ -50,6 +53,7 @@ var TileType = /** @class */ (function () {
         this.pickUpSprite = null;
         this.autoChange = null;
         this.standChange = null;
+        this.shimmers = false;
         this.clockWiseRotationTileName = "";
         this.requiredPowerDelay = 1;
         this.canBePowered = false;
@@ -309,6 +313,17 @@ var TileType = /** @class */ (function () {
         TileType.DecorCandyDown;
         TileType.DecorCandyLeft;
         TileType.DecorCandyRight;
+        TileType.ConveyorRightOffFast;
+        TileType.ConveyorLeftOffFast;
+        TileType.ShimmerInitial;
+        TileType.WindUp;
+        TileType.WindDown;
+        TileType.WindLeft;
+        TileType.WindRight;
+        TileType.FastWindUp;
+        TileType.FastWindDown;
+        TileType.FastWindLeft;
+        TileType.FastWindRight;
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
     };
@@ -1529,6 +1544,48 @@ var TileType = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(TileType, "ConveyorRightOnFast", {
+        get: function () {
+            return TileType.GetAnimatedTileType("ConveyorRightOnFast", "conveyor", [{ x: 0, y: 3 }, { x: 1, y: 3 }, { x: 2, y: 3 }], 2.5, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.conveyorSpeed = 1;
+                tileType.canBePowered = true;
+                tileType.unpoweredTileName = "ConveyorRightOffFast";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "ConveyorRightOffFast", {
+        get: function () {
+            return TileType.GetTileType("ConveyorRightOffFast", "conveyor", 0, 3, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.canBePowered = true;
+                tileType.poweredTileName = "ConveyorRightOnFast";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "ConveyorLeftOnFast", {
+        get: function () {
+            return TileType.GetAnimatedTileType("ConveyorLeftOnFast", "conveyor", [{ x: 0, y: 3 }, { x: 2, y: 3 }, { x: 1, y: 3 }], 2.5, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.conveyorSpeed = -1;
+                tileType.canBePowered = true;
+                tileType.unpoweredTileName = "ConveyorLeftOffFast";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "ConveyorLeftOffFast", {
+        get: function () {
+            return TileType.GetTileType("ConveyorLeftOffFast", "conveyor", 0, 3, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.canBePowered = true;
+                tileType.poweredTileName = "ConveyorLeftOnFast";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(TileType, "WaterTapOff", {
         get: function () {
             return TileType.GetTileType("WaterTapOff", "pipes", 0, 0, Solidity.Block, TargetLayer.main, function (tileType) {
@@ -2077,6 +2134,27 @@ var TileType = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(TileType, "ShimmerInitial", {
+        get: function () {
+            return TileType.GetTileType("ShimmerInitial", "shimmer", 10, 0, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.autoChange = {
+                    tileTypeName: "Shimmer",
+                    delay: 0
+                };
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "Shimmer", {
+        get: function () {
+            return TileType.GetTileType("Shimmer", "shimmer", 0, 0, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.shimmers = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(TileType, "WallJumpLeft", {
         get: function () {
             return TileType.GetTileType("WallJumpLeft", "wallJump", 0, 0, Solidity.LeftWall, TargetLayer.semisolid, function (tileType) {
@@ -2092,6 +2170,94 @@ var TileType = /** @class */ (function () {
             return TileType.GetTileType("WallJumpRight", "wallJump", 1, 0, Solidity.RightWall, TargetLayer.semisolid, function (tileType) {
                 tileType.isJumpWall = true;
                 tileType.isExemptFromSlime = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "WindRight", {
+        get: function () {
+            return TileType.GetAnimatedTileType("WindRight", "gust", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (a) { return ({ x: a, y: 1 }); }), 2, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.windX = 0.6;
+                tileType.clockWiseRotationTileName = "WindDown";
+                tileType.editorTile = tiles["gust"][0][2];
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "WindLeft", {
+        get: function () {
+            return TileType.GetAnimatedTileType("WindLeft", "gust", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (a) { return ({ x: 11 - a, y: 1 }); }), 2, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.windX = -0.6;
+                tileType.clockWiseRotationTileName = "WindUp";
+                tileType.editorTile = tiles["gust"][2][2];
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "WindUp", {
+        get: function () {
+            return TileType.GetAnimatedTileType("WindUp", "gust", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (a) { return ({ x: a, y: 0 }); }), 2, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.windY = -0.6;
+                tileType.clockWiseRotationTileName = "WindRight";
+                tileType.editorTile = tiles["gust"][1][2];
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "WindDown", {
+        get: function () {
+            return TileType.GetAnimatedTileType("WindDown", "gust", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (a) { return ({ x: 11 - a, y: 0 }); }), 2, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.windY = 0.6;
+                tileType.clockWiseRotationTileName = "WindLeft";
+                tileType.editorTile = tiles["gust"][3][2];
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "FastWindRight", {
+        get: function () {
+            return TileType.GetAnimatedTileType("FastWindRight", "gust", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (a) { return ({ x: a, y: 1 }); }), 1, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.windX = 1.2;
+                tileType.clockWiseRotationTileName = "FastWindDown";
+                tileType.editorTile = tiles["gust"][4][2];
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "FastWindLeft", {
+        get: function () {
+            return TileType.GetAnimatedTileType("FastWindLeft", "gust", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (a) { return ({ x: 11 - a, y: 1 }); }), 1, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.windX = -1.2;
+                tileType.clockWiseRotationTileName = "FastWindUp";
+                tileType.editorTile = tiles["gust"][6][2];
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "FastWindUp", {
+        get: function () {
+            return TileType.GetAnimatedTileType("FastWindUp", "gust", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (a) { return ({ x: a, y: 0 }); }), 1, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.windY = -1.2;
+                tileType.clockWiseRotationTileName = "FastWindRight";
+                tileType.editorTile = tiles["gust"][5][2];
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "FastWindDown", {
+        get: function () {
+            return TileType.GetAnimatedTileType("FastWindDown", "gust", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (a) { return ({ x: 11 - a, y: 0 }); }), 1, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.windY = 1.2;
+                tileType.clockWiseRotationTileName = "FastWindLeft";
+                tileType.editorTile = tiles["gust"][7][2];
             });
         },
         enumerable: false,

@@ -71,6 +71,7 @@ class Yufo extends Enemy {
             }
 
         }
+        this.ReactToVerticalWind();
     }
     
     OnBounce(): void {

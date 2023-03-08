@@ -14,6 +14,7 @@ class EditorHandler {
 
     hotbar!: EditorHotbar;
     playerButton!: EditorButtonSprite;
+    hoverPlayerButton!: EditorButtonSprite;
 
     isMinimizedMode: boolean = false;
     isTempMinimized: boolean = false; // when dragging an item near the top or bottom of screen, hide toolbars
@@ -138,18 +139,19 @@ class EditorHandler {
 
         /* ENEMY PANEL */
         let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, Wooly, WoolyBooly, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
-            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, /*, BigYufo */ ];
+            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, BaddleTrigger, /*, BigYufo */];
         let enemyButtons = enemyTypes.map(a => new EditorButtonSprite(a));
 
-        let baddleTriggerButton = new EditorButtonSprite(BaddleTrigger).AppendImage(tiles["baddle"][0][0]);
-        enemyButtons.push(baddleTriggerButton);
-        
+        // let baddleTriggerButton = new EditorButtonSprite(BaddleTrigger).AppendImage(tiles["baddle"][0][0]);
+        // enemyButtons.push(baddleTriggerButton);
+
         enemyButtons.filter(a => a.spriteType == Piggle || a.spriteType == Snail).forEach(a => hotbarDefaults.push(a));
         let enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 7);
 
         let gizmoTypes: (SpriteType)[] = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform,
-            MushroomSpring, Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon, SpinRing, FragileSpinRing, 
+            MushroomSpring, Baseball, Battery, Door, Fan, Lightbulb, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
+            SpinRing, FragileSpinRing, PortalRing,
         ];
         let gizmoButtons: EditorButton[] = gizmoTypes.map(a => new EditorButtonSprite(a));
         let keyIndex = gizmoButtons.findIndex(a => a instanceof EditorButtonSprite && a.spriteType == FlatKey);
@@ -159,7 +161,7 @@ class EditorHandler {
         gizmoButtons.push(new EditorButtonTile(TileType.ConveyorRight, "Conveyor (right)").AppendImage(tiles["editor"][2][2]));
         gizmoButtons.push(new EditorButtonTile(TileType.ConveyorLeftFast, "Fast conveyor (left)").AppendImage(tiles["editor"][5][2]));
         gizmoButtons.push(new EditorButtonTile(TileType.ConveyorRightFast, "Fast conveyor (right)").AppendImage(tiles["editor"][6][2]));
-        
+
         gizmoButtons.push(new EditorButtonTile(TileType.HangingConveyorLeft, "Hanging Conveyor (left)"));
         gizmoButtons.push(new EditorButtonTile(TileType.HangingConveyorRight, "Hanging Conveyor (right)"));
 
@@ -171,6 +173,8 @@ class EditorHandler {
         gizmoButtons.push(new EditorButtonTile(TileType.HangingBars, "Hanging bars"));
         gizmoButtons.push(new EditorButtonTile(TileType.Ice, "Ice Block"));
         gizmoButtons.push(new EditorButtonTile(TileType.IceTop, "Ice Top"));
+        gizmoButtons.push(new EditorButtonTile(TileType.WindRight, "Wind"));
+        gizmoButtons.push(new EditorButtonTile(TileType.FastWindRight, "Fast Wind"));
         gizmoButtons.push(new EditorButtonTile(TileType.OneWayRight, "One-way").AppendImage(tiles["uiButtonAdd"][0][0]));
         // gizmoButtons.push(new EditorButtonTile(TileType.OneWayDown, "One-way (down)"));
         // gizmoButtons.push(new EditorButtonTile(TileType.OneWayLeft, "One-way (left)"));
@@ -188,6 +192,7 @@ class EditorHandler {
         gizmoButtons.push(new EditorButtonTile(TileType.SolidForPlayer, "Player Blocker"));
         gizmoButtons.push(new EditorButtonTile(TileType.SolidForNonplayer, "Sprite Blocker"));
         gizmoButtons.push(new EditorButtonTile(TileType.SpriteKiller, "Sprite Killer"));
+        gizmoButtons.push(new EditorButtonTile(TileType.ShimmerInitial, "Shimmer Block"));
         gizmoButtons.push(new EditorButtonTile(TileType.WallJumpLeft, "Wall Jump (left)"));
         gizmoButtons.push(new EditorButtonTile(TileType.WallJumpRight, "Wall Jump (right)"));
         // gizmoButtons.push(new EditorButtonTile(TileType.WallWarpLeft, "Warp Wall (left)"));
@@ -218,6 +223,8 @@ class EditorHandler {
             new EditorButtonTile(TileType.ExtraSlowCircuitOff, "Extra slow wire"),
             new EditorButtonTile(TileType.ConveyorLeftOff, "Powered conveyor (left)").AppendImage(tiles["editor"][0][2]),
             new EditorButtonTile(TileType.ConveyorRightOff, "Powered conveyor (right)").AppendImage(tiles["editor"][2][2]),
+            new EditorButtonTile(TileType.ConveyorLeftOffFast, "Powered fast conveyor (left)").AppendImage(tiles["editor"][0][2]),
+            new EditorButtonTile(TileType.ConveyorRightOffFast, "Powered fast conveyor (right)").AppendImage(tiles["editor"][2][2]),
             new EditorButtonTile(TileType.AppearingBlockOff, "Appearing block"),
             new EditorButtonTile(TileType.DisappearingBlockOff, "Disappearing block"),
             new EditorButtonSprite(FloorButton),
@@ -309,17 +316,21 @@ class EditorHandler {
         let mapSizePanel = new Panel(backgroundLoadPanel.x + 80, backgroundLoadPanel.y, 70, 70);
         mapSizePanel.AddChild(mapSizeHandle);
 
-        this.playerButton = new EditorButtonSprite(Player)
+        this.playerButton = new EditorButtonSprite(Player);
+        this.hoverPlayerButton = new EditorButtonSprite(HoverPlayer);
         let levelFlowPanel = this.CreateFloatingButtonPanel([
             this.playerButton,
+            this.hoverPlayerButton,
             new EditorButtonSprite(GoldGear),
             new EditorButtonSprite(Coin),
             new EditorButtonSprite(Dabbloon),
             new EditorButtonSprite(ExtraHitHeart),
             new EditorButtonSprite(GoldHeart),
+            new EditorButtonSprite(ReviveWings),
             new EditorButtonSprite(Checkpoint),
 
             new EditorButtonSprite(CameraLockHorizontal),
+            new EditorButtonSprite(CameraLockVertical),
             new EditorButtonSprite(CameraZoomIn),
             new EditorButtonSprite(CameraZoomOut),
             new EditorButtonSprite(CameraScrollRight),
@@ -329,7 +340,7 @@ class EditorHandler {
             new EditorButtonSprite(CameraScrollReset),
             //new EditorButtonSprite(CopperGear),
             //new EditorButtonSprite(IronGear),
-        ], 3, 5);
+        ], 3, 6);
         let levelFlowHandle = new EditorButtonDrawerHandle(tiles["editor"][5][3], "Level flow element", [levelFlowPanel]);
         let levelFlowHandlePanel = new Panel(mapSizePanel.x + 160, mapSizePanel.y, 70, 70);
         levelFlowPanel.targetX = levelFlowHandlePanel.x;
@@ -478,6 +489,14 @@ class EditorHandler {
         this.transitionValue = this.maxTransitionValue;
         this.isInEditMode = false;
         if (currentMap) {
+            for (let tileCol of currentMap.mainLayer.tiles) {
+                for (let tile of tileCol) {
+                    if (tile.tileType.autoChange) {
+                        currentMap.autoChangeTiles.push({ tile: tile, standDuration: 0 });
+                    }
+                }
+            }
+
             for (let sprite of this.sprites) {
                 sprite.ResetSprite();
             }
@@ -595,7 +614,14 @@ class EditorHandler {
 
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorMinimize, true)) this.ToggleMinimizeMode();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true)) (<EditorButton>this.eraserButton).Click();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorPlayerHotkey, true)) (<EditorButton>this.playerButton).Click();
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorPlayerHotkey, true)) {
+            let isUsingHoverPlayer = editorHandler.sprites.some(a => a.spriteType == HoverPlayer);
+            if (isUsingHoverPlayer) {
+                (<EditorButton>this.hoverPlayerButton).Click();
+            } else {
+                (<EditorButton>this.playerButton).Click();
+            }
+        }
 
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorUndo, true)) this.history.Undo();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorRedo, true)) this.history.Redo();
@@ -713,12 +739,28 @@ class EditorHandler {
                         buttons.forEach(button => {
                             button.tileType = newTileType;
                             button.children = button.children.filter(a => !(a instanceof ImageFromTile) || (a instanceof ImageFromTile && a.imageTile == tiles["uiButtonAdd"][0][0]));
-                            button.AddChild(new ImageFromTile(0, 0, 50, 50, newTileType.imageTile));
+                            button.AddChild(new ImageFromTile(0, 0, 50, 50, newTileType.editorTile ? newTileType.editorTile : newTileType.imageTile));
                         });
                     } else {
                         console.error("Missing tile rotation: " + oldTiletype.clockWiseRotationTileName)
                     }
                 }
+            }
+        }
+        if (this.currentTool instanceof SpritePlacer) {
+            let spriteType = this.currentTool.spriteType;
+            let rotationSprite = spriteType.clockwiseRotationSprite;
+            if (rotationSprite) {
+                let buttons = EditorButtonSprite.AllSpriteButtons.filter(a => a.spriteType == spriteType);
+                this.currentTool.spriteType = rotationSprite;
+                buttons.forEach(button => {
+                    if (rotationSprite) button.spriteType = rotationSprite;
+                    button.children = button.children.filter(a => !(a instanceof ImageFromTile) || (a instanceof ImageFromTile && a.imageTile == tiles["uiButtonAdd"][0][0]));
+                    if (rotationSprite) {
+                        let image = (new rotationSprite(0, 0, currentMap.mainLayer, [])).GetThumbnail()
+                        button.AddChild(new ImageFromTile(0, 0, 50, 50, image));
+                    }
+                });
             }
         }
     }

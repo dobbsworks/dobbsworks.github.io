@@ -58,7 +58,7 @@ class Spurpider extends Enemy {
             }
 
             this.ReactToWater();
-
+            this.ReactToVerticalWind();
         }
     }
     

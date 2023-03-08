@@ -22,6 +22,10 @@ var EditorButtonSprite = /** @class */ (function (_super) {
             editorHandler.currentTool = _this.linkedTool;
             editorHandler.hotbar.OnToolSelect(_this);
         });
+        EditorButtonSprite.AllSpriteButtons.push(_this);
+        if (spriteType.clockwiseRotationSprite) {
+            _this.AppendImage(tiles["uiButtonAdd"][0][0]);
+        }
         return _this;
     }
     EditorButtonSprite.prototype.CreateCopy = function () {
@@ -30,7 +34,14 @@ var EditorButtonSprite = /** @class */ (function (_super) {
         return copy;
     };
     EditorButtonSprite.prototype.AppendImage = function (imageTile) {
-        this.AddChild(new ImageFromTile(0, 0, 50, 50, imageTile));
+        if (imageTile == tiles["uiButtonAdd"][0][0]) {
+            var image = new ImageFromTile(0, 0, 60, 60, imageTile);
+            image.zoom = 1;
+            this.AddChild(image);
+        }
+        else {
+            this.AddChild(new ImageFromTile(0, 0, 50, 50, imageTile));
+        }
         return this;
     };
     EditorButtonSprite.prototype.ChangeTooltip = function (newTooltip) {
@@ -42,5 +53,6 @@ var EditorButtonSprite = /** @class */ (function (_super) {
         var isSelected = editorHandler.currentTool === this.linkedTool;
         this.borderColor = isSelected ? "#FF2E" : "#FF20";
     };
+    EditorButtonSprite.AllSpriteButtons = [];
     return EditorButtonSprite;
 }(EditorButton));

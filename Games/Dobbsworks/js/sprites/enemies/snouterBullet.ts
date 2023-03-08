@@ -12,6 +12,7 @@ class SnouterBullet extends Enemy {
         if (this.isTouchingLeftWall || this.isTouchingRightWall) {
             this.Crumble();
         }
+        this.ReactToVerticalWind();
     }
 
     OnBounce(): void {

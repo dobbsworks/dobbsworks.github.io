@@ -28,6 +28,7 @@ var Player = /** @class */ (function (_super) {
         _this.isClimbing = false;
         _this.isHanging = false;
         _this.isSliding = false;
+        _this.justLanded = false;
         _this.slideDirection = 1;
         _this.currentSlope = 0;
         _this.climbCooldownTimer = -1; // how long since climbing (to avoid regrabbing ladder while climbing up)
@@ -59,6 +60,11 @@ var Player = /** @class */ (function (_super) {
         _this.history = [];
         _this.zIndex = 1;
         _this.moveSpeed = 1.2;
+        _this.floatFramesLeftForThisJump = 0;
+        _this.isFloating = false;
+        _this.maxFloatDuration = 100;
+        _this.canPlayerFloatJump = false;
+        _this.sourceImageOffset = 0;
         return _this;
     }
     Player.prototype.LogProps = function () {
@@ -89,7 +95,9 @@ var Player = /** @class */ (function (_super) {
         this.HandleEnemies(); // includes gravity
         this.PlayerInertia();
         this.PushByAutoscroll();
+        var wasOnGround = this.isOnGround;
         this.ReactToPlatformsAndSolids();
+        this.justLanded = !wasOnGround && this.isOnGround;
         this.SlideDownSlopes();
         if (!this.yoyoTarget || !this.yoyoTarget.isActive)
             this.MoveByVelocity();
@@ -105,7 +113,7 @@ var Player = /** @class */ (function (_super) {
         if (!this.yoyoTarget)
             this.HandleDoors();
         if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true) && this.age > 1 && !levelGenerator)
-            this.OnPlayerDead();
+            this.OnPlayerDead(false);
         this.replayHandler.StoreFrame();
         if (this.twinkleCount > 0) {
             if (this.twinleTimer <= 0) {
@@ -196,10 +204,13 @@ var Player = /** @class */ (function (_super) {
             if (this.age > 1)
                 this.coyoteTimer = 0;
             this.isSpinJumping = false;
+            this.floatFramesLeftForThisJump = 0;
         }
         this.coyoteTimer++;
         var isJumpHeld = KeyboardHandler.IsKeyPressed(KeyAction.Action1, false);
         if (this.jumpTimer > -1) {
+            if (this.windDy > 0)
+                this.jumpTimer += this.windDy;
             if (isJumpHeld || this.forcedJumpTimer > 0)
                 this.jumpTimer++;
             if (!isJumpHeld && this.forcedJumpTimer <= 0) {
@@ -213,12 +224,26 @@ var Player = /** @class */ (function (_super) {
                 this.jumpTimer = -1;
             // jumptimer 14
         }
-        if (this.jumpTimer == -1 && !this.isClimbing) {
-            this.ApplyGravity();
-            if (isJumpHeld && this.dy > 0)
-                this.dy *= 0.97;
-            // can call this twice for "heavy" movement
-            //this.ApplyGravity();
+        if (this.isFloating) {
+            if (isJumpHeld) {
+                this.dy = 0;
+                this.floatFramesLeftForThisJump--;
+                if (this.floatFramesLeftForThisJump <= 0)
+                    this.isFloating = false;
+            }
+            else {
+                this.isFloating = false;
+                this.floatFramesLeftForThisJump = 0;
+            }
+        }
+        else {
+            if (this.jumpTimer == -1 && !this.isClimbing) {
+                this.ApplyGravity();
+                if (isJumpHeld && this.dy > 0)
+                    this.dy *= 0.97;
+                // can call this twice for "heavy" movement
+                //this.ApplyGravity();
+            }
         }
         if (this.dy > this.maxDY)
             this.dy = this.maxDY;
@@ -231,18 +256,29 @@ var Player = /** @class */ (function (_super) {
             this.jumpBufferTimer = 0;
         if (this.jumpBufferTimer > 3)
             this.jumpBufferTimer = -1;
-        var spinJumper = this.layer.sprites.find(function (a) { return a instanceof SpinRing && a.Overlaps(_this); });
+        var spinJumper = this.layer.sprites.find(function (a) { return a instanceof SpinRing && a.Overlaps(_this) && a.allowsSpinJump; });
         if (this.jumpBufferTimer > -1 && (this.coyoteTimer < 5 || this.IsNeighboringWallJumpTiles() || (spinJumper && this.heldItem == null)) && this.forcedJumpTimer <= 0) {
             if (spinJumper) {
                 this.isSpinJumping = true;
                 audioHandler.PlaySound("spinRing", true);
                 this.twinkleCount = 4;
                 spinJumper.OnPlayerUseSpinRing();
+                this.Jump();
+                if (spinJumper.direction.x != 0) {
+                    this.dx = 1.5 * spinJumper.direction.x;
+                    this.dy = -0.5;
+                    player.neutralTimer = 20;
+                    player.forcedJumpTimer = 20;
+                }
+                if (spinJumper.direction == Direction.Down) {
+                    this.dx = 0;
+                    this.dy = 2;
+                }
             }
             else {
                 this.isSpinJumping = false;
+                this.Jump();
             }
-            this.Jump();
             this.isSliding = false;
         }
         if ((this.isInWater && (!waterLayerAtMid.isSwimmable && globalWaterHeight > this.yMid) && !currentMap.playerWaterMode)) {
@@ -271,6 +307,7 @@ var Player = /** @class */ (function (_super) {
             this.isClimbing = true;
             this.isSliding = false;
         }
+        var wasClimbing = this.isClimbing;
         if (!isTouchingLadder) {
             this.isClimbing = false;
         }
@@ -377,11 +414,21 @@ var Player = /** @class */ (function (_super) {
                     if (this.isHanging) {
                         maxSpeed = 0.5;
                     }
-                    this.dx += this.targetDirection * accel;
-                    // cap speed
-                    if (Math.abs(this.dx) > maxSpeed) {
-                        this.dx = maxSpeed * (this.dx > 0 ? 1 : -1);
+                    var shouldCapSpeed = (leftPressed || rightPressed) && this.dxFromWind == 0;
+                    // only add speed when below max speed
+                    if (this.dx * this.targetDirection < maxSpeed) {
+                        this.dx += this.targetDirection * accel;
                     }
+                    if (shouldCapSpeed) {
+                        if (Math.abs(this.dx) > maxSpeed) {
+                            this.dx = maxSpeed * (this.dx > 0 ? 1 : -1);
+                        }
+                    }
+                    // this.dx += this.targetDirection * accel;
+                    // // cap speed
+                    // if (Math.abs(this.dx) > maxSpeed) {
+                    //     this.dx = maxSpeed * (this.dx > 0 ? 1 : -1);
+                    // }
                 }
             }
         }
@@ -394,6 +441,15 @@ var Player = /** @class */ (function (_super) {
         }
         if (this.standingOn.some(function (a) { return !a.tileType.canWalkOn; }))
             this.dx = 0;
+        if (this.dy > 0 && isJumpHeld && this.canPlayerFloatJump && !this.isFloating && this.floatFramesLeftForThisJump > 0) {
+            this.isFloating = true;
+        }
+        if (this.isOnGround || this.isClimbing || wasClimbing || this.isInWater || this.isInQuicksand) {
+            this.RefreshFloatTimer();
+        }
+    };
+    Player.prototype.RefreshFloatTimer = function () {
+        this.floatFramesLeftForThisJump = this.maxFloatDuration;
     };
     Player.prototype.SlideDownSlopes = function () {
         this.currentSlope = 0;
@@ -497,6 +553,7 @@ var Player = /** @class */ (function (_super) {
             this.dy = 0;
             this.jumpTimer = -1;
         }
+        this.RefreshFloatTimer();
     };
     Player.prototype.Bounce = function () {
         // very similar to Jump()
@@ -506,13 +563,14 @@ var Player = /** @class */ (function (_super) {
         this.jumpTimer = 0;
         this.isClimbing = false;
         this.parentSprite = null;
+        this.RefreshFloatTimer();
     };
     Player.prototype.HandleBreath = function (isLosingBreath) {
         if (isLosingBreath) {
             this.breathTimer = 120;
             this.currentBreath -= 1;
             if (this.currentBreath <= 0)
-                this.OnPlayerDead();
+                this.OnPlayerDead(true);
         }
         else {
             if (this.breathTimer > 0)
@@ -591,14 +649,14 @@ var Player = /** @class */ (function (_super) {
             var leftEdge = camera.GetLeftCameraEdge();
             if (this.x < leftEdge) {
                 if (this.isTouchingRightWall && camera.autoscrollX > 0)
-                    this.OnPlayerDead();
+                    this.OnPlayerDead(false);
                 else
                     this.x = leftEdge;
             }
             var rightEdge = camera.GetRightCameraEdge();
             if (this.xRight > rightEdge) {
                 if (this.isTouchingLeftWall && camera.autoscrollX < 0)
-                    this.OnPlayerDead();
+                    this.OnPlayerDead(false);
                 else
                     this.x = rightEdge - this.width;
             }
@@ -606,12 +664,12 @@ var Player = /** @class */ (function (_super) {
                 // scrolling down
                 if (this.yBottom < camera.GetTopCameraEdge() - 24 && this.standingOn.length) {
                     // more than two tiles above screen, standing on surface
-                    this.OnPlayerDead();
+                    this.OnPlayerDead(false);
                 }
             }
             if (this.y > camera.GetBottomCameraEdge() + 12) {
                 // more than one tile below screen edge
-                this.OnPlayerDead();
+                this.OnPlayerDead(false);
             }
         }
     };
@@ -678,7 +736,7 @@ var Player = /** @class */ (function (_super) {
         var isDead = false;
         if (this.y > this.layer.GetMaxY() + 5) {
             this.dy -= 3;
-            this.OnPlayerDead();
+            this.OnPlayerDead(true);
             return;
         }
         if (this.standingOn.length > 0 && this.standingOn.every(function (a) { return a.tileType.hurtOnTop; })) {
@@ -703,7 +761,7 @@ var Player = /** @class */ (function (_super) {
         }
         if (isDead) {
             this.dy -= 3;
-            this.OnPlayerDead();
+            this.OnPlayerDead(true);
             return;
         }
         if (!isHurt) {
@@ -742,18 +800,18 @@ var Player = /** @class */ (function (_super) {
                 nextHeart_1.ReplaceWithSpriteType(ExtraHitHeartSmallLoss);
             }
             else {
-                this.OnPlayerDead();
+                this.OnPlayerDead(true);
             }
         }
     };
-    Player.prototype.OnPlayerDead = function () {
+    Player.prototype.OnPlayerDead = function (canRespawn) {
         if (!this.isActive)
             return;
         this.OnDead();
         this.isActive = false;
         // log player death
         var newDeathCount = StorageService.IncrementDeathCounter((currentLevelListing === null || currentLevelListing === void 0 ? void 0 : currentLevelListing.level.code) || "");
-        var deadPlayer = new DeadPlayer(this, newDeathCount);
+        var deadPlayer = new DeadPlayer(this, newDeathCount, canRespawn);
         editorHandler.bankedCheckpointTime += this.age;
         if (levelGenerator)
             levelGenerator.bankedClearTime += this.age;
@@ -956,6 +1014,7 @@ var Player = /** @class */ (function (_super) {
     };
     Player.prototype.GetFrameData = function (frameNum) {
         var sourceImage = "dobbs";
+        var sourceImageOffset = this.sourceImageOffset;
         if (this.iFrames > 64) {
             if (Math.floor(this.iFrames / 8) % 2 == 0)
                 sourceImage = "dobbsGhost";
@@ -981,27 +1040,27 @@ var Player = /** @class */ (function (_super) {
         var xFlip = this.direction == -1;
         var actualFrame = Math.floor(this.frameNum) % 2;
         var row = this.heldItem ? 1 : 0;
-        var tile = tiles[sourceImage][0][row];
+        var tile = tiles[sourceImage][0 + sourceImageOffset][row];
         if (this.dx != 0) {
-            tile = tiles[sourceImage][1 + actualFrame][row];
+            tile = tiles[sourceImage][1 + actualFrame + sourceImageOffset][row];
         }
         if (!this.isOnGround) {
             if (this.isInWater && this.heldItem == null) {
                 if (this.swimTimer <= 2)
-                    tile = tiles[sourceImage][2][3];
+                    tile = tiles[sourceImage][2 + sourceImageOffset][3];
                 else if (this.swimTimer < 12)
-                    tile = tiles[sourceImage][1][3];
+                    tile = tiles[sourceImage][1 + sourceImageOffset][3];
                 else
-                    tile = tiles[sourceImage][2][3];
+                    tile = tiles[sourceImage][2 + sourceImageOffset][3];
             }
             else {
-                tile = tiles[sourceImage][3][row];
+                tile = tiles[sourceImage][3 + sourceImageOffset][row];
                 if (this.isSpinJumping) {
                     var spinTiles = [
-                        tiles[sourceImage][3][row],
-                        tiles[sourceImage][0][3],
-                        tiles[sourceImage][3][row],
-                        tiles[sourceImage][1][4],
+                        tiles[sourceImage][3 + sourceImageOffset][row],
+                        tiles[sourceImage][0 + sourceImageOffset][3],
+                        tiles[sourceImage][3 + sourceImageOffset][row],
+                        tiles[sourceImage][1 + sourceImageOffset][4],
                     ];
                     tile = spinTiles[Math.floor(frameNum / 4) % 4];
                     if (Math.floor(frameNum / 4) % 4 == 2)
@@ -1011,31 +1070,31 @@ var Player = /** @class */ (function (_super) {
         }
         if (this.isOnGround && this.targetDirection == 0 && !this.heldItem) {
             if (KeyboardHandler.IsKeyPressed(KeyAction.Down, false)) {
-                tile = tiles[sourceImage][2][2];
+                tile = tiles[sourceImage][2 + sourceImageOffset][2];
             }
             else if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false)) {
-                tile = tiles[sourceImage][3][2];
+                tile = tiles[sourceImage][3 + sourceImageOffset][2];
             }
         }
         if (this.isClimbing) {
-            tile = tiles[sourceImage][0][3];
+            tile = tiles[sourceImage][0 + sourceImageOffset][3];
             xFlip = actualFrame % 2 == 0;
         }
         if (this.isHanging) {
-            tile = tiles[sourceImage][3][actualFrame % 2 ? 1 : 3];
+            tile = tiles[sourceImage][3 + sourceImageOffset][actualFrame % 2 ? 1 : 3];
         }
         if (this.isSliding) {
-            tile = tiles[sourceImage][3][row];
+            tile = tiles[sourceImage][3 + sourceImageOffset][row];
         }
         if (this.isTouchingStickyWall || this.wallDragDirection != 0) {
-            tile = tiles[sourceImage][0][4];
+            tile = tiles[sourceImage][0 + sourceImageOffset][4];
         }
         return {
             imageTile: tile,
             xFlip: xFlip,
             yFlip: false,
             xOffset: 1,
-            yOffset: 0
+            yOffset: this.isFloating ? Math.sin(this.floatFramesLeftForThisJump / 20) / 2 : 0
         };
     };
     Player.prototype.OnAfterDraw = function (camera) {
@@ -1057,17 +1116,32 @@ var Player = /** @class */ (function (_super) {
 }(Sprite));
 var DeadPlayer = /** @class */ (function (_super) {
     __extends(DeadPlayer, _super);
-    function DeadPlayer(player, deathCount) {
+    function DeadPlayer(player, deathCount, canRespawn) {
         var _this = _super.call(this, player.x, player.y, player.layer, []) || this;
         _this.deathCount = deathCount;
+        _this.canRespawn = canRespawn;
         _this.height = 9;
         _this.width = 9;
         _this.respectsSolidTiles = false;
+        _this.imageOffset = 0;
+        if (player instanceof HoverPlayer)
+            _this.imageOffset = 1;
         _this.dx = player.dx;
         _this.dy = Math.max(0, player.dy) - 1;
         return _this;
     }
     DeadPlayer.prototype.Update = function () {
+        var _this = this;
+        var accel = 0.04;
+        var maxSpeed = 2;
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Left, false))
+            this.dx -= accel;
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Right, false))
+            this.dx += accel;
+        if (this.dx > maxSpeed)
+            this.dx = maxSpeed;
+        if (this.dx < -maxSpeed)
+            this.dx = -maxSpeed;
         this.ApplyGravity();
         this.MoveByVelocity();
         if (this.age > 45) {
@@ -1089,11 +1163,28 @@ var DeadPlayer = /** @class */ (function (_super) {
                 camera.targetY = camera.y;
             }
         }
+        var overlappingWings = this.layer.sprites.filter(function (a) { return a instanceof ReviveWings && _this.Overlaps(a); });
+        if (this.age <= 60 && overlappingWings.length > 0 && this.canRespawn) {
+            audioHandler.PlaySound("respawn", true);
+            var newPlayer = this.ReplaceWithSpriteType(this.imageOffset == 1 ? HoverPlayer : Player);
+            var wings = overlappingWings[0];
+            wings.isActive = false;
+            newPlayer.x = wings.xMid - newPlayer.width / 2;
+            newPlayer.y = wings.yMid - newPlayer.height / 2;
+            newPlayer.dx = 0;
+            newPlayer.dy = 0;
+            camera.target = newPlayer;
+            camera.targetX = newPlayer.xMid;
+            camera.targetY = newPlayer.yBottom - 12;
+            camera.AdjustCameraTargetForMapBounds();
+            camera.transitionTimer = 30;
+            currentMap.fadeOutRatio = 0;
+        }
     };
     DeadPlayer.prototype.GetFrameData = function (frameNum) {
         var tileCol = Math.floor(frameNum / 5) % 4;
         return {
-            imageTile: tiles["dead"][tileCol][0],
+            imageTile: tiles["dead"][tileCol][this.imageOffset],
             xFlip: false,
             yFlip: false,
             xOffset: 1,
@@ -1117,3 +1208,14 @@ var DeadPlayer = /** @class */ (function (_super) {
     };
     return DeadPlayer;
 }(Sprite));
+var HoverPlayer = /** @class */ (function (_super) {
+    __extends(HoverPlayer, _super);
+    function HoverPlayer() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.canPlayerFloatJump = true;
+        _this.sourceImageOffset = 4;
+        _this.moveSpeed = 1;
+        return _this;
+    }
+    return HoverPlayer;
+}(Player));

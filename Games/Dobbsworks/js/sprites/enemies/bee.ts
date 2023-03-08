@@ -41,6 +41,7 @@ class BeeWithSunglasses extends Enemy {
         
         this.ApplyInertia();
         this.ReactToWater();
+        this.ReactToVerticalWind();
     }
 
     OnBounce(): void {

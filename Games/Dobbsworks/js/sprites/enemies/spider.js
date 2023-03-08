@@ -71,6 +71,7 @@ var Spurpider = /** @class */ (function (_super) {
                 }
             }
             this.ReactToWater();
+            this.ReactToVerticalWind();
         }
     };
     Spurpider.prototype.OnSpinBounce = function () { this.ReplaceWithSpriteType(Poof); };

@@ -41,7 +41,7 @@ class SapphireSnail extends Enemy {
             if (Math.abs(this.dy) > 0.3) this.dy *= 0.95;
             this.wasPlayerOnLastFrame = playerStandingOn;
         }
-
+        this.ReactToVerticalWind();
     }
 
     GetFrameData(frameNum: number): FrameData {

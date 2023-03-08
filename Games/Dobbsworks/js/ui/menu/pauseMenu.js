@@ -71,7 +71,7 @@ var PauseMenu = /** @class */ (function (_super) {
                 PauseMenu.UnpauseTime = new Date();
                 audioHandler.SetLowPass(false);
                 PauseMenu.IsPaused = false;
-                player.OnPlayerDead();
+                player.OnPlayerDead(false);
             });
         }
         else {
@@ -85,7 +85,7 @@ var PauseMenu = /** @class */ (function (_super) {
                 PauseMenu.UnpauseTime = new Date();
                 audioHandler.SetLowPass(false);
                 PauseMenu.IsPaused = false;
-                player.OnPlayerDead();
+                player.OnPlayerDead(false);
             });
             var retryFromStartButton = this.CreateButton("Retry From Start", 0.45);
             row.AddChild(retryFromStartButton);
@@ -95,7 +95,7 @@ var PauseMenu = /** @class */ (function (_super) {
                 PauseMenu.UnpauseTime = new Date();
                 audioHandler.SetLowPass(false);
                 PauseMenu.IsPaused = false;
-                player.OnPlayerDead();
+                player.OnPlayerDead(false);
             });
         }
         // EXIT BUTTON
