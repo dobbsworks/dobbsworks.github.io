@@ -21,6 +21,8 @@ class SpringBox extends Sprite {
         let overlappingSprites = this.layer.sprites.filter(a => a.CanInteractWithSpringBox() && a.Overlaps(this));
         for (let sprite of overlappingSprites) {
 
+            if (player && player.heldItem == sprite) continue;
+
             // check if sprite is fully in a quadrant relative to spring's center
             // if so, use closest corner to calculate direction
             // otherwise:

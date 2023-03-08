@@ -42,7 +42,7 @@ class SpinRing extends Sprite {
             if (!a.Overlaps(this)) return false;
             if (a instanceof SpinRing) return false;
             if (a instanceof Yoyo) return false;
-            if (player.heldItem == a) return false;
+            if (player && player.heldItem == a) return false;
             
             let parentMotor = <Motor>this.layer.sprites.find(spr => spr instanceof Motor && spr.connectedSprite == a);
             if (parentMotor) return false;
@@ -207,6 +207,9 @@ class PortalRing extends SpinRing {
 
             audioHandler.PlaySound("warp", true);
             destination.spriteInteractList.push(sprite);
+            if (sprite instanceof Player && sprite.heldItem) {
+                destination.spriteInteractList.push(sprite.heldItem);
+            }
         }
     }
 
