@@ -4,6 +4,8 @@ var Camera = /** @class */ (function () {
         this.canvas = canvas;
         this.x = 0;
         this.y = 9999;
+        this.prevX = 0;
+        this.prevY = 9999;
         this.targetX = 0;
         this.targetY = 0;
         this.maxX = 0;
@@ -21,6 +23,7 @@ var Camera = /** @class */ (function () {
         this.autoscrollY = 0;
         this.autoscrollTriggers = [];
         this.cameraZoomTriggers = [];
+        this.windTriggers = [];
         this.leftLockTimer = 0;
         this.rightLockTimer = 0;
         this.upLockTimer = 0;
@@ -30,6 +33,8 @@ var Camera = /** @class */ (function () {
     }
     Camera.prototype.Update = function () {
         var _this = this;
+        this.prevX = this.x;
+        this.prevY = this.y;
         if (this.transitionTimer > 0) {
             var xChange = (this.targetX - this.x) / this.transitionTimer;
             var yChange = (this.targetY - this.y) / this.transitionTimer;
@@ -57,7 +62,7 @@ var Camera = /** @class */ (function () {
                     this_1.autoscrollTriggers = this_1.autoscrollTriggers.filter(function (a) { return a != trigger; });
                 }
                 else {
-                    this_1.Reset();
+                    this_1.Reset(false);
                 }
             };
             var this_1 = this;
@@ -66,6 +71,28 @@ var Camera = /** @class */ (function () {
                 _loop_1(trigger);
             }
         }
+        var onScreenWindTriggers = this.windTriggers.filter(function (a) {
+            return a.x >= _this.GetLeftCameraEdge() &&
+                a.xRight <= _this.GetRightCameraEdge() &&
+                a.y >= _this.GetTopCameraEdge() &&
+                a.yBottom <= _this.GetBottomCameraEdge();
+        });
+        var _loop_2 = function (trigger) {
+            if (trigger.direction) {
+                currentMap.globalWindX += trigger.direction.x;
+                currentMap.globalWindY += trigger.direction.y;
+                // remove from list of available triggers
+                this_2.windTriggers = this_2.windTriggers.filter(function (a) { return a != trigger; });
+            }
+            else {
+                this_2.ResetWind();
+            }
+        };
+        var this_2 = this;
+        for (var _a = 0, onScreenWindTriggers_1 = onScreenWindTriggers; _a < onScreenWindTriggers_1.length; _a++) {
+            var trigger = onScreenWindTriggers_1[_a];
+            _loop_2(trigger);
+        }
         var onScreenZoomTriggers = this.cameraZoomTriggers.filter(function (a) {
             return a.x >= _this.GetLeftCameraEdge() &&
                 a.xRight <= _this.GetRightCameraEdge() &&
@@ -73,24 +100,24 @@ var Camera = /** @class */ (function () {
                 a.yBottom <= _this.GetBottomCameraEdge();
         });
         if (onScreenZoomTriggers.length) {
-            var _loop_2 = function (trigger) {
+            var _loop_3 = function (trigger) {
                 if (trigger.direction == "in") {
-                    this_2.targetScale *= 1.1892;
+                    this_3.targetScale *= 1.1892;
                 }
                 else {
-                    this_2.targetScale /= 1.1892;
+                    this_3.targetScale /= 1.1892;
                 }
-                if (this_2.targetScale > this_2.defaultScale * 2)
-                    this_2.targetScale = this_2.defaultScale * 2;
-                if (this_2.targetScale < this_2.defaultScale / 4)
-                    this_2.targetScale = this_2.defaultScale / 4;
+                if (this_3.targetScale > this_3.defaultScale * 2)
+                    this_3.targetScale = this_3.defaultScale * 2;
+                if (this_3.targetScale < this_3.defaultScale / 4)
+                    this_3.targetScale = this_3.defaultScale / 4;
                 // remove from list of available triggers
-                this_2.cameraZoomTriggers = this_2.cameraZoomTriggers.filter(function (a) { return a != trigger; });
+                this_3.cameraZoomTriggers = this_3.cameraZoomTriggers.filter(function (a) { return a != trigger; });
             };
-            var this_2 = this;
-            for (var _a = 0, onScreenZoomTriggers_1 = onScreenZoomTriggers; _a < onScreenZoomTriggers_1.length; _a++) {
-                var trigger = onScreenZoomTriggers_1[_a];
-                _loop_2(trigger);
+            var this_3 = this;
+            for (var _b = 0, onScreenZoomTriggers_1 = onScreenZoomTriggers; _b < onScreenZoomTriggers_1.length; _b++) {
+                var trigger = onScreenZoomTriggers_1[_b];
+                _loop_3(trigger);
             }
         }
         if (this.isAutoscrollingHorizontally) {
@@ -218,7 +245,8 @@ var Camera = /** @class */ (function () {
         if (this.targetY < this.minY)
             this.targetY = this.minY;
     };
-    Camera.prototype.Reset = function () {
+    Camera.prototype.Reset = function (alsoResetWind) {
+        if (alsoResetWind === void 0) { alsoResetWind = true; }
         this.autoscrollX = 0;
         this.autoscrollY = 0;
         this.isAutoscrollingHorizontally = false;
@@ -227,7 +255,14 @@ var Camera = /** @class */ (function () {
         if (currentMap) {
             this.autoscrollTriggers = currentMap.mainLayer.sprites.filter(function (a) { return a instanceof CameraScrollTrigger; });
             this.cameraZoomTriggers = currentMap.mainLayer.sprites.filter(function (a) { return a instanceof CameraZoomTrigger; });
+            if (alsoResetWind)
+                this.ResetWind();
         }
+    };
+    Camera.prototype.ResetWind = function () {
+        this.windTriggers = currentMap.mainLayer.sprites.filter(function (a) { return a instanceof WindTrigger; });
+        currentMap.globalWindX = 0;
+        currentMap.globalWindY = 0;
     };
     Camera.prototype.SnapCamera = function () {
         this.x = this.targetX;

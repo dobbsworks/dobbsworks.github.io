@@ -44,6 +44,8 @@ var SpringBox = /** @class */ (function (_super) {
         var overlappingSprites = this.layer.sprites.filter(function (a) { return a.CanInteractWithSpringBox() && a.Overlaps(_this); });
         for (var _i = 0, overlappingSprites_1 = overlappingSprites; _i < overlappingSprites_1.length; _i++) {
             var sprite = overlappingSprites_1[_i];
+            if (player && player.heldItem == sprite)
+                continue;
             // check if sprite is fully in a quadrant relative to spring's center
             // if so, use closest corner to calculate direction
             // otherwise:

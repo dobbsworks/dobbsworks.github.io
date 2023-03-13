@@ -9,6 +9,8 @@ class Camera {
     public ctx: CanvasRenderingContext2D;
     public x: number = 0;
     public y: number = 9999;
+    public prevX: number = 0;
+    public prevY: number = 9999;
     public targetX = 0;
     public targetY = 0;
     public maxX: number = 0;
@@ -27,6 +29,7 @@ class Camera {
     public autoscrollY: number = 0;
     public autoscrollTriggers: CameraScrollTrigger[] = [];
     public cameraZoomTriggers: CameraZoomTrigger[] = [];
+    public windTriggers: WindTrigger[] = [];
 
     public leftLockTimer = 0;
     public rightLockTimer = 0;
@@ -34,7 +37,8 @@ class Camera {
     public downLockTimer = 0;
 
     public Update(): void {
-
+        this.prevX = this.x;
+        this.prevY = this.y;
         if (this.transitionTimer > 0) {
             let xChange = (this.targetX - this.x) / this.transitionTimer;
             let yChange = (this.targetY - this.y) / this.transitionTimer;
@@ -61,10 +65,27 @@ class Camera {
                     // remove from list of available triggers
                     this.autoscrollTriggers = this.autoscrollTriggers.filter(a => a != trigger);
                 } else {
-                    this.Reset();
+                    this.Reset(false);
                 }
             }            
         }
+
+        let onScreenWindTriggers = this.windTriggers.filter(a => 
+            a.x >= this.GetLeftCameraEdge() &&
+            a.xRight <= this.GetRightCameraEdge() &&
+            a.y >= this.GetTopCameraEdge() &&
+            a.yBottom <= this.GetBottomCameraEdge()
+        );
+        for (let trigger of onScreenWindTriggers) {
+            if (trigger.direction) {
+                currentMap.globalWindX += trigger.direction.x;
+                currentMap.globalWindY += trigger.direction.y;
+                // remove from list of available triggers
+                this.windTriggers = this.windTriggers.filter(a => a != trigger);
+            } else {
+                this.ResetWind();
+            }
+        }            
 
         let onScreenZoomTriggers = this.cameraZoomTriggers.filter(a =>
             a.x >= this.GetLeftCameraEdge() &&
@@ -202,7 +223,7 @@ class Camera {
         if (this.targetY < this.minY) this.targetY = this.minY;
     }
 
-    public Reset(): void {
+    public Reset(alsoResetWind = true): void {
         this.autoscrollX = 0;
         this.autoscrollY = 0;
         this.isAutoscrollingHorizontally = false;
@@ -211,7 +232,14 @@ class Camera {
         if (currentMap) {
             this.autoscrollTriggers = <CameraScrollTrigger[]>currentMap.mainLayer.sprites.filter(a => a instanceof CameraScrollTrigger);
             this.cameraZoomTriggers = <CameraZoomTrigger[]>currentMap.mainLayer.sprites.filter(a => a instanceof CameraZoomTrigger);
+            if (alsoResetWind) this.ResetWind();
         }
+    }
+
+    private ResetWind(): void {
+        this.windTriggers = <WindTrigger[]>currentMap.mainLayer.sprites.filter(a => a instanceof WindTrigger);
+        currentMap.globalWindX = 0;
+        currentMap.globalWindY = 0;
     }
 
     public SnapCamera(): void {

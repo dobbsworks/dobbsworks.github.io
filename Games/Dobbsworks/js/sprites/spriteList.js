@@ -120,4 +120,9 @@ var spriteTypes = [
     PortalRingDown,
     PortalRingLeft,
     CameraLockVertical,
+    WindTriggerRight,
+    WindTriggerDown,
+    WindTriggerLeft,
+    WindTriggerUp,
+    WindTriggerReset,
 ];

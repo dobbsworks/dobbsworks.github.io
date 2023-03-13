@@ -60,7 +60,7 @@ var SpinRing = /** @class */ (function (_super) {
                 return false;
             if (a instanceof Yoyo)
                 return false;
-            if (player.heldItem == a)
+            if (player && player.heldItem == a)
                 return false;
             var parentMotor = _this.layer.sprites.find(function (spr) { return spr instanceof Motor && spr.connectedSprite == a; });
             if (parentMotor)
@@ -259,6 +259,7 @@ var PortalRing = /** @class */ (function (_super) {
         _this.isReusable = false;
         _this.direction = Direction.Up;
         _this.allowsSpinJump = false;
+        _this.anchor = null;
         return _this;
     }
     Object.defineProperty(PortalRing, "clockwiseRotationSprite", {
@@ -295,7 +296,7 @@ var PortalRing = /** @class */ (function (_super) {
                 }
                 else {
                     // change orientation
-                    sprite.dx = destination.direction.x;
+                    sprite.dx = destination.direction.x * 2;
                     sprite.dy = destination.direction.y;
                     if (destination.direction.y == -1)
                         sprite.dy = -2;
@@ -309,6 +310,9 @@ var PortalRing = /** @class */ (function (_super) {
             }
             audioHandler.PlaySound("warp", true);
             destination.spriteInteractList.push(sprite);
+            if (sprite instanceof Player && sprite.heldItem) {
+                destination.spriteInteractList.push(sprite.heldItem);
+            }
         }
     };
     PortalRing.prototype.GetPairedPortal = function () {

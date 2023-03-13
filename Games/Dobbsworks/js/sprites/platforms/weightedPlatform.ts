@@ -23,7 +23,8 @@ class WeightedPlatform extends BasePlatform {
             this.MoveByVelocity();
             if (this.originalY == -9999) this.originalY = this.y;
             let numberOfFullRiders = this.GetFullRiderCount();
-            let hasPartialRider = this.GetOneFootRiderCount() > 0;
+            let partialRiderCount = this.GetOneFootRiderCount();
+            let hasPartialRider = partialRiderCount > 0;
 
             if (numberOfFullRiders >= this.weightThreshold) {
                 this.tilesetRow = 4;
@@ -38,7 +39,7 @@ class WeightedPlatform extends BasePlatform {
                 } else {
                     this.tilesetRow = 2;
                     this.dy = -this.speed;
-                    if (hasPartialRider) {
+                    if (numberOfFullRiders + partialRiderCount >= this.weightThreshold) {
                         this.tilesetRow = 3;
                         this.dy = 0;
                     }

@@ -417,7 +417,11 @@ class Player extends Sprite {
         if (this.standingOn.some(a => !a.tileType.canWalkOn)) this.dx = 0;
 
         if (this.dy > 0 && isJumpHeld && this.canPlayerFloatJump && !this.isFloating && this.floatFramesLeftForThisJump > 0) {
-            this.isFloating = true;
+            let isInCannon = this.layer.sprites.some(a => a instanceof RedCannon && a.holdingPlayer);
+            let tappedJumpThisFrame = KeyboardHandler.IsKeyPressed(KeyAction.Action1, true);
+            if (!isInCannon && (this.forcedJumpTimer <= 0 || tappedJumpThisFrame)) {
+                this.isFloating = true;
+            }
         }
         if (this.isOnGround || this.isClimbing || wasClimbing || this.isInWater || this.isInQuicksand) {
             this.RefreshFloatTimer();

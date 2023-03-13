@@ -40,7 +40,8 @@ var WeightedPlatform = /** @class */ (function (_super) {
             if (this.originalY == -9999)
                 this.originalY = this.y;
             var numberOfFullRiders = this.GetFullRiderCount();
-            var hasPartialRider = this.GetOneFootRiderCount() > 0;
+            var partialRiderCount = this.GetOneFootRiderCount();
+            var hasPartialRider = partialRiderCount > 0;
             if (numberOfFullRiders >= this.weightThreshold) {
                 this.tilesetRow = 4;
                 this.dy = this.speed;
@@ -56,7 +57,7 @@ var WeightedPlatform = /** @class */ (function (_super) {
                 else {
                     this.tilesetRow = 2;
                     this.dy = -this.speed;
-                    if (hasPartialRider) {
+                    if (numberOfFullRiders + partialRiderCount >= this.weightThreshold) {
                         this.tilesetRow = 3;
                         this.dy = 0;
                     }

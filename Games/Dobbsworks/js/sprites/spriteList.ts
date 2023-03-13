@@ -132,4 +132,10 @@ var spriteTypes: SpriteType[] = [
     PortalRingLeft,
     
     CameraLockVertical,
+
+    WindTriggerRight,
+    WindTriggerDown,
+    WindTriggerLeft,
+    WindTriggerUp,
+    WindTriggerReset,
 ];

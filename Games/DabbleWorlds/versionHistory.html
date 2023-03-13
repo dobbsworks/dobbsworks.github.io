@@ -10,6 +10,53 @@
     <!-- <div id="logo"></div> -->
     <br />
 
+    <div class="p-section version-history minor" id="v1.6.0">
+        <h3 class="version-header">Version 1.6.0</h3>
+        <!-- 2023/ -->
+        New Features
+        <ul>
+            <li>A new player has joined the roster! Selectable from the level flow panel, Hover Cat can float by holding the jump button</li>
+            <li>Introducing warp rings!
+                <ul>
+                    <li>Hop in one to be instantly warped to the closest (horizontally) warp ring!</li>
+                    <li>Press R in the editor to rotate the orientation, allowing for more intricate setups</li>
+                    <li>The player is not the only thing that can travel through the warp ring...</li>
+                    <li>If the warp takes the player more than half a screen away, the action will pause while the camera pans over, similar to a horizontal screen transition</li>
+                </ul>
+            </li>
+            <li>Introducing shimmer tiles (and lightbulbs)!
+                <ul>
+                    <li>An invisible (but fully solid) block</li>
+                    <li>Brushing against it causes it to shimmer for a moment</li>
+                    <li>Landing down on it reveals shimmer blocks in a small area</li>
+                    <li>When powered from below, lightbulbs will pulse once per second revealing shimmer blocks in a larger area</li>
+                </ul>
+            </li>
+            <li>Added purple cannons! Can be aimed with the directional buttons, but only give a few seconds before they auto-fire</li>
+            <li>Added revive wings! Fling your corpse into them to instantly respawn</li>
+            <li>Added vertical camera locks</li>
+            <li>Added fast variants of powered conveyors</li>
+        </ul>
+        Tweaks
+        <ul>
+            <li>You can now slightly steer your corpse left and right</li>
+            <li>Chilly Jelly now only has a deadly snow aura during its jumps. While on the ground, Chilly Jelly can be jumped on safely</li>
+            <li>When the camera is stalled by a scroll lock, the edge of the screen glows to indicate that the level continues</li>
+            <li>The sky's starting color is randomized whenever the game is launched</li>
+        </ul>
+        Bug fixes
+        <ul>
+            <li>Fixed an issue where doors would not pair correctly in some situations</li>
+            <li>Fixed an issue where spring boxes would affect items while the player was holding them</li>
+            <li>Fixed an issue where weighted platforms lined up with ground could get stuck until all sprites on them were removed, regardless of weight threshold</li>
+            <li>Fixed an issue where vertical autoscroll and door transitions could kill the player</li>
+            <li>Modified one of the 3-Ring Challenge level blocks to reduce chance of softlock</li>
+            <li>Corrected the appearance of the Baddle trigger in the hotbar</li>
+            <li>Adjusted yoyo particle effect to remain stationary after yoyo "pops"</li>
+        </ul>
+    </div>
+    <br />
+
     <div class="p-section version-history minor" id="v1.5.2">
         <h3 class="version-header">Version 1.5.2</h3>
         <!-- 2023/02/13 -->

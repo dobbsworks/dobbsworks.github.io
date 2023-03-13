@@ -125,13 +125,11 @@ var EditorHandler = /** @class */ (function () {
         var enemyTypes = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, Wooly, WoolyBooly, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
             Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, BaddleTrigger,];
         var enemyButtons = enemyTypes.map(function (a) { return new EditorButtonSprite(a); });
-        // let baddleTriggerButton = new EditorButtonSprite(BaddleTrigger).AppendImage(tiles["baddle"][0][0]);
-        // enemyButtons.push(baddleTriggerButton);
         enemyButtons.filter(function (a) { return a.spriteType == Piggle || a.spriteType == Snail; }).forEach(function (a) { return hotbarDefaults.push(a); });
         var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 7);
         var gizmoTypes = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform,
-            MushroomSpring, Baseball, Battery, Door, Fan, Lightbulb, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
+            MushroomSpring, Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
             SpinRing, FragileSpinRing, PortalRing,
         ];
         var gizmoButtons = gizmoTypes.map(function (a) { return new EditorButtonSprite(a); });
@@ -153,18 +151,10 @@ var EditorHandler = /** @class */ (function () {
         gizmoButtons.push(new EditorButtonTile(TileType.IceTop, "Ice Top"));
         gizmoButtons.push(new EditorButtonTile(TileType.WindRight, "Wind"));
         gizmoButtons.push(new EditorButtonTile(TileType.FastWindRight, "Fast Wind"));
+        gizmoButtons.push(new EditorButtonSprite(WindTriggerRight));
+        gizmoButtons.push(new EditorButtonSprite(WindTriggerReset));
         gizmoButtons.push(new EditorButtonTile(TileType.OneWayRight, "One-way").AppendImage(tiles["uiButtonAdd"][0][0]));
-        // gizmoButtons.push(new EditorButtonTile(TileType.OneWayDown, "One-way (down)"));
-        // gizmoButtons.push(new EditorButtonTile(TileType.OneWayLeft, "One-way (left)"));
-        // gizmoButtons.push(new EditorButtonTile(TileType.OneWayUp, "One-way (up)"));
         gizmoButtons.push(new EditorButtonTile(TileType.ArrowRight, "Arrow").AppendImage(tiles["uiButtonAdd"][0][0]));
-        // gizmoButtons.push(new EditorButtonTile(TileType.ArrowUpRight, "Arrow (up-right)"));
-        // gizmoButtons.push(new EditorButtonTile(TileType.ArrowUp, "Arrow (up)"));
-        // gizmoButtons.push(new EditorButtonTile(TileType.ArrowUpLeft, "Arrow (up-left)"));
-        // gizmoButtons.push(new EditorButtonTile(TileType.ArrowLeft, "Arrow (left)"));
-        // gizmoButtons.push(new EditorButtonTile(TileType.ArrowDownLeft, "Arrow (down-left)"));
-        // gizmoButtons.push(new EditorButtonTile(TileType.ArrowDown, "Arrow (down)"));
-        // gizmoButtons.push(new EditorButtonTile(TileType.ArrowDownRight, "Arrow (down-right)"));
         gizmoButtons.push(new EditorButtonTile(TileType.SolidForPlayer, "Player Blocker"));
         gizmoButtons.push(new EditorButtonTile(TileType.SolidForNonplayer, "Sprite Blocker"));
         gizmoButtons.push(new EditorButtonTile(TileType.SpriteKiller, "Sprite Killer"));
@@ -205,17 +195,8 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonSprite(RightSideButton),
             new EditorButtonSprite(CeilingButton),
             new EditorButtonTile(TileType.DiodeRightOff, "Diode").AppendImage(tiles["uiButtonAdd"][0][0]),
-            // new EditorButtonTile(TileType.DiodeDownOff, "Diode (down)"),
-            // new EditorButtonTile(TileType.DiodeLeftOff, "Diode (left)"),
-            // new EditorButtonTile(TileType.DiodeUpOff, "Diode (up)"),
             new EditorButtonTile(TileType.AndGateRightOff, "And gate").AppendImage(tiles["uiButtonAdd"][0][0]),
-            // new EditorButtonTile(TileType.AndGateDownOff, "And gate (down)"),
-            // new EditorButtonTile(TileType.AndGateLeftOff, "And gate (left)"),
-            // new EditorButtonTile(TileType.AndGateUpOff, "And gate (up)"),
             new EditorButtonTile(TileType.InverterRightOff, "Inverter").AppendImage(tiles["uiButtonAdd"][0][0]),
-            // new EditorButtonTile(TileType.InverterDownOff, "Inverter (down)"),
-            // new EditorButtonTile(TileType.InverterLeftOff, "Inverter (left)"),
-            // new EditorButtonTile(TileType.InverterUpOff, "Inverter (up)"),
             new EditorButtonTile(TileType.PowerBlock, "Power source"),
             new EditorButtonTile(TileType.CircuitHurtOff, "Zappy wire"),
             new EditorButtonTile(TileType.CircuitHurtSolidOff, "Zappy block"),
@@ -232,16 +213,11 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonSprite(FastFerrisMotorRight).AppendImage(tiles["editor"][6][2]).ChangeTooltip("Fast Ferris Motor (clockwise)"),
             new EditorButtonSprite(FastFerrisMotorLeft).AppendImage(tiles["editor"][5][2]).ChangeTooltip("Fast Ferris Motor (counter-clockwise)"),
             new EditorButtonTile(TileType.TrackHorizontal, "Straight Track").AppendImage(tiles["uiButtonAdd"][0][0]),
-            //new EditorButtonTile(TileType.TrackVertical, "Vertical Track"),
             new EditorButtonTile(TileType.TrackCurveDownRight, "Track Curve").AppendImage(tiles["uiButtonAdd"][0][0]),
-            // new EditorButtonTile(TileType.TrackCurveDownLeft, "TrackCurve"),
-            // new EditorButtonTile(TileType.TrackCurveUpLeft, "Track Curve"),
-            // new EditorButtonTile(TileType.TrackCurveUpRight, "Track Curve"),
             new EditorButtonTile(TileType.TrackLeftCap, "Track Cap").AppendImage(tiles["uiButtonAdd"][0][0]),
-            // new EditorButtonTile(TileType.TrackTopCap, "Track Cap"),
-            // new EditorButtonTile(TileType.TrackRightCap, "Track Cap"),
-            // new EditorButtonTile(TileType.TrackBottomCap, "Track Cap"),
             new EditorButtonSprite(Lever),
+            new EditorButtonSprite(Lightbulb),
+            new EditorButtonTile(TileType.UnpoweredWindRight, "Wind generator"),
         ], 4, 8);
         var backgroundHandle = new EditorButtonDrawerHandle(tiles["editor"][0][3], "Background customization", []);
         this.skyEditor = new SkyEditor(this.mainPanel.x - 70 - 10, 110, 700, 300);

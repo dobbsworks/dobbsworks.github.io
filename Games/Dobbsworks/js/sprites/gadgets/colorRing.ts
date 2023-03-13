@@ -163,6 +163,7 @@ class PortalRing extends SpinRing {
     isReusable = false;
     direction = Direction.Up;
     allowsSpinJump: boolean = false;
+    public anchor: Direction | null = null;
     public static get clockwiseRotationSprite(): (SpriteType | null) { return PortalRingRight; }
 
     OnSpriteTouch(sprite: Sprite): void {
@@ -192,7 +193,7 @@ class PortalRing extends SpinRing {
                     grantVelocityBoost = false;
                 } else {
                     // change orientation
-                    sprite.dx = destination.direction.x;
+                    sprite.dx = destination.direction.x * 2;
                     sprite.dy = destination.direction.y;
                     if (destination.direction.y == -1) sprite.dy = -2;
                 }

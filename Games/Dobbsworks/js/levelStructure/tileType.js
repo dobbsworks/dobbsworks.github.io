@@ -324,6 +324,14 @@ var TileType = /** @class */ (function () {
         TileType.FastWindDown;
         TileType.FastWindLeft;
         TileType.FastWindRight;
+        TileType.PoweredWindLeft;
+        TileType.PoweredWindRight;
+        TileType.PoweredWindUp;
+        TileType.PoweredWindDown;
+        TileType.UnpoweredWindLeft;
+        TileType.UnpoweredWindRight;
+        TileType.UnpoweredWindUp;
+        TileType.UnpoweredWindDown;
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
     };
@@ -2263,6 +2271,69 @@ var TileType = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(TileType, "PoweredWindLeft", {
+        get: function () { return TileType.CreatePoweredWindTrigger(Direction.Left); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "PoweredWindRight", {
+        get: function () { return TileType.CreatePoweredWindTrigger(Direction.Right); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "PoweredWindUp", {
+        get: function () { return TileType.CreatePoweredWindTrigger(Direction.Up); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "PoweredWindDown", {
+        get: function () { return TileType.CreatePoweredWindTrigger(Direction.Down); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "UnpoweredWindLeft", {
+        get: function () { return TileType.CreateUnpoweredWindTrigger(Direction.Left); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "UnpoweredWindRight", {
+        get: function () { return TileType.CreateUnpoweredWindTrigger(Direction.Right); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "UnpoweredWindUp", {
+        get: function () { return TileType.CreateUnpoweredWindTrigger(Direction.Up); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "UnpoweredWindDown", {
+        get: function () { return TileType.CreateUnpoweredWindTrigger(Direction.Down); },
+        enumerable: false,
+        configurable: true
+    });
+    TileType.CreatePoweredWindTrigger = function (direction) {
+        var row = [1, 2, 3, 0][Direction.All.indexOf(direction)];
+        return TileType.GetAnimatedTileType("PoweredWind" + direction.name, "wind", [4, 5, 6, 7].map(function (a) { return ({ x: a, y: row }); }), 1, Solidity.None, TargetLayer.main, function (tileType) {
+            tileType.canBePowered = true;
+            tileType.unpoweredTileName = "UnpoweredWind" + direction.name;
+            tileType.onUnpowered = function (tile) {
+                currentMap.globalWindX -= direction.x;
+                currentMap.globalWindY -= direction.y;
+            };
+        });
+    };
+    TileType.CreateUnpoweredWindTrigger = function (direction) {
+        var row = [1, 2, 3, 0][Direction.All.indexOf(direction)];
+        return TileType.GetAnimatedTileType("UnpoweredWind" + direction.name, "wind", [0, 1, 2, 3].map(function (a) { return ({ x: a, y: row }); }), 20, Solidity.None, TargetLayer.main, function (tileType) {
+            tileType.canBePowered = true;
+            tileType.poweredTileName = "PoweredWind" + direction.name;
+            tileType.onPowered = function (tile) {
+                currentMap.globalWindX += direction.x;
+                currentMap.globalWindY += direction.y;
+            };
+            tileType.clockWiseRotationTileName = "UnpoweredWind" + direction.Clockwise().name;
+        });
+    };
     Object.defineProperty(TileType, "WallWarpLeft", {
         get: function () {
             return TileType.GetAnimatedTileType("WallWarpLeft", "warpWall", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (y) { return ({ x: 0, y: y }); }), 6, Solidity.LeftWall, TargetLayer.semisolid, function (tileType) {

@@ -442,7 +442,11 @@ var Player = /** @class */ (function (_super) {
         if (this.standingOn.some(function (a) { return !a.tileType.canWalkOn; }))
             this.dx = 0;
         if (this.dy > 0 && isJumpHeld && this.canPlayerFloatJump && !this.isFloating && this.floatFramesLeftForThisJump > 0) {
-            this.isFloating = true;
+            var isInCannon = this.layer.sprites.some(function (a) { return a instanceof RedCannon && a.holdingPlayer; });
+            var tappedJumpThisFrame = KeyboardHandler.IsKeyPressed(KeyAction.Action1, true);
+            if (!isInCannon && (this.forcedJumpTimer <= 0 || tappedJumpThisFrame)) {
+                this.isFloating = true;
+            }
         }
         if (this.isOnGround || this.isClimbing || wasClimbing || this.isInWater || this.isInQuicksand) {
             this.RefreshFloatTimer();

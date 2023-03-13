@@ -131,9 +131,9 @@ abstract class Sprite {
         let windTile = this.layer.GetTileByPixel(this.xMid, this.yMid).tileType;
         // if the wind speed is greater than the sprite's speed,
         // give a bit more dx to the sprite (but don't exceed wind speed?)
-        if (windTile.windX != 0) {
+        if (windTile.windX != 0 || currentMap.globalWindX != 0) {
             //this.dx = (this.dx * 9 + windTile.windX/2) / 10;
-            this.dxFromWind = windTile.windX;
+            this.dxFromWind = windTile.windX + currentMap.globalWindX * 0.3;
         } else {
             if (Math.abs(this.dxFromWind) < 0.1) {
                 this.dx += this.dxFromWind;
@@ -144,8 +144,8 @@ abstract class Sprite {
             }
         }
 
-        if (windTile.windY < 0) this.gustUpTimer = 3;
-        this.windDy = windTile.windY;
+        this.windDy = windTile.windY + currentMap.globalWindY * 0.3;
+        if (this.windDy < 0) this.gustUpTimer = 3;
     }
 
     ReactToVerticalWind(): void {
@@ -182,7 +182,7 @@ abstract class Sprite {
             fallAccel = 0.05;
         }
 
-        let bigYufos = < BigYufo[]>this.layer.sprites.filter(a => a instanceof BigYufo);
+        let bigYufos = <BigYufo[]>this.layer.sprites.filter(a => a instanceof BigYufo);
         for (let bigYufo of bigYufos) {
             let inTractor = bigYufo.IsSpriteInTractorBeam(this);
             if (inTractor) {
@@ -199,7 +199,9 @@ abstract class Sprite {
             }
             if (this instanceof Player) {
                 if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, false) || KeyboardHandler.IsKeyPressed(KeyAction.Up, false)) {
-                    targetFallSpeed += -0.7;
+                    if (this.windDy < -0.5) {
+                        targetFallSpeed += -0.7;
+                    }
                 } else if (KeyboardHandler.IsKeyPressed(KeyAction.Down, false)) {
                     targetFallSpeed += 0.5;
                 }
@@ -212,7 +214,7 @@ abstract class Sprite {
             targetFallSpeed += this.windDy;
             fallAccel += this.windDy * 0.1;
         }
-        
+
         // adjust dy
         if (Math.abs(this.dy - targetFallSpeed) < fallAccel) {
             // speeds are close, just set value
@@ -514,6 +516,7 @@ abstract class Sprite {
                         // definitely hit a wall
                         sprite.dx = wallLocation - (sprite.x + (direction == 1 ? sprite.width : 0));
                         sprite.dxFromPlatform = 0;
+                        sprite.dxFromWind = 0;
                         if (direction == -1) sprite.touchedLeftWalls = walls.tiles;
                         if (direction == 1) sprite.touchedRightWalls = walls.tiles;
                     }
@@ -860,6 +863,15 @@ abstract class Sprite {
         if (this instanceof CameraScrollTrigger) {
             frameData = {
                 imageTile: tiles["camera"][this.frameCol][this.frameRow],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            }
+        }
+        if (this instanceof WindTrigger) {
+            frameData = {
+                imageTile: tiles["gust"][this.frameCol][this.frameRow],
                 xFlip: false,
                 yFlip: false,
                 xOffset: 0,

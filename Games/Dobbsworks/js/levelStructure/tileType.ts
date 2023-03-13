@@ -363,6 +363,15 @@ class TileType {
         TileType.FastWindLeft;
         TileType.FastWindRight;
 
+        TileType.PoweredWindLeft;
+        TileType.PoweredWindRight;
+        TileType.PoweredWindUp;
+        TileType.PoweredWindDown;
+        TileType.UnpoweredWindLeft;
+        TileType.UnpoweredWindRight;
+        TileType.UnpoweredWindUp;
+        TileType.UnpoweredWindDown;
+
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
     }
@@ -1453,6 +1462,41 @@ class TileType {
             tileType.clockWiseRotationTileName = "FastWindLeft";
             tileType.editorTile = tiles["gust"][7][2];
         })
+    }
+
+
+
+    public static get PoweredWindLeft(): TileType { return TileType.CreatePoweredWindTrigger(Direction.Left); }
+    public static get PoweredWindRight(): TileType { return TileType.CreatePoweredWindTrigger(Direction.Right); }
+    public static get PoweredWindUp(): TileType { return TileType.CreatePoweredWindTrigger(Direction.Up); }
+    public static get PoweredWindDown(): TileType { return TileType.CreatePoweredWindTrigger(Direction.Down); }
+    public static get UnpoweredWindLeft(): TileType { return TileType.CreateUnpoweredWindTrigger(Direction.Left); }
+    public static get UnpoweredWindRight(): TileType { return TileType.CreateUnpoweredWindTrigger(Direction.Right); }
+    public static get UnpoweredWindUp(): TileType { return TileType.CreateUnpoweredWindTrigger(Direction.Up); }
+    public static get UnpoweredWindDown(): TileType { return TileType.CreateUnpoweredWindTrigger(Direction.Down); }
+
+    public static CreatePoweredWindTrigger(direction: Direction): TileType {
+        let row = [1, 2, 3, 0][Direction.All.indexOf(direction)];
+        return TileType.GetAnimatedTileType("PoweredWind" + direction.name, "wind", [4,5,6,7].map(a => ({x: a, y: row})), 1, Solidity.None, TargetLayer.main, tileType => {
+            tileType.canBePowered = true;
+            tileType.unpoweredTileName = "UnpoweredWind" + direction.name;
+            tileType.onUnpowered = (tile: LevelTile) => { 
+                currentMap.globalWindX -= direction.x;
+                currentMap.globalWindY -= direction.y;
+            }
+        });
+    }
+    public static CreateUnpoweredWindTrigger(direction: Direction): TileType {
+        let row = [1, 2, 3, 0][Direction.All.indexOf(direction)];
+        return TileType.GetAnimatedTileType("UnpoweredWind" + direction.name, "wind", [0,1,2,3].map(a => ({x: a, y: row})), 20, Solidity.None, TargetLayer.main, tileType => {
+            tileType.canBePowered = true;
+            tileType.poweredTileName = "PoweredWind" + direction.name;
+            tileType.onPowered = (tile: LevelTile) => { 
+                currentMap.globalWindX += direction.x;
+                currentMap.globalWindY += direction.y;
+            }
+            tileType.clockWiseRotationTileName = "UnpoweredWind" + direction.Clockwise().name;
+        });
     }
 
 

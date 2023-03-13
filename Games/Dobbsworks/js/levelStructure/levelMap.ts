@@ -51,6 +51,13 @@ class LevelMap {
     spriteKillerCheckComplete = false;
     hasSpriteKillers = false;
 
+    globalWindX: number = 0;
+    globalWindY: number = 0;
+    windAnimationDx = 0;
+    windAnimationDy = 0;
+    windOpacity = 0;
+    windParticles: {x:number,y:number,offset:number}[] = [];
+
     Update(): void {
         BenchmarkService.Log("MapUpdate");
         if (!this.isInitialized && player) {
@@ -133,7 +140,7 @@ class LevelMap {
                 let onScreenSprites = this.mainLayer.sprites.filter(a => a.IsOnScreen());
                 let deletedSprite = false;
                 for (let sprite of onScreenSprites) {
-                    if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof || sprite instanceof KeyDomino) continue;
+                    if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof || sprite instanceof KeyDomino || sprite instanceof ShimmerRipple) continue;
                     let xs = [sprite.x, sprite.xRight, sprite.xMid].map(a => Math.floor(a / this.mainLayer.tileWidth)).filter(Utility.OnlyUnique);
                     let ys = [sprite.y, sprite.yBottom, sprite.yMid].map(a => Math.floor(a / this.mainLayer.tileHeight)).filter(Utility.OnlyUnique);
                     for (let tileX of xs) for (let tileY of ys) {
@@ -231,6 +238,9 @@ class LevelMap {
             camera.ctx.fillRect(0, camera.canvas.height, camera.canvas.width, -height);
         }
 
+        BenchmarkService.Log("DrawGlobalWind");
+        this.DrawGlobalWind();
+
         BenchmarkService.Log("DrawLayers");
         this.backdropLayer.DrawTiles(camera, this.frameNum);
         this.waterLayer.DrawTiles(camera, this.frameNum);
@@ -275,6 +285,48 @@ class LevelMap {
                 camera.ctx.fillStyle = "#000000" + opacityHex;
                 camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
             }
+        }
+    }
+
+    DrawGlobalWind(): void {
+        this.windAnimationDx += (this.globalWindX - this.windAnimationDx) * 0.02;
+        this.windAnimationDy += (this.globalWindY - this.windAnimationDy) * 0.02;
+        if (Math.abs(this.windAnimationDx) < 0.01) this.windAnimationDx = 0;
+        if (Math.abs(this.windAnimationDy) < 0.01) this.windAnimationDy = 0;
+
+        if (this.windAnimationDx == 0 && this.windAnimationDy == 0) {
+            this.windOpacity -= 0.01;
+        } else {
+            this.windOpacity += 0.01;
+        }
+        if (this.windOpacity > 1) this.windOpacity = 1;
+        if (this.windOpacity < 0) this.windOpacity = 0;
+
+        if (this.windOpacity == 0) return;
+
+        let maxX = camera.canvas.width;
+        let maxY = camera.canvas.height;
+        if (this.windParticles.length == 0) {
+            for (let i=0; i<100; i++) {
+                this.windParticles.push({x: maxX * Math.random(), y: maxY * Math.random(), offset: Math.random() * Math.PI});
+            }
+        } else {
+            for (let particle of this.windParticles) {
+                particle.x += this.windAnimationDx * 4 + 
+                    Math.cos(particle.offset + this.frameNum / 20) / 4 +
+                    (camera.prevX - camera.x) * 1; //4 for no depth
+                particle.y += this.windAnimationDy * 4 + 
+                    Math.cos(particle.offset + this.frameNum / 20) / 4 +
+                    (camera.prevY - camera.y) * 1; //4 for no depth
+                if (particle.x > maxX) particle.x = particle.x % maxX - 5;
+                if (particle.y > maxY) particle.y = particle.y % maxY - 5;
+                if (particle.x < -5) particle.x += maxX + 5;
+                if (particle.y < -5) particle.y += maxY + 5;
+            }
+        }
+        camera.ctx.fillStyle = "#FFFFFF" + Math.floor(this.windOpacity * 256 * 0.6).toString(16).padStart(2, "00");
+        for (let particle of this.windParticles) {
+            camera.ctx.fillRect(particle.x, particle.y, 4, 4);
         }
     }
 
