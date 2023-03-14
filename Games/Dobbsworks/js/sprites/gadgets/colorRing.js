@@ -329,7 +329,7 @@ var PortalRing = /** @class */ (function (_super) {
         var closestDoorsHorizontally = allDoors.filter(function (a) { return Math.abs(a.x - _this.x) == minHorizontalDistance; });
         if (closestDoorsHorizontally.length == 1)
             return closestDoorsHorizontally[0];
-        var doorVerticalDistances = allDoors.map(function (a) { return Math.abs(a.y - _this.y); });
+        var doorVerticalDistances = closestDoorsHorizontally.map(function (a) { return Math.abs(a.y - _this.y); });
         doorVerticalDistances.sort(function (a, b) { return a - b; });
         var minVerticalDistance = doorVerticalDistances[0];
         // grab all doors that are tied for closest vertically AND horizontally

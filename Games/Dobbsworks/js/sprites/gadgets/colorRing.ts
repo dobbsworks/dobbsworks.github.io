@@ -227,7 +227,7 @@ class PortalRing extends SpinRing {
         let closestDoorsHorizontally = allDoors.filter(a => Math.abs(a.x - this.x) == minHorizontalDistance);
         if (closestDoorsHorizontally.length == 1) return closestDoorsHorizontally[0];
 
-        let doorVerticalDistances = allDoors.map(a => Math.abs(a.y - this.y));
+        let doorVerticalDistances = closestDoorsHorizontally.map(a => Math.abs(a.y - this.y));
         
         doorVerticalDistances.sort((a,b) => a - b);
         let minVerticalDistance = doorVerticalDistances[0];
