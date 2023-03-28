@@ -91,5 +91,15 @@ var StorageService = /** @class */ (function () {
             _loop_1(mapping);
         }
     };
+    StorageService.GetPreferenceBool = function (key, initialValue) {
+        var saved = localStorage.getItem("pref-" + key);
+        if (saved === null)
+            return initialValue;
+        return saved == "1";
+    };
+    StorageService.SetPreferenceBool = function (key, newValue) {
+        var value = newValue ? "1" : "0";
+        localStorage.setItem("pref-" + key, value);
+    };
     return StorageService;
 }());

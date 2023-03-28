@@ -120,6 +120,10 @@ var SpringBox = /** @class */ (function (_super) {
                 // bounce up
                 sprite.dy = -bounceSpeed * 1.6;
                 this.springTimers[3] = timerResetValue;
+                if (sprite instanceof HoverPlayer) {
+                    sprite.isFloating = false;
+                    sprite.RefreshFloatTimer();
+                }
             }
             else {
                 // horizontal bounce

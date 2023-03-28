@@ -29,7 +29,8 @@ var RightSideButton = /** @class */ (function (_super) {
     RightSideButton.prototype.Update = function () {
         var _this = this;
         var spritesAtLeft = this.layer.sprites.filter(function (a) {
-            return (a.xRight == _this.x && a.y < _this.yBottom && a.yBottom > _this.y);
+            return a.touchedRightWalls.indexOf(_this) > -1 ||
+                (a.xRight == _this.x && a.y < _this.yBottom && a.yBottom > _this.y);
         });
         if (spritesAtLeft.length > 0) {
             if (this.onTimer != 30)

@@ -51,9 +51,7 @@ class RollingSnailShell extends Enemy {
     OnSpinBounce(): void { this.ReplaceWithSpriteType(Poof); }
 
     OnBounce(): void {
-        this.isActive = false;
-        let shell = new SnailShell(this.x, this.y, this.layer, []);
-        this.layer.sprites.push(shell);
+        this.ReplaceWithSpriteType(SnailShell);
     }
 
     GetFrameData(frameNum: number): FrameData {

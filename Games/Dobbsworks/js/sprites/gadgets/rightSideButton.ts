@@ -12,7 +12,8 @@ class RightSideButton extends Sprite {
 
     Update(): void { 
         let spritesAtLeft = this.layer.sprites.filter(a => {
-            return (a.xRight == this.x && a.y < this.yBottom && a.yBottom > this.y);
+            return a.touchedRightWalls.indexOf(this) > -1 ||
+                (a.xRight == this.x && a.y < this.yBottom && a.yBottom > this.y);
         })
         if (spritesAtLeft.length > 0) {
             if (this.onTimer != 30) audioHandler.PlaySound("erase", true);

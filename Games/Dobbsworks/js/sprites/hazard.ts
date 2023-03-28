@@ -1,7 +1,7 @@
 abstract class Hazard extends Sprite { 
     Update(): void {
-        let player = <Player>this.layer.sprites.find(a => a instanceof Player);
-        if (player) {
+        let players = <Player[]>this.layer.sprites.filter(a => a instanceof Player);
+        for (let player of players) {
             if (this.DoesPlayerOverlap(player) && this.IsHazardActive()) {
                 player.OnPlayerHurt();
             }

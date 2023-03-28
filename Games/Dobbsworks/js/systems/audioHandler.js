@@ -73,6 +73,10 @@ var AudioHandler = /** @class */ (function () {
         if (this.gainNodeSfx && this.gainNodeSfx.gain)
             this.gainNodeSfx.gain.value = 0;
     };
+    AudioHandler.prototype.Unmute = function () {
+        this.gainNodeMusic.gain.value = this.ConvertVolumeToGain(StorageService.GetMusicVolume());
+        this.gainNodeSfx.gain.value = this.ConvertVolumeToGain(StorageService.GetSfxVolume());
+    };
     AudioHandler.prototype.LoadAudioFiles = function () {
         var audioFiles = Array.from(document.getElementsByTagName("audio"));
         for (var _i = 0, audioFiles_1 = audioFiles; _i < audioFiles_1.length; _i++) {

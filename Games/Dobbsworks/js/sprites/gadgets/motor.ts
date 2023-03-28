@@ -146,8 +146,8 @@ class Motor extends Sprite {
     }
 
     HandlePlayerGrab(sprite: Sprite): boolean {
-        let player = <Player>this.layer.sprites.find(a => a instanceof Player);
-        if (player) {
+        let players = <Player[]>this.layer.sprites.filter(a => a instanceof Player);
+        for (let player of players) {
             if (player.heldItem == sprite && player.heldItem.canBeHeld) {
                 return true;
             }

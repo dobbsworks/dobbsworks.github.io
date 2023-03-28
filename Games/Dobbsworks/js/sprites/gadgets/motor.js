@@ -159,9 +159,10 @@ var Motor = /** @class */ (function (_super) {
         }
     };
     Motor.prototype.HandlePlayerGrab = function (sprite) {
-        var player = this.layer.sprites.find(function (a) { return a instanceof Player; });
-        if (player) {
-            if (player.heldItem == sprite && player.heldItem.canBeHeld) {
+        var players = this.layer.sprites.filter(function (a) { return a instanceof Player; });
+        for (var _i = 0, players_1 = players; _i < players_1.length; _i++) {
+            var player_1 = players_1[_i];
+            if (player_1.heldItem == sprite && player_1.heldItem.canBeHeld) {
                 return true;
             }
         }

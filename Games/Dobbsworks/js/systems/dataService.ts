@@ -16,7 +16,7 @@ class DataService {
         if (window.location.href.indexOf("localhost") > -1) {
             baseUrl = "https://localhost:7121/api/";
         }
-        if (window.location.href.startsWith("http://127.0.0.1/")) {
+        if (window.location.href.startsWith("http://127.0.0.1/") || window.location.href.startsWith("http://127.0.0.1:5500/")) {
             return;
         }
         let endpoint = baseUrl + urlAction;
@@ -86,59 +86,52 @@ class DataService {
         })
     }
 
-    // static GetRecentLevels(): Promise<LevelListing[]> {
-    //     return new Promise<LevelListing[]>((resolve, reject) => {
-    //         DataService.BaseGet("Levels/RecentLevels", resolve, reject);
-    //     })
-    // }
 
-
-
-    static GetRecentLevels(): Promise<LevelListing[]> {
-        return new Promise<LevelListing[]>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/RecentLevels", resolve, reject);
+    static GetRecentLevels(pageIndex: number): Promise<LevelBrowseResults> {
+        return new Promise<LevelBrowseResults>((resolve, reject) => {
+            DataService.BaseGet("LevelSearch/RecentLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
 
-    static GetOldestLevels(): Promise<LevelListing[]> {
-        return new Promise<LevelListing[]>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/OldestLevels", resolve, reject);
+    static GetOldestLevels(pageIndex: number): Promise<LevelBrowseResults> {
+        return new Promise<LevelBrowseResults>((resolve, reject) => {
+            DataService.BaseGet("LevelSearch/OldestLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
 
-    static GetMostLikedLevels(): Promise<LevelListing[]> {
-        return new Promise<LevelListing[]>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/MostLikedLevels", resolve, reject);
+    static GetMostLikedLevels(pageIndex: number): Promise<LevelBrowseResults> {
+        return new Promise<LevelBrowseResults>((resolve, reject) => {
+            DataService.BaseGet("LevelSearch/MostLikedLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
 
-    static GetBestRatedLevels(): Promise<LevelListing[]> {
-        return new Promise<LevelListing[]>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/BestRatedLevels", resolve, reject);
+    static GetBestRatedLevels(pageIndex: number): Promise<LevelBrowseResults> {
+        return new Promise<LevelBrowseResults>((resolve, reject) => {
+            DataService.BaseGet("LevelSearch/BestRatedLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
 
-    static GetUndiscoveredLevels(): Promise<LevelListing[]> {
-        return new Promise<LevelListing[]>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/UndiscoveredLevels", resolve, reject);
+    static GetUndiscoveredLevels(pageIndex: number): Promise<LevelBrowseResults> {
+        return new Promise<LevelBrowseResults>((resolve, reject) => {
+            DataService.BaseGet("LevelSearch/UndiscoveredLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
 
-    static GetMostPlayedLevels(): Promise<LevelListing[]> {
-        return new Promise<LevelListing[]>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/MostPlayedLevels", resolve, reject);
+    static GetMostPlayedLevels(pageIndex: number): Promise<LevelBrowseResults> {
+        return new Promise<LevelBrowseResults>((resolve, reject) => {
+            DataService.BaseGet("LevelSearch/MostPlayedLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
 
-    static GetEasiestLevels(): Promise<LevelListing[]> {
-        return new Promise<LevelListing[]>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/EasiestLevels", resolve, reject);
+    static GetEasiestLevels(pageIndex: number): Promise<LevelBrowseResults> {
+        return new Promise<LevelBrowseResults>((resolve, reject) => {
+            DataService.BaseGet("LevelSearch/EasiestLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
 
-    static GetHardestLevels(): Promise<LevelListing[]> {
-        return new Promise<LevelListing[]>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/HardestLevels", resolve, reject);
+    static GetHardestLevels(pageIndex: number): Promise<LevelBrowseResults> {
+        return new Promise<LevelBrowseResults>((resolve, reject) => {
+            DataService.BaseGet("LevelSearch/HardestLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
 

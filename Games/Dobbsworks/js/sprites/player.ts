@@ -54,7 +54,7 @@ class Player extends Sprite {
     protected moveSpeed = 1.2;
 
     private floatFramesLeftForThisJump = 0;
-    private isFloating = false;
+    public isFloating = false;
     private maxFloatDuration = 100;
     protected canPlayerFloatJump = false;
     protected sourceImageOffset = 0;
@@ -389,7 +389,7 @@ class Player extends Sprite {
                     // only add speed when below max speed
                     if (this.dx * this.targetDirection < maxSpeed) {
                         this.dx += this.targetDirection * accel;
-                    } 
+                    }
                     if (shouldCapSpeed) {
                         if (Math.abs(this.dx) > maxSpeed) {
                             this.dx = maxSpeed * (this.dx > 0 ? 1 : -1);
@@ -417,7 +417,7 @@ class Player extends Sprite {
         if (this.standingOn.some(a => !a.tileType.canWalkOn)) this.dx = 0;
 
         if (this.dy > 0 && isJumpHeld && this.canPlayerFloatJump && !this.isFloating && this.floatFramesLeftForThisJump > 0) {
-            let isInCannon = this.layer.sprites.some(a => a instanceof RedCannon && a.holdingPlayer);
+            let isInCannon = this.layer.sprites.some(a => a instanceof RedCannon && a.heldPlayer == this);
             let tappedJumpThisFrame = KeyboardHandler.IsKeyPressed(KeyAction.Action1, true);
             if (!isInCannon && (this.forcedJumpTimer <= 0 || tappedJumpThisFrame)) {
                 this.isFloating = true;
@@ -690,7 +690,7 @@ class Player extends Sprite {
                 } else if (sprite.canStandOn && currentlyAbove && isHorizontalOverlap) {
 
                 } else if (!sprite.isInDeathAnimation && this.xRight > sprite.x && this.x < sprite.xRight && this.yBottom > sprite.y && this.y < sprite.yBottom) {
-                    if (this.isSliding) {
+                    if (this.isSliding && sprite.killedByProjectiles) {
                         sprite.isActive = false;
                         let deadSprite = new DeadEnemy(sprite);
                         this.layer.sprites.push(deadSprite);
@@ -700,6 +700,11 @@ class Player extends Sprite {
                         }
                     }
                 }
+            } else if (sprite instanceof Player && sprite !== this && sprite.Overlaps(this)) {
+                // bumping in to a DOOPLICATE
+                console.log(sprite, this);
+                this.OnPlayerDead(false).dooplicateDeath = true;
+                (sprite as Player).OnPlayerDead(false).dooplicateDeath = true;
             } else {
                 if (landingOnTop && sprite.canBeBouncedOn) {
                     this.Bounce();
@@ -774,20 +779,30 @@ class Player extends Sprite {
         }
     }
 
-    OnPlayerDead(canRespawn: boolean): void {
-        if (!this.isActive) return;
+    OnPlayerDead(canRespawn: boolean): DeadPlayer {
+        if (!this.isActive) {
+            return <DeadPlayer>(this.layer.sprites.find(a => a instanceof DeadPlayer));
+        }
 
         this.OnDead();
         this.isActive = false;
-        // log player death
-        let newDeathCount = StorageService.IncrementDeathCounter(currentLevelListing?.level.code || "");
-        let deadPlayer = new DeadPlayer(this, newDeathCount, canRespawn);
-        editorHandler.bankedCheckpointTime += this.age;
-        if (levelGenerator) levelGenerator.bankedClearTime += this.age;
-        this.layer.sprites.push(deadPlayer);
         audioHandler.PlaySound("dead", true);
-        camera.autoscrollX = 0;
-        camera.autoscrollY = 0;
+        if (this.isDuplicate) {
+            let deadPlayer = new DeadPlayer(this, -1, canRespawn);
+            this.layer.sprites.push(deadPlayer);
+            deadPlayer.isDuplicate = true;
+            return deadPlayer;
+        } else {
+            // log player death
+            let newDeathCount = StorageService.IncrementDeathCounter(currentLevelListing?.level.code || "");
+            let deadPlayer = new DeadPlayer(this, newDeathCount, canRespawn);
+            this.layer.sprites.push(deadPlayer);
+            editorHandler.bankedCheckpointTime += this.age;
+            if (levelGenerator) levelGenerator.bankedClearTime += this.age;
+            camera.autoscrollX = 0;
+            camera.autoscrollY = 0;
+            return deadPlayer;
+        }
     }
 
     IsOnIce(): boolean {
@@ -831,7 +846,7 @@ class Player extends Sprite {
     PlayerItem(): void {
         this.throwTimer++;
         let startedHolding = false;
-        let isInCannon = this.layer.sprites.some(a => a instanceof RedCannon && a.holdingPlayer);
+        let isInCannon = this.layer.sprites.some(a => a instanceof RedCannon && a.heldPlayer == this);
         if (!this.heldItem
             && KeyboardHandler.IsKeyPressed(KeyAction.Action2, false)
             && !this.isClimbing
@@ -998,7 +1013,7 @@ class Player extends Sprite {
         }
 
 
-        let isInCannon = this.layer.sprites.some(a => a instanceof RedCannon && a.holdingPlayer);
+        let isInCannon = this.layer.sprites.some(a => a instanceof RedCannon && a.heldPlayer == this);
         if (isInCannon) {
             return {
                 imageTile: tiles["empty"][0][0],
@@ -1095,6 +1110,7 @@ class DeadPlayer extends Sprite {
     width = 9;
     respectsSolidTiles = false;
     imageOffset = 0;
+    dooplicateDeath = false;
 
     constructor(player: Player, private deathCount: number, public canRespawn: boolean) {
         super(player.x, player.y, player.layer, []);
@@ -1114,41 +1130,46 @@ class DeadPlayer extends Sprite {
         if (this.dx < -maxSpeed) this.dx = -maxSpeed;
         this.ApplyGravity();
         this.MoveByVelocity();
-        if (this.age > 45) {
-            currentMap.fadeOutRatio = (this.age - 45) / 14;
+        if (this.isDuplicate && this.age > 60) {
+            this.ReplaceWithSpriteType(Poof);
         }
-        if (this.age > 60) {
-            if (levelGenerator) {
-                this.isActive = false;
-                levelGenerator.OnLose();
-            } else {
-                editorHandler.SwitchToEditMode(true);
-                editorHandler.SwitchToPlayMode();
-                if (camera.target) {
-                    camera.x = camera.target.xMid;
-                    camera.y = camera.target.yMid;
-                }
-                camera.targetX = camera.x;
-                camera.targetY = camera.y;
+        if (!this.isDuplicate) {
+            if (this.age > 45) {
+                currentMap.fadeOutRatio = (this.age - 45) / 14;
             }
-        }
+            if (this.age > 60) {
+                if (levelGenerator) {
+                    this.isActive = false;
+                    levelGenerator.OnLose();
+                } else {
+                    editorHandler.SwitchToEditMode(true);
+                    editorHandler.SwitchToPlayMode();
+                    if (camera.target) {
+                        camera.x = camera.target.xMid;
+                        camera.y = camera.target.yMid;
+                    }
+                    camera.targetX = camera.x;
+                    camera.targetY = camera.y;
+                }
+            }
 
-        let overlappingWings = this.layer.sprites.filter(a => a instanceof ReviveWings && this.Overlaps(a));
-        if (this.age <= 60 && overlappingWings.length > 0 && this.canRespawn) {
-            audioHandler.PlaySound("respawn", true);
-            let newPlayer = this.ReplaceWithSpriteType(this.imageOffset == 1 ? HoverPlayer : Player);
-            let wings = overlappingWings[0];
-            wings.isActive = false;
-            newPlayer.x = wings.xMid - newPlayer.width/2;
-            newPlayer.y = wings.yMid - newPlayer.height/2;
-            newPlayer.dx = 0;
-            newPlayer.dy = 0;
-            camera.target = newPlayer;
-            camera.targetX = newPlayer.xMid;
-            camera.targetY = newPlayer.yBottom - 12;
-            camera.AdjustCameraTargetForMapBounds();
-            camera.transitionTimer = 30;
-            currentMap.fadeOutRatio = 0;
+            let overlappingWings = this.layer.sprites.filter(a => a instanceof ReviveWings && this.Overlaps(a));
+            if (this.age <= 60 && overlappingWings.length > 0 && this.canRespawn) {
+                audioHandler.PlaySound("respawn", true);
+                let newPlayer = this.ReplaceWithSpriteType(this.imageOffset == 1 ? HoverPlayer : Player);
+                let wings = overlappingWings[0];
+                wings.isActive = false;
+                newPlayer.x = wings.xMid - newPlayer.width / 2;
+                newPlayer.y = wings.yMid - newPlayer.height / 2;
+                newPlayer.dx = 0;
+                newPlayer.dy = 0;
+                camera.target = newPlayer;
+                camera.targetX = newPlayer.xMid;
+                camera.targetY = newPlayer.yBottom - 12;
+                camera.AdjustCameraTargetForMapBounds();
+                camera.transitionTimer = 30;
+                currentMap.fadeOutRatio = 0;
+            }
         }
 
     }
@@ -1165,6 +1186,7 @@ class DeadPlayer extends Sprite {
     }
 
     OnAfterDraw(camera: Camera): void {
+        if (this.deathCount == -1) return;
         let ctx = camera.ctx;
         let fontsize = 16;
 

@@ -23,7 +23,7 @@ class OptionsMenu extends Menu {
             MenuHandler.SubMenu(ControlMapMenu);
         })
 
-        let musicVol = this.CreateSlider("Music Volume",  StorageService.GetMusicVolume(), (newVal) => {
+        let musicVol = this.CreateSlider("Music Volume", StorageService.GetMusicVolume(), (newVal) => {
             audioHandler.SetMusicVolume(newVal);
         });
         container.AddChild(musicVol);
@@ -43,12 +43,24 @@ class OptionsMenu extends Menu {
             }
         })
 
+        let preferencesButton = this.CreateButton("Additional Preferences");
+        container.AddChild(preferencesButton);
+        preferencesButton.onClickEvents.push(() => {
+            MenuHandler.SubMenu(PreferencesMenu);
+        })
+
         let backButton = this.CreateButton("Back");
         container.AddChild(backButton);
         backButton.onClickEvents.push(() => {
+            if (editorHandler.isInEditMode && editorHandler.isMinimizedMode) {
+                editorHandler.ToggleMinimizeMode();
+            }
             MenuHandler.GoBack();
         })
 
+        if (editorHandler.isInEditMode && !editorHandler.isMinimizedMode) {
+            editorHandler.ToggleMinimizeMode();
+        }
         return ret;
     }
 
@@ -56,9 +68,9 @@ class OptionsMenu extends Menu {
         let panel = new Panel(0, 0, camera.canvas.width / 2, 110);
         panel.margin = 15;
 
-        panel.AddChild(new Spacer(0,0,0,0));
+        panel.AddChild(new Spacer(0, 0, 0, 0));
 
-        let buttonText = new UIText(0, 0, header, 30, "#000");
+        let buttonText = new UIText(0, 0, header, 24, "#000");
         panel.layout = "vertical";
         panel.AddChild(buttonText);
         buttonText.xOffset = camera.canvas.width / 4;
@@ -68,7 +80,7 @@ class OptionsMenu extends Menu {
         panel.borderColor = "#000";
         panel.borderRadius = 9;
 
-        panel.AddChild(new Spacer(0,0,0,0));
+        panel.AddChild(new Spacer(0, 0, 0, 0));
 
         let slider = new Slider(0, 0, camera.canvas.width / 2 - 30, 40, onChange);
         slider.value = initialValue;
@@ -78,12 +90,12 @@ class OptionsMenu extends Menu {
     }
 
     CreateButton(text: string): Button {
-        let button = new Button(0, 0, camera.canvas.width / 2, 60);
-        let buttonText = new UIText(0, 0, text, 30, "#000");
+        let button = new Button(0, 0, camera.canvas.width / 2, 50);
+        let buttonText = new UIText(0, 0, text, 24, "#000");
         button.margin = 0;
         button.AddChild(buttonText);
         buttonText.xOffset = camera.canvas.width / 4;
-        buttonText.yOffset = 40;
+        buttonText.yOffset = 34;
         buttonText.textAlign = "center";
         button.normalBackColor = "#fff8";
         button.mouseoverBackColor = "#f73738";
@@ -98,14 +110,75 @@ class OptionsMenu extends Menu {
     static CreateOptionsButton(): Panel {
         let panel = new Panel(camera.canvas.width - 80, 10, 70, 70);
         panel.backColor = "#1138"
-        let button = new Button(0,0,60,60);
+        let button = new Button(0, 0, 60, 60);
         button.isNoisy = true;
         panel.AddChild(button);
         let imageTile = tiles["editor"][6][7];
-        button.AddChild(new ImageFromTile(0,0,50,50, imageTile));
+        button.AddChild(new ImageFromTile(0, 0, 50, 50, imageTile));
         button.onClickEvents.push(() => {
             MenuHandler.SubMenu(OptionsMenu);
         })
         return panel;
+    }
+}
+
+class PreferencesMenu extends Menu {
+    stopsMapUpdate = true;
+    backgroundColor = "#0005";
+    backgroundColor2 = "#000D";
+
+    CreateElements(): UIElement[] {
+        let ret: UIElement[] = [];
+
+        let container = new Panel(camera.canvas.width / 4, camera.canvas.height / 2 - 250, camera.canvas.width / 2, 500);
+        container.margin = 0;
+        container.layout = "vertical";
+        ret.push(container);
+
+        container.AddChild(this.CreateToggle("Confirm before closing game", "confirm-close", true));
+        container.AddChild(this.CreateToggle("Pause when game is minimized", "pause-on-lose-focus", true));
+        container.AddChild(this.CreateToggle("Mute when game is minimized", "mute-on-lose-focus", false));
+        container.AddChild(this.CreateToggle("Display inputs on-screen", "on-screen-input", false));
+
+        let backButton = this.CreateButton("Back");
+        container.AddChild(backButton);
+        backButton.onClickEvents.push(() => {
+            MenuHandler.GoBack();
+        })
+
+        return ret;
+    }
+
+    CreateToggle(text: string, preferenceKey: string, defaultValue: boolean): Button {
+        let button = this.CreateButton(text);
+
+        let currentValue = StorageService.GetPreferenceBool(preferenceKey, defaultValue);
+        button.borderColor = currentValue ? "#2F2E" : "#F2FE";
+
+        button.onClickEvents.push(() => {
+            let newValue = button.borderColor == "#F2FE";
+            StorageService.SetPreferenceBool(preferenceKey, newValue);
+            button.borderColor = newValue ? "#2F2E" : "#F2FE";
+        })
+
+        return button;
+    }
+
+    CreateButton(text: string): Button {
+        let button = new Button(0, 0, camera.canvas.width / 2, 50);
+        let buttonText = new UIText(0, 0, text, 24, "#000");
+        button.margin = 0;
+        button.AddChild(buttonText);
+        buttonText.xOffset = camera.canvas.width / 4;
+        buttonText.yOffset = 34;
+        buttonText.textAlign = "center";
+        button.normalBackColor = "#fff8";
+        button.mouseoverBackColor = "#f73738";
+        button.borderColor = "#000";
+        button.borderRadius = 9;
+        return button;
+    }
+
+    Update(): void {
     }
 }

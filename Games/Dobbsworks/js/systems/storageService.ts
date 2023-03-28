@@ -86,6 +86,16 @@ class StorageService {
         }
     }
 
+    public static GetPreferenceBool(key: string, initialValue: boolean): boolean {
+        let saved = localStorage.getItem("pref-" + key);
+        if (saved === null) return initialValue;
+        return saved == "1";
+    }
+    public static SetPreferenceBool(key: string, newValue: boolean): void {
+        let value = newValue ? "1" : "0";
+        localStorage.setItem("pref-" + key, value);
+    }
+
     // TODO, Get all death counts on app load
 
 }

@@ -52,7 +52,7 @@ var MainMenu = /** @class */ (function (_super) {
         if (isDemoMode)
             ret.push(demoLevelsButton);
         var recentLevelsButton = new Button(playButtonX, playButtonY + (playButtonHeight + 10) * 2, playButtonWidth, playButtonHeight);
-        var recentLevelsText = new UIText(centerX, playButtonY + 40, "Recent Levels", 30, "#000");
+        var recentLevelsText = new UIText(centerX, playButtonY + 40, "Browse Levels", 30, "#000");
         recentLevelsButton.AddChild(recentLevelsText);
         recentLevelsText.xOffset = playButtonWidth / 2 - 5;
         recentLevelsText.yOffset = 40;

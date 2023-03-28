@@ -42,7 +42,8 @@ class SpinRing extends Sprite {
             if (!a.Overlaps(this)) return false;
             if (a instanceof SpinRing) return false;
             if (a instanceof Yoyo) return false;
-            if (player && player.heldItem == a) return false;
+            if (player && player.heldItem == a && !(a instanceof Rocket)) return false;
+            if (player == a && player.heldItem && player.heldItem instanceof Rocket) return false;
             
             let parentMotor = <Motor>this.layer.sprites.find(spr => spr instanceof Motor && spr.connectedSprite == a);
             if (parentMotor) return false;

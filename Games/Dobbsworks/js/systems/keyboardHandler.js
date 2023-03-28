@@ -220,8 +220,16 @@ var KeyboardHandler = /** @class */ (function () {
             for (var i = 0; i < gamepad.axes.length; i++) {
                 var axisValue = gamepad.axes[i];
                 if (Math.abs(axisValue) > deadZone) {
+                    if (KeyboardHandler.initializedAxisIndeces.indexOf(i) == -1) {
+                        continue;
+                    }
                     var posNeg = axisValue > 0 ? "+" : "-";
                     pressedGamepadButtons.push("GpAxis" + i + posNeg);
+                }
+                else {
+                    if (KeyboardHandler.initializedAxisIndeces.indexOf(i) == -1) {
+                        KeyboardHandler.initializedAxisIndeces.push(i);
+                    }
                 }
             }
         }
@@ -348,6 +356,9 @@ var KeyboardHandler = /** @class */ (function () {
         "GpButton14": "DPad Left",
         "GpButton15": "DPad Right",
     };
+    // which axes have entered their dead (neutral) zone
+    // used to deal specifically with Duffy's weird controller
+    KeyboardHandler.initializedAxisIndeces = [];
     return KeyboardHandler;
 }());
 ;

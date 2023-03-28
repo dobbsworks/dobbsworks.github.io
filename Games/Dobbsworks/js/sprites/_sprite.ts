@@ -63,6 +63,7 @@ abstract class Sprite {
     public hurtsEnemies: boolean = false;
     public isInTractorBeam: boolean = false;
     onScreenTimer: number = 0;
+    isDuplicate = false;
 
     // used for editor
     public anchor: Direction | null = Direction.Down;
@@ -143,6 +144,8 @@ abstract class Sprite {
                 this.dxFromWind -= (this.dxFromWind > 0) ? 0.1 : -0.1;
             }
         }
+        if (this.touchedLeftWalls.length > 0 && this.dxFromWind < 0) this.dxFromWind = 0;
+        if (this.touchedRightWalls.length > 0 && this.dxFromWind > 0) this.dxFromWind = 0;
 
         this.windDy = windTile.windY + currentMap.globalWindY * 0.3;
         if (this.windDy < 0) this.gustUpTimer = 3;
@@ -256,7 +259,12 @@ abstract class Sprite {
                 this.onScreenTimer += 1;
             }
         }
-        return this.onScreenTimer >= 2;
+        let isOnScreen = this.onScreenTimer >= 2;
+        if (!isOnScreen) {
+            this.dxFromWind = 0;
+            this.dyFromWind = 0;
+        }
+        return isOnScreen;
     }
 
     ApplyInertia(): void {
@@ -302,6 +310,7 @@ abstract class Sprite {
                         if (this.y < sprite.yBottom && this.yBottom > sprite.y) {
                             this.dxFromPlatform = sprite.GetTotalDx();
                             this.dx = 0;
+                            this.dxFromWind = 0;
                             if (this.x < sprite.x) {
                                 this.touchedRightWalls.push(sprite);
                             } else {
@@ -358,6 +367,8 @@ abstract class Sprite {
                 }
             }
             this.dxFromPlatform = this.parentSprite.dx;
+            if (this.dxFromPlatform < 0 && this.isTouchingLeftWall) this.dxFromPlatform = 0;
+            if (this.dxFromPlatform > 0 && this.isTouchingRightWall) this.dxFromPlatform = 0;
             if (this.isOnCeiling && this.dyFromPlatform < 0) {
                 this.dyFromPlatform = 0;
                 this.dxFromPlatform = 0;
@@ -452,6 +463,8 @@ abstract class Sprite {
 
         this.ReactToSolids();
         this.ReactToPlatforms();
+        // if we're being pushed by a platform, need to double-check solids
+        if (this.parentSprite) this.ReactToSolids();
     }
 
     private ReactToSolids(): void {
@@ -514,11 +527,17 @@ abstract class Sprite {
                         sprite.dy = 0;
                     } else {
                         // definitely hit a wall
-                        sprite.dx = wallLocation - (sprite.x + (direction == 1 ? sprite.width : 0));
+                        let targetLocationDeltaX = wallLocation - (sprite.x + (direction == 1 ? sprite.width : 0))
+                        if (direction == -1) {
+                            sprite.touchedLeftWalls = walls.tiles;
+                            if (targetLocationDeltaX > sprite.dx) sprite.dx = targetLocationDeltaX;
+                        }
+                        if (direction == 1) {
+                            sprite.touchedRightWalls = walls.tiles;
+                            if (targetLocationDeltaX < sprite.dx) sprite.dx = targetLocationDeltaX;
+                        }
                         sprite.dxFromPlatform = 0;
                         sprite.dxFromWind = 0;
-                        if (direction == -1) sprite.touchedLeftWalls = walls.tiles;
-                        if (direction == 1) sprite.touchedRightWalls = walls.tiles;
                     }
                 }
             }
@@ -908,6 +927,12 @@ abstract class Sprite {
     }
 
     ReplaceWithSprite(newSprite: Sprite): Sprite {
+        let doopsters = <Doopster[]>this.layer.sprites.filter(a => a instanceof Doopster);
+        for (let doopster of doopsters) {
+            if (doopster.sourceSprite == this) doopster.sourceSprite = newSprite;
+            if (doopster.duplicateSprite == this) doopster.duplicateSprite = newSprite;
+        }
+
         this.layer.sprites.push(newSprite);
         this.layer.sprites = this.layer.sprites.filter(a => a != this);
         newSprite.x = this.x + this.width / 2 - newSprite.width / 2;
@@ -959,5 +984,17 @@ abstract class Sprite {
 
     CanInteractWithSpringBox(): boolean {
         return this.respectsSolidTiles || this instanceof SapphireSnail || (this instanceof BasePlatform && !(this instanceof FloatingPlatform));
+    }
+
+    DoesOverlapSpriteKiller(): boolean {
+        for (let x = this.x; x += this.layer.tileWidth; x < this.xRight) {
+            for (let y = this.y; y += this.layer.tileHeight; y < this.yBottom) {
+                let tileX = Math.floor(x / this.layer.tileWidth);
+                let tileY = Math.floor(y / this.layer.tileHeight);
+                let tile = this.layer.GetTileByIndex(tileX, tileY);
+                if (tile.tileType == TileType.SpriteKiller) return true;
+            }
+        }
+        return false;
     }
 }

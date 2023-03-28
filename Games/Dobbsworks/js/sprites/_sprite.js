@@ -40,6 +40,7 @@ var Sprite = /** @class */ (function () {
         this.hurtsEnemies = false;
         this.isInTractorBeam = false;
         this.onScreenTimer = 0;
+        this.isDuplicate = false;
         // used for editor
         this.anchor = Direction.Down;
         this.maxAllowed = -1; // -1 for no limit
@@ -153,6 +154,10 @@ var Sprite = /** @class */ (function () {
                 this.dxFromWind -= (this.dxFromWind > 0) ? 0.1 : -0.1;
             }
         }
+        if (this.touchedLeftWalls.length > 0 && this.dxFromWind < 0)
+            this.dxFromWind = 0;
+        if (this.touchedRightWalls.length > 0 && this.dxFromWind > 0)
+            this.dxFromWind = 0;
         this.windDy = windTile.windY + currentMap.globalWindY * 0.3;
         if (this.windDy < 0)
             this.gustUpTimer = 3;
@@ -259,7 +264,12 @@ var Sprite = /** @class */ (function () {
                 this.onScreenTimer += 1;
             }
         }
-        return this.onScreenTimer >= 2;
+        var isOnScreen = this.onScreenTimer >= 2;
+        if (!isOnScreen) {
+            this.dxFromWind = 0;
+            this.dyFromWind = 0;
+        }
+        return isOnScreen;
     };
     Sprite.prototype.ApplyInertia = function () {
         var inertiaRatio = this.rolls ? 0.99 : 0.94;
@@ -309,6 +319,7 @@ var Sprite = /** @class */ (function () {
                         if (this.y < sprite.yBottom && this.yBottom > sprite.y) {
                             this.dxFromPlatform = sprite.GetTotalDx();
                             this.dx = 0;
+                            this.dxFromWind = 0;
                             if (this.x < sprite.x) {
                                 this.touchedRightWalls.push(sprite);
                             }
@@ -369,6 +380,10 @@ var Sprite = /** @class */ (function () {
                 }
             }
             this.dxFromPlatform = this.parentSprite.dx;
+            if (this.dxFromPlatform < 0 && this.isTouchingLeftWall)
+                this.dxFromPlatform = 0;
+            if (this.dxFromPlatform > 0 && this.isTouchingRightWall)
+                this.dxFromPlatform = 0;
             if (this.isOnCeiling && this.dyFromPlatform < 0) {
                 this.dyFromPlatform = 0;
                 this.dxFromPlatform = 0;
@@ -461,6 +476,8 @@ var Sprite = /** @class */ (function () {
         this.touchedRightWalls = [];
         this.ReactToSolids();
         this.ReactToPlatforms();
+        if (this.parentSprite)
+            this.ReactToSolids();
     };
     Sprite.prototype.ReactToSolids = function () {
         var _a;
@@ -524,13 +541,19 @@ var Sprite = /** @class */ (function () {
                     }
                     else {
                         // definitely hit a wall
-                        sprite.dx = wallLocation - (sprite.x + (direction == 1 ? sprite.width : 0));
+                        var targetLocationDeltaX = wallLocation - (sprite.x + (direction == 1 ? sprite.width : 0));
+                        if (direction == -1) {
+                            sprite.touchedLeftWalls = walls.tiles;
+                            if (targetLocationDeltaX > sprite.dx)
+                                sprite.dx = targetLocationDeltaX;
+                        }
+                        if (direction == 1) {
+                            sprite.touchedRightWalls = walls.tiles;
+                            if (targetLocationDeltaX < sprite.dx)
+                                sprite.dx = targetLocationDeltaX;
+                        }
                         sprite.dxFromPlatform = 0;
                         sprite.dxFromWind = 0;
-                        if (direction == -1)
-                            sprite.touchedLeftWalls = walls.tiles;
-                        if (direction == 1)
-                            sprite.touchedRightWalls = walls.tiles;
                     }
                 }
             }
@@ -923,6 +946,14 @@ var Sprite = /** @class */ (function () {
     };
     Sprite.prototype.ReplaceWithSprite = function (newSprite) {
         var _this = this;
+        var doopsters = this.layer.sprites.filter(function (a) { return a instanceof Doopster; });
+        for (var _i = 0, doopsters_1 = doopsters; _i < doopsters_1.length; _i++) {
+            var doopster = doopsters_1[_i];
+            if (doopster.sourceSprite == this)
+                doopster.sourceSprite = newSprite;
+            if (doopster.duplicateSprite == this)
+                doopster.duplicateSprite = newSprite;
+        }
         this.layer.sprites.push(newSprite);
         this.layer.sprites = this.layer.sprites.filter(function (a) { return a != _this; });
         newSprite.x = this.x + this.width / 2 - newSprite.width / 2;
@@ -972,6 +1003,18 @@ var Sprite = /** @class */ (function () {
     };
     Sprite.prototype.CanInteractWithSpringBox = function () {
         return this.respectsSolidTiles || this instanceof SapphireSnail || (this instanceof BasePlatform && !(this instanceof FloatingPlatform));
+    };
+    Sprite.prototype.DoesOverlapSpriteKiller = function () {
+        for (var x = this.x; x += this.layer.tileWidth; x < this.xRight) {
+            for (var y = this.y; y += this.layer.tileHeight; y < this.yBottom) {
+                var tileX = Math.floor(x / this.layer.tileWidth);
+                var tileY = Math.floor(y / this.layer.tileHeight);
+                var tile = this.layer.GetTileByIndex(tileX, tileY);
+                if (tile.tileType == TileType.SpriteKiller)
+                    return true;
+            }
+        }
+        return false;
     };
     return Sprite;
 }());

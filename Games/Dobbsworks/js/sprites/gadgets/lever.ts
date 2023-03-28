@@ -9,8 +9,8 @@ class Lever extends Sprite {
     Update(): void {
         if (KeyboardHandler.IsKeyPressed(KeyAction.Action2, true)) {
             // action button pressed
-            let player = this.layer.sprites.find(a => a instanceof Player);
-            if (player) {
+            let players = this.layer.sprites.filter(a => a instanceof Player);
+            for (let player of players) {
                 let distance = Math.abs(this.xMid - player.xMid) + Math.abs(this.yMid - player.yMid);
                 if (distance < 9) {
                     this.isOn = !this.isOn;

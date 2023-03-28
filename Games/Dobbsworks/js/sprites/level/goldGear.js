@@ -43,12 +43,15 @@ var GoldGear = /** @class */ (function (_super) {
                 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5
             ];
             this.frame = frameIndeces[this.age % frameIndeces.length] * 20;
-            var player_1 = (this.layer.sprites.find(function (a) { return a instanceof Player; }));
-            if (player_1 && player_1.IsGoingToOverlapSprite(this)) {
-                this.isTouched = true;
-                camera.Reset();
-                this.playerAge = player_1.age + editorHandler.bankedCheckpointTime + ((levelGenerator === null || levelGenerator === void 0 ? void 0 : levelGenerator.bankedClearTime) || 0);
-                //console.log(player.replayHandler.ExportToBase64());
+            var players = (this.layer.sprites.filter(function (a) { return a instanceof Player; }));
+            for (var _i = 0, players_1 = players; _i < players_1.length; _i++) {
+                var player_1 = players_1[_i];
+                if (player_1.IsGoingToOverlapSprite(this)) {
+                    this.isTouched = true;
+                    camera.Reset();
+                    this.playerAge = player_1.age + editorHandler.bankedCheckpointTime + ((levelGenerator === null || levelGenerator === void 0 ? void 0 : levelGenerator.bankedClearTime) || 0);
+                    //console.log(player.replayHandler.ExportToBase64());
+                }
             }
         }
         if (this.spinMode) {

@@ -11,7 +11,7 @@ var DataService = /** @class */ (function () {
         if (window.location.href.indexOf("localhost") > -1) {
             baseUrl = "https://localhost:7121/api/";
         }
-        if (window.location.href.startsWith("http://127.0.0.1/")) {
+        if (window.location.href.startsWith("http://127.0.0.1/") || window.location.href.startsWith("http://127.0.0.1:5500/")) {
             return;
         }
         var endpoint = baseUrl + urlAction;
@@ -73,49 +73,44 @@ var DataService = /** @class */ (function () {
             DataService.BaseGet("Levels/MyLevels", resolve, reject);
         });
     };
-    // static GetRecentLevels(): Promise<LevelListing[]> {
-    //     return new Promise<LevelListing[]>((resolve, reject) => {
-    //         DataService.BaseGet("Levels/RecentLevels", resolve, reject);
-    //     })
-    // }
-    DataService.GetRecentLevels = function () {
+    DataService.GetRecentLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/RecentLevels", resolve, reject);
+            DataService.BaseGet("LevelSearch/RecentLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
-    DataService.GetOldestLevels = function () {
+    DataService.GetOldestLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/OldestLevels", resolve, reject);
+            DataService.BaseGet("LevelSearch/OldestLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
-    DataService.GetMostLikedLevels = function () {
+    DataService.GetMostLikedLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/MostLikedLevels", resolve, reject);
+            DataService.BaseGet("LevelSearch/MostLikedLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
-    DataService.GetBestRatedLevels = function () {
+    DataService.GetBestRatedLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/BestRatedLevels", resolve, reject);
+            DataService.BaseGet("LevelSearch/BestRatedLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
-    DataService.GetUndiscoveredLevels = function () {
+    DataService.GetUndiscoveredLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/UndiscoveredLevels", resolve, reject);
+            DataService.BaseGet("LevelSearch/UndiscoveredLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
-    DataService.GetMostPlayedLevels = function () {
+    DataService.GetMostPlayedLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/MostPlayedLevels", resolve, reject);
+            DataService.BaseGet("LevelSearch/MostPlayedLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
-    DataService.GetEasiestLevels = function () {
+    DataService.GetEasiestLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/EasiestLevels", resolve, reject);
+            DataService.BaseGet("LevelSearch/EasiestLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
-    DataService.GetHardestLevels = function () {
+    DataService.GetHardestLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/HardestLevels", resolve, reject);
+            DataService.BaseGet("LevelSearch/HardestLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
     DataService.UploadLevel = function (levelUpload) {

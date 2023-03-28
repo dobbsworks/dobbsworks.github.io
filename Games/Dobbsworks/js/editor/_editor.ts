@@ -170,8 +170,8 @@ class EditorHandler {
         gizmoButtons.push(new EditorButtonTile(TileType.HangingBars, "Hanging bars"));
         gizmoButtons.push(new EditorButtonTile(TileType.Ice, "Ice Block"));
         gizmoButtons.push(new EditorButtonTile(TileType.IceTop, "Ice Top"));
-        gizmoButtons.push(new EditorButtonTile(TileType.WindRight, "Wind"));
-        gizmoButtons.push(new EditorButtonTile(TileType.FastWindRight, "Fast Wind"));
+        gizmoButtons.push(new EditorButtonTile(TileType.WindRight, "Wind").AppendImage(tiles["uiButtonAdd"][0][0]));
+        gizmoButtons.push(new EditorButtonTile(TileType.FastWindRight, "Fast Wind").AppendImage(tiles["uiButtonAdd"][0][0]));
         gizmoButtons.push(new EditorButtonSprite(WindTriggerRight));
         gizmoButtons.push(new EditorButtonSprite(WindTriggerReset));
         gizmoButtons.push(new EditorButtonTile(TileType.OneWayRight, "One-way").AppendImage(tiles["uiButtonAdd"][0][0]));
@@ -185,6 +185,8 @@ class EditorHandler {
         gizmoButtons.push(new EditorButtonTile(TileType.WallJumpRight, "Wall Jump (right)"));
         // gizmoButtons.push(new EditorButtonTile(TileType.WallWarpLeft, "Warp Wall (left)"));
         // gizmoButtons.push(new EditorButtonTile(TileType.WallWarpRight, "Warp Wall (right)"));
+        gizmoButtons.push(new EditorButtonSprite(Doopster));
+        gizmoButtons.push(new EditorButtonSprite(Dabbot));
 
         let gizmoPanel = this.CreateFloatingButtonPanel(gizmoButtons, 5, 6);
 
@@ -285,7 +287,9 @@ class EditorHandler {
         backgroundLoadPanel.AddChild(backgroundLoadHandle);
 
 
-        this.saveDrawer = new EditorSaveDrawer(this.mainPanel.x + this.mainPanel.width + 10, 10);
+        this.saveDrawer = new EditorSaveDrawer(this.mainPanel.x + this.mainPanel.width + 10 - 70, 10);
+        let optionsButton = OptionsMenu.CreateOptionsButton();
+        optionsButton.targetX -= 70;
         let mapSizeHandle = new EditorButtonDrawerHandle(tiles["editor"][4][4], "Edit map size", [new MapSizeEditor()]);
         let mapSizePanel = new Panel(backgroundLoadPanel.x + 80, backgroundLoadPanel.y, 70, 70);
         mapSizePanel.AddChild(mapSizeHandle);
@@ -342,7 +346,7 @@ class EditorHandler {
         // let optionsPanel = OptionsMenu.CreateOptionsButton();
         // optionsPanel.targetX -= 80;
 
-        this.editorParentElementsTop.push(this.backgroundPanel, backgroundLoadPanel, levelFlowHandlePanel, this.saveDrawer, mapSizePanel, musicHandlePanel, exitPanel);
+        this.editorParentElementsTop.push(this.backgroundPanel, backgroundLoadPanel, levelFlowHandlePanel, this.saveDrawer, optionsButton, mapSizePanel, musicHandlePanel, exitPanel);
         this.editorParentElementsBottom.push(this.mainPanel, eraserPanel, this.mainToolPanel, this.brushPanel, resetPanel);
         uiHandler.elements.push(...this.editorParentElementsTop, ...this.editorParentElementsBottom);
         this.editorParentElementsTop.forEach(a => a.backColor = "#1138");
@@ -548,8 +552,8 @@ class EditorHandler {
 
             // ghost player
             if (currentMap.frameNum % 10 == 0) {
-                let player = currentMap.mainLayer.sprites.find(a => a instanceof Player);
-                if (player) {
+                let players = currentMap.mainLayer.sprites.filter(a => a instanceof Player);
+                for (let player of players) {
                     let newFrame = { fd: <FrameData>player.GetFrameData(currentMap.frameNum), x: player.x, y: player.y };
                     let matchesLatest = false;
                     let latestFrame = this.playerFrames[this.playerFrames.length - 1];
@@ -586,7 +590,7 @@ class EditorHandler {
             this.cameraMoveTimer = 0;
         }
 
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorMinimize, true)) this.ToggleMinimizeMode();
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorMinimize, true) && MenuHandler.CurrentMenu == null) this.ToggleMinimizeMode();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true)) (<EditorButton>this.eraserButton).Click();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorPlayerHotkey, true)) {
             let isUsingHoverPlayer = editorHandler.sprites.some(a => a.spriteType == HoverPlayer);

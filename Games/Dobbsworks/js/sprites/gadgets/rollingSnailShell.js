@@ -67,9 +67,7 @@ var RollingSnailShell = /** @class */ (function (_super) {
     };
     RollingSnailShell.prototype.OnSpinBounce = function () { this.ReplaceWithSpriteType(Poof); };
     RollingSnailShell.prototype.OnBounce = function () {
-        this.isActive = false;
-        var shell = new SnailShell(this.x, this.y, this.layer, []);
-        this.layer.sprites.push(shell);
+        this.ReplaceWithSpriteType(SnailShell);
     };
     RollingSnailShell.prototype.GetFrameData = function (frameNum) {
         var totalFrames = Object.keys(tiles["snail"]).length - 2;

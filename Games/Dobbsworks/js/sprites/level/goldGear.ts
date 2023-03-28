@@ -31,12 +31,14 @@ class GoldGear extends Sprite {
 
             this.frame = frameIndeces[this.age % frameIndeces.length] * 20;
 
-            let player = <Player>(this.layer.sprites.find(a => a instanceof Player));
-            if (player && player.IsGoingToOverlapSprite(this)) {
-                this.isTouched = true;
-                camera.Reset();
-                this.playerAge = player.age + editorHandler.bankedCheckpointTime + (levelGenerator?.bankedClearTime || 0);
-                //console.log(player.replayHandler.ExportToBase64());
+            let players = <Player[]>(this.layer.sprites.filter(a => a instanceof Player));
+            for (let player of players) {
+                if (player.IsGoingToOverlapSprite(this)) {
+                    this.isTouched = true;
+                    camera.Reset();
+                    this.playerAge = player.age + editorHandler.bankedCheckpointTime + (levelGenerator?.bankedClearTime || 0);
+                    //console.log(player.replayHandler.ExportToBase64());
+                }
             }
         }
 

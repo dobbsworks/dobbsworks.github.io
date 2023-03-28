@@ -13,7 +13,7 @@ class Panel extends UIElement {
     scrollableChildrenUp: UIElement[] = [];
     scrollableChildrenDown: UIElement[] = [];
     margin = 5;
-    backColor = "#0000";
+    backColor = "#F000";
     borderColor = "#0000";
     borderRadius = 8;
     layout: "horizontal" | "vertical" = "horizontal";

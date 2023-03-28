@@ -20,6 +20,7 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
         _this.selectedCloudCode = "";
         _this.levels = [];
         _this.levelPanel = null;
+        _this.pagesPanel = null;
         _this.levelOptionsPanel = null;
         _this.userDetailsPanel = null;
         _this.searchButtons = [];
@@ -36,6 +37,8 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
         _this.basePanelHeight = 480;
         _this.baseLeftX = -960;
         _this.baseRightX = 30;
+        _this.numberOfPages = 0;
+        _this.currentPageIndex = 0;
         return _this;
     }
     LevelBrowseMenu.prototype.CreateElements = function () {
@@ -52,13 +55,8 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
             _this.ShowLevelDetails();
         });
         ret.push(this.backButtonUserPanel);
-        var getLevelsPromise = DataService.GetRecentLevels();
-        getLevelsPromise.then(function (levels) {
-            _this.levels = levels;
-            _this.PopulateLevelPanel();
-        }).catch(function (error) {
-        });
         this.searchButtons.push(new LevelBrowseSortButton(this, "Newest", DataService.GetRecentLevels));
+        //this.searchButtons.push(new LevelBrowseSortButton(this, "Oldest", DataService.GetOldestLevels));
         this.searchButtons.push(new LevelBrowseSortButton(this, "Top Rated", DataService.GetBestRatedLevels));
         this.searchButtons.push(new LevelBrowseSortButton(this, "Most Liked", DataService.GetMostLikedLevels));
         this.searchButtons.push(new LevelBrowseSortButton(this, "Easiest", DataService.GetEasiestLevels));
@@ -66,10 +64,13 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
         ret.push.apply(ret, this.searchButtons);
         this.searchButtons[0].Click();
         //this.currentSearchButton
-        this.levelPanel = new Panel(this.baseX, this.baseY, this.basePanelWidth, this.basePanelHeight);
+        this.levelPanel = new Panel(this.baseX, this.baseY - 10, this.basePanelWidth, this.basePanelHeight - 30);
         this.levelPanel.backColor = "#1138";
         this.levelPanel.layout = "vertical";
         ret.push(this.levelPanel);
+        this.pagesPanel = new Panel(this.baseX, this.levelPanel.y + this.levelPanel.height, this.basePanelWidth, 40);
+        this.pagesPanel.backColor = "#0000";
+        ret.push(this.pagesPanel);
         this.levelOptionsPanel = new Panel(this.baseX + 1000, this.baseY, this.bigPanelWidth, this.basePanelHeight);
         this.levelOptionsPanel.backColor = "#1138";
         this.levelOptionsPanel.layout = "vertical";
@@ -78,17 +79,45 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
         this.userDetailsPanel.backColor = "#1138";
         this.userDetailsPanel.layout = "vertical";
         ret.push(this.userDetailsPanel);
-        this.toggles.push(new FilterToggle(this, tiles["spider"][0][0], tiles["spider"][0][1], function (isOn) {
+        this.toggles.push(new FilterToggle(this, "Glitched levels", tiles["spider"][0][0], tiles["spider"][0][1], function (isOn) {
             _this.includeGlitchLevels = isOn;
         }, this.includeGlitchLevels));
-        var clearedToggle = new FilterToggle(this, tiles["pig"][5][0], tiles["pig"][0][0], function (isOn) {
+        var clearedToggle = new FilterToggle(this, "Cleared levels", tiles["pig"][5][0], tiles["pig"][0][0], function (isOn) {
             _this.includeClearedLevels = isOn;
         }, this.includeClearedLevels);
-        clearedToggle.targetX -= 200;
+        clearedToggle.targetX -= 300;
         this.toggles.push(clearedToggle);
         this.toggles.forEach(function (a) { return a.originalX = a.targetX; });
         ret.push.apply(ret, this.toggles);
         return ret;
+    };
+    LevelBrowseMenu.prototype.UpdatePagination = function () {
+        var _this = this;
+        if (!this.pagesPanel)
+            return;
+        this.pagesPanel.children = [];
+        var buttonWidth = 50;
+        var _loop_1 = function (pageIndex) {
+            var button = new Button(0, 0, buttonWidth, 30);
+            var text = new UIText(0, 0, (pageIndex + 1).toString(), 16, "white");
+            text.xOffset = button.width / 2 - 4;
+            text.yOffset = 15;
+            button.AddChild(text);
+            this_1.pagesPanel.AddChild(button);
+            button.onClickEvents.push(function () {
+                _this.currentSearchButton.RequestLevels(pageIndex);
+            });
+            if (pageIndex == this_1.currentPageIndex) {
+                button.normalBackColor = "#020b";
+                button.mouseoverBackColor = "#242b";
+            }
+        };
+        var this_1 = this;
+        for (var pageIndex = 0; pageIndex < this.numberOfPages; pageIndex++) {
+            _loop_1(pageIndex);
+        }
+        var takenSpace = (buttonWidth + this.pagesPanel.margin) * this.numberOfPages;
+        this.pagesPanel.AddChild(new Spacer(0, 0, this.pagesPanel.width - takenSpace, 1));
     };
     LevelBrowseMenu.Reset = function () {
         var menu = MenuHandler.MenuStack.find(function (a) { return a instanceof LevelBrowseMenu; });
@@ -117,7 +146,7 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
                 map(function (a) { return new LevelBrowseButton(a, _this); });
             for (var _i = 0, buttons_1 = buttons; _i < buttons_1.length; _i++) {
                 var button = buttons_1[_i];
-                if (this.levelPanel.children.length >= 4) {
+                if (this.levelPanel.children.length >= 5) {
                     this.levelPanel.scrollableChildrenDown.push(button);
                     button.parentElement = this.levelPanel;
                 }
@@ -128,6 +157,7 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
             for (var i = 0; i < Math.abs(scrollIndex); i++) {
                 this.levelPanel.Scroll(scrollIndex < 0 ? -1 : 1);
             }
+            this.UpdatePagination();
         }
     };
     LevelBrowseMenu.prototype.ShowMainPanel = function () {
@@ -137,6 +167,8 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
             this.levelOptionsPanel.targetX = 1000;
         if (this.levelPanel)
             this.levelPanel.targetX = this.baseX;
+        if (this.pagesPanel)
+            this.pagesPanel.targetX = this.baseX;
         this.toggles.forEach(function (a) { return a.targetX = a.originalX; });
         this.backButton.isHidden = false;
         this.backButtonUserPanel.isHidden = true;
@@ -147,6 +179,8 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
         var levelListing = this.levels.find(function (a) { return a.level.code == _this.selectedCloudCode; });
         if (this.levelPanel)
             this.levelPanel.targetX = this.baseLeftX;
+        if (this.pagesPanel)
+            this.pagesPanel.targetX = this.baseLeftX;
         if (this.userDetailsPanel)
             this.userDetailsPanel.targetX = 2000;
         this.toggles.forEach(function (a) { return a.targetX = a.originalX - 1000; });
@@ -409,6 +443,8 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
             this.levelOptionsPanel.targetX = -1000;
         if (this.levelPanel)
             this.levelPanel.targetX = -2000;
+        if (this.pagesPanel)
+            this.pagesPanel.targetX = -2000;
         this.toggles.forEach(function (a) { return a.targetX = a.originalX - 2000; });
         this.backButton.isHidden = true;
         this.backButtonUserPanel.isHidden = false;
@@ -439,7 +475,7 @@ var TrophyImage = /** @class */ (function (_super) {
 var LevelBrowseButton = /** @class */ (function (_super) {
     __extends(LevelBrowseButton, _super);
     function LevelBrowseButton(levelListing, containingMenu) {
-        var _this = _super.call(this, 0, 0, 88 * 2 + 10, 50 * 2 + 10) || this;
+        var _this = _super.call(this, 0, 0, 88 * 2 + 10, 50 * 2 + 10 - 24) || this;
         _this.levelListing = levelListing;
         _this.containingMenu = containingMenu;
         _this.isSelected = false;
@@ -458,10 +494,12 @@ var LevelBrowseButton = /** @class */ (function (_super) {
         thumbnail.height = camera.canvas.height / 24;
         var imageTile = new ImageTile(thumbnail, 0, 0, thumbnail.width, thumbnail.height);
         // make sure scale of this is good
-        var imageFromTile = new ImageFromTile(0, 0, 88 * 2, 50 * 2, imageTile);
-        imageFromTile.zoom = 4;
+        var imageFromTile = new ImageFromTile(0, 0, 88 * 2 - 30, 50 * 2, imageTile);
+        imageFromTile.zoom = 3;
+        imageFromTile.xOffset = -13;
+        imageFromTile.yOffset = -12;
         _this.AddChild(imageFromTile);
-        var texts = new Panel(0, 0, 370, 80);
+        var texts = new Panel(0, 0, 400, 65);
         texts.layout = "vertical";
         var titleLine = new Panel(0, 0, 290, 25);
         titleLine.margin = 0;
@@ -475,7 +513,7 @@ var LevelBrowseButton = /** @class */ (function (_super) {
         var byLineText = new UIText(0, 0, "by " + levelListing.author.username, 14, "white");
         byLineText.textAlign = "left";
         byLineText.yOffset = 20;
-        var byLineTextContainer = new Panel(0, 0, 320, 20);
+        var byLineTextContainer = new Panel(0, 0, 340, 20);
         byLineTextContainer.AddChild(byLineText);
         byLine.AddChild(byLineTextContainer);
         texts.AddChild(titleLine);
@@ -520,40 +558,10 @@ var LevelBrowseSortButton = /** @class */ (function (_super) {
     function LevelBrowseSortButton(parent, name, searchFunc) {
         var _this = _super.call(this, 0, parent.searchButtons.length * 60 + 50, 210, 50) || this;
         _this.parent = parent;
-        _this.cachedListings = [];
+        _this.searchFunc = searchFunc;
+        _this.cachedPages = [];
         _this.searchTime = null;
-        _this.onClickEvents.push(function () {
-            if (_this.parent.isDataLoadInProgress) {
-                audioHandler.PlaySound("error", false);
-            }
-            else {
-                var secondsSinceLastSearch = 60;
-                if (_this.searchTime)
-                    secondsSinceLastSearch = (+(new Date()) - +(_this.searchTime || 0)) / 1000;
-                if ((_this.parent.currentSearchButton != _this || secondsSinceLastSearch < 10) && _this.cachedListings.length > 0) {
-                    // pull from cache
-                    _this.parent.levels = _this.cachedListings;
-                    _this.parent.PopulateLevelPanel();
-                }
-                else {
-                    // run this search function
-                    _this.parent.isDataLoadInProgress = true;
-                    _this.parent.levels = [];
-                    _this.parent.PopulateLevelPanel();
-                    _this.searchTime = new Date();
-                    var getLevelsPromise = searchFunc();
-                    getLevelsPromise.then(function (levels) {
-                        _this.parent.isDataLoadInProgress = false;
-                        _this.cachedListings = levels;
-                        _this.parent.levels = levels;
-                        _this.parent.PopulateLevelPanel();
-                    }).catch(function (error) {
-                        console.error(error);
-                    });
-                }
-            }
-            _this.parent.currentSearchButton = _this;
-        });
+        _this.onClickEvents.push(function () { _this.RequestLevels(0); });
         _this.margin = 15;
         var label = new UIText(0, 0, name, 24, "white");
         label.textAlign = "right";
@@ -562,6 +570,44 @@ var LevelBrowseSortButton = /** @class */ (function (_super) {
         _this.AddChild(label);
         return _this;
     }
+    LevelBrowseSortButton.prototype.RequestLevels = function (pageIndex) {
+        var _this = this;
+        if (this.parent.isDataLoadInProgress) {
+            audioHandler.PlaySound("error", false);
+        }
+        else {
+            var secondsSinceLastSearch = 60;
+            if (this.searchTime)
+                secondsSinceLastSearch = (+(new Date()) - +(this.searchTime || 0)) / 1000;
+            var cache = this.cachedPages.find(function (a) { return a.pageIndex == pageIndex; });
+            if ((this.parent.currentSearchButton != this || secondsSinceLastSearch < 60) && cache && cache.levels.length > 0) {
+                // pull from cache
+                this.parent.levels = cache.levels;
+                this.parent.currentPageIndex = pageIndex;
+                this.parent.PopulateLevelPanel();
+            }
+            else {
+                // run this search function
+                this.parent.isDataLoadInProgress = true;
+                this.parent.levels = [];
+                this.parent.PopulateLevelPanel();
+                this.searchTime = new Date();
+                var getLevelsPromise = this.searchFunc(pageIndex);
+                getLevelsPromise.then(function (results) {
+                    _this.parent.isDataLoadInProgress = false;
+                    _this.cachedPages = _this.cachedPages.filter(function (a) { return a.pageIndex != pageIndex; }); // delete existing cache for this page
+                    _this.cachedPages.push({ pageIndex: pageIndex, levels: results.levels });
+                    _this.parent.levels = results.levels;
+                    _this.parent.numberOfPages = results.pageCount;
+                    _this.parent.currentPageIndex = pageIndex;
+                    _this.parent.PopulateLevelPanel();
+                }).catch(function (error) {
+                    console.error(error);
+                });
+            }
+        }
+        this.parent.currentSearchButton = this;
+    };
     LevelBrowseSortButton.prototype.Update = function () {
         var _a, _b;
         _super.prototype.Update.call(this);
@@ -582,21 +628,22 @@ var LevelBrowseSortButton = /** @class */ (function (_super) {
 }(Button));
 var FilterToggle = /** @class */ (function (_super) {
     __extends(FilterToggle, _super);
-    function FilterToggle(parentMenu, selectedImage, unselectedImage, onToggle, initialState) {
-        var _this = _super.call(this, 700, 530, 150, 50) || this;
+    function FilterToggle(parentMenu, prefix, selectedImage, unselectedImage, onToggle, initialState) {
+        var _this = _super.call(this, 675, 530, 275, 50) || this;
         _this.parentMenu = parentMenu;
+        _this.prefix = prefix;
         _this.originalX = 0;
         _this.image = new ImageFromTile(0, 0, 48, 48, unselectedImage);
         _this.image.zoom = 2;
         _this.AddChild(_this.image);
-        _this.text = new UIText(0, 0, "Filtered", 18, "white");
+        _this.text = new UIText(0, 0, _this.prefix + " " + "Filtered", 18, "white");
         _this.text.yOffset = 25;
         _this.text.xOffset = -5;
         _this.text.textAlign = "right";
         _this.AddChild(_this.text);
         _this.onClickEvents.push(function () {
             _this.isSelected = !_this.isSelected;
-            _this.text.text = _this.isSelected ? "Included" : "Filtered";
+            _this.text.text = _this.prefix + " " + (_this.isSelected ? "Included" : "Filtered");
             _this.image.imageTile = _this.isSelected ? selectedImage : unselectedImage;
             onToggle(_this.isSelected);
             parentMenu.PopulateLevelPanel();
