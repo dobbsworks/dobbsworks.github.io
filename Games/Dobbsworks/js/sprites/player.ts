@@ -788,7 +788,7 @@ class Player extends Sprite {
         this.isActive = false;
         audioHandler.PlaySound("dead", true);
         if (this.isDuplicate) {
-            let deadPlayer = new DeadPlayer(this, -1, canRespawn);
+            let deadPlayer = new DeadPlayer(this, -1, false);
             this.layer.sprites.push(deadPlayer);
             deadPlayer.isDuplicate = true;
             return deadPlayer;

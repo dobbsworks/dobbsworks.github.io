@@ -822,7 +822,7 @@ var Player = /** @class */ (function (_super) {
         this.isActive = false;
         audioHandler.PlaySound("dead", true);
         if (this.isDuplicate) {
-            var deadPlayer = new DeadPlayer(this, -1, canRespawn);
+            var deadPlayer = new DeadPlayer(this, -1, false);
             this.layer.sprites.push(deadPlayer);
             deadPlayer.isDuplicate = true;
             return deadPlayer;
