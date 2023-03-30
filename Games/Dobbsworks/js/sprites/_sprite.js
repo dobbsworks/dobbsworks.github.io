@@ -1006,8 +1006,8 @@ var Sprite = /** @class */ (function () {
         return this.respectsSolidTiles || this instanceof SapphireSnail || (this instanceof BasePlatform && !(this instanceof FloatingPlatform));
     };
     Sprite.prototype.DoesOverlapSpriteKiller = function () {
-        for (var x = this.x; x += this.layer.tileWidth; x < this.xRight) {
-            for (var y = this.y; y += this.layer.tileHeight; y < this.yBottom) {
+        for (var x = this.x; x < this.xRight; x += this.layer.tileWidth) {
+            for (var y = this.y; y < this.yBottom; y += this.layer.tileHeight) {
                 var tileX = Math.floor(x / this.layer.tileWidth);
                 var tileY = Math.floor(y / this.layer.tileHeight);
                 var tile = this.layer.GetTileByIndex(tileX, tileY);

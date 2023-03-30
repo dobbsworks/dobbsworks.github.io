@@ -987,8 +987,8 @@ abstract class Sprite {
     }
 
     DoesOverlapSpriteKiller(): boolean {
-        for (let x = this.x; x += this.layer.tileWidth; x < this.xRight) {
-            for (let y = this.y; y += this.layer.tileHeight; y < this.yBottom) {
+        for (let x = this.x; x < this.xRight; x += this.layer.tileWidth) {
+            for (let y = this.y; y < this.yBottom; y += this.layer.tileHeight) {
                 let tileX = Math.floor(x / this.layer.tileWidth);
                 let tileY = Math.floor(y / this.layer.tileHeight);
                 let tile = this.layer.GetTileByIndex(tileX, tileY);
