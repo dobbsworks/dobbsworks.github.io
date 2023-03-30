@@ -15,7 +15,9 @@ class Snail extends Enemy {
     OnSpinBounce(): void { this.ReplaceWithSpriteType(Poof); }
     
     OnBounce(): void {
-        this.ReplaceWithSpriteType(SnailShell);
+        let shell = this.ReplaceWithSpriteType(SnailShell);
+        shell.dx = 0;
+        shell.dy = 0;
     }
 
     GetFrameData(frameNum: number): FrameData {
