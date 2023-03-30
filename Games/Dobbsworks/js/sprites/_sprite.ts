@@ -100,6 +100,19 @@ abstract class Sprite {
     }
 
     SharedUpdate(): void {
+        if (!(this instanceof DeadPlayer)) {
+            let motor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == this);
+            if (!motor) {
+                if (
+                    this.xRight < -36 || this.x > this.layer.GetMaxX() + 36 ||
+                    this.y > this.layer.GetMaxY() + 36 || this.yBottom < -240) {
+                    // way off-screen! Delete
+                    this.isActive = false;
+                }
+            }
+        }
+
+
         this.age++;
         if (this.framesSinceThrown >= 0) this.framesSinceThrown++;
         this.gustUpTimer--;

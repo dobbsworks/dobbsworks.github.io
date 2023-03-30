@@ -108,6 +108,17 @@ var Sprite = /** @class */ (function () {
         return ret;
     };
     Sprite.prototype.SharedUpdate = function () {
+        var _this = this;
+        if (!(this instanceof DeadPlayer)) {
+            var motor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == _this; });
+            if (!motor) {
+                if (this.xRight < -36 || this.x > this.layer.GetMaxX() + 36 ||
+                    this.y > this.layer.GetMaxY() + 36 || this.yBottom < -240) {
+                    // way off-screen! Delete
+                    this.isActive = false;
+                }
+            }
+        }
         this.age++;
         if (this.framesSinceThrown >= 0)
             this.framesSinceThrown++;
