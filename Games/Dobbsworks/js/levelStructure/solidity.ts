@@ -17,7 +17,7 @@ class BaseSolidity {
 
 class SlopeSolidity extends BaseSolidity {
     constructor(
-        private slopeFunc: (x: number) => number,
+        public slopeFunc: (x: number) => number,
         // slopefunc is for tile (0,0) ie top left tile of map
         public verticalSolidDirection: -1 | 1,
         public horizontalSolidDirection: -1 | 1,

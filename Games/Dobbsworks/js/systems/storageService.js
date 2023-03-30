@@ -101,5 +101,14 @@ var StorageService = /** @class */ (function () {
         var value = newValue ? "1" : "0";
         localStorage.setItem("pref-" + key, value);
     };
+    StorageService.GetPreference = function (key, initialValue) {
+        var saved = localStorage.getItem("pref-" + key);
+        if (saved === null)
+            return initialValue;
+        return saved;
+    };
+    StorageService.SetPreference = function (key, newValue) {
+        localStorage.setItem("pref-" + key, newValue);
+    };
     return StorageService;
 }());

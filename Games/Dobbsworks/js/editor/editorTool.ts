@@ -38,7 +38,6 @@ class Eraser extends EditorTool {
     OnCancel(): void { };
 }
 
-var tx = "";
 class SpritePlacer extends EditorTool {
     private heldSprite: EditorSprite | null = null;
     private xHoldOffset: number = 0;
@@ -50,7 +49,6 @@ class SpritePlacer extends EditorTool {
         super(); 
         if (spriteTypes.indexOf(spriteType) == -1) {
             console.error("Sprite type missing from ordered list: " + spriteType.name);
-            tx += spriteType.name + "|"
         }
     }
     OnInitialClick(tileCoord: TileCoordinate): void {
@@ -387,6 +385,61 @@ class SlopeFill extends FillType {
                     if (isSlopePositive) currentMap.mainLayer.SetTile(tileCoord.tileX, tileCoord.tileY, parity ? lowerTileA : lowerTileB);
                 }
             }
+        }
+    }
+}
+
+class TrackPlacer extends FillType {
+    FillTiles(tileCoordinates: TileCoordinate[]): void {
+        let retryList: TileCoordinate[] = [];
+        for (let tileCoord of tileCoordinates) {
+            // Which ways can this tile connect?
+            let connectableDirections = Direction.All.filter(dir => {
+                if (tileCoordinates.some(a => a.tileX == tileCoord.tileX + dir.x && a.tileY == tileCoord.tileY + dir.y)) return true;
+                let trackNeighbor = currentMap.wireLayer.GetTileByIndex(tileCoord.tileX + dir.x, tileCoord.tileY + dir.y);
+                if (trackNeighbor.tileType.trackDirections.length == 1) return true;
+                if (trackNeighbor.tileType.trackDirections.indexOf(dir.Opposite()) > -1) return true;
+                return false;
+            });
+            if (connectableDirections.length == 0) {
+                currentMap.wireLayer.SetTile(tileCoord.tileX, tileCoord.tileY, TileType.TrackHorizontal);
+            } else if (connectableDirections.length == 1) {
+                let targetTrackType = (Object.values(TileType.TileMap) as TileType[]).find(a => a.trackDirections.length == 1 && a.trackDirections[0] == connectableDirections[0]);
+                if (targetTrackType) {
+                    currentMap.wireLayer.SetTile(tileCoord.tileX, tileCoord.tileY, targetTrackType);
+                } else {
+                    console.error("Uh oh, missing track type?");
+                }
+            } else if (connectableDirections.length == 2) {
+                let targetTrackType = (Object.values(TileType.TileMap) as TileType[]).find(a => a.trackDirections.length == 2 && a.trackDirections.indexOf(connectableDirections[0]) > -1 && a.trackDirections.indexOf(connectableDirections[1]) > -1);
+                if (targetTrackType) {
+                    currentMap.wireLayer.SetTile(tileCoord.tileX, tileCoord.tileY, targetTrackType);
+                } else {
+                    console.error("Uh oh, missing track type?");
+                }
+            } else if (connectableDirections.length == 4) {
+                currentMap.wireLayer.SetTile(tileCoord.tileX, tileCoord.tileY, TileType.TrackBridge);
+            } else {
+                retryList.push(tileCoord);
+            }
+
+            for (let dir of connectableDirections) {
+                // look at each neighbor and see if we can connect them
+                let trackNeighbor = currentMap.wireLayer.GetTileByIndex(tileCoord.tileX + dir.x, tileCoord.tileY + dir.y);
+                if (tileCoordinates.some(a => a.tileX == trackNeighbor.tileX && a.tileY == trackNeighbor.tileY)) continue;
+                if (trackNeighbor.tileType.trackDirections.length == 1) {
+                    let targetTrackType = (Object.values(TileType.TileMap) as TileType[]).find(a => a.trackDirections.length == 2 && 
+                        a.trackDirections.indexOf(dir.Opposite()) > -1 && a.trackDirections.indexOf(trackNeighbor.tileType.trackDirections[0]) > -1);
+                    if (targetTrackType) {
+                        currentMap.wireLayer.SetTile(trackNeighbor.tileX, trackNeighbor.tileY, targetTrackType);
+                    } else {
+                        console.error("Uh oh, missing track type?");
+                    }
+                }
+            }
+        }
+        if (retryList.length != tileCoordinates.length) {
+            this.FillTiles(retryList);
         }
     }
 }

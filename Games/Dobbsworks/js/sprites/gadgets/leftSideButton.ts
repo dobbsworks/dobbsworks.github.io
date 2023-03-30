@@ -10,6 +10,7 @@ class LeftSideButton extends Sprite {
 
     onTimer = 0;
 
+    public static get clockwiseRotationSprite(): (SpriteType | null) { return CeilingButton; }
     Update(): void { 
         let spritesAtRight = this.layer.sprites.filter(a => {
             return a.touchedLeftWalls.indexOf(this) > -1 ||

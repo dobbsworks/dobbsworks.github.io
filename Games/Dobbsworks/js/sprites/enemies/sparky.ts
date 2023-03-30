@@ -17,10 +17,10 @@ class Sparky extends Enemy {
         if (this.pathingType == null) {
             let currentTile = this.layer.GetTileByPixel(this.xMid, this.yMid).GetWireNeighbor();
             if (currentTile && currentTile.tileType !== TileType.Air) {
-                if (currentTile.tileType.canBePowered) {
-                    this.pathingType = "wire";
-                } else if (currentTile.tileType.isTrack) {
+                if (currentTile.tileType.trackDirections.length > 0) {
                     this.pathingType = "track";
+                } else if (currentTile.tileType.canBePowered) {
+                    this.pathingType = "wire";
                 }
             }
         }
@@ -39,19 +39,11 @@ class Sparky extends Enemy {
                         this.dir = dir;
                         break;
                     }
-                    if (this.pathingType == "track" && tile.tileType.isTrack) {
-                        let xPoint = 1 - ((dir.x + 1) / 2);
-                        let yPoint = 1 - ((dir.y + 1) / 2);
-                        let landingPoint = tile.tileType.trackEquation(xPoint, yPoint);
-                        if (landingPoint.x == xPoint && landingPoint.y == yPoint) {
-
-
+                    if (this.pathingType == "track" && tile.tileType.trackDirections.length > 0) {
+                        if (tile.tileType.trackDirections.indexOf(dir) > -1) {
                             this.dir = dir;
                             break;
-                        } else {
                         }
-
-
                     }
                 }
             }

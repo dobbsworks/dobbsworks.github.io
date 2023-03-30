@@ -110,6 +110,9 @@ var EditorHotbar = /** @class */ (function () {
         if (editorButton instanceof EditorButtonSlopePen) {
             return this.panel.children.find(function (a) { return a instanceof EditorButtonSlopePen && a.slopeFill == editorButton.slopeFill; });
         }
+        if (editorButton instanceof EditorButtonTrackTool) {
+            return this.panel.children.find(function (a) { return a instanceof EditorButtonTrackTool; });
+        }
         return null;
     };
     return EditorHotbar;

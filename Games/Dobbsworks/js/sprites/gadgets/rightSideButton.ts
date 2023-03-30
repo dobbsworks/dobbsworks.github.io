@@ -10,6 +10,7 @@ class RightSideButton extends Sprite {
 
     onTimer = 0;
 
+    public static get clockwiseRotationSprite(): (SpriteType | null) { return FloorButton; }
     Update(): void { 
         let spritesAtLeft = this.layer.sprites.filter(a => {
             return a.touchedRightWalls.indexOf(this) > -1 ||

@@ -34,15 +34,8 @@ var TileType = /** @class */ (function () {
         this.isStickyWall = false;
         this.isJumpWall = false;
         this.isWarpWall = false;
-        this.isTrack = false;
         this.isExemptFromSlime = false;
-        this.isTrackCap = false;
-        this.trackEquation = function (x, y) { return ({ x: x, y: y }); };
-        this.trackCrossedEquation = function (x1, y1, x2, y2) { return false; };
-        this.trackDirectionEquation = function (x, y) { return ({ dx: 0, dy: 0 }); };
-        this.trackCurveHorizontalDirection = 0;
-        this.trackCurveVerticalDirection = 0;
-        // track equation maps based on ratio within block [0,1]=>[0,1]
+        this.trackDirections = [];
         this.isSlippery = false;
         this.hurtOnLeft = false;
         this.hurtOnRight = false;
@@ -332,6 +325,15 @@ var TileType = /** @class */ (function () {
         TileType.UnpoweredWindRight;
         TileType.UnpoweredWindUp;
         TileType.UnpoweredWindDown;
+        TileType.TrackBranchDownRightOff;
+        TileType.TrackBranchDownLeftOff;
+        TileType.TrackBranchLeftDownOff;
+        TileType.TrackBranchLeftUpOff;
+        TileType.TrackBranchUpLeftOff;
+        TileType.TrackBranchUpRightOff;
+        TileType.TrackBranchRightUpOff;
+        TileType.TrackBranchRightDownOff;
+        TileType.TrackBridge;
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
     };
@@ -1847,12 +1849,8 @@ var TileType = /** @class */ (function () {
     Object.defineProperty(TileType, "TrackHorizontal", {
         get: function () {
             return TileType.GetTileType("TrackHorizontal", "motorTrack", 2, 0, Solidity.None, TargetLayer.wire, function (tileType) {
-                tileType.isTrack = true;
-                tileType.trackEquation = function (x, y) { return ({ x: x, y: 0.5 }); };
-                tileType.trackCrossedEquation = function (x1, y1, x2, y2) { return (y1 >= 0.5 && y2 <= 0.5) || (y1 <= 0.5 && y2 >= 0.5); };
-                tileType.trackDirectionEquation = function (x, y) { return ({ dx: 1, dy: 0 }); };
+                tileType.trackDirections = [Direction.Left, Direction.Right];
                 tileType.clockWiseRotationTileName = "TrackVertical";
-                // track direction equation assumes traveling clock-wise from bottom-right
             });
         },
         enumerable: false,
@@ -1861,79 +1859,17 @@ var TileType = /** @class */ (function () {
     Object.defineProperty(TileType, "TrackVertical", {
         get: function () {
             return TileType.GetTileType("TrackVertical", "motorTrack", 3, 0, Solidity.None, TargetLayer.wire, function (tileType) {
-                tileType.isTrack = true;
-                tileType.trackEquation = function (x, y) { return ({ x: 0.5, y: y }); };
-                tileType.trackCrossedEquation = function (x1, y1, x2, y2) { return (x1 >= 0.5 && x2 <= 0.5) || (x1 <= 0.5 && x2 >= 0.5); };
-                tileType.trackDirectionEquation = function (x, y) { return ({ dx: 0, dy: -1 }); };
+                tileType.trackDirections = [Direction.Down, Direction.Up];
                 tileType.clockWiseRotationTileName = "TrackHorizontal";
             });
         },
         enumerable: false,
         configurable: true
     });
-    TileType.GetCurveTrackEquation = function (innerXDirection, innerYDirection) {
-        var centerX = (innerXDirection + 1) / 2;
-        var centerY = (innerYDirection + 1) / 2;
-        return function (x, y) {
-            if (x == centerX && y == centerY)
-                return { x: centerX, y: centerY };
-            //console.log("trackEquation inputs", x,y)
-            if (innerXDirection == 1)
-                x = 1 - x;
-            if (innerYDirection == 1)
-                y = 1 - y;
-            var theta = Math.atan2(y, x);
-            var retX = 0.5 * Math.cos(theta);
-            var retY = 0.5 * Math.sin(theta);
-            if (innerXDirection == 1)
-                retX = 1 - retX;
-            if (innerYDirection == 1)
-                retY = 1 - retY;
-            //console.log("trackEquation output", retX, retY)
-            return ({ x: retX, y: retY });
-        };
-    };
-    TileType.GetCurveTrackCrossedEquation = function (innerXDirection, innerYDirection) {
-        var centerX = (innerXDirection + 1) / 2;
-        var centerY = (innerYDirection + 1) / 2;
-        return function (x1, y1, x2, y2) {
-            var r1 = Math.sqrt(Math.pow((x1 - centerX), 2) + Math.pow((y1 - centerY), 2));
-            var r2 = Math.sqrt(Math.pow((x2 - centerX), 2) + Math.pow((y2 - centerY), 2));
-            return (r1 >= 0.5 && r2 <= 0.5) || (r1 <= 0.5 && r2 >= 0.5);
-        };
-    };
-    TileType.GetCurveTrackDirectionEquation = function (innerXDirection, innerYDirection) {
-        var centerX = (innerXDirection + 1) / 2;
-        var centerY = (innerYDirection + 1) / 2;
-        return function (x, y) {
-            if (x == centerX && y == centerY)
-                return { dx: 0, dy: 0 };
-            //console.log(x,y)
-            if (innerXDirection == 1)
-                x = 1 - x;
-            if (innerYDirection == 1)
-                y = 1 - y;
-            var theta = Math.atan2(y, x);
-            theta -= Math.PI / 2;
-            //console.log("speedtheta degrees",theta / 2 / Math.PI * 360)
-            var retX = 0.5 * Math.cos(theta);
-            var retY = 0.5 * Math.sin(theta);
-            if (innerXDirection == 1)
-                retX = 1 - retX;
-            if (innerYDirection == 1)
-                retY = 1 - retY;
-            return ({ dx: retX, dy: retY });
-        };
-    };
     Object.defineProperty(TileType, "TrackCurveDownRight", {
         get: function () {
             return TileType.GetTileType("TrackCurveDownRight", "motorTrack", 0, 1, Solidity.None, TargetLayer.wire, function (tileType) {
-                tileType.isTrack = true;
-                tileType.trackEquation = TileType.GetCurveTrackEquation(1, 1);
-                tileType.trackCrossedEquation = TileType.GetCurveTrackCrossedEquation(1, 1);
-                tileType.trackDirectionEquation = TileType.GetCurveTrackDirectionEquation(1, 1);
-                tileType.trackCurveHorizontalDirection = 1;
-                tileType.trackCurveVerticalDirection = 1;
+                tileType.trackDirections = [Direction.Down, Direction.Right];
                 tileType.clockWiseRotationTileName = "TrackCurveDownLeft";
             });
         },
@@ -1943,12 +1879,7 @@ var TileType = /** @class */ (function () {
     Object.defineProperty(TileType, "TrackCurveDownLeft", {
         get: function () {
             return TileType.GetTileType("TrackCurveDownLeft", "motorTrack", 1, 1, Solidity.None, TargetLayer.wire, function (tileType) {
-                tileType.isTrack = true;
-                tileType.trackEquation = TileType.GetCurveTrackEquation(-1, 1);
-                tileType.trackCrossedEquation = TileType.GetCurveTrackCrossedEquation(-1, 1);
-                tileType.trackDirectionEquation = TileType.GetCurveTrackDirectionEquation(-1, 1);
-                tileType.trackCurveHorizontalDirection = -1;
-                tileType.trackCurveVerticalDirection = 1;
+                tileType.trackDirections = [Direction.Down, Direction.Left];
                 tileType.clockWiseRotationTileName = "TrackCurveUpLeft";
             });
         },
@@ -1958,12 +1889,7 @@ var TileType = /** @class */ (function () {
     Object.defineProperty(TileType, "TrackCurveUpLeft", {
         get: function () {
             return TileType.GetTileType("TrackCurveUpLeft", "motorTrack", 2, 1, Solidity.None, TargetLayer.wire, function (tileType) {
-                tileType.isTrack = true;
-                tileType.trackEquation = TileType.GetCurveTrackEquation(-1, -1);
-                tileType.trackCrossedEquation = TileType.GetCurveTrackCrossedEquation(-1, -1);
-                tileType.trackDirectionEquation = TileType.GetCurveTrackDirectionEquation(-1, -1);
-                tileType.trackCurveHorizontalDirection = -1;
-                tileType.trackCurveVerticalDirection = -1;
+                tileType.trackDirections = [Direction.Up, Direction.Left];
                 tileType.clockWiseRotationTileName = "TrackCurveUpRight";
             });
         },
@@ -1973,12 +1899,7 @@ var TileType = /** @class */ (function () {
     Object.defineProperty(TileType, "TrackCurveUpRight", {
         get: function () {
             return TileType.GetTileType("TrackCurveUpRight", "motorTrack", 3, 1, Solidity.None, TargetLayer.wire, function (tileType) {
-                tileType.isTrack = true;
-                tileType.trackEquation = TileType.GetCurveTrackEquation(1, -1);
-                tileType.trackCrossedEquation = TileType.GetCurveTrackCrossedEquation(1, -1);
-                tileType.trackDirectionEquation = TileType.GetCurveTrackDirectionEquation(1, -1);
-                tileType.trackCurveHorizontalDirection = 1;
-                tileType.trackCurveVerticalDirection = -1;
+                tileType.trackDirections = [Direction.Up, Direction.Right];
                 tileType.clockWiseRotationTileName = "TrackCurveDownRight";
             });
         },
@@ -1988,11 +1909,7 @@ var TileType = /** @class */ (function () {
     Object.defineProperty(TileType, "TrackLeftCap", {
         get: function () {
             return TileType.GetTileType("TrackLeftCap", "motorTrack", 0, 2, Solidity.None, TargetLayer.wire, function (tileType) {
-                tileType.isTrack = true;
-                tileType.trackEquation = function (x, y) { return ({ x: Math.max(x, 0.5), y: 0.5 }); };
-                tileType.trackCrossedEquation = function (x1, y1, x2, y2) { return ((y1 >= 0.5 && y2 <= 0.5) || (y1 <= 0.5 && y2 >= 0.5)) && x1 >= 0.5 && x2 >= 0.5; };
-                tileType.trackDirectionEquation = function (x, y) { return ({ dx: 1, dy: 0 }); };
-                tileType.isTrackCap = true;
+                tileType.trackDirections = [Direction.Right];
                 tileType.clockWiseRotationTileName = "TrackTopCap";
             });
         },
@@ -2002,11 +1919,7 @@ var TileType = /** @class */ (function () {
     Object.defineProperty(TileType, "TrackTopCap", {
         get: function () {
             return TileType.GetTileType("TrackTopCap", "motorTrack", 1, 2, Solidity.None, TargetLayer.wire, function (tileType) {
-                tileType.isTrack = true;
-                tileType.trackEquation = function (x, y) { return ({ x: 0.5, y: Math.max(y, 0.5) }); };
-                tileType.trackCrossedEquation = function (x1, y1, x2, y2) { return ((x1 >= 0.5 && x2 <= 0.5) || (x1 <= 0.5 && x2 >= 0.5)) && y1 >= 0.5 && y2 >= 0.5; };
-                tileType.trackDirectionEquation = function (x, y) { return ({ dx: 0, dy: -1 }); };
-                tileType.isTrackCap = true;
+                tileType.trackDirections = [Direction.Down];
                 tileType.clockWiseRotationTileName = "TrackRightCap";
             });
         },
@@ -2016,11 +1929,7 @@ var TileType = /** @class */ (function () {
     Object.defineProperty(TileType, "TrackRightCap", {
         get: function () {
             return TileType.GetTileType("TrackRightCap", "motorTrack", 2, 2, Solidity.None, TargetLayer.wire, function (tileType) {
-                tileType.isTrack = true;
-                tileType.trackEquation = function (x, y) { return ({ x: Math.min(x, 0.5), y: 0.5 }); };
-                tileType.trackCrossedEquation = function (x1, y1, x2, y2) { return ((y1 >= 0.5 && y2 <= 0.5) || (y1 <= 0.5 && y2 >= 0.5)) && x1 <= 0.5 && x2 <= 0.5; };
-                tileType.trackDirectionEquation = function (x, y) { return ({ dx: 1, dy: 0 }); };
-                tileType.isTrackCap = true;
+                tileType.trackDirections = [Direction.Left];
                 tileType.clockWiseRotationTileName = "TrackBottomCap";
             });
         },
@@ -2030,17 +1939,119 @@ var TileType = /** @class */ (function () {
     Object.defineProperty(TileType, "TrackBottomCap", {
         get: function () {
             return TileType.GetTileType("TrackBottomCap", "motorTrack", 3, 2, Solidity.None, TargetLayer.wire, function (tileType) {
-                tileType.isTrack = true;
-                tileType.trackEquation = function (x, y) { return ({ x: 0.5, y: Math.min(y, 0.5) }); };
-                tileType.trackCrossedEquation = function (x1, y1, x2, y2) { return ((x1 >= 0.5 && x2 <= 0.5) || (x1 <= 0.5 && x2 >= 0.5)) && y1 <= 0.5 && y2 <= 0.5; };
-                tileType.trackDirectionEquation = function (x, y) { return ({ dx: 0, dy: -1 }); };
-                tileType.isTrackCap = true;
+                tileType.trackDirections = [Direction.Up];
                 tileType.clockWiseRotationTileName = "TrackLeftCap";
             });
         },
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(TileType, "TrackBridge", {
+        get: function () {
+            return TileType.GetTileType("TrackBridge", "motorTrack", 4, 4, Solidity.None, TargetLayer.wire, function (tileType) {
+                tileType.trackDirections = Direction.All;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBranchDownRightOff", {
+        get: function () { return TileType.TrackBranchOff(Direction.Down, Direction.Right, 4, 0); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBranchDownRightOn", {
+        get: function () { return TileType.TrackBranchOn(Direction.Down, Direction.Right, 5, 0); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBranchDownLeftOff", {
+        get: function () { return TileType.TrackBranchOff(Direction.Down, Direction.Left, 6, 0); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBranchDownLeftOn", {
+        get: function () { return TileType.TrackBranchOn(Direction.Down, Direction.Left, 7, 0); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBranchLeftDownOff", {
+        get: function () { return TileType.TrackBranchOff(Direction.Left, Direction.Down, 4, 1); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBranchLeftDownOn", {
+        get: function () { return TileType.TrackBranchOn(Direction.Left, Direction.Down, 5, 1); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBranchLeftUpOff", {
+        get: function () { return TileType.TrackBranchOff(Direction.Left, Direction.Up, 6, 1); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBranchLeftUpOn", {
+        get: function () { return TileType.TrackBranchOn(Direction.Left, Direction.Up, 7, 1); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBranchUpLeftOff", {
+        get: function () { return TileType.TrackBranchOff(Direction.Up, Direction.Left, 4, 2); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBranchUpLeftOn", {
+        get: function () { return TileType.TrackBranchOn(Direction.Up, Direction.Left, 5, 2); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBranchUpRightOff", {
+        get: function () { return TileType.TrackBranchOff(Direction.Up, Direction.Right, 6, 2); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBranchUpRightOn", {
+        get: function () { return TileType.TrackBranchOn(Direction.Up, Direction.Right, 7, 2); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBranchRightUpOff", {
+        get: function () { return TileType.TrackBranchOff(Direction.Right, Direction.Up, 4, 3); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBranchRightUpOn", {
+        get: function () { return TileType.TrackBranchOn(Direction.Right, Direction.Up, 5, 3); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBranchRightDownOff", {
+        get: function () { return TileType.TrackBranchOff(Direction.Right, Direction.Down, 6, 3); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBranchRightDownOn", {
+        get: function () { return TileType.TrackBranchOn(Direction.Right, Direction.Down, 7, 3); },
+        enumerable: false,
+        configurable: true
+    });
+    TileType.TrackBranchOff = function (sharedDir, offDir, x, y) {
+        var baseName = "TrackBranch" + sharedDir.name + offDir.name;
+        return TileType.GetTileType(baseName + "Off", "motorTrack", x, y, Solidity.None, TargetLayer.wire, function (tileType) {
+            tileType.canBePowered = true;
+            tileType.poweredTileName = baseName + "On";
+            tileType.trackDirections = [sharedDir, offDir];
+            tileType.clockWiseRotationTileName = "TrackBranch" + sharedDir.Clockwise().name + offDir.Clockwise().name + "Off";
+        });
+    };
+    TileType.TrackBranchOn = function (sharedDir, offDir, x, y) {
+        var baseName = "TrackBranch" + sharedDir.name + offDir.name;
+        return TileType.GetTileType(baseName + "On", "motorTrack", x, y, Solidity.None, TargetLayer.wire, function (tileType) {
+            tileType.canBePowered = true;
+            tileType.unpoweredTileName = baseName + "Off";
+            tileType.trackDirections = [sharedDir, offDir.Opposite()];
+        });
+    };
     TileType.OneWay = function (direction) {
         var y = [Direction.Right, Direction.Down, Direction.Left, Direction.Up].indexOf(direction);
         var frames = [

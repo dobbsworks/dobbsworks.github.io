@@ -140,4 +140,5 @@ var spriteTypes: SpriteType[] = [
     WindTriggerReset,
     Doopster,
     Dabbot,
+    ClimbingSpurpider,
 ];

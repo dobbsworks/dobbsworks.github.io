@@ -20,6 +20,8 @@ var Spurpider = /** @class */ (function (_super) {
         _this.width = 8;
         _this.respectsSolidTiles = true;
         _this.canBeBouncedOn = true;
+        _this.frameRow = 0;
+        _this.maxSquishTimer = 30;
         _this.state = "rest";
         _this.targetY = -9999;
         _this.pauseTimer = 0;
@@ -34,7 +36,7 @@ var Spurpider = /** @class */ (function (_super) {
             return;
         if (this.isInDeathAnimation) {
             this.squishTimer++;
-            if (this.squishTimer > 30) {
+            if (this.squishTimer > this.maxSquishTimer) {
                 this.isActive = false;
             }
         }
@@ -90,8 +92,11 @@ var Spurpider = /** @class */ (function (_super) {
             if (this.state == "rest")
                 frameCol = 3;
         }
+        else {
+            frameCol = 4;
+        }
         return {
-            imageTile: tiles["spider"][frameCol][this.isInDeathAnimation ? 1 : 0],
+            imageTile: tiles["spider"][frameCol][this.frameRow],
             xFlip: Math.floor((frameNum % 20) / 10) == 0,
             yFlip: false,
             xOffset: 2,
@@ -100,3 +105,119 @@ var Spurpider = /** @class */ (function (_super) {
     };
     return Spurpider;
 }(Enemy));
+var ClimbingSpurpider = /** @class */ (function (_super) {
+    __extends(ClimbingSpurpider, _super);
+    function ClimbingSpurpider() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.respectsSolidTiles = false;
+        _this.isInitialized = false;
+        _this.webTopY = 0;
+        _this.webBottomY = 0;
+        _this.verticalDirection = 1;
+        _this.anchorX = 0;
+        _this.frameRow = 1;
+        _this.anchor = null;
+        return _this;
+    }
+    ClimbingSpurpider.prototype.Initialize = function () {
+        var _this = this;
+        if (!this.isInitialized) {
+            var motor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == _this; });
+            if (motor)
+                return;
+            this.isInitialized = true;
+            this.anchorX = this.x;
+            this.webTopY = this.y;
+            this.webBottomY = this.yBottom;
+            var startTile = this.layer.GetTileByPixel(this.xMid, this.yMid);
+            for (var y = startTile.tileY; y >= 0; y--) {
+                this.webTopY = (y + 1) * 12;
+                var tile = this.layer.GetTileByIndex(startTile.tileX, y);
+                if (tile.tileType.solidity == Solidity.Block)
+                    break;
+                if (tile.tileType.solidity == Solidity.SolidForNonplayer)
+                    break;
+                if (tile.tileType.solidity == Solidity.Bottom)
+                    break;
+                if (tile.tileType.solidity instanceof SlopeSolidity) {
+                    if (tile.tileType.solidity.verticalSolidDirection == 1)
+                        break;
+                    var ratio = tile.tileType.solidity.slopeFunc(0.5);
+                    this.webTopY = y * 12 + 12 * ratio;
+                    break;
+                }
+                this.webTopY = y * 12;
+            }
+            for (var y = startTile.tileY; y < currentMap.mapHeight; y++) {
+                this.webBottomY = y * 12;
+                var tile = this.layer.GetTileByIndex(startTile.tileX, y);
+                if (tile.tileType.solidity == Solidity.Block)
+                    break;
+                if (tile.tileType.solidity == Solidity.SolidForNonplayer)
+                    break;
+                if (tile.tileType.solidity == Solidity.Top)
+                    break;
+                if (tile.tileType.solidity instanceof SlopeSolidity) {
+                    if (tile.tileType.solidity.verticalSolidDirection == -1)
+                        break;
+                    var ratio = tile.tileType.solidity.slopeFunc(0.5);
+                    this.webBottomY = y * 12 + 12 * ratio;
+                    break;
+                }
+                this.webBottomY = (y + 1) * 12;
+            }
+        }
+    };
+    ClimbingSpurpider.prototype.Update = function () {
+        if (this.stackedOn)
+            return;
+        this.Initialize();
+        if (!this.WaitForOnScreen())
+            return;
+        if (this.isInDeathAnimation) {
+            this.squishTimer++;
+            this.dy = 0;
+            this.dx = 0;
+            if (this.squishTimer > this.maxSquishTimer) {
+                this.isActive = false;
+            }
+        }
+        else {
+            var speed = 0.3;
+            var accel = 0.05;
+            var targetDy = speed * this.verticalDirection;
+            this.AccelerateVertically(accel, targetDy);
+            if (this.y > this.webBottomY - this.height) {
+                this.verticalDirection = -1;
+                if (this.dy > 0)
+                    this.dy = 0;
+            }
+            if (this.y < this.webTopY) {
+                this.verticalDirection = 1;
+                if (this.dy < 0)
+                    this.dy = 0;
+            }
+            var targetDx = this.anchorX < this.x ? -speed : speed;
+            this.AccelerateHorizontally(accel / 3, targetDx);
+            this.dx *= 0.98;
+        }
+    };
+    ClimbingSpurpider.prototype.OnBeforeDraw = function (camera) {
+        if (!this.isInitialized)
+            return;
+        camera.ctx.fillStyle = "#FFF";
+        var destX = (this.anchorX + this.width / 2 - camera.x) * camera.scale + camera.canvas.width / 2;
+        var destXSpider = (this.xMid - camera.x) * camera.scale + camera.canvas.width / 2;
+        var destY1 = (this.webTopY - camera.y) * camera.scale + camera.canvas.height / 2;
+        var destY2 = (this.webBottomY - camera.y) * camera.scale + camera.canvas.height / 2;
+        var destYSpider = (this.yMid - camera.y) * camera.scale + camera.canvas.height / 2;
+        camera.ctx.lineWidth = camera.scale / 2;
+        camera.ctx.strokeStyle = "#FFF";
+        camera.ctx.beginPath();
+        camera.ctx.moveTo(destX, destY1);
+        camera.ctx.lineTo(destXSpider, destYSpider);
+        camera.ctx.lineTo(destX, destY2);
+        camera.ctx.stroke();
+    };
+    return ClimbingSpurpider;
+}(Spurpider));

@@ -123,7 +123,7 @@ var EditorHandler = /** @class */ (function () {
         var tilePanel = this.CreateFloatingButtonPanel(tilePanelButtons, 5, 9);
         /* ENEMY PANEL */
         var enemyTypes = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, Wooly, WoolyBooly, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
-            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, BaddleTrigger,];
+            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, BaddleTrigger,];
         var enemyButtons = enemyTypes.map(function (a) { return new EditorButtonSprite(a); });
         enemyButtons.filter(function (a) { return a.spriteType == Piggle || a.spriteType == Snail; }).forEach(function (a) { return hotbarDefaults.push(a); });
         var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 7);
@@ -167,12 +167,13 @@ var EditorHandler = /** @class */ (function () {
         gizmoButtons.push(new EditorButtonSprite(Dabbot));
         var gizmoPanel = this.CreateFloatingButtonPanel(gizmoButtons, 5, 6);
         var brushTypeHandle = new EditorButtonDrawerHandle(tiles["editor"][4][0], "Brush types", []);
-        this.brushPanel = new EditorButtonDrawer(this.mainPanel.x - 160, this.mainPanel.y, 70, 70, brushTypeHandle, [
-            new EditorButtonFillBrush(CircleBrush, tiles["editor"][4][3]),
-            new EditorButtonFillBrush(RectangleBrush, tiles["editor"][4][2]),
-            new EditorButtonFillBrush(LineBrush, tiles["editor"][4][1]),
-            new EditorButtonFillBrush(FreeformBrush, tiles["editor"][4][0]),
-        ]);
+        var brushButtons = [
+            new EditorButtonFillBrush(CircleBrush, tiles["editor"][4][3], 0),
+            new EditorButtonFillBrush(RectangleBrush, tiles["editor"][4][2], 1),
+            new EditorButtonFillBrush(LineBrush, tiles["editor"][4][1], 2),
+            new EditorButtonFillBrush(FreeformBrush, tiles["editor"][4][0], 3),
+        ];
+        this.brushPanel = new EditorButtonDrawer(this.mainPanel.x - 160, this.mainPanel.y, 70, 70, brushTypeHandle, brushButtons);
         this.brushPanel.children.forEach(function (a) {
             if (a instanceof EditorButtonFillBrush) {
                 a.onClickEvents.push(function () {
@@ -193,9 +194,6 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonTile(TileType.AppearingBlockOff, "Appearing block"),
             new EditorButtonTile(TileType.DisappearingBlockOff, "Disappearing block"),
             new EditorButtonSprite(FloorButton),
-            new EditorButtonSprite(LeftSideButton),
-            new EditorButtonSprite(RightSideButton),
-            new EditorButtonSprite(CeilingButton),
             new EditorButtonTile(TileType.DiodeRightOff, "Diode").AppendImage(tiles["uiButtonAdd"][0][0]),
             new EditorButtonTile(TileType.AndGateRightOff, "And gate").AppendImage(tiles["uiButtonAdd"][0][0]),
             new EditorButtonTile(TileType.InverterRightOff, "Inverter").AppendImage(tiles["uiButtonAdd"][0][0]),
@@ -214,9 +212,12 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonSprite(FerrisMotorLeft).AppendImage(tiles["editor"][0][2]).ChangeTooltip("Ferris Motor (counter-clockwise)"),
             new EditorButtonSprite(FastFerrisMotorRight).AppendImage(tiles["editor"][6][2]).ChangeTooltip("Fast Ferris Motor (clockwise)"),
             new EditorButtonSprite(FastFerrisMotorLeft).AppendImage(tiles["editor"][5][2]).ChangeTooltip("Fast Ferris Motor (counter-clockwise)"),
-            new EditorButtonTile(TileType.TrackHorizontal, "Straight Track").AppendImage(tiles["uiButtonAdd"][0][0]),
-            new EditorButtonTile(TileType.TrackCurveDownRight, "Track Curve").AppendImage(tiles["uiButtonAdd"][0][0]),
-            new EditorButtonTile(TileType.TrackLeftCap, "Track Cap").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.TrackHorizontal, "Straight Track").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.TrackCurveDownRight, "Track Curve").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.TrackLeftCap, "Track Cap").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.TrackBridge, "Track Bridge"),
+            new EditorButtonTrackTool(),
+            new EditorButtonTile(TileType.TrackBranchDownLeftOff, "Track Branch").AppendImage(tiles["uiButtonAdd"][0][0]),
             new EditorButtonSprite(Lever),
             new EditorButtonSprite(Lightbulb),
             new EditorButtonTile(TileType.UnpoweredWindRight, "Wind generator"),
@@ -315,6 +316,8 @@ var EditorHandler = /** @class */ (function () {
         this.editorParentElementsTop.forEach(function (a) { return a.backColor = "#1138"; });
         this.editorParentElementsBottom.forEach(function (a) { return a.backColor = "#1138"; });
         hotbarDefaults.forEach(function (a) { return _this.hotbar.OnToolSelect(a); });
+        var brushPref = StorageService.GetPreference("brush", "3");
+        brushButtons[+brushPref].Click();
     };
     EditorHandler.prototype.CreateFloatingButtonPanel = function (buttons, maxDisplayedRows, tilesPerRow) {
         var panel = new Panel(this.mainPanel.x, 90, 70 * tilesPerRow, maxDisplayedRows * 70);
@@ -551,7 +554,7 @@ var EditorHandler = /** @class */ (function () {
         }
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorMinimize, true) && MenuHandler.CurrentMenu == null)
             this.ToggleMinimizeMode();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true))
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true) && MenuHandler.CurrentMenu == null)
             this.eraserButton.Click();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorPlayerHotkey, true)) {
             var isUsingHoverPlayer = editorHandler.sprites.some(function (a) { return a.spriteType == HoverPlayer; });

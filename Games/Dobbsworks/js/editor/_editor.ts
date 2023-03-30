@@ -139,7 +139,7 @@ class EditorHandler {
 
         /* ENEMY PANEL */
         let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, Wooly, WoolyBooly, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
-            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, BaddleTrigger, /*, BigYufo */];
+            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, BaddleTrigger, /*, BigYufo */];
         let enemyButtons = enemyTypes.map(a => new EditorButtonSprite(a));
 
         enemyButtons.filter(a => a.spriteType == Piggle || a.spriteType == Snail).forEach(a => hotbarDefaults.push(a));
@@ -191,12 +191,13 @@ class EditorHandler {
         let gizmoPanel = this.CreateFloatingButtonPanel(gizmoButtons, 5, 6);
 
         let brushTypeHandle = new EditorButtonDrawerHandle(tiles["editor"][4][0], "Brush types", []);
-        this.brushPanel = new EditorButtonDrawer(this.mainPanel.x - 160, this.mainPanel.y, 70, 70, brushTypeHandle, [
-            new EditorButtonFillBrush(CircleBrush, tiles["editor"][4][3]),
-            new EditorButtonFillBrush(RectangleBrush, tiles["editor"][4][2]),
-            new EditorButtonFillBrush(LineBrush, tiles["editor"][4][1]),
-            new EditorButtonFillBrush(FreeformBrush, tiles["editor"][4][0]),
-        ]);
+        let brushButtons = [
+            new EditorButtonFillBrush(CircleBrush, tiles["editor"][4][3], 0),
+            new EditorButtonFillBrush(RectangleBrush, tiles["editor"][4][2], 1),
+            new EditorButtonFillBrush(LineBrush, tiles["editor"][4][1], 2),
+            new EditorButtonFillBrush(FreeformBrush, tiles["editor"][4][0], 3),
+        ];
+        this.brushPanel = new EditorButtonDrawer(this.mainPanel.x - 160, this.mainPanel.y, 70, 70, brushTypeHandle, brushButtons);
         this.brushPanel.children.forEach(a => {
             if (a instanceof EditorButtonFillBrush) {
                 a.onClickEvents.push(() => {
@@ -218,9 +219,6 @@ class EditorHandler {
             new EditorButtonTile(TileType.AppearingBlockOff, "Appearing block"),
             new EditorButtonTile(TileType.DisappearingBlockOff, "Disappearing block"),
             new EditorButtonSprite(FloorButton),
-            new EditorButtonSprite(LeftSideButton),
-            new EditorButtonSprite(RightSideButton),
-            new EditorButtonSprite(CeilingButton),
             new EditorButtonTile(TileType.DiodeRightOff, "Diode").AppendImage(tiles["uiButtonAdd"][0][0]),
             new EditorButtonTile(TileType.AndGateRightOff, "And gate").AppendImage(tiles["uiButtonAdd"][0][0]),
             new EditorButtonTile(TileType.InverterRightOff, "Inverter").AppendImage(tiles["uiButtonAdd"][0][0]),
@@ -240,9 +238,12 @@ class EditorHandler {
             new EditorButtonSprite(FerrisMotorLeft).AppendImage(tiles["editor"][0][2]).ChangeTooltip("Ferris Motor (counter-clockwise)"),
             new EditorButtonSprite(FastFerrisMotorRight).AppendImage(tiles["editor"][6][2]).ChangeTooltip("Fast Ferris Motor (clockwise)"),
             new EditorButtonSprite(FastFerrisMotorLeft).AppendImage(tiles["editor"][5][2]).ChangeTooltip("Fast Ferris Motor (counter-clockwise)"),
-            new EditorButtonTile(TileType.TrackHorizontal, "Straight Track").AppendImage(tiles["uiButtonAdd"][0][0]),
-            new EditorButtonTile(TileType.TrackCurveDownRight, "Track Curve").AppendImage(tiles["uiButtonAdd"][0][0]),
-            new EditorButtonTile(TileType.TrackLeftCap, "Track Cap").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.TrackHorizontal, "Straight Track").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.TrackCurveDownRight, "Track Curve").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.TrackLeftCap, "Track Cap").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.TrackBridge, "Track Bridge"),
+            new EditorButtonTrackTool(),
+            new EditorButtonTile(TileType.TrackBranchDownLeftOff, "Track Branch").AppendImage(tiles["uiButtonAdd"][0][0]),
             new EditorButtonSprite(Lever),
             new EditorButtonSprite(Lightbulb),
             new EditorButtonTile(TileType.UnpoweredWindRight, "Wind generator"),
@@ -353,6 +354,8 @@ class EditorHandler {
         this.editorParentElementsBottom.forEach(a => a.backColor = "#1138");
 
         hotbarDefaults.forEach(a => this.hotbar.OnToolSelect(<any>a));
+        let brushPref = StorageService.GetPreference("brush", "3");
+        brushButtons[+brushPref].Click();
     }
 
     CreateFloatingButtonPanel(buttons: EditorButton[], maxDisplayedRows: number, tilesPerRow: number): Panel {
@@ -591,7 +594,7 @@ class EditorHandler {
         }
 
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorMinimize, true) && MenuHandler.CurrentMenu == null) this.ToggleMinimizeMode();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true)) (<EditorButton>this.eraserButton).Click();
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true) && MenuHandler.CurrentMenu == null ) (<EditorButton>this.eraserButton).Click();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorPlayerHotkey, true)) {
             let isUsingHoverPlayer = editorHandler.sprites.some(a => a.spriteType == HoverPlayer);
             if (isUsingHoverPlayer) {

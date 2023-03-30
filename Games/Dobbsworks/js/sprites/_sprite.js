@@ -476,6 +476,7 @@ var Sprite = /** @class */ (function () {
         this.touchedRightWalls = [];
         this.ReactToSolids();
         this.ReactToPlatforms();
+        // if we're being pushed by a platform, need to double-check solids
         if (this.parentSprite)
             this.ReactToSolids();
     };

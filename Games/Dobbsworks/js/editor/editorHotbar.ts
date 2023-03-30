@@ -109,11 +109,14 @@ class EditorHotbar {
         if (editorButton instanceof EditorButtonSlopePen) {
             return <EditorButtonSlopePen | null>this.panel.children.find(a => a instanceof EditorButtonSlopePen && a.slopeFill == editorButton.slopeFill);
         }
+        if (editorButton instanceof EditorButtonTrackTool) {
+            return <EditorButtonTrackTool | null>this.panel.children.find(a => a instanceof EditorButtonTrackTool);
+        }
         return null;
     }
 }
 
-type HotbarButton = EditorButtonTile | EditorButtonSprite | EditorButtonSlopePen;
+type HotbarButton = EditorButtonTile | EditorButtonSprite | EditorButtonSlopePen | EditorButtonTrackTool;
 
 type HotbarElement = {
     button: HotbarButton,

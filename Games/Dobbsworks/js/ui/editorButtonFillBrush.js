@@ -14,15 +14,15 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var EditorButtonFillBrush = /** @class */ (function (_super) {
     __extends(EditorButtonFillBrush, _super);
-    function EditorButtonFillBrush(fillBrushType, imageTile) {
+    function EditorButtonFillBrush(fillBrushType, imageTile, index) {
         var _this = _super.call(this, imageTile) || this;
         _this.fillBrushType = fillBrushType;
-        _this.imageTile = imageTile;
         _this.onClickEvents.push(function () {
             editorHandler.selectedFillBrush = _this.fillBrushType;
             if (editorHandler.currentTool instanceof FillBrush) {
                 editorHandler.currentTool = new editorHandler.selectedFillBrush(editorHandler.currentTool.fillType);
             }
+            StorageService.SetPreference("brush", index.toString());
         });
         return _this;
     }

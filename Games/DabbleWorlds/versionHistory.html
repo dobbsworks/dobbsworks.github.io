@@ -15,13 +15,29 @@
         <!-- 2023/ -->
         New Features
         <ul>
-            <li>Added the Doopster!</li>
-            <li>Added Dabbot</li>
+            <li>Added the Doopster
+                <ul>
+                    <li>Place an item on the top of it, wait a second, and... BAP! It creates a Dooplicate!</li>
+                    <li>The Doopster can't create a new Dooplicate until either the original or copy of the last Dooplication is destroyed.</li>
+                    <li>Can dooplicate just about anything that can land down on top of the Doopster.</li>
+                    <li>Warning: please be responsible with what you decide to dooplicate.</li>
+                </ul>
+            </li>
+            <li>Added Dabbot
+                <ul>
+                    <li>A busy robot that is directed by the player's input</li>
+                    <li>Responds to left, right, jump, and grab/throw</li>
+                    <li>Can be picked up! Can pick up items! Can pick up each other!</li>
+                </ul>
+            </li>
+            <li>Added Climbing Spurpiders to the roster</li>
+            <li>Added Track Branches, a curved track that changes direction when powered</li>
+            <li>Added Track Bridges</li>
+            <li>Added the Track Pen to the editor to allow players to easily draw track paths without manually selecting the appropriate pieces</li>
         </ul>
         Tweaks
         <ul>
             <li>Spring boxes, mushroom platforms, and mushroom springs now force a hovering player out of hover state, but also refresh the hover timer</li>
-            <li>Replaced "Recent Levels" on main menu with "Browse Levels"</li>
         </ul>
         Interface improvements
         <ul>
@@ -37,6 +53,9 @@
             </li>
             <li>You can now access the options menu from the editor (without having to go into play mode first)</li>
             <li>The game will now ignore any controller stick inputs until the axis reaches its neutral state</li>
+            <li>Pressable wire buttons have been consolidated into a single rotatable gadget in the editor</li>
+            <li>The editor now remembers your selected brush type between sessions</li>
+            <li>Replaced "Recent Levels" on main menu with "Browse Levels"</li>
         </ul>
         Bug fixes
         <ul>
@@ -47,6 +66,8 @@
             <li>Sprite killers no longer delete sprites that are adjacent on the left or top side, sprites must actually overlap the sprite killer</li>
             <li>Corrected interactions between player-held rockets and warp portals</li>
             <li>Fixed issue where slight conveyor or wind momentum could pin a player to a wall</li>
+            <li>Fixed issue where moving platforms could allow a player to pass through one-ways</li>
+            <li>Fixed issue with motors on track curves getting stuck in some cases</li>
         </ul>
     </div>
     <br />

@@ -65,7 +65,6 @@ var Eraser = /** @class */ (function (_super) {
     ;
     return Eraser;
 }(EditorTool));
-var tx = "";
 var SpritePlacer = /** @class */ (function (_super) {
     __extends(SpritePlacer, _super);
     function SpritePlacer(spriteType) {
@@ -78,7 +77,6 @@ var SpritePlacer = /** @class */ (function (_super) {
         _this.resizeSide = -1;
         if (spriteTypes.indexOf(spriteType) == -1) {
             console.error("Sprite type missing from ordered list: " + spriteType.name);
-            tx += spriteType.name + "|";
         }
         return _this;
     }
@@ -492,4 +490,81 @@ var SlopeFill = /** @class */ (function (_super) {
         }
     };
     return SlopeFill;
+}(FillType));
+var TrackPlacer = /** @class */ (function (_super) {
+    __extends(TrackPlacer, _super);
+    function TrackPlacer() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TrackPlacer.prototype.FillTiles = function (tileCoordinates) {
+        var retryList = [];
+        var _loop_1 = function (tileCoord) {
+            // Which ways can this tile connect?
+            var connectableDirections = Direction.All.filter(function (dir) {
+                if (tileCoordinates.some(function (a) { return a.tileX == tileCoord.tileX + dir.x && a.tileY == tileCoord.tileY + dir.y; }))
+                    return true;
+                var trackNeighbor = currentMap.wireLayer.GetTileByIndex(tileCoord.tileX + dir.x, tileCoord.tileY + dir.y);
+                if (trackNeighbor.tileType.trackDirections.length == 1)
+                    return true;
+                if (trackNeighbor.tileType.trackDirections.indexOf(dir.Opposite()) > -1)
+                    return true;
+                return false;
+            });
+            if (connectableDirections.length == 0) {
+                currentMap.wireLayer.SetTile(tileCoord.tileX, tileCoord.tileY, TileType.TrackHorizontal);
+            }
+            else if (connectableDirections.length == 1) {
+                var targetTrackType = Object.values(TileType.TileMap).find(function (a) { return a.trackDirections.length == 1 && a.trackDirections[0] == connectableDirections[0]; });
+                if (targetTrackType) {
+                    currentMap.wireLayer.SetTile(tileCoord.tileX, tileCoord.tileY, targetTrackType);
+                }
+                else {
+                    console.error("Uh oh, missing track type?");
+                }
+            }
+            else if (connectableDirections.length == 2) {
+                var targetTrackType = Object.values(TileType.TileMap).find(function (a) { return a.trackDirections.length == 2 && a.trackDirections.indexOf(connectableDirections[0]) > -1 && a.trackDirections.indexOf(connectableDirections[1]) > -1; });
+                if (targetTrackType) {
+                    currentMap.wireLayer.SetTile(tileCoord.tileX, tileCoord.tileY, targetTrackType);
+                }
+                else {
+                    console.error("Uh oh, missing track type?");
+                }
+            }
+            else if (connectableDirections.length == 4) {
+                currentMap.wireLayer.SetTile(tileCoord.tileX, tileCoord.tileY, TileType.TrackBridge);
+            }
+            else {
+                retryList.push(tileCoord);
+            }
+            var _loop_2 = function (dir) {
+                // look at each neighbor and see if we can connect them
+                var trackNeighbor = currentMap.wireLayer.GetTileByIndex(tileCoord.tileX + dir.x, tileCoord.tileY + dir.y);
+                if (tileCoordinates.some(function (a) { return a.tileX == trackNeighbor.tileX && a.tileY == trackNeighbor.tileY; }))
+                    return "continue";
+                if (trackNeighbor.tileType.trackDirections.length == 1) {
+                    var targetTrackType = Object.values(TileType.TileMap).find(function (a) { return a.trackDirections.length == 2 &&
+                        a.trackDirections.indexOf(dir.Opposite()) > -1 && a.trackDirections.indexOf(trackNeighbor.tileType.trackDirections[0]) > -1; });
+                    if (targetTrackType) {
+                        currentMap.wireLayer.SetTile(trackNeighbor.tileX, trackNeighbor.tileY, targetTrackType);
+                    }
+                    else {
+                        console.error("Uh oh, missing track type?");
+                    }
+                }
+            };
+            for (var _i = 0, connectableDirections_1 = connectableDirections; _i < connectableDirections_1.length; _i++) {
+                var dir = connectableDirections_1[_i];
+                _loop_2(dir);
+            }
+        };
+        for (var _i = 0, tileCoordinates_5 = tileCoordinates; _i < tileCoordinates_5.length; _i++) {
+            var tileCoord = tileCoordinates_5[_i];
+            _loop_1(tileCoord);
+        }
+        if (retryList.length != tileCoordinates.length) {
+            this.FillTiles(retryList);
+        }
+    };
+    return TrackPlacer;
 }(FillType));

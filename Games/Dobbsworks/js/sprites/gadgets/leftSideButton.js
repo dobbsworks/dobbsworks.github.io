@@ -26,6 +26,11 @@ var LeftSideButton = /** @class */ (function (_super) {
         _this.onTimer = 0;
         return _this;
     }
+    Object.defineProperty(LeftSideButton, "clockwiseRotationSprite", {
+        get: function () { return CeilingButton; },
+        enumerable: false,
+        configurable: true
+    });
     LeftSideButton.prototype.Update = function () {
         var _this = this;
         var spritesAtRight = this.layer.sprites.filter(function (a) {

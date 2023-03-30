@@ -96,6 +96,15 @@ class StorageService {
         localStorage.setItem("pref-" + key, value);
     }
 
+    public static GetPreference(key: string, initialValue: string): string {
+        let saved = localStorage.getItem("pref-" + key);
+        if (saved === null) return initialValue;
+        return saved;
+    }
+    public static SetPreference(key: string, newValue: string): void {
+        localStorage.setItem("pref-" + key, newValue);
+    }
+
     // TODO, Get all death counts on app load
 
 }
