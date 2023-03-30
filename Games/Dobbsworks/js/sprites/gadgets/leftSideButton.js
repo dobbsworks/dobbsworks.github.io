@@ -26,10 +26,16 @@ var LeftSideButton = /** @class */ (function (_super) {
         _this.onTimer = 0;
         return _this;
     }
+    Object.defineProperty(LeftSideButton, "clockwiseRotationSprite", {
+        get: function () { return CeilingButton; },
+        enumerable: false,
+        configurable: true
+    });
     LeftSideButton.prototype.Update = function () {
         var _this = this;
         var spritesAtRight = this.layer.sprites.filter(function (a) {
-            return (a.x == _this.xRight && a.y < _this.yBottom && a.yBottom > _this.y);
+            return a.touchedLeftWalls.indexOf(_this) > -1 ||
+                (a.x == _this.xRight && a.y < _this.yBottom && a.yBottom > _this.y);
         });
         if (spritesAtRight.length > 0) {
             if (this.onTimer != 30)

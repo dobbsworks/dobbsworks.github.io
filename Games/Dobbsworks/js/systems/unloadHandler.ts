@@ -1,7 +1,8 @@
 class UnloadHandler {
 
     static ShouldPrompt(): boolean {
-        if (window.location.href.startsWith("https://localhost:7121/")) return false;
+        if (!StorageService.GetPreferenceBool("confirm-close", true)) return false;
+        return true;
 
         let unsavedChangesExist = true;
         let currentSaveValue = currentMap.GetExportString();

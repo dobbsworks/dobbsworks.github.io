@@ -16,11 +16,13 @@ class SnailShell extends Sprite {
         }
 
         if (this.age > 10) {
-            let player = <Player>(this.layer.sprites.find(a => a instanceof Player));
-            if (player && player.heldItem != this && player.Overlaps(this)) {
-                let oldDy = this.dy;
-                let newShell = this.OnThrow(player, player.x < this.x ? 1 : -1);
-                newShell.dy = oldDy;
+            let players = <Player[]>(this.layer.sprites.filter(a => a instanceof Player));
+            for (let player of players) {
+                if (player && player.heldItem != this && player.Overlaps(this)) {
+                    let oldDy = this.dy;
+                    let newShell = this.OnThrow(player, player.x < this.x ? 1 : -1);
+                    newShell.dy = oldDy;
+                }
             }
         }
 
@@ -43,12 +45,11 @@ class SnailShell extends Sprite {
 
     OnThrow(thrower: Sprite, direction: -1 | 1): Sprite {
         this.isActive = false;
-        let shell = new RollingSnailShell(this.x, this.y, this.layer, []);
+        let shell = <RollingSnailShell>this.ReplaceWithSpriteType(RollingSnailShell);
         shell.age = 0;
         shell.framesSinceThrown = 0;
         shell.direction = direction;
         if (!(thrower instanceof Player)) shell.framesSinceThrown = 100;
-        this.layer.sprites.push(shell);
         return shell;
     }
 

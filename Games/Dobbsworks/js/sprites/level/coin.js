@@ -36,12 +36,15 @@ var Coin = /** @class */ (function (_super) {
                 this.isActive = false;
         }
         else {
-            var player_1 = this.layer.sprites.find(function (a) { return a instanceof Player; });
-            if (player_1 && player_1.Overlaps(this)) {
-                this.isTouched = true;
-                audioHandler.PlaySound(this.sound, false);
-                if (this instanceof Dabbloon) {
-                    this.layer.sprites.push(new Points(this.xMid - 15 / 2, this.y, this.layer, []));
+            var players = this.layer.sprites.filter(function (a) { return a instanceof Player; });
+            for (var _i = 0, players_1 = players; _i < players_1.length; _i++) {
+                var player_1 = players_1[_i];
+                if (player_1.Overlaps(this)) {
+                    this.isTouched = true;
+                    audioHandler.PlaySound(this.sound, false);
+                    if (this instanceof Dabbloon) {
+                        this.layer.sprites.push(new Points(this.xMid - 15 / 2, this.y, this.layer, []));
+                    }
                 }
             }
         }

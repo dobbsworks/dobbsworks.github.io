@@ -87,6 +87,10 @@ class SpringBox extends Sprite {
                 // bounce up
                 sprite.dy = -bounceSpeed * 1.6;
                 this.springTimers[3] = timerResetValue;
+                if (sprite instanceof HoverPlayer) {
+                    sprite.isFloating = false;
+                    sprite.RefreshFloatTimer();
+                }
             } else {
                 // horizontal bounce
                 sprite.dy -= 0.3;

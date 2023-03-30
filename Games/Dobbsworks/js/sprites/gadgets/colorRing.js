@@ -60,7 +60,9 @@ var SpinRing = /** @class */ (function (_super) {
                 return false;
             if (a instanceof Yoyo)
                 return false;
-            if (player && player.heldItem == a)
+            if (player && player.heldItem == a && !(a instanceof Rocket))
+                return false;
+            if (player == a && player.heldItem && player.heldItem instanceof Rocket)
                 return false;
             var parentMotor = _this.layer.sprites.find(function (spr) { return spr instanceof Motor && spr.connectedSprite == a; });
             if (parentMotor)

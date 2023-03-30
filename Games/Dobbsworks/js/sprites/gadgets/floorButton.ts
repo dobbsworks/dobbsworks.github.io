@@ -10,6 +10,8 @@ class FloorButton extends Sprite {
 
     onTimer = 0;
 
+    public static get clockwiseRotationSprite(): (SpriteType | null) { return LeftSideButton; }
+
     Update(): void { 
         let spritesOnTop = this.layer.sprites.filter(a => a.parentSprite == this);
         if (spritesOnTop.length > 0) {

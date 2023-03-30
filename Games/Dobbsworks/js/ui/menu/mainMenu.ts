@@ -37,7 +37,7 @@ class MainMenu extends Menu {
         if (isDemoMode) ret.push(demoLevelsButton);
 
         let recentLevelsButton = new Button(playButtonX, playButtonY + (playButtonHeight + 10)*2, playButtonWidth, playButtonHeight);
-        let recentLevelsText = new UIText(centerX, playButtonY + 40, "Recent Levels", 30, "#000");
+        let recentLevelsText = new UIText(centerX, playButtonY + 40, "Browse Levels", 30, "#000");
         recentLevelsButton.AddChild(recentLevelsText);
         recentLevelsText.xOffset = playButtonWidth / 2 - 5;
         recentLevelsText.yOffset = 40;

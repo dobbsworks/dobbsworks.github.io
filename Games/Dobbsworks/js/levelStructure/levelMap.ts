@@ -81,7 +81,7 @@ class LevelMap {
         })
         player = <Player>(this.mainLayer.sprites.find(a => a instanceof Player));
 
-        if (player) {
+        for (let player of <Player[]>this.mainLayer.sprites.filter(a => a instanceof Player)) {
             for (let tile of player.standingOn) {
                 if (tile instanceof LevelTile && tile.tileType.standChange) {
                     let existingStandChangeTile = this.standChangeTiles.find(a => a.tile === tile);
@@ -141,15 +141,10 @@ class LevelMap {
                 let deletedSprite = false;
                 for (let sprite of onScreenSprites) {
                     if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof || sprite instanceof KeyDomino || sprite instanceof ShimmerRipple) continue;
-                    let xs = [sprite.x, sprite.xRight, sprite.xMid].map(a => Math.floor(a / this.mainLayer.tileWidth)).filter(Utility.OnlyUnique);
-                    let ys = [sprite.y, sprite.yBottom, sprite.yMid].map(a => Math.floor(a / this.mainLayer.tileHeight)).filter(Utility.OnlyUnique);
-                    for (let tileX of xs) for (let tileY of ys) {
-                        let tile = this.mainLayer.GetTileByIndex(tileX, tileY);
-                        if (tile.tileType == TileType.SpriteKiller) {
-                            sprite.ReplaceWithSpriteType(Poof);
-                            deletedSprite = true;
-                            if (sprite instanceof Enemy) sprite.OnDead();
-                        }
+                    if (sprite.DoesOverlapSpriteKiller()) {
+                        sprite.ReplaceWithSpriteType(Poof);
+                        deletedSprite = true;
+                        if (sprite instanceof Enemy) sprite.OnDead();
                     }
                 }
                 if (deletedSprite) audioHandler.PlaySound("erase", true);
@@ -254,8 +249,11 @@ class LevelMap {
         if (this.fadeOutRatio && !editorHandler.isInEditMode) {
             camera.ctx.fillStyle = `rgba(0,0,0,${this.fadeOutRatio.toFixed(2)})`;
             camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
-            let deadPlayer = this.mainLayer.sprites.find(a => a instanceof DeadPlayer);
-            if (deadPlayer) {
+            let deadPlayers = <DeadPlayer[]>this.mainLayer.sprites.filter(a => a instanceof DeadPlayer);
+            for (let deadPlayer of deadPlayers) {
+                if (deadPlayer.dooplicateDeath) {
+                    new ImageFromTile(0, 0, 960, 576, tiles["bluescreen"][0][0]).Draw(ctx);
+                }
                 this.mainLayer.DrawSprite(deadPlayer, camera, this.frameNum);
             }
         }

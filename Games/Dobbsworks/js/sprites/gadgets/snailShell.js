@@ -32,11 +32,14 @@ var SnailShell = /** @class */ (function (_super) {
             this.rotation -= this.GetTotalDx() / 2;
         }
         if (this.age > 10) {
-            var player_1 = (this.layer.sprites.find(function (a) { return a instanceof Player; }));
-            if (player_1 && player_1.heldItem != this && player_1.Overlaps(this)) {
-                var oldDy = this.dy;
-                var newShell = this.OnThrow(player_1, player_1.x < this.x ? 1 : -1);
-                newShell.dy = oldDy;
+            var players = (this.layer.sprites.filter(function (a) { return a instanceof Player; }));
+            for (var _i = 0, players_1 = players; _i < players_1.length; _i++) {
+                var player_1 = players_1[_i];
+                if (player_1 && player_1.heldItem != this && player_1.Overlaps(this)) {
+                    var oldDy = this.dy;
+                    var newShell = this.OnThrow(player_1, player_1.x < this.x ? 1 : -1);
+                    newShell.dy = oldDy;
+                }
             }
         }
         this.ApplyGravity();
@@ -55,13 +58,12 @@ var SnailShell = /** @class */ (function (_super) {
     };
     SnailShell.prototype.OnThrow = function (thrower, direction) {
         this.isActive = false;
-        var shell = new RollingSnailShell(this.x, this.y, this.layer, []);
+        var shell = this.ReplaceWithSpriteType(RollingSnailShell);
         shell.age = 0;
         shell.framesSinceThrown = 0;
         shell.direction = direction;
         if (!(thrower instanceof Player))
             shell.framesSinceThrown = 100;
-        this.layer.sprites.push(shell);
         return shell;
     };
     SnailShell.prototype.GetFrameData = function (frameNum) {

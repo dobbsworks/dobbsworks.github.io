@@ -10,9 +10,11 @@ class LeftSideButton extends Sprite {
 
     onTimer = 0;
 
+    public static get clockwiseRotationSprite(): (SpriteType | null) { return CeilingButton; }
     Update(): void { 
         let spritesAtRight = this.layer.sprites.filter(a => {
-            return (a.x == this.xRight && a.y < this.yBottom && a.yBottom > this.y);
+            return a.touchedLeftWalls.indexOf(this) > -1 ||
+                (a.x == this.xRight && a.y < this.yBottom && a.yBottom > this.y);
         })
         if (spritesAtRight.length > 0) {
             if (this.onTimer != 30) audioHandler.PlaySound("erase", true);

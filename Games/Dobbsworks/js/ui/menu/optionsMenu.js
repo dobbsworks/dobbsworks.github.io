@@ -56,18 +56,29 @@ var OptionsMenu = /** @class */ (function (_super) {
                 (_a = document.getElementById("canvas")) === null || _a === void 0 ? void 0 : _a.requestFullscreen();
             }
         });
+        var preferencesButton = this.CreateButton("Additional Preferences");
+        container.AddChild(preferencesButton);
+        preferencesButton.onClickEvents.push(function () {
+            MenuHandler.SubMenu(PreferencesMenu);
+        });
         var backButton = this.CreateButton("Back");
         container.AddChild(backButton);
         backButton.onClickEvents.push(function () {
+            if (editorHandler.isInEditMode && editorHandler.isMinimizedMode) {
+                editorHandler.ToggleMinimizeMode();
+            }
             MenuHandler.GoBack();
         });
+        if (editorHandler.isInEditMode && !editorHandler.isMinimizedMode) {
+            editorHandler.ToggleMinimizeMode();
+        }
         return ret;
     };
     OptionsMenu.prototype.CreateSlider = function (header, initialValue, onChange) {
         var panel = new Panel(0, 0, camera.canvas.width / 2, 110);
         panel.margin = 15;
         panel.AddChild(new Spacer(0, 0, 0, 0));
-        var buttonText = new UIText(0, 0, header, 30, "#000");
+        var buttonText = new UIText(0, 0, header, 24, "#000");
         panel.layout = "vertical";
         panel.AddChild(buttonText);
         buttonText.xOffset = camera.canvas.width / 4;
@@ -83,12 +94,12 @@ var OptionsMenu = /** @class */ (function (_super) {
         return panel;
     };
     OptionsMenu.prototype.CreateButton = function (text) {
-        var button = new Button(0, 0, camera.canvas.width / 2, 60);
-        var buttonText = new UIText(0, 0, text, 30, "#000");
+        var button = new Button(0, 0, camera.canvas.width / 2, 50);
+        var buttonText = new UIText(0, 0, text, 24, "#000");
         button.margin = 0;
         button.AddChild(buttonText);
         buttonText.xOffset = camera.canvas.width / 4;
-        buttonText.yOffset = 40;
+        buttonText.yOffset = 34;
         buttonText.textAlign = "center";
         button.normalBackColor = "#fff8";
         button.mouseoverBackColor = "#f73738";
@@ -112,4 +123,59 @@ var OptionsMenu = /** @class */ (function (_super) {
         return panel;
     };
     return OptionsMenu;
+}(Menu));
+var PreferencesMenu = /** @class */ (function (_super) {
+    __extends(PreferencesMenu, _super);
+    function PreferencesMenu() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.stopsMapUpdate = true;
+        _this.backgroundColor = "#0005";
+        _this.backgroundColor2 = "#000D";
+        return _this;
+    }
+    PreferencesMenu.prototype.CreateElements = function () {
+        var ret = [];
+        var container = new Panel(camera.canvas.width / 4, camera.canvas.height / 2 - 250, camera.canvas.width / 2, 500);
+        container.margin = 0;
+        container.layout = "vertical";
+        ret.push(container);
+        container.AddChild(this.CreateToggle("Confirm before closing game", "confirm-close", true));
+        container.AddChild(this.CreateToggle("Pause when game is minimized", "pause-on-lose-focus", true));
+        container.AddChild(this.CreateToggle("Mute when game is minimized", "mute-on-lose-focus", false));
+        container.AddChild(this.CreateToggle("Display inputs on-screen", "on-screen-input", false));
+        var backButton = this.CreateButton("Back");
+        container.AddChild(backButton);
+        backButton.onClickEvents.push(function () {
+            MenuHandler.GoBack();
+        });
+        return ret;
+    };
+    PreferencesMenu.prototype.CreateToggle = function (text, preferenceKey, defaultValue) {
+        var button = this.CreateButton(text);
+        var currentValue = StorageService.GetPreferenceBool(preferenceKey, defaultValue);
+        button.borderColor = currentValue ? "#2F2E" : "#F2FE";
+        button.onClickEvents.push(function () {
+            var newValue = button.borderColor == "#F2FE";
+            StorageService.SetPreferenceBool(preferenceKey, newValue);
+            button.borderColor = newValue ? "#2F2E" : "#F2FE";
+        });
+        return button;
+    };
+    PreferencesMenu.prototype.CreateButton = function (text) {
+        var button = new Button(0, 0, camera.canvas.width / 2, 50);
+        var buttonText = new UIText(0, 0, text, 24, "#000");
+        button.margin = 0;
+        button.AddChild(buttonText);
+        buttonText.xOffset = camera.canvas.width / 4;
+        buttonText.yOffset = 34;
+        buttonText.textAlign = "center";
+        button.normalBackColor = "#fff8";
+        button.mouseoverBackColor = "#f73738";
+        button.borderColor = "#000";
+        button.borderRadius = 9;
+        return button;
+    };
+    PreferencesMenu.prototype.Update = function () {
+    };
+    return PreferencesMenu;
 }(Menu));

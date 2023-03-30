@@ -2,7 +2,7 @@ class Coin extends Sprite {
     public height: number = 8;
     public width: number = 8;
     public respectsSolidTiles: boolean = false;
-    
+
     isExemptFromSilhoutte = true;
     anchor = null;
     imageSource = "coin";
@@ -10,24 +10,26 @@ class Coin extends Sprite {
     sound = "coin";
     isTouched = false;
     touchTimer = 0;
-    
+
     Update(): void {
         if (this.isTouched) {
             this.touchTimer++;
             this.y -= 0.25;
             if (this.touchTimer > 60) this.isActive = false;
         } else {
-            let player = this.layer.sprites.find(a => a instanceof Player);
-            if (player && player.Overlaps(this)) {
-                this.isTouched = true;
-                audioHandler.PlaySound(this.sound, false);
-                if (this instanceof Dabbloon) {
-                    this.layer.sprites.push(new Points(this.xMid - 15/2, this.y, this.layer, []))
+            let players = this.layer.sprites.filter(a => a instanceof Player);
+            for (let player of players) {
+                if (player.Overlaps(this)) {
+                    this.isTouched = true;
+                    audioHandler.PlaySound(this.sound, false);
+                    if (this instanceof Dabbloon) {
+                        this.layer.sprites.push(new Points(this.xMid - 15 / 2, this.y, this.layer, []))
+                    }
                 }
             }
         }
     }
-    
+
     GetFrameData(frameNum: number): FrameData {
         let frame = Math.floor(frameNum / 10) % 6;
         let frameRow = 0;

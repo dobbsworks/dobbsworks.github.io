@@ -19,7 +19,7 @@ var RedCannon = /** @class */ (function (_super) {
         _this.height = 10;
         _this.width = 10;
         _this.respectsSolidTiles = false;
-        _this.holdingPlayer = false;
+        _this.heldPlayer = null;
         _this.shootTimer = 0;
         _this.rotationCounter = 0;
         _this.autoRotates = true;
@@ -36,7 +36,7 @@ var RedCannon = /** @class */ (function (_super) {
             this.rotationCounter++;
         }
         else {
-            if (this.holdingPlayer) {
+            if (this.heldPlayer) {
                 var isUpPressed = KeyboardHandler.IsKeyPressed(KeyAction.Up, false);
                 var isLeftPressed = KeyboardHandler.IsKeyPressed(KeyAction.Left, false);
                 var isRightPressed = KeyboardHandler.IsKeyPressed(KeyAction.Right, false);
@@ -61,23 +61,24 @@ var RedCannon = /** @class */ (function (_super) {
         }
         if (this.bigTimer > 0)
             this.bigTimer--;
-        var player = this.layer.sprites.find(function (a) { return a instanceof Player; });
-        if (!player)
-            return;
         if (this.shootTimer > 0)
             this.shootTimer--;
-        if (!this.holdingPlayer) {
-            this.autoFireTimer = 0;
-            if (this.IsGoingToOverlapSprite(player) && this.shootTimer <= 0 && !player.yoyoTarget) {
-                this.holdingPlayer = true;
-                this.bigTimer = 10;
-                audioHandler.PlaySound("bwump", true);
+        if (!this.heldPlayer) {
+            var players = this.layer.sprites.filter(function (a) { return a instanceof Player; });
+            for (var _i = 0, players_1 = players; _i < players_1.length; _i++) {
+                var player_1 = players_1[_i];
+                this.autoFireTimer = 0;
+                if (this.IsGoingToOverlapSprite(player_1) && this.shootTimer <= 0 && !player_1.yoyoTarget) {
+                    this.heldPlayer = player_1;
+                    this.bigTimer = 10;
+                    audioHandler.PlaySound("bwump", true);
+                }
             }
         }
-        if (this.holdingPlayer) {
+        if (this.heldPlayer) {
             this.autoFireTimer++;
-            player.x = this.xMid - player.width / 2;
-            player.y = this.yMid - player.height / 2;
+            this.heldPlayer.x = this.xMid - this.heldPlayer.width / 2;
+            this.heldPlayer.y = this.yMid - this.heldPlayer.height / 2;
             if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
                 this.CannonBlastPlayer();
             }
@@ -89,7 +90,7 @@ var RedCannon = /** @class */ (function (_super) {
         }
     };
     RedCannon.prototype.CannonBlastPlayer = function () {
-        this.holdingPlayer = false;
+        this.heldPlayer = null;
         this.shootTimer = 30;
         this.bigTimer = 5;
         // 8 frames per 22.5-degree tile
@@ -97,6 +98,8 @@ var RedCannon = /** @class */ (function (_super) {
         var theta = -Math.PI / 2 + 2 * Math.PI * Math.floor((this.rotationCounter + 4) / 16) / 8;
         player.dx = this.power * Math.cos(theta);
         player.dy = this.power * Math.sin(theta);
+        player.dxFromPlatform = 0;
+        player.dyFromPlatform = 0;
         player.neutralTimer = 20;
         player.forcedJumpTimer = 20;
         player.jumpTimer = -1;
@@ -111,7 +114,7 @@ var RedCannon = /** @class */ (function (_super) {
                 xOffset: 3,
                 yOffset: 3
             }];
-        if (this.holdingPlayer && this.autoFireFrames > 0) {
+        if (this.heldPlayer && this.autoFireFrames > 0) {
             var remaining = Math.floor((this.autoFireFrames - this.autoFireTimer) / 30);
             var newFrame = {
                 imageTile: tiles["numbers"][remaining][0],

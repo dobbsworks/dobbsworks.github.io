@@ -3,7 +3,7 @@ class RedCannon extends Sprite {
     public width: number = 10;
     public respectsSolidTiles: boolean = false;
 
-    public holdingPlayer: boolean = false;
+    public heldPlayer: Player | null = null;
     private shootTimer: number = 0;
     private rotationCounter: number = 0;
 
@@ -19,7 +19,7 @@ class RedCannon extends Sprite {
         if (this.autoRotates) {
             this.rotationCounter++;
         } else {
-            if (this.holdingPlayer) {
+            if (this.heldPlayer) {
                 let isUpPressed = KeyboardHandler.IsKeyPressed(KeyAction.Up, false);
                 let isLeftPressed = KeyboardHandler.IsKeyPressed(KeyAction.Left, false);
                 let isRightPressed = KeyboardHandler.IsKeyPressed(KeyAction.Right, false);
@@ -36,24 +36,24 @@ class RedCannon extends Sprite {
             }
         }
         if (this.bigTimer > 0) this.bigTimer--;
-
-        let player = <Player>this.layer.sprites.find(a => a instanceof Player);
-        if (!player) return;
-
         if (this.shootTimer > 0) this.shootTimer--;
 
-        if (!this.holdingPlayer) {
-            this.autoFireTimer = 0;
-            if (this.IsGoingToOverlapSprite(player) && this.shootTimer <= 0 && !player.yoyoTarget) {
-                this.holdingPlayer = true;
-                this.bigTimer = 10;
-                audioHandler.PlaySound("bwump", true);
+        if (!this.heldPlayer) {
+            let players = <Player[]>this.layer.sprites.filter(a => a instanceof Player);
+            for (let player of players) {
+                this.autoFireTimer = 0;
+                if (this.IsGoingToOverlapSprite(player) && this.shootTimer <= 0 && !player.yoyoTarget) {
+                    this.heldPlayer = player;
+                    this.bigTimer = 10;
+                    audioHandler.PlaySound("bwump", true);
+                }
             }
         }
-        if (this.holdingPlayer) {
+
+        if (this.heldPlayer) {
             this.autoFireTimer++;
-            player.x = this.xMid - player.width / 2;
-            player.y = this.yMid - player.height / 2;
+            this.heldPlayer.x = this.xMid - this.heldPlayer.width / 2;
+            this.heldPlayer.y = this.yMid - this.heldPlayer.height / 2;
 
             if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
                 this.CannonBlastPlayer();
@@ -66,7 +66,7 @@ class RedCannon extends Sprite {
     }
 
     CannonBlastPlayer(): void {
-        this.holdingPlayer = false;
+        this.heldPlayer = null;
         this.shootTimer = 30;
         this.bigTimer = 5;
 
@@ -76,6 +76,8 @@ class RedCannon extends Sprite {
         let theta = -Math.PI / 2 + 2 * Math.PI * Math.floor((this.rotationCounter + 4) / 16) / 8;
         player.dx = this.power * Math.cos(theta);
         player.dy = this.power * Math.sin(theta);
+        player.dxFromPlatform = 0;
+        player.dyFromPlatform = 0;
         player.neutralTimer = 20;
         player.forcedJumpTimer = 20;
         player.jumpTimer = -1;
@@ -91,7 +93,7 @@ class RedCannon extends Sprite {
             xOffset: 3,
             yOffset: 3
         }];
-        if (this.holdingPlayer && this.autoFireFrames > 0) {
+        if (this.heldPlayer && this.autoFireFrames > 0) {
             let remaining = Math.floor((this.autoFireFrames - this.autoFireTimer) / 30);
             let newFrame = {
                 imageTile: tiles["numbers"][remaining][0],

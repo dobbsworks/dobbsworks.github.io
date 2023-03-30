@@ -245,7 +245,7 @@ class KeyboardHandler {
         KeyboardHandler.recentlyReleasedKeys = [];
     }
 
-    private static GetKeyState(keyAction: KeyAction) {
+    public static GetKeyState(keyAction: KeyAction) {
         let keyState = KeyboardHandler.keyState.find(a => a.keyAction === keyAction);
         return keyState;
     }
@@ -294,6 +294,9 @@ class KeyboardHandler {
         "GpButton15": "DPad Right",
     };
 
+    // which axes have entered their dead (neutral) zone
+    // used to deal specifically with Duffy's weird controller
+    static initializedAxisIndeces: number[] = []; 
 
     private static UpdateGamepad() {
         for (let i = 0; i < navigator.getGamepads().length; i++) {
@@ -315,8 +318,15 @@ class KeyboardHandler {
             for (let i = 0; i < gamepad.axes.length; i++) {
                 let axisValue = gamepad.axes[i];
                 if (Math.abs(axisValue) > deadZone) {
+                    if (KeyboardHandler.initializedAxisIndeces.indexOf(i) == -1) {
+                        continue;
+                    }
                     let posNeg = axisValue > 0 ? "+" : "-";
                     pressedGamepadButtons.push("GpAxis" + i + posNeg);
+                } else {
+                    if (KeyboardHandler.initializedAxisIndeces.indexOf(i) == -1) {
+                        KeyboardHandler.initializedAxisIndeces.push(i);
+                    }
                 }
             }
         }

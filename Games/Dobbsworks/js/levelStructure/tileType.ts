@@ -28,15 +28,8 @@ class TileType {
     public isStickyWall: boolean = false;
     public isJumpWall: boolean = false;
     public isWarpWall: boolean = false;
-    public isTrack: boolean = false;
     public isExemptFromSlime = false;
-    public isTrackCap: boolean = false;
-    public trackEquation: (x: number, y: number) => { x: number, y: number } = (x: number, y: number) => ({ x: x, y: y });
-    public trackCrossedEquation: (x1: number, y1: number, x2: number, y2: number) => boolean = (x1: number, y1: number, x2: number, y2: number) => false;
-    public trackDirectionEquation: (x: number, y: number) => { dx: number, dy: number } = (x: number, y: number) => ({ dx: 0, dy: 0 });
-    public trackCurveHorizontalDirection: -1 | 0 | 1 = 0;
-    public trackCurveVerticalDirection: -1 | 0 | 1 = 0;
-    // track equation maps based on ratio within block [0,1]=>[0,1]
+    public trackDirections: Direction[] = [];
 
     public isSlippery = false;
 
@@ -371,7 +364,18 @@ class TileType {
         TileType.UnpoweredWindRight;
         TileType.UnpoweredWindUp;
         TileType.UnpoweredWindDown;
-
+        
+        TileType.TrackBranchDownRightOff;
+        TileType.TrackBranchDownLeftOff;
+        TileType.TrackBranchLeftDownOff;
+        TileType.TrackBranchLeftUpOff;
+        TileType.TrackBranchUpLeftOff;
+        TileType.TrackBranchUpRightOff;
+        TileType.TrackBranchRightUpOff;
+        TileType.TrackBranchRightDownOff;
+        
+        TileType.TrackBridge;
+        
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
     }
@@ -1180,156 +1184,109 @@ class TileType {
 
     public static get TrackHorizontal(): TileType {
         return TileType.GetTileType("TrackHorizontal", "motorTrack", 2, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
-            tileType.isTrack = true;
-            tileType.trackEquation = (x, y) => ({ x: x, y: 0.5 });
-            tileType.trackCrossedEquation = (x1, y1, x2, y2) => (y1 >= 0.5 && y2 <= 0.5) || (y1 <= 0.5 && y2 >= 0.5);
-            tileType.trackDirectionEquation = (x, y) => ({ dx: 1, dy: 0 });
+            tileType.trackDirections = [Direction.Left, Direction.Right];
             tileType.clockWiseRotationTileName = "TrackVertical";
-            // track direction equation assumes traveling clock-wise from bottom-right
         })
     }
     public static get TrackVertical(): TileType {
         return TileType.GetTileType("TrackVertical", "motorTrack", 3, 0, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
-            tileType.isTrack = true;
-            tileType.trackEquation = (x, y) => ({ x: 0.5, y: y });
-            tileType.trackCrossedEquation = (x1, y1, x2, y2) => (x1 >= 0.5 && x2 <= 0.5) || (x1 <= 0.5 && x2 >= 0.5);
-            tileType.trackDirectionEquation = (x, y) => ({ dx: 0, dy: -1 });
+            tileType.trackDirections = [Direction.Down, Direction.Up];
             tileType.clockWiseRotationTileName = "TrackHorizontal";
         })
     }
-    static GetCurveTrackEquation(innerXDirection: -1 | 1, innerYDirection: -1 | 1): (x: number, y: number) => { x: number, y: number } {
-        let centerX = (innerXDirection + 1) / 2;
-        let centerY = (innerYDirection + 1) / 2;
-        return (x, y) => {
-            if (x == centerX && y == centerY) return { x: centerX, y: centerY };
-            //console.log("trackEquation inputs", x,y)
-            if (innerXDirection == 1) x = 1 - x;
-            if (innerYDirection == 1) y = 1 - y;
-
-            let theta = Math.atan2(y, x);
-            let retX = 0.5 * Math.cos(theta);
-            let retY = 0.5 * Math.sin(theta);
-            if (innerXDirection == 1) retX = 1 - retX;
-            if (innerYDirection == 1) retY = 1 - retY;
-
-            //console.log("trackEquation output", retX, retY)
-            return ({ x: retX, y: retY })
-        };
-    }
-    static GetCurveTrackCrossedEquation(innerXDirection: -1 | 1, innerYDirection: -1 | 1): (x1: number, y1: number, x2: number, y2: number) => boolean {
-        let centerX = (innerXDirection + 1) / 2;
-        let centerY = (innerYDirection + 1) / 2;
-        return (x1: number, y1: number, x2: number, y2: number) => {
-            let r1 = Math.sqrt((x1 - centerX) ** 2 + (y1 - centerY) ** 2);
-            let r2 = Math.sqrt((x2 - centerX) ** 2 + (y2 - centerY) ** 2);
-            return (r1 >= 0.5 && r2 <= 0.5) || (r1 <= 0.5 && r2 >= 0.5);
-        }
-    }
-    static GetCurveTrackDirectionEquation(innerXDirection: -1 | 1, innerYDirection: -1 | 1): (x: number, y: number) => { dx: number, dy: number } {
-        let centerX = (innerXDirection + 1) / 2;
-        let centerY = (innerYDirection + 1) / 2;
-        return (x, y) => {
-            if (x == centerX && y == centerY) return { dx: 0, dy: 0 };
-
-            //console.log(x,y)
-            if (innerXDirection == 1) x = 1 - x;
-            if (innerYDirection == 1) y = 1 - y;
-
-            let theta = Math.atan2(y, x);
-            theta -= Math.PI / 2;
-
-            //console.log("speedtheta degrees",theta / 2 / Math.PI * 360)
-            let retX = 0.5 * Math.cos(theta);
-            let retY = 0.5 * Math.sin(theta);
-            if (innerXDirection == 1) retX = 1 - retX;
-            if (innerYDirection == 1) retY = 1 - retY;
-
-            return ({ dx: retX, dy: retY })
-        };
-    }
+    
     public static get TrackCurveDownRight(): TileType {
         return TileType.GetTileType("TrackCurveDownRight", "motorTrack", 0, 1, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
-            tileType.isTrack = true;
-            tileType.trackEquation = TileType.GetCurveTrackEquation(1, 1);
-            tileType.trackCrossedEquation = TileType.GetCurveTrackCrossedEquation(1, 1);
-            tileType.trackDirectionEquation = TileType.GetCurveTrackDirectionEquation(1, 1);
-            tileType.trackCurveHorizontalDirection = 1;
-            tileType.trackCurveVerticalDirection = 1;
+            tileType.trackDirections = [Direction.Down, Direction.Right];
             tileType.clockWiseRotationTileName = "TrackCurveDownLeft";
         })
     }
     public static get TrackCurveDownLeft(): TileType {
         return TileType.GetTileType("TrackCurveDownLeft", "motorTrack", 1, 1, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
-            tileType.isTrack = true;
-            tileType.trackEquation = TileType.GetCurveTrackEquation(-1, 1);
-            tileType.trackCrossedEquation = TileType.GetCurveTrackCrossedEquation(-1, 1);
-            tileType.trackDirectionEquation = TileType.GetCurveTrackDirectionEquation(-1, 1);
-            tileType.trackCurveHorizontalDirection = -1;
-            tileType.trackCurveVerticalDirection = 1;
+            tileType.trackDirections = [Direction.Down, Direction.Left];
             tileType.clockWiseRotationTileName = "TrackCurveUpLeft";
         })
     }
     public static get TrackCurveUpLeft(): TileType {
         return TileType.GetTileType("TrackCurveUpLeft", "motorTrack", 2, 1, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
-            tileType.isTrack = true;
-            tileType.trackEquation = TileType.GetCurveTrackEquation(-1, -1);
-            tileType.trackCrossedEquation = TileType.GetCurveTrackCrossedEquation(-1, -1);
-            tileType.trackDirectionEquation = TileType.GetCurveTrackDirectionEquation(-1, -1);
-            tileType.trackCurveHorizontalDirection = -1;
-            tileType.trackCurveVerticalDirection = -1;
+            tileType.trackDirections = [Direction.Up, Direction.Left];
             tileType.clockWiseRotationTileName = "TrackCurveUpRight";
         })
     }
     public static get TrackCurveUpRight(): TileType {
         return TileType.GetTileType("TrackCurveUpRight", "motorTrack", 3, 1, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
-            tileType.isTrack = true;
-            tileType.trackEquation = TileType.GetCurveTrackEquation(1, -1);
-            tileType.trackCrossedEquation = TileType.GetCurveTrackCrossedEquation(1, -1);
-            tileType.trackDirectionEquation = TileType.GetCurveTrackDirectionEquation(1, -1);
-            tileType.trackCurveHorizontalDirection = 1;
-            tileType.trackCurveVerticalDirection = -1;
+            tileType.trackDirections = [Direction.Up, Direction.Right];
             tileType.clockWiseRotationTileName = "TrackCurveDownRight";
         })
     }
     public static get TrackLeftCap(): TileType {
         return TileType.GetTileType("TrackLeftCap", "motorTrack", 0, 2, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
-            tileType.isTrack = true;
-            tileType.trackEquation = (x, y) => ({ x: Math.max(x, 0.5), y: 0.5 });
-            tileType.trackCrossedEquation = (x1, y1, x2, y2) => ((y1 >= 0.5 && y2 <= 0.5) || (y1 <= 0.5 && y2 >= 0.5)) && x1 >= 0.5 && x2 >= 0.5;
-            tileType.trackDirectionEquation = (x, y) => ({ dx: 1, dy: 0 });
-            tileType.isTrackCap = true;
+            tileType.trackDirections = [Direction.Right];
             tileType.clockWiseRotationTileName = "TrackTopCap";
         })
     }
     public static get TrackTopCap(): TileType {
         return TileType.GetTileType("TrackTopCap", "motorTrack", 1, 2, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
-            tileType.isTrack = true;
-            tileType.trackEquation = (x, y) => ({ x: 0.5, y: Math.max(y, 0.5) });
-            tileType.trackCrossedEquation = (x1, y1, x2, y2) => ((x1 >= 0.5 && x2 <= 0.5) || (x1 <= 0.5 && x2 >= 0.5)) && y1 >= 0.5 && y2 >= 0.5;
-            tileType.trackDirectionEquation = (x, y) => ({ dx: 0, dy: -1 });
-            tileType.isTrackCap = true;
+            tileType.trackDirections = [Direction.Down];
             tileType.clockWiseRotationTileName = "TrackRightCap";
         })
     }
     public static get TrackRightCap(): TileType {
         return TileType.GetTileType("TrackRightCap", "motorTrack", 2, 2, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
-            tileType.isTrack = true;
-            tileType.trackEquation = (x, y) => ({ x: Math.min(x, 0.5), y: 0.5 });
-            tileType.trackCrossedEquation = (x1, y1, x2, y2) => ((y1 >= 0.5 && y2 <= 0.5) || (y1 <= 0.5 && y2 >= 0.5)) && x1 <= 0.5 && x2 <= 0.5;
-            tileType.trackDirectionEquation = (x, y) => ({ dx: 1, dy: 0 });
-            tileType.isTrackCap = true;
+            tileType.trackDirections = [Direction.Left];
             tileType.clockWiseRotationTileName = "TrackBottomCap";
         })
     }
     public static get TrackBottomCap(): TileType {
         return TileType.GetTileType("TrackBottomCap", "motorTrack", 3, 2, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
-            tileType.isTrack = true;
-            tileType.trackEquation = (x, y) => ({ x: 0.5, y: Math.min(y, 0.5) });
-            tileType.trackCrossedEquation = (x1, y1, x2, y2) => ((x1 >= 0.5 && x2 <= 0.5) || (x1 <= 0.5 && x2 >= 0.5)) && y1 <= 0.5 && y2 <= 0.5;
-            tileType.trackDirectionEquation = (x, y) => ({ dx: 0, dy: -1 });
-            tileType.isTrackCap = true;
+            tileType.trackDirections = [Direction.Up];
             tileType.clockWiseRotationTileName = "TrackLeftCap";
         })
+    }
+
+    public static get TrackBridge(): TileType {
+        return TileType.GetTileType("TrackBridge", "motorTrack", 4, 4, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
+            tileType.trackDirections = Direction.All;
+        })
+    }
+
+    public static get TrackBranchDownRightOff(): TileType { return TileType.TrackBranchOff(Direction.Down, Direction.Right, 4, 0); }
+    public static get TrackBranchDownRightOn(): TileType { return TileType.TrackBranchOn(Direction.Down, Direction.Right, 5, 0); }
+    public static get TrackBranchDownLeftOff(): TileType { return TileType.TrackBranchOff(Direction.Down, Direction.Left, 6, 0); }
+    public static get TrackBranchDownLeftOn(): TileType { return TileType.TrackBranchOn(Direction.Down, Direction.Left, 7, 0); }
+
+    public static get TrackBranchLeftDownOff(): TileType { return TileType.TrackBranchOff(Direction.Left, Direction.Down, 4, 1); }
+    public static get TrackBranchLeftDownOn(): TileType { return TileType.TrackBranchOn(Direction.Left, Direction.Down, 5, 1); }
+    public static get TrackBranchLeftUpOff(): TileType { return TileType.TrackBranchOff(Direction.Left, Direction.Up, 6, 1); }
+    public static get TrackBranchLeftUpOn(): TileType { return TileType.TrackBranchOn(Direction.Left, Direction.Up, 7, 1); }
+
+    public static get TrackBranchUpLeftOff(): TileType { return TileType.TrackBranchOff(Direction.Up, Direction.Left, 4, 2); }
+    public static get TrackBranchUpLeftOn(): TileType { return TileType.TrackBranchOn(Direction.Up, Direction.Left, 5, 2); }
+    public static get TrackBranchUpRightOff(): TileType { return TileType.TrackBranchOff(Direction.Up, Direction.Right, 6, 2); }
+    public static get TrackBranchUpRightOn(): TileType { return TileType.TrackBranchOn(Direction.Up, Direction.Right, 7, 2); }
+
+    public static get TrackBranchRightUpOff(): TileType { return TileType.TrackBranchOff(Direction.Right, Direction.Up, 4, 3); }
+    public static get TrackBranchRightUpOn(): TileType { return TileType.TrackBranchOn(Direction.Right, Direction.Up, 5, 3); }
+    public static get TrackBranchRightDownOff(): TileType { return TileType.TrackBranchOff(Direction.Right, Direction.Down, 6, 3); }
+    public static get TrackBranchRightDownOn(): TileType { return TileType.TrackBranchOn(Direction.Right, Direction.Down, 7, 3); }
+
+
+    private static TrackBranchOff(sharedDir: Direction, offDir: Direction, x: number, y: number): TileType {
+        let baseName = "TrackBranch" + sharedDir.name + offDir.name;
+        return TileType.GetTileType(baseName + "Off", "motorTrack", x, y, Solidity.None, TargetLayer.wire, tileType => {
+            tileType.canBePowered = true;
+            tileType.poweredTileName = baseName + "On"
+            tileType.trackDirections = [sharedDir, offDir];
+            tileType.clockWiseRotationTileName = "TrackBranch" + sharedDir.Clockwise().name + offDir.Clockwise().name + "Off";
+        });
+    }
+    private static TrackBranchOn(sharedDir: Direction, offDir: Direction, x: number, y: number): TileType {
+        let baseName = "TrackBranch" + sharedDir.name + offDir.name;
+        return TileType.GetTileType(baseName + "On", "motorTrack", x, y, Solidity.None, TargetLayer.wire, tileType => {
+            tileType.canBePowered = true;
+            tileType.unpoweredTileName = baseName + "Off"
+            tileType.trackDirections = [sharedDir, offDir.Opposite()];
+        });
     }
 
 

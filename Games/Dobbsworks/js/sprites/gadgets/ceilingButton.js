@@ -26,6 +26,11 @@ var CeilingButton = /** @class */ (function (_super) {
         _this.onTimer = 0;
         return _this;
     }
+    Object.defineProperty(CeilingButton, "clockwiseRotationSprite", {
+        get: function () { return RightSideButton; },
+        enumerable: false,
+        configurable: true
+    });
     CeilingButton.prototype.Update = function () {
         var _this = this;
         var spritesAtBottom = this.layer.sprites.filter(function (a) {

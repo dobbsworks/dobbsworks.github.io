@@ -10,6 +10,7 @@ class CeilingButton extends Sprite {
 
     onTimer = 0;
 
+    public static get clockwiseRotationSprite(): (SpriteType | null) { return RightSideButton; }
     Update(): void { 
         let spritesAtBottom = this.layer.sprites.filter(a => {
             return (a.y == this.yBottom && a.x < this.xRight && a.xRight > this.x);

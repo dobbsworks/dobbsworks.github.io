@@ -3,6 +3,7 @@ class LevelBrowseMenu extends Menu {
     selectedCloudCode: string = "";
     levels: LevelListing[] = [];
     levelPanel: Panel | null = null;
+    pagesPanel: Panel | null = null;
     levelOptionsPanel: Panel | null = null;
     userDetailsPanel: Panel | null = null;
     backButton!: Button;
@@ -25,6 +26,9 @@ class LevelBrowseMenu extends Menu {
     baseLeftX = -960;
     baseRightX = 30;
 
+    numberOfPages = 0;
+    currentPageIndex = 0;
+
     CreateElements(): UIElement[] {
         let ret: UIElement[] = [];
 
@@ -40,14 +44,8 @@ class LevelBrowseMenu extends Menu {
         })
         ret.push(this.backButtonUserPanel);
 
-        let getLevelsPromise = DataService.GetRecentLevels();
-        getLevelsPromise.then(levels => {
-            this.levels = levels;
-            this.PopulateLevelPanel();
-        }).catch((error) => {
-        });
-
         this.searchButtons.push(new LevelBrowseSortButton(this, "Newest", DataService.GetRecentLevels));
+        //this.searchButtons.push(new LevelBrowseSortButton(this, "Oldest", DataService.GetOldestLevels));
         this.searchButtons.push(new LevelBrowseSortButton(this, "Top Rated", DataService.GetBestRatedLevels));
         this.searchButtons.push(new LevelBrowseSortButton(this, "Most Liked", DataService.GetMostLikedLevels));
         this.searchButtons.push(new LevelBrowseSortButton(this, "Easiest", DataService.GetEasiestLevels));
@@ -57,10 +55,14 @@ class LevelBrowseMenu extends Menu {
         //this.currentSearchButton
 
 
-        this.levelPanel = new Panel(this.baseX, this.baseY, this.basePanelWidth, this.basePanelHeight);
+        this.levelPanel = new Panel(this.baseX, this.baseY - 10, this.basePanelWidth, this.basePanelHeight - 30);
         this.levelPanel.backColor = "#1138";
         this.levelPanel.layout = "vertical";
         ret.push(this.levelPanel);
+
+        this.pagesPanel = new Panel(this.baseX, this.levelPanel.y + this.levelPanel.height, this.basePanelWidth, 40);
+        this.pagesPanel.backColor = "#0000";
+        ret.push(this.pagesPanel);
 
         this.levelOptionsPanel = new Panel(this.baseX + 1000, this.baseY, this.bigPanelWidth, this.basePanelHeight);
         this.levelOptionsPanel.backColor = "#1138";
@@ -72,20 +74,45 @@ class LevelBrowseMenu extends Menu {
         this.userDetailsPanel.layout = "vertical";
         ret.push(this.userDetailsPanel);
 
-        this.toggles.push(new FilterToggle(this, tiles["spider"][0][0], tiles["spider"][0][1], (isOn) => {
+        this.toggles.push(new FilterToggle(this, "Glitched levels", tiles["spider"][0][0], tiles["spider"][0][1], (isOn) => {
             this.includeGlitchLevels = isOn;
         }, this.includeGlitchLevels));
 
-        let clearedToggle = new FilterToggle(this, tiles["pig"][5][0], tiles["pig"][0][0], (isOn) => {
+        let clearedToggle = new FilterToggle(this, "Cleared levels", tiles["pig"][5][0], tiles["pig"][0][0], (isOn) => {
             this.includeClearedLevels = isOn;
         }, this.includeClearedLevels);
-        clearedToggle.targetX -= 200;
+        clearedToggle.targetX -= 300;
         this.toggles.push(clearedToggle);
         this.toggles.forEach(a => a.originalX = a.targetX);
 
         ret.push(...this.toggles);
 
         return ret;
+    }
+
+    UpdatePagination(): void {
+        if (!this.pagesPanel) return;
+        this.pagesPanel.children = [];
+
+        let buttonWidth = 50;
+        for (let pageIndex = 0; pageIndex < this.numberOfPages; pageIndex++) {
+            let button = new Button(0, 0, buttonWidth,30);
+            let text = new UIText(0, 0, (pageIndex + 1).toString(), 16, "white");
+            text.xOffset = button.width / 2 - 4;
+            text.yOffset = 15;
+            button.AddChild(text);
+            this.pagesPanel.AddChild(button);
+            button.onClickEvents.push(() => {
+                this.currentSearchButton.RequestLevels(pageIndex);
+            });
+
+            if (pageIndex == this.currentPageIndex) {
+                button.normalBackColor = "#020b";
+                button.mouseoverBackColor = "#242b";
+            }
+        }
+        let takenSpace = (buttonWidth + this.pagesPanel.margin) * this.numberOfPages;
+        this.pagesPanel.AddChild(new Spacer(0,0,this.pagesPanel.width - takenSpace, 1));
     }
 
     static Reset(): void {
@@ -117,7 +144,7 @@ class LevelBrowseMenu extends Menu {
                 map(a => new LevelBrowseButton(a, this));
 
             for (let button of buttons) {
-                if (this.levelPanel.children.length >= 4) {
+                if (this.levelPanel.children.length >= 5) {
                     this.levelPanel.scrollableChildrenDown.push(button);
                     button.parentElement = this.levelPanel;
                 } else {
@@ -128,6 +155,8 @@ class LevelBrowseMenu extends Menu {
             for (let i = 0; i < Math.abs(scrollIndex); i++) {
                 this.levelPanel.Scroll(scrollIndex < 0 ? -1 : 1);
             }
+
+            this.UpdatePagination();
         }
     }
 
@@ -135,6 +164,7 @@ class LevelBrowseMenu extends Menu {
         if (this.userDetailsPanel) this.userDetailsPanel.targetX = 2000;
         if (this.levelOptionsPanel) this.levelOptionsPanel.targetX = 1000;
         if (this.levelPanel) this.levelPanel.targetX = this.baseX;
+        if (this.pagesPanel) this.pagesPanel.targetX = this.baseX;
         this.toggles.forEach(a => a.targetX = a.originalX);
         this.backButton.isHidden = false;
         this.backButtonUserPanel.isHidden = true;
@@ -144,6 +174,7 @@ class LevelBrowseMenu extends Menu {
         this.backButtonUserPanel.isHidden = true;
         let levelListing = this.levels.find(a => a.level.code == this.selectedCloudCode);
         if (this.levelPanel) this.levelPanel.targetX = this.baseLeftX;
+        if (this.pagesPanel) this.pagesPanel.targetX = this.baseLeftX;
         if (this.userDetailsPanel) this.userDetailsPanel.targetX = 2000;
         this.toggles.forEach(a => a.targetX = a.originalX - 1000);
         if (levelListing && this.levelPanel && this.levelOptionsPanel) {
@@ -434,6 +465,7 @@ class LevelBrowseMenu extends Menu {
         if (this.userDetailsPanel) this.userDetailsPanel.targetX = this.baseX - 214;
         if (this.levelOptionsPanel) this.levelOptionsPanel.targetX = -1000;
         if (this.levelPanel) this.levelPanel.targetX = -2000;
+        if (this.pagesPanel) this.pagesPanel.targetX = -2000;
         this.toggles.forEach(a => a.targetX = a.originalX - 2000);
         this.backButton.isHidden = true;
         this.backButtonUserPanel.isHidden = false;
@@ -465,7 +497,7 @@ class LevelBrowseButton extends Button {
     isSelected: boolean = false;
 
     constructor(private levelListing: LevelListing, private containingMenu: LevelBrowseMenu) {
-        super(0, 0, 88 * 2 + 10, 50 * 2 + 10);
+        super(0, 0, 88 * 2 + 10, 50 * 2 + 10 - 24);
 
         if (levelListing.isStarted && !levelListing.isCleared) {
             this.normalBackColor = "#200b";
@@ -484,11 +516,13 @@ class LevelBrowseButton extends Button {
         let imageTile = new ImageTile(thumbnail, 0, 0, thumbnail.width, thumbnail.height);
 
         // make sure scale of this is good
-        let imageFromTile = new ImageFromTile(0, 0, 88 * 2, 50 * 2, imageTile);
-        imageFromTile.zoom = 4;
+        let imageFromTile = new ImageFromTile(0, 0, 88 * 2 - 30, 50 * 2, imageTile);
+        imageFromTile.zoom = 3;
+        imageFromTile.xOffset = -13;
+        imageFromTile.yOffset = -12;
         this.AddChild(imageFromTile);
 
-        let texts = new Panel(0, 0, 370, 80);
+        let texts = new Panel(0, 0, 400, 65);
         texts.layout = "vertical";
 
 
@@ -509,7 +543,7 @@ class LevelBrowseButton extends Button {
         byLineText.textAlign = "left";
         byLineText.yOffset = 20;
 
-        let byLineTextContainer = new Panel(0, 0, 320, 20);
+        let byLineTextContainer = new Panel(0, 0, 340, 20);
         byLineTextContainer.AddChild(byLineText);
         byLine.AddChild(byLineTextContainer);
 
@@ -558,48 +592,14 @@ class LevelBrowseButton extends Button {
 
 class LevelBrowseSortButton extends Button {
 
-    cachedListings: LevelListing[] = [];
+    cachedPages: {pageIndex: number, levels: LevelListing[]}[] = [];
     searchTime: Date | null = null;
 
-    constructor(private parent: LevelBrowseMenu, name: string, searchFunc: () => Promise<LevelListing[]>) {
+    constructor(private parent: LevelBrowseMenu, name: string, private searchFunc: (pageIndex: number) => Promise<LevelBrowseResults>) {
         super(0, parent.searchButtons.length * 60 + 50, 210, 50);
 
-        this.onClickEvents.push(() => {
-
-            if (this.parent.isDataLoadInProgress) {
-                audioHandler.PlaySound("error", false);
-            } else {
-                let secondsSinceLastSearch = 60;
-                if (this.searchTime) secondsSinceLastSearch = (+(new Date()) - +(this.searchTime || 0)) / 1000;
-                if ((this.parent.currentSearchButton != this || secondsSinceLastSearch < 10) && this.cachedListings.length > 0) {
-                    // pull from cache
-                    this.parent.levels = this.cachedListings;
-                    this.parent.PopulateLevelPanel();
-                } else {
-                    // run this search function
-                    this.parent.isDataLoadInProgress = true;
-                    this.parent.levels = [];
-                    this.parent.PopulateLevelPanel();
-                    this.searchTime = new Date();
-
-                    let getLevelsPromise = searchFunc();
-                    getLevelsPromise.then(levels => {
-                        this.parent.isDataLoadInProgress = false;
-                        this.cachedListings = levels;
-                        this.parent.levels = levels;
-                        this.parent.PopulateLevelPanel();
-                    }).catch((error) => {
-                        console.error(error);
-                    });
-                }
-
-            }
-
-
-            this.parent.currentSearchButton = this;
-        })
+        this.onClickEvents.push(() => { this.RequestLevels(0); })
         this.margin = 15;
-
         let label = new UIText(0, 0, name, 24, "white");
         label.textAlign = "right";
         label.yOffset = 22;
@@ -607,7 +607,42 @@ class LevelBrowseSortButton extends Button {
         this.AddChild(label);
     }
 
+    RequestLevels(pageIndex: number): void {
+        if (this.parent.isDataLoadInProgress) {
+            audioHandler.PlaySound("error", false);
+        } else {
+            let secondsSinceLastSearch = 60;
+            if (this.searchTime) secondsSinceLastSearch = (+(new Date()) - +(this.searchTime || 0)) / 1000;
+            let cache = this.cachedPages.find(a => a.pageIndex == pageIndex);
+            if ((this.parent.currentSearchButton != this || secondsSinceLastSearch < 60) && cache && cache.levels.length > 0) {
+                // pull from cache
+                this.parent.levels = cache.levels;
+                this.parent.currentPageIndex = pageIndex;
+                this.parent.PopulateLevelPanel();
+            } else {
+                // run this search function
+                this.parent.isDataLoadInProgress = true;
+                this.parent.levels = [];
+                this.parent.PopulateLevelPanel();
+                this.searchTime = new Date();
 
+                let getLevelsPromise = this.searchFunc(pageIndex);
+                getLevelsPromise.then(results => {
+                    this.parent.isDataLoadInProgress = false;
+                    this.cachedPages = this.cachedPages.filter(a => a.pageIndex != pageIndex); // delete existing cache for this page
+                    this.cachedPages.push({pageIndex: pageIndex, levels: results.levels});
+                    this.parent.levels = results.levels;
+                    this.parent.numberOfPages = results.pageCount;
+                    this.parent.currentPageIndex = pageIndex;
+                    this.parent.PopulateLevelPanel();
+                }).catch((error) => {
+                    console.error(error);
+                });
+            }
+        }
+
+        this.parent.currentSearchButton = this;
+    }
 
     Update(): void {
         super.Update();
@@ -631,14 +666,14 @@ class FilterToggle extends Button {
     image!: ImageFromTile;
     originalX: number = 0;
 
-    constructor(public parentMenu: LevelBrowseMenu, selectedImage: ImageTile, unselectedImage: ImageTile, onToggle: (isOn: boolean) => void, initialState: boolean) {
-        super(700, 530, 150, 50);
+    constructor(public parentMenu: LevelBrowseMenu, private prefix: string, selectedImage: ImageTile, unselectedImage: ImageTile, onToggle: (isOn: boolean) => void, initialState: boolean) {
+        super(675, 530, 275, 50);
 
         this.image = new ImageFromTile(0, 0, 48, 48, unselectedImage);
         this.image.zoom = 2;
         this.AddChild(this.image);
 
-        this.text = new UIText(0, 0, "Filtered", 18, "white");
+        this.text = new UIText(0, 0, this.prefix + " " + "Filtered", 18, "white");
         this.text.yOffset = 25;
         this.text.xOffset = -5;
         this.text.textAlign = "right";
@@ -646,7 +681,7 @@ class FilterToggle extends Button {
 
         this.onClickEvents.push(() => {
             this.isSelected = !this.isSelected;
-            this.text.text = this.isSelected ? "Included" : "Filtered";
+            this.text.text = this.prefix + " " + (this.isSelected ? "Included" : "Filtered");
             this.image.imageTile = this.isSelected ? selectedImage : unselectedImage;
             onToggle(this.isSelected);
             parentMenu.PopulateLevelPanel();

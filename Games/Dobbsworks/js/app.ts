@@ -9,6 +9,7 @@ let uiHandler = new UiHandler();
 let moneyService = new MoneyService();
 let toastService = new ToastService();
 let audioHandler: AudioHandler;
+let inputDisplay = new InputDisplay();
 let currentLevelListing: LevelListing | null = null;
 let gameLoadedState = -1;
 
@@ -20,6 +21,7 @@ function Initialize() {
     mouseHandler = new MouseHandler(canvas);
     audioHandler = new AudioHandler();
     audioHandler.Initialize();
+    new FocusHandler().Initialize();
     
     UnloadHandler.RegisterUnloadHandler();
     KeyboardHandler.InitKeyHandlers();
@@ -100,6 +102,7 @@ function Draw() {
     }
     
     toastService.Draw(camera.ctx);
+    inputDisplay.Draw(camera.ctx);
 
     BenchmarkService.Log("DrawDone");
 }
@@ -157,11 +160,9 @@ function Update() {
                 }
             }
 
-            if (currentMap && !doesMenuBlockMapUpdate && !editorHandler.isInEditMode && currentMap.CanPause() && !MenuHandler.CurrentMenu?.blocksPause) {
-                let isOnMainMenu = MenuHandler.CurrentMenu instanceof MainMenu;
-                if (KeyboardHandler.IsKeyPressed(KeyAction.Pause, true) && !isOnMainMenu) {
-                    let msSinceUnpause = (+(new Date()) - +PauseMenu.UnpauseTime);
-                    if (msSinceUnpause > 100) MenuHandler.SubMenu(PauseMenu);
+            if (CanGamePause()) {
+                if (KeyboardHandler.IsKeyPressed(KeyAction.Pause, true)) {
+                    PauseGame();
                 }
             }
 
@@ -172,6 +173,20 @@ function Update() {
     }
     mouseHandler.UpdateMouseChanged();
     KeyboardHandler.AfterUpdate();
+}
+
+function CanGamePause(): boolean {
+    if (currentMap && !MenuHandler.CurrentMenu?.stopsMapUpdate && !editorHandler.isInEditMode && currentMap.CanPause() && !MenuHandler.CurrentMenu?.blocksPause) {
+        let isOnMainMenu = MenuHandler.CurrentMenu instanceof MainMenu;
+        if (!isOnMainMenu) {
+            return true;
+        }
+    }
+    return false;
+}
+function PauseGame() {
+    let msSinceUnpause = (+(new Date()) - +PauseMenu.UnpauseTime);
+    if (msSinceUnpause > 100) MenuHandler.SubMenu(PauseMenu);
 }
 
 

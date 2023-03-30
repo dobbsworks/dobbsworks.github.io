@@ -30,6 +30,10 @@ var MushroomPlatform = /** @class */ (function (_super) {
             rider.dy = -3.8;
             if (rider instanceof Player) {
                 rider.forcedJumpTimer = 28;
+                if (rider instanceof HoverPlayer) {
+                    rider.isFloating = false;
+                    rider.RefreshFloatTimer();
+                }
             }
             rider.parentSprite = null;
             this.bouncetimer = 30;
@@ -63,6 +67,10 @@ var MushroomSpring = /** @class */ (function (_super) {
             rider.dy = -3.3;
             if (rider instanceof Player) {
                 rider.forcedJumpTimer = 28;
+                if (rider instanceof HoverPlayer) {
+                    rider.isFloating = false;
+                    rider.RefreshFloatTimer();
+                }
             }
             rider.parentSprite = null;
             this.bouncetimer = 30;

@@ -18,10 +18,11 @@ var Hazard = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Hazard.prototype.Update = function () {
-        var player = this.layer.sprites.find(function (a) { return a instanceof Player; });
-        if (player) {
-            if (this.DoesPlayerOverlap(player) && this.IsHazardActive()) {
-                player.OnPlayerHurt();
+        var players = this.layer.sprites.filter(function (a) { return a instanceof Player; });
+        for (var _i = 0, players_1 = players; _i < players_1.length; _i++) {
+            var player_1 = players_1[_i];
+            if (this.DoesPlayerOverlap(player_1) && this.IsHazardActive()) {
+                player_1.OnPlayerHurt();
             }
         }
     };

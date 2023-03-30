@@ -13,16 +13,21 @@ function CreateTitle() {
             "Dove",
 
             "Kirbs",
-            "Tank",
+            //"Tank",
             //"Shiner",
             "Dae",
             "Hudson",
             "Al",
             "Pixel",
             "Mantis",
+            "Theron",
+            "Popples",
+            "Doopu",
             Rand([
+                "Torgan",
+                "Serene",
+                "Glain",
                 "Gorj",
-                "MoS",
                 "The Molsc",
             ])
         ])
@@ -97,6 +102,15 @@ function CreateTitle() {
         `So Long, and Thanks for all the ${animal1}s`,
         `Gugyugubah!`,
         `Crouching ${animal1}, Hidden ${animal2}`,
+        `${char1} Misses the Nai`,
+        `${char1} Uploads Hot Garbage`,
+        Rand(["Perfect Episode, 8.5/10", "Worst Episode Ever, 8.5/10"]),
+        `${char1} (PC)`,
+        `Backwards Pirouette, Backwards Pirouette`,
+        `${char1} Ditches Yoshi`,
+        `${char1} Taunts The Biters`,
+        `${char1} Only, No Items, Final Destination`,
+
     ]);
 }
 

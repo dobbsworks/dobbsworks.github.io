@@ -442,7 +442,7 @@ var Player = /** @class */ (function (_super) {
         if (this.standingOn.some(function (a) { return !a.tileType.canWalkOn; }))
             this.dx = 0;
         if (this.dy > 0 && isJumpHeld && this.canPlayerFloatJump && !this.isFloating && this.floatFramesLeftForThisJump > 0) {
-            var isInCannon = this.layer.sprites.some(function (a) { return a instanceof RedCannon && a.holdingPlayer; });
+            var isInCannon = this.layer.sprites.some(function (a) { return a instanceof RedCannon && a.heldPlayer == _this; });
             var tappedJumpThisFrame = KeyboardHandler.IsKeyPressed(KeyAction.Action1, true);
             if (!isInCannon && (this.forcedJumpTimer <= 0 || tappedJumpThisFrame)) {
                 this.isFloating = true;
@@ -714,7 +714,7 @@ var Player = /** @class */ (function (_super) {
                 else if (sprite.canStandOn && currentlyAbove && isHorizontalOverlap) {
                 }
                 else if (!sprite.isInDeathAnimation && this.xRight > sprite.x && this.x < sprite.xRight && this.yBottom > sprite.y && this.y < sprite.yBottom) {
-                    if (this.isSliding) {
+                    if (this.isSliding && sprite.killedByProjectiles) {
                         sprite.isActive = false;
                         var deadSprite = new DeadEnemy(sprite);
                         this.layer.sprites.push(deadSprite);
@@ -725,6 +725,12 @@ var Player = /** @class */ (function (_super) {
                         }
                     }
                 }
+            }
+            else if (sprite instanceof Player && sprite !== this && sprite.Overlaps(this)) {
+                // bumping in to a DOOPLICATE
+                console.log(sprite, this);
+                this.OnPlayerDead(false).dooplicateDeath = true;
+                sprite.OnPlayerDead(false).dooplicateDeath = true;
             }
             else {
                 if (landingOnTop && sprite.canBeBouncedOn) {
@@ -809,20 +815,30 @@ var Player = /** @class */ (function (_super) {
         }
     };
     Player.prototype.OnPlayerDead = function (canRespawn) {
-        if (!this.isActive)
-            return;
+        if (!this.isActive) {
+            return (this.layer.sprites.find(function (a) { return a instanceof DeadPlayer; }));
+        }
         this.OnDead();
         this.isActive = false;
-        // log player death
-        var newDeathCount = StorageService.IncrementDeathCounter((currentLevelListing === null || currentLevelListing === void 0 ? void 0 : currentLevelListing.level.code) || "");
-        var deadPlayer = new DeadPlayer(this, newDeathCount, canRespawn);
-        editorHandler.bankedCheckpointTime += this.age;
-        if (levelGenerator)
-            levelGenerator.bankedClearTime += this.age;
-        this.layer.sprites.push(deadPlayer);
         audioHandler.PlaySound("dead", true);
-        camera.autoscrollX = 0;
-        camera.autoscrollY = 0;
+        if (this.isDuplicate) {
+            var deadPlayer = new DeadPlayer(this, -1, canRespawn);
+            this.layer.sprites.push(deadPlayer);
+            deadPlayer.isDuplicate = true;
+            return deadPlayer;
+        }
+        else {
+            // log player death
+            var newDeathCount = StorageService.IncrementDeathCounter((currentLevelListing === null || currentLevelListing === void 0 ? void 0 : currentLevelListing.level.code) || "");
+            var deadPlayer = new DeadPlayer(this, newDeathCount, canRespawn);
+            this.layer.sprites.push(deadPlayer);
+            editorHandler.bankedCheckpointTime += this.age;
+            if (levelGenerator)
+                levelGenerator.bankedClearTime += this.age;
+            camera.autoscrollX = 0;
+            camera.autoscrollY = 0;
+            return deadPlayer;
+        }
     };
     Player.prototype.IsOnIce = function () {
         return this.standingOn.length > 0 && this.standingOn.some(function (a) { return a.tileType.isSlippery; });
@@ -869,10 +885,11 @@ var Player = /** @class */ (function (_super) {
         }
     };
     Player.prototype.PlayerItem = function () {
+        var _this = this;
         var _a;
         this.throwTimer++;
         var startedHolding = false;
-        var isInCannon = this.layer.sprites.some(function (a) { return a instanceof RedCannon && a.holdingPlayer; });
+        var isInCannon = this.layer.sprites.some(function (a) { return a instanceof RedCannon && a.heldPlayer == _this; });
         if (!this.heldItem
             && KeyboardHandler.IsKeyPressed(KeyAction.Action2, false)
             && !this.isClimbing
@@ -1017,6 +1034,7 @@ var Player = /** @class */ (function (_super) {
         }
     };
     Player.prototype.GetFrameData = function (frameNum) {
+        var _this = this;
         var sourceImage = "dobbs";
         var sourceImageOffset = this.sourceImageOffset;
         if (this.iFrames > 64) {
@@ -1031,7 +1049,7 @@ var Player = /** @class */ (function (_super) {
             if (Math.floor(this.age / 8) % 2 == 0)
                 sourceImage = "dobbsGhost";
         }
-        var isInCannon = this.layer.sprites.some(function (a) { return a instanceof RedCannon && a.holdingPlayer; });
+        var isInCannon = this.layer.sprites.some(function (a) { return a instanceof RedCannon && a.heldPlayer == _this; });
         if (isInCannon) {
             return {
                 imageTile: tiles["empty"][0][0],
@@ -1128,6 +1146,7 @@ var DeadPlayer = /** @class */ (function (_super) {
         _this.width = 9;
         _this.respectsSolidTiles = false;
         _this.imageOffset = 0;
+        _this.dooplicateDeath = false;
         if (player instanceof HoverPlayer)
             _this.imageOffset = 1;
         _this.dx = player.dx;
@@ -1148,41 +1167,46 @@ var DeadPlayer = /** @class */ (function (_super) {
             this.dx = -maxSpeed;
         this.ApplyGravity();
         this.MoveByVelocity();
-        if (this.age > 45) {
-            currentMap.fadeOutRatio = (this.age - 45) / 14;
+        if (this.isDuplicate && this.age > 60) {
+            this.ReplaceWithSpriteType(Poof);
         }
-        if (this.age > 60) {
-            if (levelGenerator) {
-                this.isActive = false;
-                levelGenerator.OnLose();
+        if (!this.isDuplicate) {
+            if (this.age > 45) {
+                currentMap.fadeOutRatio = (this.age - 45) / 14;
             }
-            else {
-                editorHandler.SwitchToEditMode(true);
-                editorHandler.SwitchToPlayMode();
-                if (camera.target) {
-                    camera.x = camera.target.xMid;
-                    camera.y = camera.target.yMid;
+            if (this.age > 60) {
+                if (levelGenerator) {
+                    this.isActive = false;
+                    levelGenerator.OnLose();
                 }
-                camera.targetX = camera.x;
-                camera.targetY = camera.y;
+                else {
+                    editorHandler.SwitchToEditMode(true);
+                    editorHandler.SwitchToPlayMode();
+                    if (camera.target) {
+                        camera.x = camera.target.xMid;
+                        camera.y = camera.target.yMid;
+                    }
+                    camera.targetX = camera.x;
+                    camera.targetY = camera.y;
+                }
             }
-        }
-        var overlappingWings = this.layer.sprites.filter(function (a) { return a instanceof ReviveWings && _this.Overlaps(a); });
-        if (this.age <= 60 && overlappingWings.length > 0 && this.canRespawn) {
-            audioHandler.PlaySound("respawn", true);
-            var newPlayer = this.ReplaceWithSpriteType(this.imageOffset == 1 ? HoverPlayer : Player);
-            var wings = overlappingWings[0];
-            wings.isActive = false;
-            newPlayer.x = wings.xMid - newPlayer.width / 2;
-            newPlayer.y = wings.yMid - newPlayer.height / 2;
-            newPlayer.dx = 0;
-            newPlayer.dy = 0;
-            camera.target = newPlayer;
-            camera.targetX = newPlayer.xMid;
-            camera.targetY = newPlayer.yBottom - 12;
-            camera.AdjustCameraTargetForMapBounds();
-            camera.transitionTimer = 30;
-            currentMap.fadeOutRatio = 0;
+            var overlappingWings = this.layer.sprites.filter(function (a) { return a instanceof ReviveWings && _this.Overlaps(a); });
+            if (this.age <= 60 && overlappingWings.length > 0 && this.canRespawn) {
+                audioHandler.PlaySound("respawn", true);
+                var newPlayer = this.ReplaceWithSpriteType(this.imageOffset == 1 ? HoverPlayer : Player);
+                var wings = overlappingWings[0];
+                wings.isActive = false;
+                newPlayer.x = wings.xMid - newPlayer.width / 2;
+                newPlayer.y = wings.yMid - newPlayer.height / 2;
+                newPlayer.dx = 0;
+                newPlayer.dy = 0;
+                camera.target = newPlayer;
+                camera.targetX = newPlayer.xMid;
+                camera.targetY = newPlayer.yBottom - 12;
+                camera.AdjustCameraTargetForMapBounds();
+                camera.transitionTimer = 30;
+                currentMap.fadeOutRatio = 0;
+            }
         }
     };
     DeadPlayer.prototype.GetFrameData = function (frameNum) {
@@ -1196,6 +1220,8 @@ var DeadPlayer = /** @class */ (function (_super) {
         };
     };
     DeadPlayer.prototype.OnAfterDraw = function (camera) {
+        if (this.deathCount == -1)
+            return;
         var ctx = camera.ctx;
         var fontsize = 16;
         ctx.fillStyle = "#0008";

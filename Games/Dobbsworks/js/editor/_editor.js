@@ -123,7 +123,7 @@ var EditorHandler = /** @class */ (function () {
         var tilePanel = this.CreateFloatingButtonPanel(tilePanelButtons, 5, 9);
         /* ENEMY PANEL */
         var enemyTypes = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, Wooly, WoolyBooly, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
-            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, BaddleTrigger,];
+            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, BaddleTrigger,];
         var enemyButtons = enemyTypes.map(function (a) { return new EditorButtonSprite(a); });
         enemyButtons.filter(function (a) { return a.spriteType == Piggle || a.spriteType == Snail; }).forEach(function (a) { return hotbarDefaults.push(a); });
         var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 7);
@@ -149,8 +149,8 @@ var EditorHandler = /** @class */ (function () {
         gizmoButtons.push(new EditorButtonTile(TileType.HangingBars, "Hanging bars"));
         gizmoButtons.push(new EditorButtonTile(TileType.Ice, "Ice Block"));
         gizmoButtons.push(new EditorButtonTile(TileType.IceTop, "Ice Top"));
-        gizmoButtons.push(new EditorButtonTile(TileType.WindRight, "Wind"));
-        gizmoButtons.push(new EditorButtonTile(TileType.FastWindRight, "Fast Wind"));
+        gizmoButtons.push(new EditorButtonTile(TileType.WindRight, "Wind").AppendImage(tiles["uiButtonAdd"][0][0]));
+        gizmoButtons.push(new EditorButtonTile(TileType.FastWindRight, "Fast Wind").AppendImage(tiles["uiButtonAdd"][0][0]));
         gizmoButtons.push(new EditorButtonSprite(WindTriggerRight));
         gizmoButtons.push(new EditorButtonSprite(WindTriggerReset));
         gizmoButtons.push(new EditorButtonTile(TileType.OneWayRight, "One-way").AppendImage(tiles["uiButtonAdd"][0][0]));
@@ -163,14 +163,17 @@ var EditorHandler = /** @class */ (function () {
         gizmoButtons.push(new EditorButtonTile(TileType.WallJumpRight, "Wall Jump (right)"));
         // gizmoButtons.push(new EditorButtonTile(TileType.WallWarpLeft, "Warp Wall (left)"));
         // gizmoButtons.push(new EditorButtonTile(TileType.WallWarpRight, "Warp Wall (right)"));
+        gizmoButtons.push(new EditorButtonSprite(Doopster));
+        gizmoButtons.push(new EditorButtonSprite(Dabbot));
         var gizmoPanel = this.CreateFloatingButtonPanel(gizmoButtons, 5, 6);
         var brushTypeHandle = new EditorButtonDrawerHandle(tiles["editor"][4][0], "Brush types", []);
-        this.brushPanel = new EditorButtonDrawer(this.mainPanel.x - 160, this.mainPanel.y, 70, 70, brushTypeHandle, [
-            new EditorButtonFillBrush(CircleBrush, tiles["editor"][4][3]),
-            new EditorButtonFillBrush(RectangleBrush, tiles["editor"][4][2]),
-            new EditorButtonFillBrush(LineBrush, tiles["editor"][4][1]),
-            new EditorButtonFillBrush(FreeformBrush, tiles["editor"][4][0]),
-        ]);
+        var brushButtons = [
+            new EditorButtonFillBrush(CircleBrush, tiles["editor"][4][3], 0),
+            new EditorButtonFillBrush(RectangleBrush, tiles["editor"][4][2], 1),
+            new EditorButtonFillBrush(LineBrush, tiles["editor"][4][1], 2),
+            new EditorButtonFillBrush(FreeformBrush, tiles["editor"][4][0], 3),
+        ];
+        this.brushPanel = new EditorButtonDrawer(this.mainPanel.x - 160, this.mainPanel.y, 70, 70, brushTypeHandle, brushButtons);
         this.brushPanel.children.forEach(function (a) {
             if (a instanceof EditorButtonFillBrush) {
                 a.onClickEvents.push(function () {
@@ -191,9 +194,6 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonTile(TileType.AppearingBlockOff, "Appearing block"),
             new EditorButtonTile(TileType.DisappearingBlockOff, "Disappearing block"),
             new EditorButtonSprite(FloorButton),
-            new EditorButtonSprite(LeftSideButton),
-            new EditorButtonSprite(RightSideButton),
-            new EditorButtonSprite(CeilingButton),
             new EditorButtonTile(TileType.DiodeRightOff, "Diode").AppendImage(tiles["uiButtonAdd"][0][0]),
             new EditorButtonTile(TileType.AndGateRightOff, "And gate").AppendImage(tiles["uiButtonAdd"][0][0]),
             new EditorButtonTile(TileType.InverterRightOff, "Inverter").AppendImage(tiles["uiButtonAdd"][0][0]),
@@ -212,9 +212,12 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonSprite(FerrisMotorLeft).AppendImage(tiles["editor"][0][2]).ChangeTooltip("Ferris Motor (counter-clockwise)"),
             new EditorButtonSprite(FastFerrisMotorRight).AppendImage(tiles["editor"][6][2]).ChangeTooltip("Fast Ferris Motor (clockwise)"),
             new EditorButtonSprite(FastFerrisMotorLeft).AppendImage(tiles["editor"][5][2]).ChangeTooltip("Fast Ferris Motor (counter-clockwise)"),
-            new EditorButtonTile(TileType.TrackHorizontal, "Straight Track").AppendImage(tiles["uiButtonAdd"][0][0]),
-            new EditorButtonTile(TileType.TrackCurveDownRight, "Track Curve").AppendImage(tiles["uiButtonAdd"][0][0]),
-            new EditorButtonTile(TileType.TrackLeftCap, "Track Cap").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.TrackHorizontal, "Straight Track").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.TrackCurveDownRight, "Track Curve").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.TrackLeftCap, "Track Cap").AppendImage(tiles["uiButtonAdd"][0][0]),
+            // new EditorButtonTile(TileType.TrackBridge, "Track Bridge"),
+            new EditorButtonTrackTool(),
+            new EditorButtonTile(TileType.TrackBranchDownLeftOff, "Track Branch").AppendImage(tiles["uiButtonAdd"][0][0]),
             new EditorButtonSprite(Lever),
             new EditorButtonSprite(Lightbulb),
             new EditorButtonTile(TileType.UnpoweredWindRight, "Wind generator"),
@@ -257,7 +260,9 @@ var EditorHandler = /** @class */ (function () {
         backgroundLoadHandle.AddChild(new ImageFromTile(0, 0, 50, 50, tiles["editor"][0][8]));
         var backgroundLoadPanel = new Panel(this.brushPanel.x + 70 + 10, 10, 70, 70);
         backgroundLoadPanel.AddChild(backgroundLoadHandle);
-        this.saveDrawer = new EditorSaveDrawer(this.mainPanel.x + this.mainPanel.width + 10, 10);
+        this.saveDrawer = new EditorSaveDrawer(this.mainPanel.x + this.mainPanel.width + 10 - 70, 10);
+        var optionsButton = OptionsMenu.CreateOptionsButton();
+        optionsButton.targetX -= 70;
         var mapSizeHandle = new EditorButtonDrawerHandle(tiles["editor"][4][4], "Edit map size", [new MapSizeEditor()]);
         var mapSizePanel = new Panel(backgroundLoadPanel.x + 80, backgroundLoadPanel.y, 70, 70);
         mapSizePanel.AddChild(mapSizeHandle);
@@ -305,12 +310,14 @@ var EditorHandler = /** @class */ (function () {
         // TODO - prevent other buttons from being used while options is open
         // let optionsPanel = OptionsMenu.CreateOptionsButton();
         // optionsPanel.targetX -= 80;
-        this.editorParentElementsTop.push(this.backgroundPanel, backgroundLoadPanel, levelFlowHandlePanel, this.saveDrawer, mapSizePanel, musicHandlePanel, exitPanel);
+        this.editorParentElementsTop.push(this.backgroundPanel, backgroundLoadPanel, levelFlowHandlePanel, this.saveDrawer, optionsButton, mapSizePanel, musicHandlePanel, exitPanel);
         this.editorParentElementsBottom.push(this.mainPanel, eraserPanel, this.mainToolPanel, this.brushPanel, resetPanel);
         (_a = uiHandler.elements).push.apply(_a, __spreadArrays(this.editorParentElementsTop, this.editorParentElementsBottom));
         this.editorParentElementsTop.forEach(function (a) { return a.backColor = "#1138"; });
         this.editorParentElementsBottom.forEach(function (a) { return a.backColor = "#1138"; });
         hotbarDefaults.forEach(function (a) { return _this.hotbar.OnToolSelect(a); });
+        var brushPref = StorageService.GetPreference("brush", "3");
+        brushButtons[+brushPref].Click();
     };
     EditorHandler.prototype.CreateFloatingButtonPanel = function (buttons, maxDisplayedRows, tilesPerRow) {
         var panel = new Panel(this.mainPanel.x, 90, 70 * tilesPerRow, maxDisplayedRows * 70);
@@ -503,8 +510,9 @@ var EditorHandler = /** @class */ (function () {
                 this.transitionValue--;
             // ghost player
             if (currentMap.frameNum % 10 == 0) {
-                var player_1 = currentMap.mainLayer.sprites.find(function (a) { return a instanceof Player; });
-                if (player_1) {
+                var players = currentMap.mainLayer.sprites.filter(function (a) { return a instanceof Player; });
+                for (var _i = 0, players_1 = players; _i < players_1.length; _i++) {
+                    var player_1 = players_1[_i];
                     var newFrame = { fd: player_1.GetFrameData(currentMap.frameNum), x: player_1.x, y: player_1.y };
                     var matchesLatest = false;
                     var latestFrame = this.playerFrames[this.playerFrames.length - 1];
@@ -544,9 +552,9 @@ var EditorHandler = /** @class */ (function () {
             !KeyboardHandler.IsKeyPressed(KeyAction.Down, false)) {
             this.cameraMoveTimer = 0;
         }
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorMinimize, true))
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorMinimize, true) && MenuHandler.CurrentMenu == null)
             this.ToggleMinimizeMode();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true))
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true) && MenuHandler.CurrentMenu == null)
             this.eraserButton.Click();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorPlayerHotkey, true)) {
             var isUsingHoverPlayer = editorHandler.sprites.some(function (a) { return a.spriteType == HoverPlayer; });
@@ -594,12 +602,12 @@ var EditorHandler = /** @class */ (function () {
         };
         var this_1 = this;
         // really hacky fix to deal with occasional duplicate player objects
-        for (var _i = 0, _a = this.sprites; _i < _a.length; _i++) {
-            var sprite = _a[_i];
+        for (var _a = 0, _b = this.sprites; _a < _b.length; _a++) {
+            var sprite = _b[_a];
             _loop_2(sprite);
         }
-        for (var _b = 0, _c = this.sprites; _b < _c.length; _b++) {
-            var sprite = _c[_b];
+        for (var _c = 0, _d = this.sprites; _c < _d.length; _c++) {
+            var sprite = _d[_c];
             sprite.Update();
         }
         if (currentMap) {

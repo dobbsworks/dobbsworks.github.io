@@ -20,6 +20,8 @@
     <script src="js/systems/replayHandler.js?v=1.6.0b1"></script>
     <script src="js/systems/camera.js?v=1.6.0b1"></script>
     <script src="js/systems/audioHandler.js?v=1.6.0b1"></script>
+    <script src="js/systems/focusHandler.js?v=1.6.0b1"></script>
+    <script src="js/systems/inputDisplay.js?v=1.6.0b1"></script>
     <script src="js/levelStructure/frameData.js?v=1.6.0b1"></script>
     <script src="js/levelStructure/imageTile.js?v=1.6.0b1"></script>
     <script src="js/sprites/_sprite.js?v=1.6.0b1"></script>
@@ -100,6 +102,8 @@
     <script src="js/sprites/gadgets/springBox.js?v=1.6.0b1"></script>
     <script src="js/sprites/gadgets/colorRing.js?v=1.6.1"></script>
     <script src="js/sprites/gadgets/angelWings.js?v=1.6.0b1"></script>
+    <script src="js/sprites/gadgets/doopster.js"></script>
+    <script src="js/sprites/gadgets/dabbot.js"></script>
     
     <script src="js/sprites/level/goldGear.js?v=1.6.0b1"></script>
     <script src="js/sprites/level/redGear.js?v=1.6.0b1"></script>
@@ -133,6 +137,7 @@
     <script src="js/ui/editorButtonDrawer.js?v=1.6.0b1"></script>
     <script src="js/ui/editorButtonDrawerHandle.js?v=1.6.0b1"></script>
     <script src="js/ui/editorButtonEraser.js?v=1.6.0b1"></script>
+    <script src="js/ui/editorButtonTrackTool.js?v=1.6.0b1"></script>
     <script src="js/ui/editorButtonToggle.js?v=1.6.0b1"></script>
     <script src="js/ui/editorButtonBackgroundSource.js?v=1.6.0b1"></script>
     <script src="js/ui/editorButtonBackgroundLoad.js?v=1.6.0b1"></script>
@@ -245,7 +250,7 @@
         <img src="images/snouter.png?v=1.6.0b1" data-cols="2" data-rows="5" />
         <img src="images/snowman.png?v=1.6.0b1" data-cols="4" data-rows="2" />
         <img src="images/shrub.png?v=1.6.0b1" data-cols="8" data-rows="6" />
-        <img src="images/spider.png?v=1.6.0b1" data-cols="4" data-rows="2" />
+        <img src="images/spider.png?v=1.6.0b1" data-cols="5" data-rows="2" />
         <img src="images/slime.png?v=1.6.0b1" data-cols="15" data-rows="2" />
         <img src="images/crab.png?v=1.6.0b1" data-cols="2" data-rows="2" />
         <img src="images/chest.png?v=1.6.0b1" data-cols="6" data-rows="1" />
@@ -267,7 +272,7 @@
         <img src="images/aviator.png?v=1.6.0b1" data-cols="4" data-rows="3" />
         <img src="images/cannon.png?v=1.6.0b1" data-cols="16" data-rows="8" />
         <img src="images/ring.png?v=1.6.0b1" data-cols="5" data-rows="4" />
-        <img src="images/motorTrack.png?v=1.6.0b1" data-cols="4" data-rows="6" />
+        <img src="images/motorTrack.png?v=1.6.0b1" data-cols="8" data-rows="6" />
         <img src="images/rocket.png?v=1.6.0b1" data-cols="1" data-rows="1" />
         <img src="images/coin.png?v=1.6.0b1" data-cols="6" data-rows="4" />
         <img src="images/dobbloon.png?v=1.6.0b1" data-cols="6" data-rows="4" />
@@ -314,6 +319,9 @@
         <img src="images/angelWings.png?v=1.6.0b1" data-cols="5" data-rows="1" />
         <img src="images/shimmer.png?v=1.6.0b1" data-cols="11" data-rows="1" />
         <img src="images/wind.png?v=1.6.0b1" data-cols="8" data-rows="4" />
+        <img src="images/doopster.png?v=1.6.0b1" data-cols="7" data-rows="1" />
+        <img src="images/dabbot.png?v=1.6.0b1" data-cols="1" data-rows="1" />
+        <img src="images/bluescreen.png?v=1.6.0b1" data-cols="1" data-rows="1" />
 
         
         <img src="images/avatars.png" data-cols="16" data-rows="12" />
@@ -431,6 +439,7 @@
             <audio src="audio/sfx/carnivalVictoryShort.mp3"></audio>
             <audio src="audio/sfx/respawn.mp3"></audio>
             <audio src="audio/sfx/warp.mp3"></audio>
+            <audio src="audio/sfx/bap.mp3"></audio>
 
             <audio bpm="88" src="audio/sfx/instrument-square.mp3"></audio>
             <audio bpm="88" src="audio/sfx/instrument-flute.mp3"></audio>

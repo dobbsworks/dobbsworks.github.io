@@ -26,6 +26,11 @@ var FloorButton = /** @class */ (function (_super) {
         _this.onTimer = 0;
         return _this;
     }
+    Object.defineProperty(FloorButton, "clockwiseRotationSprite", {
+        get: function () { return LeftSideButton; },
+        enumerable: false,
+        configurable: true
+    });
     FloorButton.prototype.Update = function () {
         var _this = this;
         var spritesOnTop = this.layer.sprites.filter(function (a) { return a.parentSprite == _this; });

@@ -82,8 +82,8 @@ var LevelMap = /** @class */ (function () {
             a.Update();
         });
         player = (this.mainLayer.sprites.find(function (a) { return a instanceof Player; }));
-        if (player) {
-            var _loop_1 = function (tile) {
+        var _loop_1 = function (player_1) {
+            var _loop_2 = function (tile) {
                 if (tile instanceof LevelTile && tile.tileType.standChange) {
                     var existingStandChangeTile = this_1.standChangeTiles.find(function (a) { return a.tile === tile; });
                     if (!existingStandChangeTile) {
@@ -91,31 +91,29 @@ var LevelMap = /** @class */ (function () {
                     }
                 }
             };
-            var this_1 = this;
-            for (var _i = 0, _a = player.standingOn; _i < _a.length; _i++) {
+            for (var _i = 0, _a = player_1.standingOn; _i < _a.length; _i++) {
                 var tile = _a[_i];
-                _loop_1(tile);
+                _loop_2(tile);
             }
-            var _loop_2 = function (standChangeTile) {
+            var _loop_3 = function (standChangeTile) {
                 standChangeTile.standDuration++;
                 var tile = standChangeTile.tile;
                 var tileTypeChange = tile.tileType.standChange;
                 if (tileTypeChange) {
                     if (standChangeTile.standDuration > tileTypeChange.delay) {
                         tile.layer.SetTile(tile.tileX, tile.tileY, TileType[tileTypeChange.tileTypeName]);
-                        this_2.standChangeTiles = this_2.standChangeTiles.filter(function (a) { return a !== standChangeTile; });
+                        this_1.standChangeTiles = this_1.standChangeTiles.filter(function (a) { return a !== standChangeTile; });
                     }
                 }
             };
-            var this_2 = this;
-            for (var _b = 0, _c = this.standChangeTiles; _b < _c.length; _b++) {
+            for (var _b = 0, _c = this_1.standChangeTiles; _b < _c.length; _b++) {
                 var standChangeTile = _c[_b];
-                _loop_2(standChangeTile);
+                _loop_3(standChangeTile);
             }
-            this.standChangeTiles = this.standChangeTiles.filter(function (a) { return player.standingOn.indexOf(a.tile) > -1; });
-            if (this.frameNum % 2 == 0) {
+            this_1.standChangeTiles = this_1.standChangeTiles.filter(function (a) { return player_1.standingOn.indexOf(a.tile) > -1; });
+            if (this_1.frameNum % 2 == 0) {
                 // only check every other frame to cut down on shimmers
-                var playerTouchingTiles = __spreadArrays(player.standingOn, player.touchedCeilings, player.touchedLeftWalls, player.touchedRightWalls).filter(function (a) { return a instanceof LevelTile; });
+                var playerTouchingTiles = __spreadArrays(player_1.standingOn, player_1.touchedCeilings, player_1.touchedLeftWalls, player_1.touchedRightWalls).filter(function (a) { return a instanceof LevelTile; });
                 for (var _d = 0, playerTouchingTiles_1 = playerTouchingTiles; _d < playerTouchingTiles_1.length; _d++) {
                     var tile = playerTouchingTiles_1[_d];
                     if (tile.tileType.shimmers) {
@@ -123,57 +121,52 @@ var LevelMap = /** @class */ (function () {
                     }
                 }
             }
-            if (player.justLanded && player.standingOn.some(function (a) { return a.tileType.shimmers; })) {
+            if (player_1.justLanded && player_1.standingOn.some(function (a) { return a.tileType.shimmers; })) {
                 // land down on shimmer
-                var shimmerRipple = new ShimmerRipple(player.xMid, player.yBottom, player.layer, []);
-                player.layer.sprites.push(shimmerRipple);
+                var shimmerRipple = new ShimmerRipple(player_1.xMid, player_1.yBottom, player_1.layer, []);
+                player_1.layer.sprites.push(shimmerRipple);
             }
-            var _loop_3 = function (autoChangeTile) {
+            var _loop_4 = function (autoChangeTile) {
                 autoChangeTile.standDuration++;
                 var tile = autoChangeTile.tile;
                 var tileTypeChange = tile.tileType.autoChange;
                 if (tileTypeChange) {
                     if (autoChangeTile.standDuration > tileTypeChange.delay) {
                         tile.layer.SetTile(tile.tileX, tile.tileY, TileType[tileTypeChange.tileTypeName]);
-                        this_3.autoChangeTiles = this_3.autoChangeTiles.filter(function (a) { return a !== autoChangeTile; });
+                        this_1.autoChangeTiles = this_1.autoChangeTiles.filter(function (a) { return a !== autoChangeTile; });
                     }
                 }
             };
-            var this_3 = this;
-            for (var _e = 0, _f = this.autoChangeTiles; _e < _f.length; _e++) {
+            for (var _e = 0, _f = this_1.autoChangeTiles; _e < _f.length; _e++) {
                 var autoChangeTile = _f[_e];
-                _loop_3(autoChangeTile);
+                _loop_4(autoChangeTile);
             }
-            if (!this.spriteKillerCheckComplete) {
-                this.spriteKillerCheckComplete = true;
-                this.hasSpriteKillers = this.mainLayer.tiles.flatMap(function (a) { return a; }).some(function (a) { return a.tileType == TileType.SpriteKiller; });
+            if (!this_1.spriteKillerCheckComplete) {
+                this_1.spriteKillerCheckComplete = true;
+                this_1.hasSpriteKillers = this_1.mainLayer.tiles.flatMap(function (a) { return a; }).some(function (a) { return a.tileType == TileType.SpriteKiller; });
             }
-            if (this.hasSpriteKillers) {
-                var onScreenSprites = this.mainLayer.sprites.filter(function (a) { return a.IsOnScreen(); });
+            if (this_1.hasSpriteKillers) {
+                var onScreenSprites = this_1.mainLayer.sprites.filter(function (a) { return a.IsOnScreen(); });
                 var deletedSprite = false;
                 for (var _g = 0, onScreenSprites_1 = onScreenSprites; _g < onScreenSprites_1.length; _g++) {
                     var sprite = onScreenSprites_1[_g];
                     if (sprite instanceof Player || sprite instanceof DeadPlayer || sprite instanceof Poof || sprite instanceof KeyDomino || sprite instanceof ShimmerRipple)
                         continue;
-                    var xs = [sprite.x, sprite.xRight, sprite.xMid].map(function (a) { return Math.floor(a / _this.mainLayer.tileWidth); }).filter(Utility.OnlyUnique);
-                    var ys = [sprite.y, sprite.yBottom, sprite.yMid].map(function (a) { return Math.floor(a / _this.mainLayer.tileHeight); }).filter(Utility.OnlyUnique);
-                    for (var _h = 0, xs_1 = xs; _h < xs_1.length; _h++) {
-                        var tileX = xs_1[_h];
-                        for (var _j = 0, ys_1 = ys; _j < ys_1.length; _j++) {
-                            var tileY = ys_1[_j];
-                            var tile = this.mainLayer.GetTileByIndex(tileX, tileY);
-                            if (tile.tileType == TileType.SpriteKiller) {
-                                sprite.ReplaceWithSpriteType(Poof);
-                                deletedSprite = true;
-                                if (sprite instanceof Enemy)
-                                    sprite.OnDead();
-                            }
-                        }
+                    if (sprite.DoesOverlapSpriteKiller()) {
+                        sprite.ReplaceWithSpriteType(Poof);
+                        deletedSprite = true;
+                        if (sprite instanceof Enemy)
+                            sprite.OnDead();
                     }
                 }
                 if (deletedSprite)
                     audioHandler.PlaySound("erase", true);
             }
+        };
+        var this_1 = this;
+        for (var _i = 0, _a = this.mainLayer.sprites.filter(function (a) { return a instanceof Player; }); _i < _a.length; _i++) {
+            var player_1 = _a[_i];
+            _loop_1(player_1);
         }
         if (levelGenerator) {
             var gear = this.mainLayer.sprites.find(function (a) { return a instanceof GoldGear; });
@@ -271,8 +264,12 @@ var LevelMap = /** @class */ (function () {
         if (this.fadeOutRatio && !editorHandler.isInEditMode) {
             camera.ctx.fillStyle = "rgba(0,0,0," + this.fadeOutRatio.toFixed(2) + ")";
             camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
-            var deadPlayer = this.mainLayer.sprites.find(function (a) { return a instanceof DeadPlayer; });
-            if (deadPlayer) {
+            var deadPlayers = this.mainLayer.sprites.filter(function (a) { return a instanceof DeadPlayer; });
+            for (var _i = 0, deadPlayers_1 = deadPlayers; _i < deadPlayers_1.length; _i++) {
+                var deadPlayer = deadPlayers_1[_i];
+                if (deadPlayer.dooplicateDeath) {
+                    new ImageFromTile(0, 0, 960, 576, tiles["bluescreen"][0][0]).Draw(ctx);
+                }
                 this.mainLayer.DrawSprite(deadPlayer, camera, this.frameNum);
             }
         }

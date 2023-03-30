@@ -56,6 +56,11 @@ class AudioHandler {
         if (this.gainNodeSfx && this.gainNodeSfx.gain) this.gainNodeSfx.gain.value = 0;
     }
 
+    Unmute(): void {
+        this.gainNodeMusic.gain.value = this.ConvertVolumeToGain(StorageService.GetMusicVolume());
+        this.gainNodeSfx.gain.value = this.ConvertVolumeToGain(StorageService.GetSfxVolume());
+    }
+
     LoadAudioFiles(): void {
         let audioFiles = Array.from(document.getElementsByTagName("audio"));
         for (let audioFile of audioFiles) {

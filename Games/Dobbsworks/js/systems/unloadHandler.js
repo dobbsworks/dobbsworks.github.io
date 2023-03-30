@@ -3,8 +3,9 @@ var UnloadHandler = /** @class */ (function () {
     function UnloadHandler() {
     }
     UnloadHandler.ShouldPrompt = function () {
-        if (window.location.href.startsWith("https://localhost:7121/"))
+        if (!StorageService.GetPreferenceBool("confirm-close", true))
             return false;
+        return true;
         var unsavedChangesExist = true;
         var currentSaveValue = currentMap.GetExportString();
         if (currentSaveValue == startLevel)

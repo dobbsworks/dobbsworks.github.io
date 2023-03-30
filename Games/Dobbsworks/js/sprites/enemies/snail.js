@@ -31,9 +31,7 @@ var Snail = /** @class */ (function (_super) {
     };
     Snail.prototype.OnSpinBounce = function () { this.ReplaceWithSpriteType(Poof); };
     Snail.prototype.OnBounce = function () {
-        this.isActive = false;
-        var shell = new SnailShell(this.x + 1, this.y, this.layer, []);
-        this.layer.sprites.push(shell);
+        this.ReplaceWithSpriteType(SnailShell);
     };
     Snail.prototype.GetFrameData = function (frameNum) {
         var frame = Math.floor(frameNum / 10) % 2;
