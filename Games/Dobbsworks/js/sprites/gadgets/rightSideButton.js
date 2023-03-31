@@ -46,6 +46,8 @@ var RightSideButton = /** @class */ (function (_super) {
             if (this.onTimer > 0)
                 this.onTimer--;
         }
+        this.dx *= 0.9;
+        this.dy *= 0.9;
     };
     RightSideButton.prototype.GetPowerPoints = function () {
         if (this.onTimer > 0) {

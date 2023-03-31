@@ -50,6 +50,8 @@ var Doopster = /** @class */ (function (_super) {
                 this.duplicationTimer = 0;
             }
         }
+        this.dx *= 0.9;
+        this.dy *= 0.9;
     };
     Doopster.prototype.CreateDuplicate = function () {
         if (this.sourceSprite) {

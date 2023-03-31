@@ -197,6 +197,7 @@ class LevelLayer {
         }
         this.sprites.forEach(a => a.updatedThisFrame = false);
         let motors = this.sprites.filter(a => a instanceof Motor);
+        motors.sort((a, b) => a.y - b.y)
         let platforms = this.sprites.filter(a => a.isPlatform && !(a instanceof Motor));
         let players = this.sprites.filter(a => a instanceof Player);
         platforms.sort((a, b) => a.y - b.y)

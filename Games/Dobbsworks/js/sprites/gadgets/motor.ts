@@ -33,18 +33,18 @@ class Motor extends Sprite {
         if (this.connectionDirectionY == 1) possibleConnectionSprites.sort((a, b) => a.y - b.y);
         if (this.connectionDirectionY == -1) possibleConnectionSprites.sort((a, b) => -a.y + b.y);
 
-        let targetsMotor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == possibleConnectionSprites[0]);
-        if (!targetsMotor) {
+        let targetAlreadyOnMotor = this.layer.sprites.some(a => a instanceof Motor && a.connectedSprite == possibleConnectionSprites[0]);
+        if (!targetAlreadyOnMotor) {
             this.connectedSprite = possibleConnectionSprites[0];
             this.connectionDistance = this.connectedSprite.y - this.y;
         } else {
             // Below comment block can duplicate already held sprites (useful for ferris motor setups)
 
-            // let targetSprite = possibleConnectionSprites[0];
-            // let spriteType = <SpriteType>targetSprite.constructor;
-            // this.connectedSprite = new spriteType(targetSprite.x, targetSprite.y, targetSprite.layer, []);
-            // this.layer.sprites.push(this.connectedSprite);
-            // this.connectionDistance = this.connectedSprite.y - this.y;
+            let targetSprite = possibleConnectionSprites[0];
+            let spriteType = <SpriteType>targetSprite.constructor;
+            this.connectedSprite = new spriteType(targetSprite.x, targetSprite.y, targetSprite.layer, []);
+            this.layer.sprites.push(this.connectedSprite);
+            this.connectionDistance = this.connectedSprite.y - this.y;
         }
     }
 

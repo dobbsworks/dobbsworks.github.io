@@ -21,6 +21,8 @@ class CeilingButton extends Sprite {
         } else {
             if (this.onTimer > 0) this.onTimer--;
         }
+        this.dx *= 0.9;
+        this.dy *= 0.9;
     }
     
     GetPowerPoints(): Pixel[] { 

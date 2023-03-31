@@ -31,6 +31,8 @@ class Doopster extends Sprite {
                 this.duplicationTimer = 0;
             }
         }
+        this.dx *= 0.9;
+        this.dy *= 0.9;
     }
 
     CreateDuplicate(): void {

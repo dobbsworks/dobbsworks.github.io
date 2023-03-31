@@ -51,18 +51,18 @@ var Motor = /** @class */ (function (_super) {
             possibleConnectionSprites.sort(function (a, b) { return a.y - b.y; });
         if (this.connectionDirectionY == -1)
             possibleConnectionSprites.sort(function (a, b) { return -a.y + b.y; });
-        var targetsMotor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == possibleConnectionSprites[0]; });
-        if (!targetsMotor) {
+        var targetAlreadyOnMotor = this.layer.sprites.some(function (a) { return a instanceof Motor && a.connectedSprite == possibleConnectionSprites[0]; });
+        if (!targetAlreadyOnMotor) {
             this.connectedSprite = possibleConnectionSprites[0];
             this.connectionDistance = this.connectedSprite.y - this.y;
         }
         else {
             // Below comment block can duplicate already held sprites (useful for ferris motor setups)
-            // let targetSprite = possibleConnectionSprites[0];
-            // let spriteType = <SpriteType>targetSprite.constructor;
-            // this.connectedSprite = new spriteType(targetSprite.x, targetSprite.y, targetSprite.layer, []);
-            // this.layer.sprites.push(this.connectedSprite);
-            // this.connectionDistance = this.connectedSprite.y - this.y;
+            var targetSprite = possibleConnectionSprites[0];
+            var spriteType = targetSprite.constructor;
+            this.connectedSprite = new spriteType(targetSprite.x, targetSprite.y, targetSprite.layer, []);
+            this.layer.sprites.push(this.connectedSprite);
+            this.connectionDistance = this.connectedSprite.y - this.y;
         }
     };
     Motor.prototype.GetTileRatio = function (num) {

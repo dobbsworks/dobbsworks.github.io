@@ -162,6 +162,7 @@ abstract class Sprite {
 
         this.windDy = windTile.windY + currentMap.globalWindY * 0.3;
         if (this.windDy < 0) this.gustUpTimer = 3;
+
     }
 
     ReactToVerticalWind(): void {

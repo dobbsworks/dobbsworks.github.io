@@ -210,6 +210,7 @@ var LevelLayer = /** @class */ (function () {
         }
         this.sprites.forEach(function (a) { return a.updatedThisFrame = false; });
         var motors = this.sprites.filter(function (a) { return a instanceof Motor; });
+        motors.sort(function (a, b) { return a.y - b.y; });
         var platforms = this.sprites.filter(function (a) { return a.isPlatform && !(a instanceof Motor); });
         var players = this.sprites.filter(function (a) { return a instanceof Player; });
         platforms.sort(function (a, b) { return a.y - b.y; });

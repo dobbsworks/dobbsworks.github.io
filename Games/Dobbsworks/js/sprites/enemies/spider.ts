@@ -171,8 +171,8 @@ class ClimbingSpurpider extends Spurpider {
                 if (this.dy < 0) this.dy = 0;
             }
 
-            let targetDx = this.anchorX < this.x ? -speed : speed;
-            this.AccelerateHorizontally(accel/3, targetDx);
+            let targetDx = (this.anchorX - this.x) / 10;
+            this.AccelerateHorizontally(Math.abs(targetDx), targetDx);
             this.dx *= 0.98;
         }
     }

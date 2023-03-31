@@ -197,8 +197,8 @@ var ClimbingSpurpider = /** @class */ (function (_super) {
                 if (this.dy < 0)
                     this.dy = 0;
             }
-            var targetDx = this.anchorX < this.x ? -speed : speed;
-            this.AccelerateHorizontally(accel / 3, targetDx);
+            var targetDx = (this.anchorX - this.x) / 10;
+            this.AccelerateHorizontally(Math.abs(targetDx), targetDx);
             this.dx *= 0.98;
         }
     };
