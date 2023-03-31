@@ -87,6 +87,9 @@ var RedCannon = /** @class */ (function (_super) {
                     this.CannonBlastPlayer();
                 }
             }
+            if (!this.IsOnScreen()) {
+                this.heldPlayer.OnPlayerDead(false);
+            }
         }
     };
     RedCannon.prototype.CannonBlastPlayer = function () {

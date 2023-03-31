@@ -62,6 +62,9 @@ class RedCannon extends Sprite {
                     this.CannonBlastPlayer();
                 }
             }
+            if (!this.IsOnScreen()) {
+                this.heldPlayer.OnPlayerDead(false);
+            }
         }
     }
 
