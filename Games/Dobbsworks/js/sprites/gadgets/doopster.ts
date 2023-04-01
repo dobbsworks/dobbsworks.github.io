@@ -38,7 +38,7 @@ class Doopster extends Sprite {
     CreateDuplicate(): void {
         if (this.sourceSprite) {
             let spriteType = <SpriteType>this.sourceSprite.constructor;
-            this.duplicateSprite = new spriteType(this.sourceSprite.x, this.sourceSprite.y + 12 + this.sourceSprite.height, this.sourceSprite.layer, []);
+            this.duplicateSprite = new spriteType(this.xMid - this.sourceSprite.width/2, this.sourceSprite.y + 12 + this.sourceSprite.height, this.sourceSprite.layer, []);
             this.duplicateSprite.age = this.sourceSprite.age;
             this.duplicateSprite.isDuplicate = true;
             this.layer.sprites.push(this.duplicateSprite);

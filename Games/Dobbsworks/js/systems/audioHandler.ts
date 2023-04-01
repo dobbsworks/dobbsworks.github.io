@@ -182,6 +182,7 @@ class AudioHandler {
         "jungle",
         "clocktower",
         "overdue",
+        "cherry",
     ]
 }
 

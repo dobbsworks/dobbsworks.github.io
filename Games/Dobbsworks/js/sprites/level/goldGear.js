@@ -43,7 +43,7 @@ var GoldGear = /** @class */ (function (_super) {
                 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5
             ];
             this.frame = frameIndeces[this.age % frameIndeces.length] * 20;
-            var players = (this.layer.sprites.filter(function (a) { return a instanceof Player; }));
+            var players = (this.layer.sprites.filter(function (a) { return a instanceof Player && !a.isDuplicate; }));
             for (var _i = 0, players_1 = players; _i < players_1.length; _i++) {
                 var player_1 = players_1[_i];
                 if (player_1.IsGoingToOverlapSprite(this)) {

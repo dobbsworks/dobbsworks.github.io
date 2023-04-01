@@ -31,7 +31,7 @@ class GoldGear extends Sprite {
 
             this.frame = frameIndeces[this.age % frameIndeces.length] * 20;
 
-            let players = <Player[]>(this.layer.sprites.filter(a => a instanceof Player));
+            let players = <Player[]>(this.layer.sprites.filter(a => a instanceof Player && !a.isDuplicate));
             for (let player of players) {
                 if (player.IsGoingToOverlapSprite(this)) {
                     this.isTouched = true;
