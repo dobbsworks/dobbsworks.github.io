@@ -74,7 +74,7 @@ class LevelBrowseMenu extends Menu {
         this.userDetailsPanel.layout = "vertical";
         ret.push(this.userDetailsPanel);
 
-        this.toggles.push(new FilterToggle(this, "Glitched levels", tiles["spider"][0][0], tiles["spider"][0][1], (isOn) => {
+        this.toggles.push(new FilterToggle(this, "Glitched levels", tiles["spider"][0][0], tiles["spider"][4][0], (isOn) => {
             this.includeGlitchLevels = isOn;
         }, this.includeGlitchLevels));
 

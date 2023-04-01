@@ -32,6 +32,7 @@ var Doopster = /** @class */ (function (_super) {
         var riders = this.layer.sprites.filter(function (a) { return a.parentSprite == _this; });
         this.hasRider = riders.length > 0;
         if (!this.sourceSprite || !this.sourceSprite.isActive || !this.duplicateSprite || !this.duplicateSprite.isActive) {
+            this.duplicateSprite = null;
             if (riders.length == 1) {
                 var toDuplicate = riders[0];
                 if (this.sourceSprite == toDuplicate) {

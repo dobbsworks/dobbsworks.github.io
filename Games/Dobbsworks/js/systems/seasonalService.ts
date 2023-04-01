@@ -10,7 +10,9 @@ class SeasonalService {
 
             if (currentMonth == 10 && currentDate == 31) {
                 SeasonalService.event = SeasonalEvent.Halloween;
-            } else {
+            } else if (currentMonth == 4 && currentDate == 1) {
+                SeasonalService.event = SeasonalEvent.AprilFools;
+            } else{
                 SeasonalService.event = SeasonalEvent.None;
             }
 
@@ -23,5 +25,6 @@ class SeasonalService {
 
 enum SeasonalEvent {
     None,
-    Halloween
+    Halloween,
+    AprilFools
 }

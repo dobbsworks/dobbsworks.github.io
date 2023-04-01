@@ -107,19 +107,19 @@ var Motor = /** @class */ (function (_super) {
                     if (this.direction == trackDirections[0].Opposite()) {
                         if (this.direction == Direction.Up && this.yMid % 12 < 6) {
                             this.direction = Direction.Down;
-                            this.y -= this.y % 12;
+                            this.y -= this.yMid % 12 - 6;
                         }
                         if (this.direction == Direction.Down && this.yMid % 12 > 6) {
                             this.direction = Direction.Up;
-                            this.y -= this.y % 12;
+                            this.y -= this.yMid % 12 - 6;
                         }
                         if (this.direction == Direction.Left && this.xMid % 12 < 6) {
                             this.direction = Direction.Right;
-                            this.x -= this.x % 12;
+                            this.x -= this.xMid % 12 - 6;
                         }
                         if (this.direction == Direction.Right && this.xMid % 12 > 6) {
                             this.direction = Direction.Left;
-                            this.x -= this.x % 12;
+                            this.x -= this.xMid % 12 - 6;
                         }
                     }
                     this.dx = speedRatio * this.direction.x;

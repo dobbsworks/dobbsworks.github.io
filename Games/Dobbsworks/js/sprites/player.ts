@@ -910,6 +910,9 @@ class Player extends Sprite {
             this.heldItem.parentSprite = null;
             if (!this.heldItem.updatedThisFrame) {
                 this.heldItem.updatedThisFrame = true;
+                // move rocket above head before first update
+                if (this.heldItem instanceof Rocket && !this.heldItem.isRocketing) this.UpdateHeldItemLocation();
+
                 this.heldItem.Update();
             }
             if (this.heldItem && this.heldItem.canBeHeld) {

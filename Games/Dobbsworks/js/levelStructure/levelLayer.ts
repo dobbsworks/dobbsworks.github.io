@@ -291,10 +291,14 @@ class LevelLayer {
         if (!ctx) return;
         let imgTile = frameData.imageTile;
         //if (sprite.isInTractorBeam) frameData.yFlip = !frameData.yFlip;
+
+        let xFlip = frameData.xFlip;
+        if (SeasonalService.GetEvent() == SeasonalEvent.AprilFools) xFlip = !xFlip;
+
         imgTile.Draw(ctx,
             (sprite.x - camera.x - frameData.xOffset) * scale + camera.canvas.width / 2,
             (sprite.y - camera.y - frameData.yOffset) * scale + camera.canvas.height / 2,
-            scale, frameData.xFlip, frameData.yFlip);
+            scale, xFlip, frameData.yFlip);
 
         if (debugMode) {
             ctx.lineWidth = 1;

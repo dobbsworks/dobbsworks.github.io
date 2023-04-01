@@ -298,7 +298,10 @@ var LevelLayer = /** @class */ (function () {
             return;
         var imgTile = frameData.imageTile;
         //if (sprite.isInTractorBeam) frameData.yFlip = !frameData.yFlip;
-        imgTile.Draw(ctx, (sprite.x - camera.x - frameData.xOffset) * scale + camera.canvas.width / 2, (sprite.y - camera.y - frameData.yOffset) * scale + camera.canvas.height / 2, scale, frameData.xFlip, frameData.yFlip);
+        var xFlip = frameData.xFlip;
+        if (SeasonalService.GetEvent() == SeasonalEvent.AprilFools)
+            xFlip = !xFlip;
+        imgTile.Draw(ctx, (sprite.x - camera.x - frameData.xOffset) * scale + camera.canvas.width / 2, (sprite.y - camera.y - frameData.yOffset) * scale + camera.canvas.height / 2, scale, xFlip, frameData.yFlip);
         if (debugMode) {
             ctx.lineWidth = 1;
             ctx.strokeStyle = "#CCC";

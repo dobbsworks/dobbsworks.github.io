@@ -15,6 +15,7 @@ class Doopster extends Sprite {
         let riders = this.layer.sprites.filter(a => a.parentSprite == this);
         this.hasRider = riders.length > 0;
         if (!this.sourceSprite || !this.sourceSprite.isActive || !this.duplicateSprite || !this.duplicateSprite.isActive) {
+            this.duplicateSprite = null;
             if (riders.length == 1) {
                 let toDuplicate = riders[0];
                 if (this.sourceSprite == toDuplicate) {

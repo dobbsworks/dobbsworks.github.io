@@ -32,16 +32,22 @@ class Key extends Sprite {
             //     #X        X#
             //     #          #
 
-            let tilesToCheck = [
-                ...this.GetTilesByCoords([this.x, this.xRight - 0.1], [this.y - 0.1, this.yBottom]),
-                ...this.GetTilesByCoords([this.x - 0.1, this.xRight], [this.y, this.yBottom - 0.1])
-            ];
-            let lockTiles = [];
-            for (let tileToCheck of tilesToCheck) {
-                if (tileToCheck.tileType == TileType.Lock) {
-                    lockTiles.push(tileToCheck);
-                }
-            }
+            // let tilesToCheck = [
+            //     ...this.GetTilesByCoords([this.x, this.xRight - 0.1], [this.y - 0.1, this.yBottom]),
+            //     ...this.GetTilesByCoords([this.x - 0.1, this.xRight], [this.y, this.yBottom - 0.1])
+            // ];
+            let lockTiles = [
+                ...this.touchedRightWalls.filter(a => a instanceof LevelTile && a.tileType == TileType.Lock),
+                ...this.touchedLeftWalls.filter(a => a instanceof LevelTile && a.tileType == TileType.Lock),
+                ...this.touchedCeilings.filter(a => a instanceof LevelTile && a.tileType == TileType.Lock),
+                ...this.standingOn.filter(a => a instanceof LevelTile && a.tileType == TileType.Lock),
+            ] as LevelTile[];
+            // for (let tileToCheck of tilesToCheck) {
+            //     if (tileToCheck.tileType == TileType.Lock) {
+            //         lockTiles.push(tileToCheck);
+            //     }
+            // }
+
 
             if (lockTiles.length > 0) {
                 for (let lockTile of lockTiles) {

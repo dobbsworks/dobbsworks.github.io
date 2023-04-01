@@ -79,7 +79,7 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
         this.userDetailsPanel.backColor = "#1138";
         this.userDetailsPanel.layout = "vertical";
         ret.push(this.userDetailsPanel);
-        this.toggles.push(new FilterToggle(this, "Glitched levels", tiles["spider"][0][0], tiles["spider"][0][1], function (isOn) {
+        this.toggles.push(new FilterToggle(this, "Glitched levels", tiles["spider"][0][0], tiles["spider"][4][0], function (isOn) {
             _this.includeGlitchLevels = isOn;
         }, this.includeGlitchLevels));
         var clearedToggle = new FilterToggle(this, "Cleared levels", tiles["pig"][5][0], tiles["pig"][0][0], function (isOn) {

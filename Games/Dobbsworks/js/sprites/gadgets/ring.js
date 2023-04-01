@@ -30,6 +30,8 @@ var Ring = /** @class */ (function (_super) {
             this.dx *= 0.9;
             this.dy *= 0.9;
         }
+        this.dxFromWind = 0;
+        this.dyFromWind = 0;
         this.MoveByVelocity();
     };
     Ring.prototype.GetFrameData = function (frameNum) {
