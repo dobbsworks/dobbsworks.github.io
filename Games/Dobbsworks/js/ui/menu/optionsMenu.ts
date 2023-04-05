@@ -135,10 +135,10 @@ class PreferencesMenu extends Menu {
         container.layout = "vertical";
         ret.push(container);
 
-        container.AddChild(this.CreateToggle("Confirm before closing game", "confirm-close", true));
-        container.AddChild(this.CreateToggle("Pause when game is minimized", "pause-on-lose-focus", true));
-        container.AddChild(this.CreateToggle("Mute when game is minimized", "mute-on-lose-focus", false));
-        container.AddChild(this.CreateToggle("Display inputs on-screen", "on-screen-input", false));
+        container.AddChild(this.CreateToggle(Preference.ConfirmOnClose));
+        container.AddChild(this.CreateToggle(Preference.PauseOnLoseFocus));
+        container.AddChild(this.CreateToggle(Preference.MuteOnLoseFocus));
+        container.AddChild(this.CreateToggle(Preference.OnScreenInputs));
 
         let backButton = this.CreateButton("Back");
         container.AddChild(backButton);
@@ -149,15 +149,15 @@ class PreferencesMenu extends Menu {
         return ret;
     }
 
-    CreateToggle(text: string, preferenceKey: string, defaultValue: boolean): Button {
-        let button = this.CreateButton(text);
+    CreateToggle(pref: Preference): Button {
+        let button = this.CreateButton(pref.optionText);
 
-        let currentValue = StorageService.GetPreferenceBool(preferenceKey, defaultValue);
+        let currentValue = StorageService.GetPreferenceBool(pref);
         button.borderColor = currentValue ? "#2F2E" : "#F2FE";
 
         button.onClickEvents.push(() => {
             let newValue = button.borderColor == "#F2FE";
-            StorageService.SetPreferenceBool(preferenceKey, newValue);
+            StorageService.SetPreferenceBool(pref, newValue);
             button.borderColor = newValue ? "#2F2E" : "#F2FE";
         })
 

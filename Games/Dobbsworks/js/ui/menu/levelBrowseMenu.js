@@ -61,6 +61,12 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
         this.searchButtons.push(new LevelBrowseSortButton(this, "Most Liked", DataService.GetMostLikedLevels));
         this.searchButtons.push(new LevelBrowseSortButton(this, "Easiest", DataService.GetEasiestLevels));
         this.searchButtons.push(new LevelBrowseSortButton(this, "Hardest", DataService.GetHardestLevels));
+        if (ContestService.currentContest) {
+            var contestState = ContestService.currentContest.status;
+            if (contestState == ContestState.results || contestState == ContestState.votingOpen) {
+                this.searchButtons.push(new LevelBrowseSortButton(this, "Contest", DataService.GetContestLevels));
+            }
+        }
         ret.push.apply(ret, this.searchButtons);
         this.searchButtons[0].Click();
         //this.currentSearchButton
@@ -135,7 +141,6 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
     LevelBrowseMenu.prototype.PopulateLevelPanel = function () {
         var _this = this;
         if (this.levelPanel) {
-            var scrollIndex = this.levelPanel.scrollIndex;
             this.levelPanel.scrollIndex = 0;
             this.levelPanel.children = [];
             this.levelPanel.scrollableChildrenUp = [];
@@ -153,9 +158,6 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
                 else {
                     this.levelPanel.AddChild(button);
                 }
-            }
-            for (var i = 0; i < Math.abs(scrollIndex); i++) {
-                this.levelPanel.Scroll(scrollIndex < 0 ? -1 : 1);
             }
             this.UpdatePagination();
         }
@@ -206,7 +208,31 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
             codeText.xOffset = -190;
             codeText.yOffset = -10;
             buttons.AddChild(codeText);
-            buttons.AddChild(new Spacer(0, 0, 200, 10));
+            if (levelListing.isStarted && levelListing.contestVote == 0 && ContestService.currentContest && ContestService.currentContest.status == ContestState.votingOpen) {
+                // contest button
+                var voteButton_1 = new Button(0, 0, 200, 50);
+                voteButton_1.onClickEvents.push(function () {
+                    UIDialog.Alert("Rate the level from 1 (not great) to 5 (the best)", "Cancel");
+                    if (MenuHandler.Dialog) {
+                        MenuHandler.Dialog.AddFiveStarButtons(function (ranking) {
+                            // submit vote
+                            if (levelListing) {
+                                levelListing.contestVote = ranking;
+                                voteButton_1.Disable();
+                                DataService.SubmitContestVote(levelListing.level.code, ranking);
+                            }
+                        });
+                    }
+                });
+                var voteButtonText = new UIText(0, 0, "Submit Vote", 20, "white");
+                voteButton_1.AddChild(voteButtonText);
+                voteButtonText.xOffset = voteButton_1.width / 2;
+                voteButtonText.yOffset = 30;
+                buttons.AddChild(voteButton_1);
+            }
+            else {
+                buttons.AddChild(new Spacer(0, 0, 200, 10));
+            }
             var editButton = new Button(0, 0, 200, 50);
             editButton.onClickEvents.push(function () {
                 if (levelListing) {
@@ -358,7 +384,7 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
             authorContainer.margin = 0;
             topPanel.AddChild(authorContainer);
             authorContainer.layout = "vertical";
-            var authorPanel = CreateTimePanel("Created by", 0, levelListing.author);
+            var authorPanel = CreateTimePanel("Created by", 0, levelListing.author || { username: "[REDACTED]" });
             authorContainer.AddChild(authorPanel);
             this.levelOptionsPanel.AddChild(topPanel);
             this.levelOptionsPanel.AddChild(midPanel);
@@ -508,27 +534,33 @@ var LevelBrowseButton = /** @class */ (function (_super) {
         titleLineText.yOffset = 20;
         titleLine.AddChild(titleLineText);
         var byLine = new Panel(0, 0, 290, 20);
-        byLine.margin = 0;
-        byLine.AddChild(new AvatarPanel(levelListing.author.avatar));
-        var byLineText = new UIText(0, 0, "by " + levelListing.author.username, 14, "white");
-        byLineText.textAlign = "left";
-        byLineText.yOffset = 20;
-        var byLineTextContainer = new Panel(0, 0, 340, 20);
-        byLineTextContainer.AddChild(byLineText);
-        byLine.AddChild(byLineTextContainer);
+        if (levelListing.author) {
+            byLine.margin = 0;
+            byLine.AddChild(new AvatarPanel(levelListing.author.avatar));
+            var byLineText = new UIText(0, 0, "by " + levelListing.author.username, 14, "white");
+            byLineText.textAlign = "left";
+            byLineText.yOffset = 20;
+            var byLineTextContainer = new Panel(0, 0, 340, 20);
+            byLineTextContainer.AddChild(byLineText);
+            byLine.AddChild(byLineTextContainer);
+        }
         texts.AddChild(titleLine);
         texts.AddChild(byLine);
         texts.AddChild(new Spacer(0, 0, 0, 0));
         _this.AddChild(texts);
-        var iconPanel = new Panel(0, 0, 50, 90);
+        var iconPanel = new Panel(0, 0, 24, 75);
         iconPanel.layout = "vertical";
+        iconPanel.margin = 0;
         if (levelListing.isLiked || levelListing.isDisliked) {
             var col = levelListing.isLiked ? 0 : 1;
-            var likeImage = new ImageFromTile(0, 0, 110, 110, tiles["menuButtons"][col][0]);
+            var likeImage = new ImageFromTile(0, 0, 24, 24, tiles["menuButtons"][col][0]);
             likeImage.zoom = 1;
-            likeImage.xOffset = -25;
-            likeImage.yOffset = -30;
             iconPanel.AddChild(likeImage);
+        }
+        if (levelListing.contestVote > 0) {
+            var voteImage = new ImageFromTile(0, 0, 24, 24, tiles["voteStars"][1][0]);
+            voteImage.zoom = 1;
+            iconPanel.AddChild(voteImage);
         }
         _this.AddChild(iconPanel);
         _this.onClickEvents.push(function () {

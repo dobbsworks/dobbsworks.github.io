@@ -10,6 +10,7 @@ var UIElement = /** @class */ (function () {
         this.height = 0;
         this.targetWidth = 0;
         this.targetHeight = 0;
+        this.moveSpeed = 0.25;
         this.targetX = x;
         this.targetY = y;
     }
@@ -49,7 +50,7 @@ var UIElement = /** @class */ (function () {
             this[rawProperty] = target;
         }
         else {
-            this[rawProperty] += (target - value) * 0.25;
+            this[rawProperty] += (target - value) * this.moveSpeed;
             // previously 0.15
         }
     };

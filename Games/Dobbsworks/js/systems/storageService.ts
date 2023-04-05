@@ -86,14 +86,14 @@ class StorageService {
         }
     }
 
-    public static GetPreferenceBool(key: string, initialValue: boolean): boolean {
-        let saved = localStorage.getItem("pref-" + key);
-        if (saved === null) return initialValue;
+    public static GetPreferenceBool(pref: Preference): boolean {
+        let saved = localStorage.getItem("pref-" + pref.key);
+        if (saved === null) return pref.defaultValue;
         return saved == "1";
     }
-    public static SetPreferenceBool(key: string, newValue: boolean): void {
+    public static SetPreferenceBool(pref: Preference, newValue: boolean): void {
         let value = newValue ? "1" : "0";
-        localStorage.setItem("pref-" + key, value);
+        localStorage.setItem("pref-" + pref.key, value);
     }
 
     public static GetPreference(key: string, initialValue: string): string {
@@ -107,4 +107,13 @@ class StorageService {
 
     // TODO, Get all death counts on app load
 
+}
+
+class Preference {
+    constructor(public optionText: string, public key: string, public defaultValue: boolean) {}
+    
+    static ConfirmOnClose: Preference = new Preference("Confirm before closing game", "confirm-close", true);
+    static PauseOnLoseFocus: Preference = new Preference("Pause when game is minimized", "pause-on-lose-focus", true);
+    static MuteOnLoseFocus: Preference = new Preference("Mute when game is minimized", "mute-on-lose-focus", false);
+    static OnScreenInputs: Preference = new Preference("Display inputs on-screen", "on-screen-input", false);
 }

@@ -2,7 +2,6 @@ class DataService {
 
 
     static DefaultErrorHandler(error: string): void {
-        // no additional actions, just send to console
     }
 
 
@@ -31,6 +30,14 @@ class DataService {
         }
         fetch(endpoint, init).then(response => {
             if (response.status && !response.ok) {
+                try {
+                    response.text().then(res => {
+                        try {
+                            let message = JSON.parse(res).message;
+                            if (message) UIDialog.Alert(message, "OK");
+                        } catch (e) { }
+                    })
+                } catch (e) { }
                 throw new Error("Status " + response.status);
             }
             let raw = response.text();
@@ -43,6 +50,7 @@ class DataService {
         }).catch(error => {
             console.error(error);
             (<any>document.getElementById("errorLog")).innerText += error + " \n" + endpoint + " \n" + error.stack;
+
             onError(error);
         });
     }
@@ -225,4 +233,29 @@ class DataService {
             DataService.BaseGet("Users/GetUserStatsByUserId?userId=" + userId, resolve, reject);
         })
     }
+
+
+
+    static GetCurrentContest(): Promise<ContestDT> {
+        return new Promise<ContestDT>((resolve, reject) => {
+            DataService.BaseGet("Contest/GetCurrentContest", resolve, reject);
+        })
+    }
+
+    static SubmitContestLevel(levelCode: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            DataService.BasePost(`Contest/SubmitContestLevel?levelCode=${levelCode}`, {}, resolve, reject);
+        })
+    }
+    static GetContestLevels(pageIndex: number): Promise<LevelBrowseResults> {
+        return new Promise<LevelBrowseResults>((resolve, reject) => {
+            DataService.BaseGet("LevelSearch/ContestLevels?pageIndex=" + pageIndex, resolve, reject);
+        })
+    }
+    static SubmitContestVote(levelCode: string, vote: number): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            DataService.BasePost(`Contest/SubmitContestVote?levelCode=${levelCode}&vote=${vote}`, {}, resolve, reject);
+        })
+    }
+
 }

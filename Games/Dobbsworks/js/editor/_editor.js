@@ -220,7 +220,7 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonTile(TileType.TrackBranchDownLeftOff, "Track Branch").AppendImage(tiles["uiButtonAdd"][0][0]),
             new EditorButtonSprite(Lever),
             new EditorButtonSprite(Lightbulb),
-            new EditorButtonTile(TileType.UnpoweredWindRight, "Wind generator"),
+            new EditorButtonTile(TileType.UnpoweredWindRight, "Wind Generator").AppendImage(tiles["uiButtonAdd"][0][0]),
         ], 4, 8);
         var backgroundHandle = new EditorButtonDrawerHandle(tiles["editor"][0][3], "Background customization", []);
         this.skyEditor = new SkyEditor(this.mainPanel.x - 70 - 10, 110, 700, 300);
@@ -552,9 +552,10 @@ var EditorHandler = /** @class */ (function () {
             !KeyboardHandler.IsKeyPressed(KeyAction.Down, false)) {
             this.cameraMoveTimer = 0;
         }
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorMinimize, true) && MenuHandler.CurrentMenu == null)
+        var isInEditorWithoutOverlayMenu = editorHandler.isInEditMode && (MenuHandler.CurrentMenu == null || MenuHandler.CurrentMenu instanceof BlankMenu);
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorMinimize, true) && isInEditorWithoutOverlayMenu)
             this.ToggleMinimizeMode();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true) && MenuHandler.CurrentMenu == null)
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true) && isInEditorWithoutOverlayMenu)
             this.eraserButton.Click();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorPlayerHotkey, true)) {
             var isUsingHoverPlayer = editorHandler.sprites.some(function (a) { return a.spriteType == HoverPlayer; });

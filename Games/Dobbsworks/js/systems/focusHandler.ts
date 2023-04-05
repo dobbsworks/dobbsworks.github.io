@@ -1,7 +1,7 @@
 class FocusHandler {
     Initialize() {
         document.addEventListener("visibilitychange", () => {
-            if (StorageService.GetPreferenceBool("pause-on-lose-focus", true)) {
+            if (StorageService.GetPreferenceBool(Preference.PauseOnLoseFocus)) {
                 if (document.hidden) {
                     if (CanGamePause()) {
                         PauseGame();
@@ -9,7 +9,7 @@ class FocusHandler {
                 }
             }
 
-            if (StorageService.GetPreferenceBool("mute-on-lose-focus", true)) {
+            if (StorageService.GetPreferenceBool(Preference.MuteOnLoseFocus)) {
                 if (document.hidden) {
                     audioHandler.Mute();
                 } else {

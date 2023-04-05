@@ -702,7 +702,6 @@ class Player extends Sprite {
                 }
             } else if (sprite instanceof Player && sprite !== this && sprite.Overlaps(this)) {
                 // bumping in to a DOOPLICATE
-                console.log(sprite, this);
                 this.OnPlayerDead(false).dooplicateDeath = true;
                 (sprite as Player).OnPlayerDead(false).dooplicateDeath = true;
             } else {

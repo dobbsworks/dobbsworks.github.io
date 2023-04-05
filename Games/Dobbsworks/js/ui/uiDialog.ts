@@ -6,6 +6,9 @@ abstract class UIDialog {
     promptText: string = "";
     promptLines: string[] = [];
     suppressKeyNavigation = false;
+    title: string = "";
+    targetTime: Date | null = null;
+    targetTimeText: string = "";
 
     Draw(ctx: CanvasRenderingContext2D): void {
         ctx.fillStyle = "#0009";
@@ -25,12 +28,34 @@ abstract class UIDialog {
             this.promptLines = UISplitLines(ctx, this.promptText, 450);
         }
         let yIter = 200;
+
+        if (this.title) {
+            ctx.font = `${24}px ${"grobold"}`;
+            ctx.fillText(this.title, ctx.canvas.width / 2, yIter);
+            ctx.font = `${16}px ${"arial"}`;
+            yIter += 36;
+        }
+
         for (let line of this.promptLines) {
             ctx.fillText(line, ctx.canvas.width / 2, yIter);
             yIter += 18;
         }
 
+
         let xIter = 230;
+
+        if (this.targetTime) {
+            let remainingTime = +new Date(this.targetTime) - +new Date();
+            if (remainingTime < 0) remainingTime = 0;
+            let remainingTimeText = Utility.MsToTimeText(remainingTime);
+            let text = this.targetTimeText + ": " + remainingTimeText;
+            ctx.fillStyle = "#BBB";
+            ctx.textAlign = "left";
+            ctx.fillText(text, xIter, 370 - 15);
+            ctx.textAlign = "center";
+        }
+
+
         if (this.options.length == 1) xIter += 175 * 2;
         for (let option of this.options) {
             if (option.x == -1) {
@@ -42,13 +67,22 @@ abstract class UIDialog {
                 if (this.options.length == 2) xIter += 175;
             }
 
-            ctx.fillStyle = option.color;
-            ctx.fillRect(option.x, option.y, option.xRight - option.x, option.yBottom - option.y);
+            option.Draw(ctx);
+        }
+    }
 
-            ctx.strokeStyle = option.isMouseOver ? "#BBB" : "#BBB8";
-            ctx.strokeRect(option.x, option.y, option.xRight - option.x, option.yBottom - option.y);
-            ctx.fillStyle = "#BBB";
-            ctx.fillText(option.text, (option.x + option.xRight) / 2, option.yBottom - 15);
+    AddFiveStarButtons(onClick: (oneToFiveRank: number) => void): void {
+        let xIter = 230;
+        for (let i = 1; i <= 5; i++) {
+            let newOption = new UIDialogStarVote(i, () => {
+                onClick(i);
+            });
+            newOption.x = xIter;
+            newOption.xRight = xIter + 76;
+            newOption.y = 320 - 76;
+            newOption.yBottom = 320;
+            this.options.push(newOption);
+            xIter += 106;
         }
     }
 
@@ -60,9 +94,9 @@ abstract class UIDialog {
             if (mouseHandler.isMouseClicked()) {
                 let option = this.options.find(a => a.isMouseOver);
                 if (option) {
+                    MenuHandler.Dialog = null;
                     option.action(...this.GetButtonActionParameters());
                     this.OnAnyAction();
-                    MenuHandler.Dialog = null;
                     mouseHandler.isMouseDown = false;
                 }
             }
@@ -90,10 +124,17 @@ abstract class UIDialog {
         return [];
     }
 
-    OnAnyAction(): void {}
+    OnAnyAction(): void { }
 
-    OnKeyboardConfirm(): void {}
-    OnKeyboardCancel(): void {}
+    OnKeyboardConfirm(): void { }
+    OnKeyboardCancel(): void { }
+
+    static SetCountdown(title: string, targetTime: Date) {
+        if (MenuHandler.Dialog) {
+            MenuHandler.Dialog.targetTime = targetTime;
+            MenuHandler.Dialog.targetTimeText = title;
+        }
+    }
 
     static Alert(info: string, confirmButtonText: string): void {
         MenuHandler.Dialog = new UIAlert(info, confirmButtonText);
@@ -149,6 +190,35 @@ class UIDialogOption {
             mouseY >= this.y &&
             mouseY <= this.yBottom);
     }
+
+    Draw(ctx: CanvasRenderingContext2D): void {
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x, this.y, this.xRight - this.x, this.yBottom - this.y);
+
+        ctx.strokeStyle = this.isMouseOver ? "#BBB" : "#BBB8";
+        ctx.strokeRect(this.x, this.y, this.xRight - this.x, this.yBottom - this.y);
+        ctx.fillStyle = "#BBB";
+        ctx.fillText(this.text, (this.x + this.xRight) / 2, this.yBottom - 15);
+    }
+}
+
+class UIDialogStarVote extends UIDialogOption {
+    constructor(public rank: number, action: (...args: any[]) => void) {
+        super("", action);
+    }
+
+    Draw(ctx: CanvasRenderingContext2D): void {
+        let imageCol = this.isMouseOver ? 2 : 0;
+        if (MenuHandler.Dialog) {
+            let mouseOverStar = <UIDialogStarVote>MenuHandler.Dialog.options.find(a => a instanceof UIDialogStarVote && a.isMouseOver);
+            if (mouseOverStar && mouseOverStar.rank > this.rank) {
+                imageCol = 1;
+            }
+        }
+
+        let image = tiles["voteStars"][imageCol][0] as ImageTile;
+        ctx.drawImage(image.src, image.xSrc, image.ySrc, image.width, image.height, this.x, this.y, this.xRight - this.x, this.yBottom - this.y);
+    }
 }
 
 class UISmallPrompt extends UIDialog {
@@ -178,7 +248,7 @@ class UISmallPrompt extends UIDialog {
     OnAnyAction(): void {
         try {
             document.body.removeChild(this.inputForm);
-        } catch (e) {}
+        } catch (e) { }
     }
 
     Draw(ctx: CanvasRenderingContext2D): void {
@@ -244,7 +314,7 @@ class UIAlert extends UIDialog {
         this.options.push(new UIDialogOption(confirmText, onConfirmAction));
         this.promptText = messageText;
     }
-    
+
     OnKeyboardConfirm(): void { this.onConfirmAction(); }
     OnKeyboardCancel(): void { this.onConfirmAction(); }
 }
@@ -263,7 +333,7 @@ class UIConfirm extends UIDialog {
         this.options.push(opt1, opt2);
         this.promptText = messageText;
     }
-    
+
     OnKeyboardConfirm(): void { this.onConfirmAction(); }
 }
 
@@ -296,6 +366,6 @@ class UIReadKey extends UIConfirm {
         this.promptLines[this.promptLines.length - 1] = "<" + keyCode + ">";
     }
 
-    OnKeyboardConfirm(): void {};
-    OnKeyboardCancel(): void {};
+    OnKeyboardConfirm(): void { };
+    OnKeyboardCancel(): void { };
 }

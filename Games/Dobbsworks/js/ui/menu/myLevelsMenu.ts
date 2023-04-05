@@ -12,6 +12,8 @@ class MyLevelsMenu extends Menu {
 
     saveSlotChart: SaveSlotChart | null = null;
     publishButton: Button | null = null;
+    cloudDeleteButton: Button | null = null;
+    contestSubmit: Button | null = null;
 
     cloudSavesOptionsPanel: Panel | null = null;
     localSavesOptionsPanel: Panel | null = null;
@@ -53,7 +55,7 @@ class MyLevelsMenu extends Menu {
             if (this.saveSlotChart) {
                 this.saveSlotChart.numSlotsTotal = myLevelsModel.maxUploads;
                 this.saveSlotChart.numSlotsCleared = myLevelsModel.myLevels.filter(a => a.levelState == LevelState.cleared).length;
-                this.saveSlotChart.numSlotsLive = myLevelsModel.myLevels.filter(a => a.levelState == LevelState.live).length;
+                this.saveSlotChart.numSlotsLive = myLevelsModel.myLevels.filter(a => a.levelState == LevelState.live || a.levelState == LevelState.contestSubmitted).length;
                 this.saveSlotChart.numSlotsPending = myLevelsModel.myLevels.filter(a => a.levelState == LevelState.pending).length;
             }
             this.CreateCloudSavesPanel(myLevelsModel.myLevels);
@@ -100,7 +102,7 @@ class MyLevelsMenu extends Menu {
         });
         this.cloudSavesOptionsPanel.AddChild(cloudBackButton);
 
-        let cloudDeleteButton = this.CreateActionButton("Delete", () => {
+        this.cloudDeleteButton = this.CreateActionButton("Delete", () => {
             UIDialog.Confirm("Are you sure you want to delete this level? This cannot be undone.", "Delete it", "Cancel", () => {
 
                 let deletePromise = DataService.RemoveLevel(MyLevelsMenu.selectedCloudCode);
@@ -113,7 +115,7 @@ class MyLevelsMenu extends Menu {
                 MyLevelsMenu.selectedCloudCode = "";
             })
         });
-        this.cloudSavesOptionsPanel.AddChild(cloudDeleteButton);
+        this.cloudSavesOptionsPanel.AddChild(this.cloudDeleteButton);
 
         let cloudEditButton = this.CreateActionButton("Open in Editor", () => {
             if (MyLevelsMenu.selectedCloudCode !== "") {
@@ -148,6 +150,25 @@ class MyLevelsMenu extends Menu {
         this.publishButton = cloudPublishButton;  
         this.cloudSavesOptionsPanel.AddChild(cloudPublishButton);
 
+        let contestSubmitButton = this.CreateActionButton("Submit to Contest", () => {
+            if (MyLevelsMenu.selectedCloudCode !== "") {
+                let level = this.myLevelsData?.myLevels.find(a => a.code === MyLevelsMenu.selectedCloudCode);
+                if (level) {
+                    let publishPromise = DataService.SubmitContestLevel(MyLevelsMenu.selectedCloudCode);
+                    publishPromise.then(() => {
+                        let contest = ContestService.currentContest;
+                        if (contest) {
+                            contest.submittedLevel = MyLevelsMenu.selectedCloudCode;
+                        }
+                        this.ResetCloudSavesPanel();
+                        UIDialog.Alert("Your level is now submitted to the contest!", "Nice!");
+                    }).catch(() => { });
+                }
+            }
+        });
+        this.contestSubmit = contestSubmitButton;  
+        this.cloudSavesOptionsPanel.AddChild(contestSubmitButton);
+
         let cloudPlayButton = this.CreateActionButton("Play", () => {
             let level = this.myLevelsData?.myLevels.find(a => a.code === MyLevelsMenu.selectedCloudCode);
             if (level) {
@@ -155,7 +176,7 @@ class MyLevelsMenu extends Menu {
                 editorHandler.SwitchToPlayMode();
                 MenuHandler.SubMenu(BlankMenu);
                 DataService.LogLevelPlayStarted(level.code);
-                let listing = new LevelListing(level, new UserDT(0, "", "", ""), new UserDT(0, "", "", ""), false, false, false, false, 0)
+                let listing = new LevelListing(level, new UserDT(0, "", "", ""), new UserDT(0, "", "", ""), false, false, false, false, 0, 0, 0);
                 currentLevelListing = listing;
             }
         });
@@ -302,12 +323,16 @@ class MyLevelsMenu extends Menu {
                 this.localSavesPanel.targetX = this.baseRightX + 2000;
                 this.localSavesTitlePanel.targetX = this.baseRightX + 2000;
                 this.cloudSavesOptionsPanel.targetY = this.baseY;
-                if (this.publishButton) {
+                if (this.publishButton && this.contestSubmit && this.cloudDeleteButton) {
                     let levelDt = this.myLevelsData?.myLevels.find(a => a.code == MyLevelsMenu.selectedCloudCode);
                     if (levelDt) {
                         this.publishButton.isHidden = (levelDt.levelState != LevelState.cleared);
+                        let contest = ContestService.currentContest;
+                        this.contestSubmit.isHidden = (levelDt.levelState != LevelState.cleared || contest == null || contest.submittedLevel != "");
+                        this.cloudDeleteButton.isHidden = (contest != null && contest.submittedLevel == MyLevelsMenu.selectedCloudCode);
                     } else {
                         this.publishButton.isHidden = true;
+                        this.contestSubmit.isHidden = true;
                     }
                 }
             }

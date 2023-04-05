@@ -25,6 +25,7 @@ class Dabbot extends Sprite {
         let isJumpPressed = KeyboardHandler.IsKeyPressed(KeyAction.Action1, true);
         if (isJumpPressed && this.isOnGround) {
             this.dy -= 1.5;
+            this.parentSprite = null;
         }
         let leftHeld = KeyboardHandler.IsKeyPressed(KeyAction.Left, false);
         let rightHeld = KeyboardHandler.IsKeyPressed(KeyAction.Right, false);

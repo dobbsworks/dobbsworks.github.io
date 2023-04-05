@@ -19,6 +19,9 @@ var UIDialog = /** @class */ (function () {
         this.promptText = "";
         this.promptLines = [];
         this.suppressKeyNavigation = false;
+        this.title = "";
+        this.targetTime = null;
+        this.targetTimeText = "";
     }
     UIDialog.prototype.Draw = function (ctx) {
         ctx.fillStyle = "#0009";
@@ -34,12 +37,29 @@ var UIDialog = /** @class */ (function () {
             this.promptLines = UISplitLines(ctx, this.promptText, 450);
         }
         var yIter = 200;
+        if (this.title) {
+            ctx.font = 24 + "px " + "grobold";
+            ctx.fillText(this.title, ctx.canvas.width / 2, yIter);
+            ctx.font = 16 + "px " + "arial";
+            yIter += 36;
+        }
         for (var _i = 0, _a = this.promptLines; _i < _a.length; _i++) {
             var line = _a[_i];
             ctx.fillText(line, ctx.canvas.width / 2, yIter);
             yIter += 18;
         }
         var xIter = 230;
+        if (this.targetTime) {
+            var remainingTime = +this.targetTime - +new Date();
+            if (remainingTime < 0)
+                remainingTime = 0;
+            var remainingTimeText = Utility.MsToTimeText(remainingTime);
+            var text = this.targetTimeText + ": " + remainingTimeText;
+            ctx.fillStyle = "#BBB";
+            ctx.textAlign = "left";
+            ctx.fillText(text, xIter, 370 - 15);
+            ctx.textAlign = "center";
+        }
         if (this.options.length == 1)
             xIter += 175 * 2;
         for (var _b = 0, _c = this.options; _b < _c.length; _b++) {
@@ -53,12 +73,25 @@ var UIDialog = /** @class */ (function () {
                 if (this.options.length == 2)
                     xIter += 175;
             }
-            ctx.fillStyle = option.color;
-            ctx.fillRect(option.x, option.y, option.xRight - option.x, option.yBottom - option.y);
-            ctx.strokeStyle = option.isMouseOver ? "#BBB" : "#BBB8";
-            ctx.strokeRect(option.x, option.y, option.xRight - option.x, option.yBottom - option.y);
-            ctx.fillStyle = "#BBB";
-            ctx.fillText(option.text, (option.x + option.xRight) / 2, option.yBottom - 15);
+            option.Draw(ctx);
+        }
+    };
+    UIDialog.prototype.AddFiveStarButtons = function (onClick) {
+        var xIter = 230;
+        var _loop_1 = function (i) {
+            var newOption = new UIDialogStarVote(i, function () {
+                onClick(i);
+            });
+            newOption.x = xIter;
+            newOption.xRight = xIter + 76;
+            newOption.y = 320 - 76;
+            newOption.yBottom = 320;
+            this_1.options.push(newOption);
+            xIter += 106;
+        };
+        var this_1 = this;
+        for (var i = 1; i <= 5; i++) {
+            _loop_1(i);
         }
     };
     UIDialog.prototype.Update = function () {
@@ -68,9 +101,9 @@ var UIDialog = /** @class */ (function () {
             if (mouseHandler.isMouseClicked()) {
                 var option = this.options.find(function (a) { return a.isMouseOver; });
                 if (option) {
+                    MenuHandler.Dialog = null;
                     option.action.apply(option, this.GetButtonActionParameters());
                     this.OnAnyAction();
-                    MenuHandler.Dialog = null;
                     mouseHandler.isMouseDown = false;
                 }
             }
@@ -98,6 +131,12 @@ var UIDialog = /** @class */ (function () {
     UIDialog.prototype.OnAnyAction = function () { };
     UIDialog.prototype.OnKeyboardConfirm = function () { };
     UIDialog.prototype.OnKeyboardCancel = function () { };
+    UIDialog.SetCountdown = function (title, targetTime) {
+        if (MenuHandler.Dialog) {
+            MenuHandler.Dialog.targetTime = targetTime;
+            MenuHandler.Dialog.targetTimeText = title;
+        }
+    };
     UIDialog.Alert = function (info, confirmButtonText) {
         MenuHandler.Dialog = new UIAlert(info, confirmButtonText);
     };
@@ -150,8 +189,36 @@ var UIDialogOption = /** @class */ (function () {
             mouseY >= this.y &&
             mouseY <= this.yBottom);
     };
+    UIDialogOption.prototype.Draw = function (ctx) {
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x, this.y, this.xRight - this.x, this.yBottom - this.y);
+        ctx.strokeStyle = this.isMouseOver ? "#BBB" : "#BBB8";
+        ctx.strokeRect(this.x, this.y, this.xRight - this.x, this.yBottom - this.y);
+        ctx.fillStyle = "#BBB";
+        ctx.fillText(this.text, (this.x + this.xRight) / 2, this.yBottom - 15);
+    };
     return UIDialogOption;
 }());
+var UIDialogStarVote = /** @class */ (function (_super) {
+    __extends(UIDialogStarVote, _super);
+    function UIDialogStarVote(rank, action) {
+        var _this = _super.call(this, "", action) || this;
+        _this.rank = rank;
+        return _this;
+    }
+    UIDialogStarVote.prototype.Draw = function (ctx) {
+        var imageCol = this.isMouseOver ? 2 : 0;
+        if (MenuHandler.Dialog) {
+            var mouseOverStar = MenuHandler.Dialog.options.find(function (a) { return a instanceof UIDialogStarVote && a.isMouseOver; });
+            if (mouseOverStar && mouseOverStar.rank > this.rank) {
+                imageCol = 1;
+            }
+        }
+        var image = tiles["voteStars"][imageCol][0];
+        ctx.drawImage(image.src, image.xSrc, image.ySrc, image.width, image.height, this.x, this.y, this.xRight - this.x, this.yBottom - this.y);
+    };
+    return UIDialogStarVote;
+}(UIDialogOption));
 var UISmallPrompt = /** @class */ (function (_super) {
     __extends(UISmallPrompt, _super);
     function UISmallPrompt(messageText, confirmText, maxLength, onConfirmAction, allowedCharacters // blank to allow all

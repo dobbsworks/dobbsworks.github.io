@@ -728,7 +728,6 @@ var Player = /** @class */ (function (_super) {
             }
             else if (sprite instanceof Player && sprite !== this && sprite.Overlaps(this)) {
                 // bumping in to a DOOPLICATE
-                console.log(sprite, this);
                 this.OnPlayerDead(false).dooplicateDeath = true;
                 sprite.OnPlayerDead(false).dooplicateDeath = true;
             }

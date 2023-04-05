@@ -41,6 +41,7 @@ var Dabbot = /** @class */ (function (_super) {
         var isJumpPressed = KeyboardHandler.IsKeyPressed(KeyAction.Action1, true);
         if (isJumpPressed && this.isOnGround) {
             this.dy -= 1.5;
+            this.parentSprite = null;
         }
         var leftHeld = KeyboardHandler.IsKeyPressed(KeyAction.Left, false);
         var rightHeld = KeyboardHandler.IsKeyPressed(KeyAction.Right, false);

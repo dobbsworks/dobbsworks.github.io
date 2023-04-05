@@ -4,14 +4,14 @@ var FocusHandler = /** @class */ (function () {
     }
     FocusHandler.prototype.Initialize = function () {
         document.addEventListener("visibilitychange", function () {
-            if (StorageService.GetPreferenceBool("pause-on-lose-focus", true)) {
+            if (StorageService.GetPreferenceBool(Preference.PauseOnLoseFocus)) {
                 if (document.hidden) {
                     if (CanGamePause()) {
                         PauseGame();
                     }
                 }
             }
-            if (StorageService.GetPreferenceBool("mute-on-lose-focus", true)) {
+            if (StorageService.GetPreferenceBool(Preference.MuteOnLoseFocus)) {
                 if (document.hidden) {
                     audioHandler.Mute();
                 }

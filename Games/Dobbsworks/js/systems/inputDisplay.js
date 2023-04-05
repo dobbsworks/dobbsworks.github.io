@@ -3,7 +3,7 @@ var InputDisplay = /** @class */ (function () {
     function InputDisplay() {
     }
     InputDisplay.prototype.Draw = function (ctx) {
-        if (!StorageService.GetPreferenceBool("on-screen-input", false))
+        if (!StorageService.GetPreferenceBool(Preference.OnScreenInputs))
             return;
         if (editorHandler.isInEditMode)
             return;

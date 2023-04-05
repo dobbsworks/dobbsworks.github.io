@@ -1,6 +1,6 @@
 class InputDisplay {
     Draw(ctx: CanvasRenderingContext2D): void {
-        if (!StorageService.GetPreferenceBool("on-screen-input", false)) return;
+        if (!StorageService.GetPreferenceBool(Preference.OnScreenInputs)) return;
         if (editorHandler.isInEditMode) return;
 
         let actions = [

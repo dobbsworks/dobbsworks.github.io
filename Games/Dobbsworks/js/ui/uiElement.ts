@@ -16,6 +16,8 @@ abstract class UIElement {
     targetWidth: number = 0;
     targetHeight: number = 0;
 
+    moveSpeed = 0.25;
+
     abstract Draw(ctx: CanvasRenderingContext2D): void;
 
     Update(): void {
@@ -58,7 +60,7 @@ abstract class UIElement {
         if (ratioDiff < 0.0005) {
             this[rawProperty] = target;
         } else {
-            this[rawProperty] += (target - value) * 0.25;
+            this[rawProperty] += (target - value) * this.moveSpeed;
             // previously 0.15
         }
     }

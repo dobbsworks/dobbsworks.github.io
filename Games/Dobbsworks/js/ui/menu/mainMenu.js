@@ -67,7 +67,28 @@ var MainMenu = /** @class */ (function (_super) {
         singlePlayerButton.isNoisy = true;
         if (!isDemoMode)
             ret.push(singlePlayerButton);
-        [playButton, myLevelsButton, recentLevelsButton, demoLevelsButton, singlePlayerButton].forEach(function (b) {
+        var contestButton = new Button(playButtonX + playButtonWidth + 10 + 50, playButtonY + (playButtonHeight + 10) * 2, playButtonWidth - 80, playButtonHeight * 2 + 10);
+        var contestButtonText = new UIText(centerX, playButtonY + 40, "Level Contest!", 30, "#000");
+        contestButton.AddChild(contestButtonText);
+        contestButtonText.xOffset = contestButton.width / 2 - 5;
+        contestButtonText.yOffset = 40;
+        contestButton.isNoisy = true;
+        contestButton.layout = "vertical";
+        var trophyRow = new Panel(0, 0, contestButton.width - 10, 70);
+        trophyRow.AddChild(new Spacer(0, 0, 10, 10));
+        for (var i = 0; i < 3; i++) {
+            var contestIcon = new ImageFromTile(0, 0, 48, 48, tiles["trophies"][i][0]);
+            trophyRow.AddChild(contestIcon);
+        }
+        trophyRow.AddChild(new Spacer(0, 0, 10, 10));
+        contestButton.AddChild(trophyRow);
+        if (!isDemoMode)
+            ret.push(contestButton);
+        contestButton.x += 300;
+        if (!ContestService.currentContest) {
+            contestButton.targetX += 300;
+        }
+        [playButton, myLevelsButton, recentLevelsButton, demoLevelsButton, singlePlayerButton, contestButton].forEach(function (b) {
             b.normalBackColor = "#fff8";
             b.mouseoverBackColor = "#f73738";
             b.borderColor = "#000";
@@ -93,6 +114,9 @@ var MainMenu = /** @class */ (function (_super) {
             MenuHandler.SubMenu(CarnivalMenu);
             audioHandler.SetBackgroundMusic("carnival");
         });
+        contestButton.onClickEvents.push(function () {
+            _this.DisplayContestPopUp();
+        });
         demoLevelsButton.onClickEvents.push(function () {
             currentDemoIndex = 0;
             currentMap = LevelMap.FromImportString(allDemoLevels[0]);
@@ -100,6 +124,48 @@ var MainMenu = /** @class */ (function (_super) {
             MenuHandler.SubMenu(BlankMenu);
         });
         return ret;
+    };
+    MainMenu.prototype.DisplayContestPopUp = function () {
+        var _this = this;
+        var contest = ContestService.currentContest;
+        if (contest) {
+            if (contest.status == ContestState.results) {
+                UIDialog.Alert("The level contest, \"" + contest.title + "\", has completed! You can view the results in the \"Contest\" tab of the level browser. Special thanks to all participants and voters!", "OK");
+                if (MenuHandler.Dialog)
+                    MenuHandler.Dialog.title = "The resutls are in!";
+            }
+            else {
+                UIDialog.Alert(contest.description, "OK");
+                if (MenuHandler.Dialog) {
+                    MenuHandler.Dialog.title = contest.title;
+                    if (contest.status == ContestState.submissionsOpen) {
+                        var countdownText = "Time left to submit";
+                        if (contest.submittedLevel)
+                            countdownText = "Time until voting opens";
+                        UIDialog.SetCountdown(countdownText, contest.votingTime);
+                        if (!contest.submittedLevel) {
+                            MenuHandler.Dialog.options.unshift(new UIDialogOption("How to submit", function () {
+                                UIDialog.Alert("After creating your level, clear check it from the My Levels menu. Instead of clicking \"Publish\", click \"Submit to Contest\". You can only submit one level, so make it count!", "OK");
+                                if (MenuHandler.Dialog) {
+                                    MenuHandler.Dialog.title = "How to submit contest levels";
+                                    MenuHandler.Dialog.options[0].action = function () { _this.DisplayContestPopUp(); };
+                                }
+                            }));
+                        }
+                    }
+                    if (contest.status == ContestState.votingOpen) {
+                        UIDialog.SetCountdown("Time left to vote", contest.resultsTime);
+                        MenuHandler.Dialog.options.unshift(new UIDialogOption("How to vote", function () {
+                            UIDialog.Alert("Click \"Browse Levels\", then click the \"Contest\" tab. This will show all the submissions for the active contest. After playing a level, a \"Vote\" button will appear next to the \"Open in Editor\" button. You can rate the level on a 1 - 5 scale, with 5 being the best. All votes are final!", "OK");
+                            if (MenuHandler.Dialog) {
+                                MenuHandler.Dialog.title = "How to vote on contest levels";
+                                MenuHandler.Dialog.options[0].action = function () { _this.DisplayContestPopUp(); };
+                            }
+                        }));
+                    }
+                }
+            }
+        }
     };
     return MainMenu;
 }(Menu));

@@ -8,6 +8,7 @@ let editorHandler = new EditorHandler();
 let uiHandler = new UiHandler();
 let moneyService = new MoneyService();
 let toastService = new ToastService();
+let contestService: ContestService;
 let audioHandler: AudioHandler;
 let inputDisplay = new InputDisplay();
 let currentLevelListing: LevelListing | null = null;
@@ -22,6 +23,7 @@ function Initialize() {
     audioHandler = new AudioHandler();
     audioHandler.Initialize();
     new FocusHandler().Initialize();
+    contestService = new ContestService();
     
     UnloadHandler.RegisterUnloadHandler();
     KeyboardHandler.InitKeyHandlers();
@@ -167,6 +169,7 @@ function Update() {
             }
 
         }
+        BenchmarkService.Log("UIUpdates");
         uiHandler.Update();
         editorHandler.Update();
         toastService.Update();

@@ -30,12 +30,12 @@ var Yoyo = /** @class */ (function (_super) {
         this.MoveByVelocity();
     };
     Yoyo.prototype.OnThrow = function (thrower, direction) { if (thrower instanceof Player)
-        this.YoyoThrow(direction); };
+        this.YoyoThrow(thrower, direction); };
     Yoyo.prototype.OnUpThrow = function (thrower, direction) { if (thrower instanceof Player)
-        this.YoyoThrow(direction); };
+        this.YoyoThrow(thrower, direction); };
     Yoyo.prototype.OnDownThrow = function (thrower, direction) { if (thrower instanceof Player)
-        this.YoyoThrow(direction); };
-    Yoyo.prototype.YoyoThrow = function (facing) {
+        this.YoyoThrow(thrower, direction); };
+    Yoyo.prototype.YoyoThrow = function (thrower, facing) {
         var horizontalDir = KeyboardHandler.IsKeyPressed(KeyAction.Left, false) ? -1 :
             KeyboardHandler.IsKeyPressed(KeyAction.Right, false) ? 1 : 0;
         var verticalDir = KeyboardHandler.IsKeyPressed(KeyAction.Up, false) ? -1 :
@@ -43,6 +43,7 @@ var Yoyo = /** @class */ (function (_super) {
         if (horizontalDir == 0 && verticalDir == 0)
             horizontalDir = facing;
         var newSprite = this.ReplaceWithSpriteType(SpinningYoyo);
+        newSprite.thrower = thrower;
         audioHandler.PlaySound("yoyo", false);
         var isDiagonal = horizontalDir != 0 && verticalDir != 0;
         var baseSpeed = 3;
@@ -74,33 +75,33 @@ var SpinningYoyo = /** @class */ (function (_super) {
     }
     SpinningYoyo.prototype.Update = function () {
         if (this.age <= 12) {
-            if (player)
-                player.yoyoTarget = this;
+            if (this.thrower)
+                this.thrower.yoyoTarget = this;
             this.MoveByVelocity();
         }
         else if (this.age == 32) {
             this.ReplaceWithSpriteType(Poof);
-            if (player) {
-                var theta = Math.atan2(this.yBottom - player.yMid, this.xMid - player.xMid);
+            if (this.thrower) {
+                var theta = Math.atan2(this.yBottom - this.thrower.yMid, this.xMid - this.thrower.xMid);
                 var speed = 3;
-                player.dx = speed * Math.cos(theta);
-                player.dy = speed * Math.sin(theta);
-                player.yoyoTarget = null;
-                player.yoyoTimer = 10;
-                if (player.dy < 0)
-                    player.parentSprite = null;
+                this.thrower.dx = speed * Math.cos(theta);
+                this.thrower.dy = speed * Math.sin(theta);
+                this.thrower.yoyoTarget = null;
+                this.thrower.yoyoTimer = 10;
+                if (this.thrower.dy < 0)
+                    this.thrower.parentSprite = null;
             }
         }
     };
     SpinningYoyo.prototype.OnBeforeDraw = function (camera) {
-        if (!player)
+        if (!this.thrower || !this.thrower.isActive)
             return;
-        var theta = Math.atan2(this.yBottom - player.y, this.xMid - player.xMid);
-        var distance = Math.sqrt(Math.pow((this.xMid - player.xMid), 2) + Math.pow((this.yBottom - player.y), 2));
+        var theta = Math.atan2(this.yBottom - this.thrower.y, this.xMid - this.thrower.xMid);
+        var distance = Math.sqrt(Math.pow((this.xMid - this.thrower.xMid), 2) + Math.pow((this.yBottom - this.thrower.y), 2));
         camera.ctx.fillStyle = "#000";
         for (var r = 3; r < distance; r += 3) {
-            var gameX = r * Math.cos(theta) + player.xMid;
-            var gameY = r * Math.sin(theta) + player.y;
+            var gameX = r * Math.cos(theta) + this.thrower.xMid;
+            var gameY = r * Math.sin(theta) + this.thrower.y;
             var destX = (gameX - camera.x) * camera.scale + camera.canvas.width / 2;
             var destY = (gameY - camera.y) * camera.scale + camera.canvas.height / 2;
             camera.ctx.fillRect(destX, destY, 1 * camera.scale, 1 * camera.scale);

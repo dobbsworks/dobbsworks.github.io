@@ -33,6 +33,11 @@ var Button = /** @class */ (function (_super) {
         });
         return _this;
     }
+    Button.prototype.Disable = function () {
+        this.onClickEvents = [];
+        this.normalBackColor = "#888";
+        this.mouseoverBackColor = "#888";
+    };
     Button.prototype.Update = function () {
         _super.prototype.Update.call(this);
         var oldMousedOver = this.isMousedOver;

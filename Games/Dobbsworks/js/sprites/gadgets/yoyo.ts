@@ -13,18 +13,19 @@ class Yoyo extends Sprite {
         this.MoveByVelocity();
     }
     
-    OnThrow(thrower: Sprite, direction: -1|1) { if (thrower instanceof Player) this.YoyoThrow(direction); }
-    OnUpThrow(thrower: Sprite, direction: -1|1) { if (thrower instanceof Player) this.YoyoThrow(direction); }
-    OnDownThrow(thrower: Sprite, direction: -1|1) { if (thrower instanceof Player) this.YoyoThrow(direction); }
+    OnThrow(thrower: Sprite, direction: -1|1) { if (thrower instanceof Player) this.YoyoThrow(thrower, direction); }
+    OnUpThrow(thrower: Sprite, direction: -1|1) { if (thrower instanceof Player) this.YoyoThrow(thrower, direction); }
+    OnDownThrow(thrower: Sprite, direction: -1|1) { if (thrower instanceof Player) this.YoyoThrow(thrower, direction); }
 
-    YoyoThrow(facing: -1|1): void {
+    YoyoThrow(thrower: Player, facing: -1|1): void {
         let horizontalDir = KeyboardHandler.IsKeyPressed(KeyAction.Left, false) ? -1 :
             KeyboardHandler.IsKeyPressed(KeyAction.Right, false) ? 1 : 0;
         let verticalDir = KeyboardHandler.IsKeyPressed(KeyAction.Up, false) ? -1 :
                 KeyboardHandler.IsKeyPressed(KeyAction.Down, false) ? 1 : 0;
         if (horizontalDir == 0 && verticalDir == 0) horizontalDir = facing;
 
-        let newSprite = this.ReplaceWithSpriteType(SpinningYoyo);
+        let newSprite = this.ReplaceWithSpriteType(SpinningYoyo) as SpinningYoyo;
+        newSprite.thrower = thrower;
         audioHandler.PlaySound("yoyo", false);
         let isDiagonal = horizontalDir != 0 && verticalDir != 0;
         let baseSpeed = 3;
@@ -50,34 +51,35 @@ class SpinningYoyo extends Sprite {
     public width: number = 4;
     respectsSolidTiles = false;
     canBeHeld = false;
+    thrower!: Player;
 
     Update(): void {
         if (this.age <= 12) {
-            if (player) player.yoyoTarget = this;
+            if (this.thrower) this.thrower.yoyoTarget = this;
             this.MoveByVelocity();
         } else if (this.age == 32) {
             this.ReplaceWithSpriteType(Poof);
-            if (player) {
-                let theta = Math.atan2(this.yBottom - player.yMid, this.xMid - player.xMid);
+            if (this.thrower) {
+                let theta = Math.atan2(this.yBottom - this.thrower.yMid, this.xMid - this.thrower.xMid);
                 let speed = 3;
-                player.dx = speed * Math.cos(theta);
-                player.dy = speed * Math.sin(theta);
-                player.yoyoTarget = null;
-                player.yoyoTimer = 10;
-                if (player.dy < 0) player.parentSprite = null;
+                this.thrower.dx = speed * Math.cos(theta);
+                this.thrower.dy = speed * Math.sin(theta);
+                this.thrower.yoyoTarget = null;
+                this.thrower.yoyoTimer = 10;
+                if (this.thrower.dy < 0) this.thrower.parentSprite = null;
             }
         }
     }
 
     OnBeforeDraw(camera: Camera): void {
-        if (!player) return
-        let theta = Math.atan2(this.yBottom - player.y, this.xMid - player.xMid);
-        let distance = Math.sqrt((this.xMid - player.xMid)**2 + (this.yBottom - player.y)**2 );
+        if (!this.thrower || !this.thrower.isActive) return
+        let theta = Math.atan2(this.yBottom - this.thrower.y, this.xMid - this.thrower.xMid);
+        let distance = Math.sqrt((this.xMid - this.thrower.xMid)**2 + (this.yBottom - this.thrower.y)**2 );
         camera.ctx.fillStyle = "#000";
         for (let r = 3; r < distance; r += 3) {
 
-            let gameX = r * Math.cos(theta) + player.xMid;
-            let gameY = r * Math.sin(theta) + player.y;
+            let gameX = r * Math.cos(theta) + this.thrower.xMid;
+            let gameY = r * Math.sin(theta) + this.thrower.y;
 
             let destX = (gameX - camera.x) * camera.scale + camera.canvas.width / 2;
             let destY = (gameY - camera.y) * camera.scale + camera.canvas.height / 2;

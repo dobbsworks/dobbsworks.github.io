@@ -246,7 +246,7 @@ class EditorHandler {
             new EditorButtonTile(TileType.TrackBranchDownLeftOff, "Track Branch").AppendImage(tiles["uiButtonAdd"][0][0]),
             new EditorButtonSprite(Lever),
             new EditorButtonSprite(Lightbulb),
-            new EditorButtonTile(TileType.UnpoweredWindRight, "Wind generator"),
+            new EditorButtonTile(TileType.UnpoweredWindRight, "Wind Generator").AppendImage(tiles["uiButtonAdd"][0][0]),
         ], 4, 8);
 
 
@@ -593,8 +593,9 @@ class EditorHandler {
             this.cameraMoveTimer = 0;
         }
 
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorMinimize, true) && MenuHandler.CurrentMenu == null) this.ToggleMinimizeMode();
-        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true) && MenuHandler.CurrentMenu == null ) (<EditorButton>this.eraserButton).Click();
+        let isInEditorWithoutOverlayMenu = editorHandler.isInEditMode && (MenuHandler.CurrentMenu == null || MenuHandler.CurrentMenu instanceof BlankMenu);
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorMinimize, true) && isInEditorWithoutOverlayMenu) this.ToggleMinimizeMode();
+        if (KeyboardHandler.IsKeyPressed(KeyAction.EditorEraseHotkey, true) && isInEditorWithoutOverlayMenu ) (<EditorButton>this.eraserButton).Click();
         if (KeyboardHandler.IsKeyPressed(KeyAction.EditorPlayerHotkey, true)) {
             let isUsingHoverPlayer = editorHandler.sprites.some(a => a.spriteType == HoverPlayer);
             if (isUsingHoverPlayer) {

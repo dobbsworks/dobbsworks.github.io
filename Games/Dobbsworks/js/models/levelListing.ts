@@ -9,5 +9,7 @@ class LevelListing
     public isLiked: boolean,
     public isDisliked: boolean,
     public personalBestFrames: number,
+    public contestVote: number,
+    public contestRank: number
     ){}
 }

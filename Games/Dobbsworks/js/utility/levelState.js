@@ -5,4 +5,5 @@ var LevelState;
     LevelState[LevelState["cleared"] = 1] = "cleared";
     LevelState[LevelState["live"] = 2] = "live";
     LevelState[LevelState["removed"] = 3] = "removed";
+    LevelState[LevelState["contestSubmitted"] = 4] = "contestSubmitted";
 })(LevelState || (LevelState = {}));

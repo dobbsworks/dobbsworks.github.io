@@ -91,15 +91,15 @@ var StorageService = /** @class */ (function () {
             _loop_1(mapping);
         }
     };
-    StorageService.GetPreferenceBool = function (key, initialValue) {
-        var saved = localStorage.getItem("pref-" + key);
+    StorageService.GetPreferenceBool = function (pref) {
+        var saved = localStorage.getItem("pref-" + pref.key);
         if (saved === null)
-            return initialValue;
+            return pref.defaultValue;
         return saved == "1";
     };
-    StorageService.SetPreferenceBool = function (key, newValue) {
+    StorageService.SetPreferenceBool = function (pref, newValue) {
         var value = newValue ? "1" : "0";
-        localStorage.setItem("pref-" + key, value);
+        localStorage.setItem("pref-" + pref.key, value);
     };
     StorageService.GetPreference = function (key, initialValue) {
         var saved = localStorage.getItem("pref-" + key);
@@ -111,4 +111,16 @@ var StorageService = /** @class */ (function () {
         localStorage.setItem("pref-" + key, newValue);
     };
     return StorageService;
+}());
+var Preference = /** @class */ (function () {
+    function Preference(optionText, key, defaultValue) {
+        this.optionText = optionText;
+        this.key = key;
+        this.defaultValue = defaultValue;
+    }
+    Preference.ConfirmOnClose = new Preference("Confirm before closing game", "confirm-close", true);
+    Preference.PauseOnLoseFocus = new Preference("Pause when game is minimized", "pause-on-lose-focus", true);
+    Preference.MuteOnLoseFocus = new Preference("Mute when game is minimized", "mute-on-lose-focus", false);
+    Preference.OnScreenInputs = new Preference("Display inputs on-screen", "on-screen-input", false);
+    return Preference;
 }());

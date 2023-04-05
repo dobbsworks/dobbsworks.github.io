@@ -20,6 +20,12 @@ class Button extends Panel {
         })
     }
 
+    Disable(): void {
+        this.onClickEvents = [];
+        this.normalBackColor = "#888";
+        this.mouseoverBackColor = "#888";
+    }
+
     Update(): void {
         super.Update();
         let oldMousedOver = this.isMousedOver;

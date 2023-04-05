@@ -3,7 +3,6 @@ var DataService = /** @class */ (function () {
     function DataService() {
     }
     DataService.DefaultErrorHandler = function (error) {
-        // no additional actions, just send to console
     };
     DataService.BaseCall = function (urlAction, method, body, onSuccess, onError) {
         if (onError === void 0) { onError = DataService.DefaultErrorHandler; }
@@ -26,6 +25,17 @@ var DataService = /** @class */ (function () {
         }
         fetch(endpoint, init).then(function (response) {
             if (response.status && !response.ok) {
+                try {
+                    response.text().then(function (res) {
+                        try {
+                            var message = JSON.parse(res).message;
+                            if (message)
+                                UIDialog.Alert(message, "OK");
+                        }
+                        catch (e) { }
+                    });
+                }
+                catch (e) { }
                 throw new Error("Status " + response.status);
             }
             var raw = response.text();
@@ -183,6 +193,26 @@ var DataService = /** @class */ (function () {
     DataService.GetUserStatsByUserId = function (userId) {
         return new Promise(function (resolve, reject) {
             DataService.BaseGet("Users/GetUserStatsByUserId?userId=" + userId, resolve, reject);
+        });
+    };
+    DataService.GetCurrentContest = function () {
+        return new Promise(function (resolve, reject) {
+            DataService.BaseGet("Contest/GetCurrentContest", resolve, reject);
+        });
+    };
+    DataService.SubmitContestLevel = function (levelCode) {
+        return new Promise(function (resolve, reject) {
+            DataService.BasePost("Contest/SubmitContestLevel?levelCode=" + levelCode, {}, resolve, reject);
+        });
+    };
+    DataService.GetContestLevels = function (pageIndex) {
+        return new Promise(function (resolve, reject) {
+            DataService.BaseGet("LevelSearch/ContestLevels?pageIndex=" + pageIndex, resolve, reject);
+        });
+    };
+    DataService.SubmitContestVote = function (levelCode, vote) {
+        return new Promise(function (resolve, reject) {
+            DataService.BasePost("Contest/SubmitContestVote?levelCode=" + levelCode + "&vote=" + vote, {}, resolve, reject);
         });
     };
     return DataService;

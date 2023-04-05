@@ -139,10 +139,10 @@ var PreferencesMenu = /** @class */ (function (_super) {
         container.margin = 0;
         container.layout = "vertical";
         ret.push(container);
-        container.AddChild(this.CreateToggle("Confirm before closing game", "confirm-close", true));
-        container.AddChild(this.CreateToggle("Pause when game is minimized", "pause-on-lose-focus", true));
-        container.AddChild(this.CreateToggle("Mute when game is minimized", "mute-on-lose-focus", false));
-        container.AddChild(this.CreateToggle("Display inputs on-screen", "on-screen-input", false));
+        container.AddChild(this.CreateToggle(Preference.ConfirmOnClose));
+        container.AddChild(this.CreateToggle(Preference.PauseOnLoseFocus));
+        container.AddChild(this.CreateToggle(Preference.MuteOnLoseFocus));
+        container.AddChild(this.CreateToggle(Preference.OnScreenInputs));
         var backButton = this.CreateButton("Back");
         container.AddChild(backButton);
         backButton.onClickEvents.push(function () {
@@ -150,13 +150,13 @@ var PreferencesMenu = /** @class */ (function (_super) {
         });
         return ret;
     };
-    PreferencesMenu.prototype.CreateToggle = function (text, preferenceKey, defaultValue) {
-        var button = this.CreateButton(text);
-        var currentValue = StorageService.GetPreferenceBool(preferenceKey, defaultValue);
+    PreferencesMenu.prototype.CreateToggle = function (pref) {
+        var button = this.CreateButton(pref.optionText);
+        var currentValue = StorageService.GetPreferenceBool(pref);
         button.borderColor = currentValue ? "#2F2E" : "#F2FE";
         button.onClickEvents.push(function () {
             var newValue = button.borderColor == "#F2FE";
-            StorageService.SetPreferenceBool(preferenceKey, newValue);
+            StorageService.SetPreferenceBool(pref, newValue);
             button.borderColor = newValue ? "#2F2E" : "#F2FE";
         });
         return button;

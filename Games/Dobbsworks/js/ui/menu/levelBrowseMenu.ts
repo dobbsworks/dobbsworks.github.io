@@ -50,6 +50,12 @@ class LevelBrowseMenu extends Menu {
         this.searchButtons.push(new LevelBrowseSortButton(this, "Most Liked", DataService.GetMostLikedLevels));
         this.searchButtons.push(new LevelBrowseSortButton(this, "Easiest", DataService.GetEasiestLevels));
         this.searchButtons.push(new LevelBrowseSortButton(this, "Hardest", DataService.GetHardestLevels));
+        if (ContestService.currentContest) {
+            let contestState = ContestService.currentContest.status;
+            if (contestState == ContestState.results || contestState == ContestState.votingOpen) {
+                this.searchButtons.push(new LevelBrowseSortButton(this, "Contest", DataService.GetContestLevels));
+            }
+        }
         ret.push(...this.searchButtons);
         this.searchButtons[0].Click();
         //this.currentSearchButton
@@ -96,7 +102,7 @@ class LevelBrowseMenu extends Menu {
 
         let buttonWidth = 50;
         for (let pageIndex = 0; pageIndex < this.numberOfPages; pageIndex++) {
-            let button = new Button(0, 0, buttonWidth,30);
+            let button = new Button(0, 0, buttonWidth, 30);
             let text = new UIText(0, 0, (pageIndex + 1).toString(), 16, "white");
             text.xOffset = button.width / 2 - 4;
             text.yOffset = 15;
@@ -112,7 +118,7 @@ class LevelBrowseMenu extends Menu {
             }
         }
         let takenSpace = (buttonWidth + this.pagesPanel.margin) * this.numberOfPages;
-        this.pagesPanel.AddChild(new Spacer(0,0,this.pagesPanel.width - takenSpace, 1));
+        this.pagesPanel.AddChild(new Spacer(0, 0, this.pagesPanel.width - takenSpace, 1));
     }
 
     static Reset(): void {
@@ -132,7 +138,6 @@ class LevelBrowseMenu extends Menu {
 
     PopulateLevelPanel(): void {
         if (this.levelPanel) {
-            let scrollIndex = this.levelPanel.scrollIndex;
             this.levelPanel.scrollIndex = 0;
             this.levelPanel.children = [];
             this.levelPanel.scrollableChildrenUp = [];
@@ -150,10 +155,6 @@ class LevelBrowseMenu extends Menu {
                 } else {
                     this.levelPanel.AddChild(button);
                 }
-            }
-
-            for (let i = 0; i < Math.abs(scrollIndex); i++) {
-                this.levelPanel.Scroll(scrollIndex < 0 ? -1 : 1);
             }
 
             this.UpdatePagination();
@@ -199,12 +200,39 @@ class LevelBrowseMenu extends Menu {
             backButtonText.yOffset = 30;
             buttons.AddChild(backButton);
 
+
             let codeText = new UIText(0, 0, levelListing.level.code, 20, "#BBB");
             codeText.textAlign = "left";
             codeText.xOffset = -190;
             codeText.yOffset = -10;
             buttons.AddChild(codeText);
-            buttons.AddChild(new Spacer(0, 0, 200, 10));
+
+
+            if (levelListing.isStarted && levelListing.contestVote == 0 && ContestService.currentContest && ContestService.currentContest.status == ContestState.votingOpen) {
+                // contest button
+                let voteButton = new Button(0, 0, 200, 50);
+                voteButton.onClickEvents.push(() => {
+                    UIDialog.Alert("Rate the level from 1 (not great) to 5 (the best)", "Cancel");
+                    if (MenuHandler.Dialog) {
+                        MenuHandler.Dialog.AddFiveStarButtons((ranking: number) => {
+                            // submit vote
+                            if (levelListing) {
+                                levelListing.contestVote = ranking;
+                                voteButton.Disable();
+                                DataService.SubmitContestVote(levelListing.level.code, ranking);
+                            }
+                        });
+                    }
+                })
+                let voteButtonText = new UIText(0, 0, "Submit Vote", 20, "white");
+                voteButton.AddChild(voteButtonText);
+                voteButtonText.xOffset = voteButton.width / 2;
+                voteButtonText.yOffset = 30;
+                buttons.AddChild(voteButton);
+            } else {
+                buttons.AddChild(new Spacer(0, 0, 200, 10));
+            }
+
 
             let editButton = new Button(0, 0, 200, 50);
             editButton.onClickEvents.push(() => {
@@ -378,7 +406,7 @@ class LevelBrowseMenu extends Menu {
             topPanel.AddChild(authorContainer);
             authorContainer.layout = "vertical";
 
-            let authorPanel = CreateTimePanel("Created by", 0, levelListing.author);
+            let authorPanel = CreateTimePanel("Created by", 0, levelListing.author || { username: "[REDACTED]" });
             authorContainer.AddChild(authorPanel);
             this.levelOptionsPanel.AddChild(topPanel);
             this.levelOptionsPanel.AddChild(midPanel);
@@ -535,17 +563,16 @@ class LevelBrowseButton extends Button {
         titleLine.AddChild(titleLineText);
 
         let byLine = new Panel(0, 0, 290, 20);
-        byLine.margin = 0;
-
-        byLine.AddChild(new AvatarPanel(levelListing.author.avatar));
-
-        let byLineText = new UIText(0, 0, "by " + levelListing.author.username, 14, "white");
-        byLineText.textAlign = "left";
-        byLineText.yOffset = 20;
-
-        let byLineTextContainer = new Panel(0, 0, 340, 20);
-        byLineTextContainer.AddChild(byLineText);
-        byLine.AddChild(byLineTextContainer);
+        if (levelListing.author) {
+            byLine.margin = 0;
+            byLine.AddChild(new AvatarPanel(levelListing.author.avatar));
+            let byLineText = new UIText(0, 0, "by " + levelListing.author.username, 14, "white");
+            byLineText.textAlign = "left";
+            byLineText.yOffset = 20;
+            let byLineTextContainer = new Panel(0, 0, 340, 20);
+            byLineTextContainer.AddChild(byLineText);
+            byLine.AddChild(byLineTextContainer);
+        }
 
         texts.AddChild(titleLine);
         texts.AddChild(byLine);
@@ -555,16 +582,20 @@ class LevelBrowseButton extends Button {
         this.AddChild(texts);
 
 
-        let iconPanel = new Panel(0, 0, 50, 90);
+        let iconPanel = new Panel(0, 0, 24, 75);
         iconPanel.layout = "vertical";
+        iconPanel.margin = 0;
 
         if (levelListing.isLiked || levelListing.isDisliked) {
             let col = levelListing.isLiked ? 0 : 1;
-            let likeImage = new ImageFromTile(0, 0, 110, 110, tiles["menuButtons"][col][0]);
+            let likeImage = new ImageFromTile(0, 0, 24, 24, tiles["menuButtons"][col][0]);
             likeImage.zoom = 1;
-            likeImage.xOffset = -25;
-            likeImage.yOffset = -30;
             iconPanel.AddChild(likeImage);
+        }
+        if (levelListing.contestVote > 0) {
+            let voteImage = new ImageFromTile(0, 0, 24, 24, tiles["voteStars"][1][0]);
+            voteImage.zoom = 1;
+            iconPanel.AddChild(voteImage);
         }
         this.AddChild(iconPanel);
 
@@ -592,7 +623,7 @@ class LevelBrowseButton extends Button {
 
 class LevelBrowseSortButton extends Button {
 
-    cachedPages: {pageIndex: number, levels: LevelListing[]}[] = [];
+    cachedPages: { pageIndex: number, levels: LevelListing[] }[] = [];
     searchTime: Date | null = null;
 
     constructor(private parent: LevelBrowseMenu, name: string, private searchFunc: (pageIndex: number) => Promise<LevelBrowseResults>) {
@@ -630,7 +661,7 @@ class LevelBrowseSortButton extends Button {
                 getLevelsPromise.then(results => {
                     this.parent.isDataLoadInProgress = false;
                     this.cachedPages = this.cachedPages.filter(a => a.pageIndex != pageIndex); // delete existing cache for this page
-                    this.cachedPages.push({pageIndex: pageIndex, levels: results.levels});
+                    this.cachedPages.push({ pageIndex: pageIndex, levels: results.levels });
                     this.parent.levels = results.levels;
                     this.parent.numberOfPages = results.pageCount;
                     this.parent.currentPageIndex = pageIndex;

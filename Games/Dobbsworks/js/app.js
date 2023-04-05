@@ -15,6 +15,7 @@ var editorHandler = new EditorHandler();
 var uiHandler = new UiHandler();
 var moneyService = new MoneyService();
 var toastService = new ToastService();
+var contestService;
 var audioHandler;
 var inputDisplay = new InputDisplay();
 var currentLevelListing = null;
@@ -27,6 +28,7 @@ function Initialize() {
     audioHandler = new AudioHandler();
     audioHandler.Initialize();
     new FocusHandler().Initialize();
+    contestService = new ContestService();
     UnloadHandler.RegisterUnloadHandler();
     KeyboardHandler.InitKeyHandlers();
     CreateTestMap();
@@ -171,6 +173,7 @@ function Update() {
                 }
             }
         }
+        BenchmarkService.Log("UIUpdates");
         uiHandler.Update();
         editorHandler.Update();
         toastService.Update();

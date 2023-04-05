@@ -40,7 +40,7 @@ class Sparky extends Enemy {
                         break;
                     }
                     if (this.pathingType == "track" && tile.tileType.trackDirections.length > 0) {
-                        if (tile.tileType.trackDirections.indexOf(dir) > -1) {
+                        if (tile.tileType.trackDirections.indexOf(dir.Opposite()) > -1) {
                             this.dir = dir;
                             break;
                         }
