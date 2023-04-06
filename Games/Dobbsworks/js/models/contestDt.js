@@ -1,6 +1,6 @@
 "use strict";
 var ContestDT = /** @class */ (function () {
-    function ContestDT(id, title, description, openEntryTime, votingTime, resultsTime, endTime, status, serverTime, submittedLevel) {
+    function ContestDT(id, title, description, openEntryTime, votingTime, resultsTime, endTime, status, submittedLevel, isHidden) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -9,8 +9,8 @@ var ContestDT = /** @class */ (function () {
         this.resultsTime = resultsTime;
         this.endTime = endTime;
         this.status = status;
-        this.serverTime = serverTime;
         this.submittedLevel = submittedLevel;
+        this.isHidden = isHidden;
     }
     return ContestDT;
 }());

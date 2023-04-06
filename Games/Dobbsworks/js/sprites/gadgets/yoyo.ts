@@ -18,6 +18,7 @@ class Yoyo extends Sprite {
     OnDownThrow(thrower: Sprite, direction: -1|1) { if (thrower instanceof Player) this.YoyoThrow(thrower, direction); }
 
     YoyoThrow(thrower: Player, facing: -1|1): void {
+        console.log("!")
         let horizontalDir = KeyboardHandler.IsKeyPressed(KeyAction.Left, false) ? -1 :
             KeyboardHandler.IsKeyPressed(KeyAction.Right, false) ? 1 : 0;
         let verticalDir = KeyboardHandler.IsKeyPressed(KeyAction.Up, false) ? -1 :

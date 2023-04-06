@@ -951,7 +951,12 @@ var Player = /** @class */ (function (_super) {
                 // move rocket above head before first update
                 if (this.heldItem instanceof Rocket && !this.heldItem.isRocketing)
                     this.UpdateHeldItemLocation();
+                this.heldItem.updatedThisFrame = true;
+                this.heldItem.SharedUpdate();
                 this.heldItem.Update();
+                if (this.heldItem instanceof Enemy) {
+                    this.heldItem.EnemyUpdate();
+                }
             }
             if (this.heldItem && this.heldItem.canBeHeld) {
                 this.UpdateHeldItemLocation();

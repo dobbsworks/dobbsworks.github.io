@@ -36,6 +36,7 @@ var Yoyo = /** @class */ (function (_super) {
     Yoyo.prototype.OnDownThrow = function (thrower, direction) { if (thrower instanceof Player)
         this.YoyoThrow(thrower, direction); };
     Yoyo.prototype.YoyoThrow = function (thrower, facing) {
+        console.log("!");
         var horizontalDir = KeyboardHandler.IsKeyPressed(KeyAction.Left, false) ? -1 :
             KeyboardHandler.IsKeyPressed(KeyAction.Right, false) ? 1 : 0;
         var verticalDir = KeyboardHandler.IsKeyPressed(KeyAction.Up, false) ? -1 :

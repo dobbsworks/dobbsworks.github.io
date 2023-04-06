@@ -41,11 +41,12 @@ var Utility = /** @class */ (function () {
         var hours = Math.floor(ms / 1000 / 60 / 60) % 24;
         var minutes = Math.floor(ms / 1000 / 60) % 60;
         var seconds = Math.floor(ms / 1000) % 60;
-        if (ms < 1000 * 60)
+        if (ms < 1)
             return "Time's up!";
         return (days ? (days.toString() + " day" + (days == 1 ? "" : "s") + " ") : "") +
             ((days || hours) ? (hours.toString() + " hour" + (hours == 1 ? "" : "s") + " ") : "") +
-            ((days || hours || minutes) ? (minutes.toString() + " minute" + (minutes == 1 ? "" : "s") + " ") : "");
+            ((days || hours || minutes) ? (minutes.toString() + " minute" + (minutes == 1 ? "" : "s") + " ") : "") +
+            ((days || hours) ? "" : (seconds.toString() + " second" + (seconds == 1 ? "" : "s") + " "));
     };
     Utility.PascalCaseToSpaces = function (text) {
         var ret = "";

@@ -209,7 +209,10 @@ class LevelLayer {
         ];
         this.sprites = orderedSprites;
 
-        for (let sprite of orderedSprites) {
+        // using spread on orderedSprites to make sure we're iterating over a seaparte copy of the sprite list
+        // iterating directly over orderedSprites is a problem because sprites is pointing to the same memory 
+        // location, meaning that changes to the sprite list can affect which sprites are getting updated
+        for (let sprite of [...orderedSprites]) {
             if (sprite.locked) continue;
             if (sprite.updatedThisFrame) continue;
             if (!sprite.isActive) continue;

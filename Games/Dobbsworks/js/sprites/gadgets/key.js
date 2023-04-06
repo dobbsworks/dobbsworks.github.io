@@ -56,19 +56,18 @@ var Key = /** @class */ (function (_super) {
             //#####################
             //     #X        X#
             //     #          #
-            // let tilesToCheck = [
-            //     ...this.GetTilesByCoords([this.x, this.xRight - 0.1], [this.y - 0.1, this.yBottom]),
-            //     ...this.GetTilesByCoords([this.x - 0.1, this.xRight], [this.y, this.yBottom - 0.1])
-            // ];
+            var tilesToCheck = __spreadArrays(this.GetTilesByCoords([this.x, this.xRight - 0.1], [this.y - 0.1, this.yBottom]), this.GetTilesByCoords([this.x - 0.1, this.xRight], [this.y, this.yBottom - 0.1]));
             var lockTiles = __spreadArrays(this.touchedRightWalls.filter(function (a) { return a instanceof LevelTile && a.tileType == TileType.Lock; }), this.touchedLeftWalls.filter(function (a) { return a instanceof LevelTile && a.tileType == TileType.Lock; }), this.touchedCeilings.filter(function (a) { return a instanceof LevelTile && a.tileType == TileType.Lock; }), this.standingOn.filter(function (a) { return a instanceof LevelTile && a.tileType == TileType.Lock; }));
-            // for (let tileToCheck of tilesToCheck) {
-            //     if (tileToCheck.tileType == TileType.Lock) {
-            //         lockTiles.push(tileToCheck);
-            //     }
-            // }
+            for (var _i = 0, tilesToCheck_1 = tilesToCheck; _i < tilesToCheck_1.length; _i++) {
+                var tileToCheck = tilesToCheck_1[_i];
+                if (tileToCheck.tileType == TileType.Lock) {
+                    if (lockTiles.indexOf(tileToCheck) == -1)
+                        lockTiles.push(tileToCheck);
+                }
+            }
             if (lockTiles.length > 0) {
-                for (var _i = 0, lockTiles_1 = lockTiles; _i < lockTiles_1.length; _i++) {
-                    var lockTile = lockTiles_1[_i];
+                for (var _a = 0, lockTiles_1 = lockTiles; _a < lockTiles_1.length; _a++) {
+                    var lockTile = lockTiles_1[_a];
                     this.layer.SetTile(lockTile.tileX, lockTile.tileY, TileType.Air);
                     var propogatingUnlockEffect = new KeyDomino(lockTile.tileX * this.layer.tileWidth, lockTile.tileY * this.layer.tileHeight, this.layer, []);
                     this.layer.sprites.push(propogatingUnlockEffect);

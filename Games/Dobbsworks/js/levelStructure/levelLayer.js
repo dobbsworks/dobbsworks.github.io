@@ -216,8 +216,11 @@ var LevelLayer = /** @class */ (function () {
         platforms.sort(function (a, b) { return a.y - b.y; });
         var orderedSprites = __spreadArrays(motors, platforms, players, this.sprites.filter(function (a) { return !a.isPlatform && !(a instanceof Motor) && !(a instanceof Player); }));
         this.sprites = orderedSprites;
-        for (var _i = 0, orderedSprites_1 = orderedSprites; _i < orderedSprites_1.length; _i++) {
-            var sprite = orderedSprites_1[_i];
+        // using spread on orderedSprites to make sure we're iterating over a seaparte copy of the sprite list
+        // iterating directly over orderedSprites is a problem because sprites is pointing to the same memory 
+        // location, meaning that changes to the sprite list can affect which sprites are getting updated
+        for (var _i = 0, _a = __spreadArrays(orderedSprites); _i < _a.length; _i++) {
+            var sprite = _a[_i];
             if (sprite.locked)
                 continue;
             if (sprite.updatedThisFrame)
@@ -263,8 +266,8 @@ var LevelLayer = /** @class */ (function () {
         // draw player on top of other sprites
         var orderedSprites = __spreadArrays(this.sprites);
         orderedSprites.sort(function (a, b) { return a.zIndex - b.zIndex; });
-        for (var _i = 0, orderedSprites_2 = orderedSprites; _i < orderedSprites_2.length; _i++) {
-            var sprite = orderedSprites_2[_i];
+        for (var _i = 0, orderedSprites_1 = orderedSprites; _i < orderedSprites_1.length; _i++) {
+            var sprite = orderedSprites_1[_i];
             this.DrawSprite(sprite, camera, frameNum);
         }
     };

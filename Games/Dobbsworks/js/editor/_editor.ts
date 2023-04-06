@@ -83,6 +83,14 @@ class EditorHandler {
                 MenuHandler.CreateMenu(MainMenu);
             }
         });
+        
+        let helpButton = new EditorButton(tiles["editor"][6][1], "Help");
+        let helpPanel = new EditorSingleServePanel(this.mainPanel.x + this.mainPanel.width + 10 - 70 - 70 - 10, 10, helpButton);
+        helpButton.onClickEvents.push(() => {
+            UIDialog.Confirm("This will open a tutorial video in a new tab. Proceed?", "OK", "Cancel", () => {
+                window.open("https://youtu.be/RixtWX8cRCI", '_blank');
+            });
+        });
 
 
         /* TILE PANEL */
@@ -143,7 +151,7 @@ class EditorHandler {
         let enemyButtons = enemyTypes.map(a => new EditorButtonSprite(a));
 
         enemyButtons.filter(a => a.spriteType == Piggle || a.spriteType == Snail).forEach(a => hotbarDefaults.push(a));
-        let enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 7);
+        let enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 8);
 
         let gizmoTypes: (SpriteType)[] = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform,
@@ -188,7 +196,7 @@ class EditorHandler {
         gizmoButtons.push(new EditorButtonSprite(Doopster));
         gizmoButtons.push(new EditorButtonSprite(Dabbot));
 
-        let gizmoPanel = this.CreateFloatingButtonPanel(gizmoButtons, 5, 6);
+        let gizmoPanel = this.CreateFloatingButtonPanel(gizmoButtons, 5, 8);
 
         let brushTypeHandle = new EditorButtonDrawerHandle(tiles["editor"][4][0], "Brush types", []);
         let brushButtons = [
@@ -333,7 +341,7 @@ class EditorHandler {
         musicHandlePanel.AddChild(musicHandle);
 
         let selectionMenuHandle = new EditorButtonDrawerHandle(tiles["editor"][0][1], "Level elements", []);
-        let spriteSelectionHandle = new EditorButtonDrawerHandle(tiles["editor"][3][0], "Sprites", [enemyPanel]);
+        let spriteSelectionHandle = new EditorButtonDrawerHandle(tiles["editor"][3][0], "Enemies", [enemyPanel]);
         let tileSelectionHandle = new EditorButtonDrawerHandle(tiles["editor"][3][1], "Tiles", [tilePanel]);
         let wireSelectionHandle = new EditorButtonDrawerHandle(tiles["editor"][3][2], "Wires and tracks", [wirePanel]);
         let gizmoSelectionHandle = new EditorButtonDrawerHandle(tiles["editor"][3][3], "Gadgets", [gizmoPanel]);
@@ -347,7 +355,7 @@ class EditorHandler {
         // let optionsPanel = OptionsMenu.CreateOptionsButton();
         // optionsPanel.targetX -= 80;
 
-        this.editorParentElementsTop.push(this.backgroundPanel, backgroundLoadPanel, levelFlowHandlePanel, this.saveDrawer, optionsButton, mapSizePanel, musicHandlePanel, exitPanel);
+        this.editorParentElementsTop.push(this.backgroundPanel, backgroundLoadPanel, levelFlowHandlePanel, this.saveDrawer, optionsButton, mapSizePanel, musicHandlePanel, exitPanel, helpPanel);
         this.editorParentElementsBottom.push(this.mainPanel, eraserPanel, this.mainToolPanel, this.brushPanel, resetPanel);
         uiHandler.elements.push(...this.editorParentElementsTop, ...this.editorParentElementsBottom);
         this.editorParentElementsTop.forEach(a => a.backColor = "#1138");

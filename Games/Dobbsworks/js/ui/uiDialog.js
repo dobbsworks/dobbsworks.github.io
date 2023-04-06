@@ -50,7 +50,7 @@ var UIDialog = /** @class */ (function () {
         }
         var xIter = 230;
         if (this.targetTime) {
-            var remainingTime = +this.targetTime - +new Date();
+            var remainingTime = +new Date(this.targetTime) - +new Date();
             if (remainingTime < 0)
                 remainingTime = 0;
             var remainingTimeText = Utility.MsToTimeText(remainingTime);

@@ -70,6 +70,13 @@ var EditorHandler = /** @class */ (function () {
                 MenuHandler.CreateMenu(MainMenu);
             }
         });
+        var helpButton = new EditorButton(tiles["editor"][6][1], "Help");
+        var helpPanel = new EditorSingleServePanel(this.mainPanel.x + this.mainPanel.width + 10 - 70 - 70 - 10, 10, helpButton);
+        helpButton.onClickEvents.push(function () {
+            UIDialog.Confirm("This will open a tutorial video in a new tab. Proceed?", "OK", "Cancel", function () {
+                window.open("https://youtu.be/RixtWX8cRCI", '_blank');
+            });
+        });
         /* TILE PANEL */
         var slopeFills = [
             new SlopeFill("Grassy", TileType.Dirt),
@@ -126,7 +133,7 @@ var EditorHandler = /** @class */ (function () {
             Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, BaddleTrigger,];
         var enemyButtons = enemyTypes.map(function (a) { return new EditorButtonSprite(a); });
         enemyButtons.filter(function (a) { return a.spriteType == Piggle || a.spriteType == Snail; }).forEach(function (a) { return hotbarDefaults.push(a); });
-        var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 7);
+        var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 8);
         var gizmoTypes = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform,
             MushroomSpring, Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
@@ -165,7 +172,7 @@ var EditorHandler = /** @class */ (function () {
         // gizmoButtons.push(new EditorButtonTile(TileType.WallWarpRight, "Warp Wall (right)"));
         gizmoButtons.push(new EditorButtonSprite(Doopster));
         gizmoButtons.push(new EditorButtonSprite(Dabbot));
-        var gizmoPanel = this.CreateFloatingButtonPanel(gizmoButtons, 5, 6);
+        var gizmoPanel = this.CreateFloatingButtonPanel(gizmoButtons, 5, 8);
         var brushTypeHandle = new EditorButtonDrawerHandle(tiles["editor"][4][0], "Brush types", []);
         var brushButtons = [
             new EditorButtonFillBrush(CircleBrush, tiles["editor"][4][3], 0),
@@ -299,7 +306,7 @@ var EditorHandler = /** @class */ (function () {
         musicPanel.targetY = musicHandlePanel.targetY + 80;
         musicHandlePanel.AddChild(musicHandle);
         var selectionMenuHandle = new EditorButtonDrawerHandle(tiles["editor"][0][1], "Level elements", []);
-        var spriteSelectionHandle = new EditorButtonDrawerHandle(tiles["editor"][3][0], "Sprites", [enemyPanel]);
+        var spriteSelectionHandle = new EditorButtonDrawerHandle(tiles["editor"][3][0], "Enemies", [enemyPanel]);
         var tileSelectionHandle = new EditorButtonDrawerHandle(tiles["editor"][3][1], "Tiles", [tilePanel]);
         var wireSelectionHandle = new EditorButtonDrawerHandle(tiles["editor"][3][2], "Wires and tracks", [wirePanel]);
         var gizmoSelectionHandle = new EditorButtonDrawerHandle(tiles["editor"][3][3], "Gadgets", [gizmoPanel]);
@@ -310,7 +317,7 @@ var EditorHandler = /** @class */ (function () {
         // TODO - prevent other buttons from being used while options is open
         // let optionsPanel = OptionsMenu.CreateOptionsButton();
         // optionsPanel.targetX -= 80;
-        this.editorParentElementsTop.push(this.backgroundPanel, backgroundLoadPanel, levelFlowHandlePanel, this.saveDrawer, optionsButton, mapSizePanel, musicHandlePanel, exitPanel);
+        this.editorParentElementsTop.push(this.backgroundPanel, backgroundLoadPanel, levelFlowHandlePanel, this.saveDrawer, optionsButton, mapSizePanel, musicHandlePanel, exitPanel, helpPanel);
         this.editorParentElementsBottom.push(this.mainPanel, eraserPanel, this.mainToolPanel, this.brushPanel, resetPanel);
         (_a = uiHandler.elements).push.apply(_a, __spreadArrays(this.editorParentElementsTop, this.editorParentElementsBottom));
         this.editorParentElementsTop.forEach(function (a) { return a.backColor = "#1138"; });
