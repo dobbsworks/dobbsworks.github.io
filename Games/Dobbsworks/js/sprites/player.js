@@ -691,7 +691,7 @@ var Player = /** @class */ (function (_super) {
             }
             var landingOnTop = aboutToOverlapFromAbove && isHorizontalOverlap;
             if (sprite instanceof Enemy) {
-                if (sprite.framesSinceThrown > 0 && sprite.framesSinceThrown < 25)
+                if (sprite.framesSinceThrown >= 0 && sprite.framesSinceThrown < 25)
                     continue; // can't bounce on items that have just been thrown
                 if (landingOnTop && sprite.canBeBouncedOn) {
                     this.Bounce();

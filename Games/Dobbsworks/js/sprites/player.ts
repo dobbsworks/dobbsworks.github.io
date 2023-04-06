@@ -669,7 +669,7 @@ class Player extends Sprite {
 
             if (sprite instanceof Enemy) {
 
-                if (sprite.framesSinceThrown > 0 && sprite.framesSinceThrown < 25) continue; // can't bounce on items that have just been thrown
+                if (sprite.framesSinceThrown >= 0 && sprite.framesSinceThrown < 25) continue; // can't bounce on items that have just been thrown
                 if (landingOnTop && sprite.canBeBouncedOn) {
                     this.Bounce();
                     if (this.isSpinJumping) {
