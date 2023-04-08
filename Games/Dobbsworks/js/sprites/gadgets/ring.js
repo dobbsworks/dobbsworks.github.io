@@ -21,6 +21,7 @@ var Ring = /** @class */ (function (_super) {
         _this.respectsSolidTiles = false;
         _this.rowNum = 0;
         _this.canHangFrom = true;
+        _this.isMovedByWind = false;
         return _this;
     }
     Ring.prototype.Update = function () {
@@ -30,8 +31,6 @@ var Ring = /** @class */ (function (_super) {
             this.dx *= 0.9;
             this.dy *= 0.9;
         }
-        this.dxFromWind = 0;
-        this.dyFromWind = 0;
         this.MoveByVelocity();
     };
     Ring.prototype.GetFrameData = function (frameNum) {

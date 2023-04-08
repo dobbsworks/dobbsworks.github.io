@@ -13,12 +13,20 @@ class Yoyo extends Sprite {
         this.MoveByVelocity();
     }
     
-    OnThrow(thrower: Sprite, direction: -1|1) { if (thrower instanceof Player) this.YoyoThrow(thrower, direction); }
-    OnUpThrow(thrower: Sprite, direction: -1|1) { if (thrower instanceof Player) this.YoyoThrow(thrower, direction); }
-    OnDownThrow(thrower: Sprite, direction: -1|1) { if (thrower instanceof Player) this.YoyoThrow(thrower, direction); }
+    OnThrow(thrower: Sprite, direction: -1|1) { 
+        if (thrower instanceof Player) this.YoyoThrow(thrower, direction); 
+        else super.OnThrow(thrower, direction);
+    }
+    OnUpThrow(thrower: Sprite, direction: -1|1) { 
+        if (thrower instanceof Player) this.YoyoThrow(thrower, direction); 
+        else super.OnThrow(thrower, direction);
+    }
+    OnDownThrow(thrower: Sprite, direction: -1|1) { 
+        if (thrower instanceof Player) this.YoyoThrow(thrower, direction); 
+        else super.OnThrow(thrower, direction);
+    }
 
     YoyoThrow(thrower: Player, facing: -1|1): void {
-        console.log("!")
         let horizontalDir = KeyboardHandler.IsKeyPressed(KeyAction.Left, false) ? -1 :
             KeyboardHandler.IsKeyPressed(KeyAction.Right, false) ? 1 : 0;
         let verticalDir = KeyboardHandler.IsKeyPressed(KeyAction.Up, false) ? -1 :
@@ -27,6 +35,7 @@ class Yoyo extends Sprite {
 
         let newSprite = this.ReplaceWithSpriteType(SpinningYoyo) as SpinningYoyo;
         newSprite.thrower = thrower;
+        thrower.yoyoTarget = newSprite;
         audioHandler.PlaySound("yoyo", false);
         let isDiagonal = horizontalDir != 0 && verticalDir != 0;
         let baseSpeed = 3;
@@ -56,7 +65,6 @@ class SpinningYoyo extends Sprite {
 
     Update(): void {
         if (this.age <= 12) {
-            if (this.thrower) this.thrower.yoyoTarget = this;
             this.MoveByVelocity();
         } else if (this.age == 32) {
             this.ReplaceWithSpriteType(Poof);

@@ -124,7 +124,7 @@ class MainMenu extends Menu {
             if (contest.status == ContestState.results) {
                 
                 UIDialog.Alert(`The level contest, "${contest.title}", has completed! You can view the results in the "Contest" tab of the level browser. Special thanks to all participants and voters!`, "OK");
-                if (MenuHandler.Dialog) MenuHandler.Dialog.title = "The resutls are in!";
+                if (MenuHandler.Dialog) MenuHandler.Dialog.title = "The results are in!";
                 
             } else {
 

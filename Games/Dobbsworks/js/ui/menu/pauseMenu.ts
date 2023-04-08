@@ -125,15 +125,16 @@ class PauseMenu extends Menu {
             levelTitle.textAlign = "left";
             levelTitle.strokeColor = "black";
             ret.push(levelTitle);
-            let byText = new UIText(20, levelTitle.y + 18 + 10, "Created by " + currentLevelListing.author.username, 18, "white");
-            byText.textAlign = "left";
-            ret.push(byText);
-
-            let recordText = new UIText(20, byText.y + 18 + 10,
-                "WR: " + Utility.FramesToTimeText(currentLevelListing.level.recordFrames) + " by " + currentLevelListing.wrHolder.username,
-                18, "white");
-            recordText.textAlign = "left";
-            ret.push(recordText);
+            if (currentLevelListing.author) {
+                let byText = new UIText(20, levelTitle.y + 18 + 10, "Created by " + currentLevelListing.author.username, 18, "white");
+                byText.textAlign = "left";
+                ret.push(byText);
+                let recordText = new UIText(20, byText.y + 18 + 10,
+                    "WR: " + Utility.FramesToTimeText(currentLevelListing.level.recordFrames) + " by " + currentLevelListing.wrHolder.username,
+                    18, "white");
+                recordText.textAlign = "left";
+                ret.push(recordText);
+            }
 
 
             let opinionContainer = new Panel(0, 0, container.width, 60);

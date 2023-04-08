@@ -328,7 +328,7 @@ class MyLevelsMenu extends Menu {
                     if (levelDt) {
                         this.publishButton.isHidden = (levelDt.levelState != LevelState.cleared);
                         let contest = ContestService.currentContest;
-                        this.contestSubmit.isHidden = (levelDt.levelState != LevelState.cleared || contest == null || contest.submittedLevel != "");
+                        this.contestSubmit.isHidden = (levelDt.levelState != LevelState.cleared || contest == null || (contest.submittedLevel != "" && contest.submittedLevel != null));
                         this.cloudDeleteButton.isHidden = (contest != null && contest.submittedLevel == MyLevelsMenu.selectedCloudCode);
                     } else {
                         this.publishButton.isHidden = true;

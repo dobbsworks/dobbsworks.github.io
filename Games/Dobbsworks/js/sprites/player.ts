@@ -327,6 +327,10 @@ class Player extends Sprite {
         if (this.isTouchingStickyWall) {
             this.dx = 0;
             this.dy = 0;
+            this.dxFromWind = 0;
+            this.dyFromWind = 0;
+            this.dxFromPlatform = 0;
+            this.dyFromPlatform = 0;
             this.isSliding = false;
         } else if (this.wallDragDirection != 0) {
             if (this.isOnGround) {
@@ -414,7 +418,10 @@ class Player extends Sprite {
             this.dy *= 0.8;
         }
 
-        if (this.standingOn.some(a => !a.tileType.canWalkOn)) this.dx = 0;
+        if (this.standingOn.some(a => !a.tileType.canWalkOn)) {
+            this.dx = 0;
+            this.dxFromWind = 0;
+        }
 
         if (this.dy > 0 && isJumpHeld && this.canPlayerFloatJump && !this.isFloating && this.floatFramesLeftForThisJump > 0) {
             let isInCannon = this.layer.sprites.some(a => a instanceof RedCannon && a.heldPlayer == this);

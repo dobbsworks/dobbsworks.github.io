@@ -14,6 +14,7 @@ var Sprite = /** @class */ (function () {
         this.dxFromWind = 0;
         this.dyFromWind = 0;
         this.windDy = 0; // current wind tile's strength, special handling with fan gusts
+        this.isMovedByWind = true;
         this.ledgeGrabDistance = 3;
         this.isOnGround = true;
         this.standingOn = [];
@@ -98,18 +99,20 @@ var Sprite = /** @class */ (function () {
     Sprite.prototype.GetTotalDx = function () {
         var ret = this.dx;
         ret += this.dxFromPlatform;
-        ret += this.dxFromWind;
+        if (this.isMovedByWind)
+            ret += this.dxFromWind;
         return ret;
     };
     Sprite.prototype.GetTotalDy = function () {
         var ret = this.dy;
         ret += this.dyFromPlatform;
-        ret += this.dyFromWind;
+        if (this.isMovedByWind)
+            ret += this.dyFromWind;
         return ret;
     };
     Sprite.prototype.SharedUpdate = function () {
         var _this = this;
-        if (!(this instanceof DeadPlayer)) {
+        if (!(this instanceof DeadPlayer || this instanceof Player)) {
             var motor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == _this; });
             if (!motor) {
                 if (this.xRight < -36 || this.x > this.layer.GetMaxX() + 36 ||
@@ -214,6 +217,7 @@ var Sprite = /** @class */ (function () {
                 break;
             }
         }
+        var preWindFallSpeed = targetFallSpeed;
         if (this.gustUpTimer > 0) {
             targetFallSpeed = -0.8;
             if (this.windDy < 0) {
@@ -230,6 +234,9 @@ var Sprite = /** @class */ (function () {
                 }
                 if ((_b = this.heldItem) === null || _b === void 0 ? void 0 : _b.slowFall) {
                     targetFallSpeed += -1.2;
+                }
+                if (this.standingOn.some(function (a) { return !a.tileType.canJumpFrom; })) {
+                    targetFallSpeed = preWindFallSpeed;
                 }
             }
         }

@@ -25,6 +25,7 @@ abstract class Sprite {
     public dxFromWind: number = 0;
     public dyFromWind: number = 0;
     public windDy: number = 0; // current wind tile's strength, special handling with fan gusts
+    public isMovedByWind: boolean = true;
 
     public ledgeGrabDistance = 3;
 
@@ -89,18 +90,18 @@ abstract class Sprite {
     public GetTotalDx(): number {
         let ret = this.dx;
         ret += this.dxFromPlatform;
-        ret += this.dxFromWind;
+        if (this.isMovedByWind) ret += this.dxFromWind;
         return ret;
     }
     public GetTotalDy(): number {
         let ret = this.dy;
         ret += this.dyFromPlatform;
-        ret += this.dyFromWind;
+        if (this.isMovedByWind) ret += this.dyFromWind;
         return ret;
     }
 
     SharedUpdate(): void {
-        if (!(this instanceof DeadPlayer)) {
+        if (!(this instanceof DeadPlayer || this instanceof Player)) {
             let motor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == this);
             if (!motor) {
                 if (
@@ -209,6 +210,7 @@ abstract class Sprite {
             }
         }
 
+        let preWindFallSpeed = targetFallSpeed;
         if (this.gustUpTimer > 0) {
             targetFallSpeed = -0.8;
             if (this.windDy < 0) {
@@ -224,6 +226,10 @@ abstract class Sprite {
                 }
                 if (this.heldItem?.slowFall) {
                     targetFallSpeed += -1.2;
+                }
+
+                if (this.standingOn.some(a => !a.tileType.canJumpFrom)) {
+                    targetFallSpeed = preWindFallSpeed;
                 }
             }
         }

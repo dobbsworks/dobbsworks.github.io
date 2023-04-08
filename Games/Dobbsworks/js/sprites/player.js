@@ -90,7 +90,9 @@ var Player = /** @class */ (function (_super) {
         //this.HandleBumpers();
         if (this.iFrames > 0)
             this.iFrames--;
+        console.log(0, this.windDy, this.dyFromWind, this.standingOn.length);
         this.PlayerMovement(); // includes gravity
+        console.log(1, this.windDy, this.dyFromWind, this.standingOn.length);
         this.PlayerItem();
         this.HandleEnemies(); // includes gravity
         this.PlayerInertia();
@@ -126,6 +128,7 @@ var Player = /** @class */ (function (_super) {
                 this.twinleTimer--;
             }
         }
+        console.log(2, this.windDy, this.dyFromWind);
     };
     Player.prototype.PlayerMovement = function () {
         var _this = this;
@@ -341,6 +344,10 @@ var Player = /** @class */ (function (_super) {
         if (this.isTouchingStickyWall) {
             this.dx = 0;
             this.dy = 0;
+            this.dxFromWind = 0;
+            this.dyFromWind = 0;
+            this.dxFromPlatform = 0;
+            this.dyFromPlatform = 0;
             this.isSliding = false;
         }
         else if (this.wallDragDirection != 0) {
@@ -439,8 +446,10 @@ var Player = /** @class */ (function (_super) {
             this.dx *= 0.8;
             this.dy *= 0.8;
         }
-        if (this.standingOn.some(function (a) { return !a.tileType.canWalkOn; }))
+        if (this.standingOn.some(function (a) { return !a.tileType.canWalkOn; })) {
             this.dx = 0;
+            this.dxFromWind = 0;
+        }
         if (this.dy > 0 && isJumpHeld && this.canPlayerFloatJump && !this.isFloating && this.floatFramesLeftForThisJump > 0) {
             var isInCannon = this.layer.sprites.some(function (a) { return a instanceof RedCannon && a.heldPlayer == _this; });
             var tappedJumpThisFrame = KeyboardHandler.IsKeyPressed(KeyAction.Action1, true);
@@ -554,6 +563,7 @@ var Player = /** @class */ (function (_super) {
         }
         this.isTouchingStickyWall = false;
         if (isOnSlime) {
+            console.log("slime jump");
             this.dy = 0;
             this.jumpTimer = -1;
         }

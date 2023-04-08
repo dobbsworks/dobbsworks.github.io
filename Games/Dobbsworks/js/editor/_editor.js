@@ -592,10 +592,10 @@ var EditorHandler = /** @class */ (function () {
         }
         if (uiHandler.mousedOverElements.length == 0) {
             if (mouseHandler.mouseScroll > 0) {
-                camera.targetScale -= 1;
+                camera.targetScale /= 1.1892;
             }
             if (mouseHandler.mouseScroll < 0) {
-                camera.targetScale += 1;
+                camera.targetScale *= 1.1892;
             }
         }
         var _loop_2 = function (sprite) {

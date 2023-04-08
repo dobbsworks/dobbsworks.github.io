@@ -29,14 +29,25 @@ var Yoyo = /** @class */ (function (_super) {
         this.ReactToPlatformsAndSolids();
         this.MoveByVelocity();
     };
-    Yoyo.prototype.OnThrow = function (thrower, direction) { if (thrower instanceof Player)
-        this.YoyoThrow(thrower, direction); };
-    Yoyo.prototype.OnUpThrow = function (thrower, direction) { if (thrower instanceof Player)
-        this.YoyoThrow(thrower, direction); };
-    Yoyo.prototype.OnDownThrow = function (thrower, direction) { if (thrower instanceof Player)
-        this.YoyoThrow(thrower, direction); };
+    Yoyo.prototype.OnThrow = function (thrower, direction) {
+        if (thrower instanceof Player)
+            this.YoyoThrow(thrower, direction);
+        else
+            _super.prototype.OnThrow.call(this, thrower, direction);
+    };
+    Yoyo.prototype.OnUpThrow = function (thrower, direction) {
+        if (thrower instanceof Player)
+            this.YoyoThrow(thrower, direction);
+        else
+            _super.prototype.OnThrow.call(this, thrower, direction);
+    };
+    Yoyo.prototype.OnDownThrow = function (thrower, direction) {
+        if (thrower instanceof Player)
+            this.YoyoThrow(thrower, direction);
+        else
+            _super.prototype.OnThrow.call(this, thrower, direction);
+    };
     Yoyo.prototype.YoyoThrow = function (thrower, facing) {
-        console.log("!");
         var horizontalDir = KeyboardHandler.IsKeyPressed(KeyAction.Left, false) ? -1 :
             KeyboardHandler.IsKeyPressed(KeyAction.Right, false) ? 1 : 0;
         var verticalDir = KeyboardHandler.IsKeyPressed(KeyAction.Up, false) ? -1 :
@@ -45,6 +56,7 @@ var Yoyo = /** @class */ (function (_super) {
             horizontalDir = facing;
         var newSprite = this.ReplaceWithSpriteType(SpinningYoyo);
         newSprite.thrower = thrower;
+        thrower.yoyoTarget = newSprite;
         audioHandler.PlaySound("yoyo", false);
         var isDiagonal = horizontalDir != 0 && verticalDir != 0;
         var baseSpeed = 3;
@@ -76,8 +88,6 @@ var SpinningYoyo = /** @class */ (function (_super) {
     }
     SpinningYoyo.prototype.Update = function () {
         if (this.age <= 12) {
-            if (this.thrower)
-                this.thrower.yoyoTarget = this;
             this.MoveByVelocity();
         }
         else if (this.age == 32) {

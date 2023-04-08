@@ -4,6 +4,7 @@ class SpringBox extends Sprite {
     public width: number = 12;
     respectsSolidTiles = false;
     canBeHeld = false;
+    isMovedByWind = false;
 
     springTimers: number[] = [0, 0, 0, 0];
     //                      right, down, left, up

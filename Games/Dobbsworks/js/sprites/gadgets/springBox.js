@@ -27,6 +27,7 @@ var SpringBox = /** @class */ (function (_super) {
         _this.width = 12;
         _this.respectsSolidTiles = false;
         _this.canBeHeld = false;
+        _this.isMovedByWind = false;
         _this.springTimers = [0, 0, 0, 0];
         return _this;
     }

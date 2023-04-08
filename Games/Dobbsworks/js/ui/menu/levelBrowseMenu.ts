@@ -550,7 +550,7 @@ class LevelBrowseButton extends Button {
         imageFromTile.yOffset = -12;
         this.AddChild(imageFromTile);
 
-        let texts = new Panel(0, 0, 400, 65);
+        let texts = new Panel(0, 0, 480, 65);
         texts.layout = "vertical";
 
 
@@ -569,6 +569,7 @@ class LevelBrowseButton extends Button {
             let byLineText = new UIText(0, 0, "by " + levelListing.author.username, 14, "white");
             byLineText.textAlign = "left";
             byLineText.yOffset = 20;
+            byLineText.xOffset = -80;
             let byLineTextContainer = new Panel(0, 0, 340, 20);
             byLineTextContainer.AddChild(byLineText);
             byLine.AddChild(byLineTextContainer);
@@ -582,20 +583,53 @@ class LevelBrowseButton extends Button {
         this.AddChild(texts);
 
 
-        let iconPanel = new Panel(0, 0, 24, 75);
-        iconPanel.layout = "vertical";
+        let iconPanel = new Panel(0, 0, 24, 24);
+        iconPanel.yOffset = 48;
         iconPanel.margin = 0;
+        let imageOffset = 0;
 
+        if (levelListing.contestRank == 1) {
+            let awardImage = new ImageFromTile(0, 0, 24, 24, tiles["trophies"][0][1]);
+            awardImage.zoom = 2;
+            awardImage.xOffset -= imageOffset;
+            imageOffset += 24;
+            iconPanel.AddChild(awardImage);
+        }
+        if (levelListing.contestRank == 2) {
+            let awardImage = new ImageFromTile(0, 0, 24, 24, tiles["trophies"][1][1]);
+            awardImage.zoom = 2;
+            awardImage.xOffset -= imageOffset;
+            imageOffset += 24;
+            iconPanel.AddChild(awardImage);
+        }
+        if (levelListing.contestRank == 3) {
+            let awardImage = new ImageFromTile(0, 0, 24, 24, tiles["trophies"][2][1]);
+            awardImage.zoom = 2;
+            awardImage.xOffset -= imageOffset;
+            imageOffset += 24;
+            iconPanel.AddChild(awardImage);
+        }
         if (levelListing.isLiked || levelListing.isDisliked) {
             let col = levelListing.isLiked ? 0 : 1;
             let likeImage = new ImageFromTile(0, 0, 24, 24, tiles["menuButtons"][col][0]);
             likeImage.zoom = 1;
+            likeImage.xOffset -= imageOffset;
+            imageOffset += 24;
             iconPanel.AddChild(likeImage);
         }
         if (levelListing.contestVote > 0) {
             let voteImage = new ImageFromTile(0, 0, 24, 24, tiles["voteStars"][1][0]);
             voteImage.zoom = 1;
+            voteImage.xOffset -= imageOffset;
+            imageOffset += 24;
             iconPanel.AddChild(voteImage);
+        }
+        if (levelListing.level.isGlitch) {
+            let glitchImage = new ImageFromTile(0, 0, 24, 24, tiles["spider"][0][0]);
+            glitchImage.zoom = 2;
+            glitchImage.xOffset -= imageOffset;
+            imageOffset += 24;
+            iconPanel.AddChild(glitchImage);
         }
         this.AddChild(iconPanel);
 
