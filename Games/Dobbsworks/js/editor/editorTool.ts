@@ -427,7 +427,7 @@ class TrackPlacer extends FillType {
                 // look at each neighbor and see if we can connect them
                 let trackNeighbor = currentMap.wireLayer.GetTileByIndex(tileCoord.tileX + dir.x, tileCoord.tileY + dir.y);
                 if (tileCoordinates.some(a => a.tileX == trackNeighbor.tileX && a.tileY == trackNeighbor.tileY)) continue;
-                if (trackNeighbor.tileType.trackDirections.length == 1) {
+                if (trackNeighbor.tileType.trackDirections.length == 1 && !trackNeighbor.tileType.isTrackPipe) {
                     let targetTrackType = (Object.values(TileType.TileMap) as TileType[]).find(a => a.trackDirections.length == 2 && 
                         a.trackDirections.indexOf(dir.Opposite()) > -1 && a.trackDirections.indexOf(trackNeighbor.tileType.trackDirections[0]) > -1);
                     if (targetTrackType) {

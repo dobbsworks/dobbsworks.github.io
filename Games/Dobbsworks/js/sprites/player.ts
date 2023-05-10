@@ -865,6 +865,7 @@ class Player extends Sprite {
                 if (sprite.age < 10) continue; // can't grab items that just spawned (prevent grabbing shell after shell jump)
 
                 if (this.IsGoingToOverlapSprite(sprite)) {
+                    sprite = sprite.OnPickup();
                     this.heldItem = sprite;
                     startedHolding = true;
 

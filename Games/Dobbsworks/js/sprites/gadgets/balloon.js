@@ -93,6 +93,7 @@ var BlueBalloon = /** @class */ (function (_super) {
     function BlueBalloon() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.frameRow = 1;
+        _this.direction = Direction.Left;
         return _this;
     }
     BlueBalloon.prototype.Movement = function () {

@@ -71,6 +71,10 @@ class RollingBarrel extends Sprite {
         this.layer.sprites.push(breakingAnimation);
     }
 
+    OnPickup(): Sprite { 
+        return this.ReplaceWithSpriteType(Barrel);
+    }
+
     Update(): void {
         this.ApplyGravity();
         this.ReactToWater();
@@ -146,5 +150,8 @@ class RollingSteelBarrel extends RollingBarrel {
     }
     Float() {
         this.ReplaceWithSpriteType(SteelBarrel);
+    }
+    OnPickup(): Sprite { 
+        return this.ReplaceWithSpriteType(SteelBarrel);
     }
 }

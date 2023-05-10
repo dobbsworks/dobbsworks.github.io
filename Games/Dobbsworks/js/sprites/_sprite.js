@@ -42,6 +42,7 @@ var Sprite = /** @class */ (function () {
         this.isInTractorBeam = false;
         this.onScreenTimer = 0;
         this.isDuplicate = false;
+        this.trackPipeExit = null;
         // used for editor
         this.anchor = Direction.Down;
         this.maxAllowed = -1; // -1 for no limit
@@ -96,6 +97,7 @@ var Sprite = /** @class */ (function () {
     });
     Sprite.prototype.GetPowerPoints = function () { return [{ xPixel: this.xMid, yPixel: this.yMid }]; };
     Sprite.prototype.OnStrikeEnemy = function (enemy) { };
+    Sprite.prototype.OnPickup = function () { return this; };
     Sprite.prototype.GetTotalDx = function () {
         var ret = this.dx;
         ret += this.dxFromPlatform;
@@ -112,6 +114,7 @@ var Sprite = /** @class */ (function () {
     };
     Sprite.prototype.SharedUpdate = function () {
         var _this = this;
+        var _a;
         if (!(this instanceof DeadPlayer || this instanceof Player)) {
             var motor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == _this; });
             if (!motor) {
@@ -151,12 +154,12 @@ var Sprite = /** @class */ (function () {
                 }
             }
         }
-        var windTile = this.layer.GetTileByPixel(this.xMid, this.yMid).tileType;
+        var tileAtCenter = this.layer.GetTileByPixel(this.xMid, this.yMid).tileType;
         // if the wind speed is greater than the sprite's speed,
         // give a bit more dx to the sprite (but don't exceed wind speed?)
-        if (windTile.windX != 0 || currentMap.globalWindX != 0) {
+        if (tileAtCenter.windX != 0 || currentMap.globalWindX != 0) {
             //this.dx = (this.dx * 9 + windTile.windX/2) / 10;
-            this.dxFromWind = windTile.windX + currentMap.globalWindX * 0.3;
+            this.dxFromWind = tileAtCenter.windX + currentMap.globalWindX * 0.3;
         }
         else {
             if (Math.abs(this.dxFromWind) < 0.1) {
@@ -172,9 +175,30 @@ var Sprite = /** @class */ (function () {
             this.dxFromWind = 0;
         if (this.touchedRightWalls.length > 0 && this.dxFromWind > 0)
             this.dxFromWind = 0;
-        this.windDy = windTile.windY + currentMap.globalWindY * 0.3;
+        this.windDy = tileAtCenter.windY + currentMap.globalWindY * 0.3;
         if (this.windDy < 0)
             this.gustUpTimer = 3;
+        var trackTileAtCenter = (_a = this.layer.map) === null || _a === void 0 ? void 0 : _a.wireLayer.GetTileByPixel(this.xMid, this.yMid);
+        if (trackTileAtCenter && trackTileAtCenter != this.trackPipeExit)
+            this.trackPipeExit = null;
+        if (trackTileAtCenter && trackTileAtCenter.tileType.isTrackPipe && this.trackPipeExit == null) {
+            if (!(this instanceof PipeContent || this instanceof DeadPlayer || this instanceof Poof || this instanceof KeyDomino || this instanceof ShimmerRipple)) {
+                var targetDirection = trackTileAtCenter.tileType.trackDirections[0];
+                var nextTrack = trackTileAtCenter.Neighbor(targetDirection);
+                var doesNextTrackExist = false;
+                if (nextTrack && nextTrack.tileType.trackDirections.indexOf(targetDirection.Opposite()) > -1) {
+                    // fail out if no track beyond?
+                    doesNextTrackExist = true;
+                }
+                if (doesNextTrackExist) {
+                    var newSprite = this.ReplaceWithSpriteType(PipeContent);
+                    newSprite.SetContainedSprite(this);
+                    newSprite.x = trackTileAtCenter.tileX * 12;
+                    newSprite.y = trackTileAtCenter.tileY * 12;
+                    newSprite.direction = targetDirection;
+                }
+            }
+        }
     };
     Sprite.prototype.ReactToVerticalWind = function () {
         this.dyFromWind = this.windDy;

@@ -542,7 +542,7 @@ var TrackPlacer = /** @class */ (function (_super) {
                 var trackNeighbor = currentMap.wireLayer.GetTileByIndex(tileCoord.tileX + dir.x, tileCoord.tileY + dir.y);
                 if (tileCoordinates.some(function (a) { return a.tileX == trackNeighbor.tileX && a.tileY == trackNeighbor.tileY; }))
                     return "continue";
-                if (trackNeighbor.tileType.trackDirections.length == 1) {
+                if (trackNeighbor.tileType.trackDirections.length == 1 && !trackNeighbor.tileType.isTrackPipe) {
                     var targetTrackType = Object.values(TileType.TileMap).find(function (a) { return a.trackDirections.length == 2 &&
                         a.trackDirections.indexOf(dir.Opposite()) > -1 && a.trackDirections.indexOf(trackNeighbor.tileType.trackDirections[0]) > -1; });
                     if (targetTrackType) {

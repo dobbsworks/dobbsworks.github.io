@@ -30,6 +30,7 @@ class TileType {
     public isWarpWall: boolean = false;
     public isExemptFromSlime = false;
     public trackDirections: Direction[] = [];
+    public isTrackPipe = false;
 
     public isSlippery = false;
 
@@ -376,6 +377,20 @@ class TileType {
         
         TileType.TrackBridge;
         
+        TileType.MountainGround;
+        TileType.MountainBrick;
+        TileType.MountainBlock;
+        TileType.MountainTop;
+        TileType.MountainBack;
+        TileType.MountainLadder;
+        TileType.MountainSpikes;
+        TileType.DecorMountain;
+        TileType.RegisterSlope("Mountain", 11);
+
+        TileType.TrackLeftCapEntry;
+        TileType.TrackTopCapEntry;
+        TileType.TrackRightCapEntry;
+        TileType.TrackBottomCapEntry;
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
     }
@@ -601,6 +616,19 @@ class TileType {
         tileType.clockWiseRotationTileName = "DecorCandyLeft";
     }); }
 
+
+    public static get MountainGround(): TileType { return TileType.GetTileType("MountainGround", "terrain", 0, 11, Solidity.Block, TargetLayer.main); }
+    public static get MountainBrick(): TileType { return TileType.GetTileType("MountainBrick", "terrain", 1, 11, Solidity.Block, TargetLayer.main); }
+    public static get MountainBlock(): TileType { return TileType.GetTileType("MountainBlock", "terrain", 2, 11, Solidity.Block, TargetLayer.main); }
+    public static get MountainTop(): TileType { return TileType.GetTileType("MountainTop", "terrain", 3, 11, Solidity.Top, TargetLayer.semisolid); }
+    public static get MountainBack(): TileType { return TileType.GetTileType("MountainBack", "terrain", 4, 11, Solidity.None, TargetLayer.backdrop); }
+    public static get MountainLadder(): TileType { return TileType.GetTileType("MountainLadder", "terrain", 5, 11, Solidity.None, TargetLayer.main, tileType => { tileType.isClimbable = true; }); }
+    public static get MountainSpikes(): TileType {
+        return TileType.GetTileType("MountainSpikes", "terrain", 6, 11, Solidity.Block, TargetLayer.main, tileType => {
+            tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnLeft = true; tileType.hurtOnRight = true;
+        });
+    }
+    public static get DecorMountain(): TileType { return TileType.GetTileType("DecorMountain", "terrain", 7, 11, Solidity.None, TargetLayer.main); }
 
 
 
@@ -1247,6 +1275,35 @@ class TileType {
     public static get TrackBridge(): TileType {
         return TileType.GetTileType("TrackBridge", "motorTrack", 4, 4, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
             tileType.trackDirections = Direction.All;
+        })
+    }
+    
+    public static get TrackLeftCapEntry(): TileType {
+        return TileType.GetTileType("TrackLeftCapEntry", "motorTrack", 4, 5, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
+            tileType.trackDirections = [Direction.Right];
+            tileType.clockWiseRotationTileName = "TrackTopCapEntry";
+            tileType.isTrackPipe = true;
+        })
+    }
+    public static get TrackTopCapEntry(): TileType {
+        return TileType.GetTileType("TrackTopCapEntry", "motorTrack", 5, 5, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
+            tileType.trackDirections = [Direction.Down];
+            tileType.clockWiseRotationTileName = "TrackRightCapEntry";
+            tileType.isTrackPipe = true;
+        })
+    }
+    public static get TrackRightCapEntry(): TileType {
+        return TileType.GetTileType("TrackRightCapEntry", "motorTrack", 6, 5, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
+            tileType.trackDirections = [Direction.Left];
+            tileType.clockWiseRotationTileName = "TrackBottomCapEntry";
+            tileType.isTrackPipe = true;
+        })
+    }
+    public static get TrackBottomCapEntry(): TileType {
+        return TileType.GetTileType("TrackBottomCapEntry", "motorTrack", 7, 5, Solidity.None, TargetLayer.wire, (tileType: TileType) => {
+            tileType.trackDirections = [Direction.Up];
+            tileType.clockWiseRotationTileName = "TrackLeftCapEntry";
+            tileType.isTrackPipe = true;
         })
     }
 

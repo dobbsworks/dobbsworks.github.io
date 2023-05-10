@@ -77,6 +77,7 @@ class RedBalloon extends Motor {
 
 class BlueBalloon extends RedBalloon {
     protected frameRow = 1;
+    protected direction: Direction = Direction.Left;
     Movement(): void {
         if (this.WaitForOnScreen()) {
             this.floatTimer++;

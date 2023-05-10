@@ -1,0 +1,70 @@
+<html>
+
+<head>
+    <title>Dabble Party</title>
+    <!-- <link rel="icon" type="image/x-icon" href="images/favicon.ico" /> -->
+
+    <link rel="stylesheet" href="css/app.css?v=0.0.0">
+    
+    <script src="js/structure/pixel.js"></script>
+    
+
+    <script src="js/systems/version.js?v=0.0.0"></script>
+    <script src="js/systems/storageService.js?v=0.0.0"></script>
+    <script src="js/systems/keyboardHandler.js?v=0.0.0"></script>
+    <script src="js/systems/mouseHandler.js?v=0.0.0"></script>
+    <script src="js/systems/camera.js?v=0.0.0"></script>
+    <script src="js/systems/audioHandler.js?v=0.0.0"></script>
+    <script src="js/systems/focusHandler.js?v=0.0.0"></script>
+    <script src="js/systems/dataService.js?v=0.0.0"></script>
+    <script src="js/systems/unloadHandler.js?v=0.0.0"></script>
+
+    <script src="js/structure/imageTile.js?v=0.0.0"></script>
+    <script src="js/structure/frameData.js?v=0.0.0"></script>
+    <script src="js/structure/sprite.js?v=0.0.0"></script>
+
+    <script src="js/minigames/_minigame.js?v=0.0.0"></script>
+    <script src="js/minigames/mushroomBounce.js?v=0.0.0"></script>
+
+    <script src="js/board/boardSpace.js?v=0.0.0"></script>
+    <script src="js/board/boardMap.js?v=0.0.0"></script>
+
+    <script src="js/app.js?v=0.0.0"></script>
+    
+    <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+</head>
+
+
+<body>
+    <canvas id="canvas" width="960" height="540"></canvas>
+
+    <div id="footer">
+        <div>© Dobbsworks 2023</div>
+    </div>
+
+    <div id="imageResources" style="display:none;">
+        <img src="images/partySquares.png" data-cols="1" data-rows="6" />
+        <img src="images/bounceMush.png" data-cols="5" data-rows="5" />
+        <img src="images/droppingItems.png" data-cols="4" data-rows="1" />
+        <img src="images/forest.png" data-cols="1" data-rows="1" />
+        <img src="images/ground.png" data-cols="1" data-rows="1" />
+        <img src="images/branch.png" data-cols="1" data-rows="1" />
+        <img src="images/nest.png" data-cols="1" data-rows="1" />
+        <img src="images/text.png" data-cols="1" data-rows="3" />
+        <img src="images/particles.png" data-cols="4" data-rows="1" />
+        
+        <img src="images/space.png" data-cols="1" data-rows="1" />
+        <img src="images/spaceThings.png" data-cols="4" data-rows="1" />
+    </div>
+
+    <div id="audioResources" style="display:none;">
+        <div id="music">
+            <!-- <audio id="levelEnd" controls src="audio/music/LevelEnd.mp3" data-bpm="160" data-intro-beats="8" data-loop-beats="80"></audio> -->
+        </div>
+        <div id="sfx">
+            <!-- <audio src="audio/sfx/bap.mp3"></audio> -->
+        </div>
+    </div>
+</body>
+
+</html>

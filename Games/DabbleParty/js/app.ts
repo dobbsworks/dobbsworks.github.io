@@ -1,0 +1,83 @@
+window.onload = Initialize;
+let tiles: any = {};
+let camera: Camera;
+let mouseHandler: MouseHandler;
+let audioHandler: AudioHandler;
+
+let currentMinigame: MinigameBase | null = null;
+
+function Initialize() {
+    LoadImageSources();
+    let canvas = <HTMLCanvasElement>document.getElementById("canvas");
+    camera = new Camera(canvas);
+
+    mouseHandler = new MouseHandler(canvas);
+    audioHandler = new AudioHandler();
+    audioHandler.Initialize();
+    new FocusHandler().Initialize();
+    
+    UnloadHandler.RegisterUnloadHandler();
+    KeyboardHandler.InitKeyHandlers();
+    setInterval(MainLoop, 1000 / 60);
+
+    currentMinigame = new MinigameMushroomBounce();
+}
+
+var times: number[] = [];
+function MainLoop() {
+    let t0 = performance.now();
+    Update();
+    Draw();
+    audioHandler.Update();
+    let t1 = performance.now();
+    times.push(t1 - t0);
+    if (times.length > 60) times.shift();
+}
+function GetLoopTime() {
+    return times.reduce((a,b) => a+b,0) / times.length;
+}
+
+function Update(): void {
+    KeyboardHandler.Update();
+    
+    if (currentMinigame) {
+        currentMinigame.BaseUpdate();
+    }
+
+    camera.Update();
+    mouseHandler.UpdateMouseChanged();
+    KeyboardHandler.AfterUpdate();
+}
+function Draw(): void {
+    camera.Clear();
+    
+    if (currentMinigame) {
+        currentMinigame.Draw(camera);
+    }
+}
+
+
+function LoadImageSources() {
+    let container = document.getElementById("imageResources");
+    let images = container?.querySelectorAll("img");
+    if (images) for (let img of Array.from(images)) {
+        let src = img.src.split(".png")[0];
+        let imgName = src.split("/")[src.split("/").length - 1];
+        if (src.indexOf("/bg/") > -1) imgName = "bg_" + imgName;
+        let tileMap: any = {};
+        let rows = +(img.dataset.rows ?? 1) || 1;
+        let cols = +(img.dataset.cols ?? 1) || 1;
+        let rowHeight = img.height / rows;
+        let colWidth = img.width / cols;
+        for (let col = 0; col < cols; col++) {
+            let tileCol: any = {};
+            for (let row = 0; row < rows; row++) {
+                let imageTile = new ImageTile(
+                    img, col * colWidth, row * rowHeight, colWidth, rowHeight);
+                tileCol[row] = imageTile;
+            }
+            tileMap[col] = tileCol;
+        }
+        tiles[imgName] = tileMap;
+    }
+}

@@ -65,6 +65,7 @@ abstract class Sprite {
     public isInTractorBeam: boolean = false;
     onScreenTimer: number = 0;
     isDuplicate = false;
+    trackPipeExit: LevelTile | null = null;
 
     // used for editor
     public anchor: Direction | null = Direction.Down;
@@ -86,6 +87,8 @@ abstract class Sprite {
     abstract GetFrameData(frameNum: number): FrameData | FrameData[];
 
     public OnStrikeEnemy(enemy: Enemy): void { }
+
+    public OnPickup(): Sprite { return this; }
 
     public GetTotalDx(): number {
         let ret = this.dx;
@@ -143,12 +146,12 @@ abstract class Sprite {
             }
         }
 
-        let windTile = this.layer.GetTileByPixel(this.xMid, this.yMid).tileType;
+        let tileAtCenter = this.layer.GetTileByPixel(this.xMid, this.yMid).tileType;
         // if the wind speed is greater than the sprite's speed,
         // give a bit more dx to the sprite (but don't exceed wind speed?)
-        if (windTile.windX != 0 || currentMap.globalWindX != 0) {
+        if (tileAtCenter.windX != 0 || currentMap.globalWindX != 0) {
             //this.dx = (this.dx * 9 + windTile.windX/2) / 10;
-            this.dxFromWind = windTile.windX + currentMap.globalWindX * 0.3;
+            this.dxFromWind = tileAtCenter.windX + currentMap.globalWindX * 0.3;
         } else {
             if (Math.abs(this.dxFromWind) < 0.1) {
                 this.dx += this.dxFromWind;
@@ -161,9 +164,30 @@ abstract class Sprite {
         if (this.touchedLeftWalls.length > 0 && this.dxFromWind < 0) this.dxFromWind = 0;
         if (this.touchedRightWalls.length > 0 && this.dxFromWind > 0) this.dxFromWind = 0;
 
-        this.windDy = windTile.windY + currentMap.globalWindY * 0.3;
+        this.windDy = tileAtCenter.windY + currentMap.globalWindY * 0.3;
         if (this.windDy < 0) this.gustUpTimer = 3;
 
+        let trackTileAtCenter = this.layer.map?.wireLayer.GetTileByPixel(this.xMid, this.yMid);
+        if (trackTileAtCenter && trackTileAtCenter != this.trackPipeExit) this.trackPipeExit = null;
+        if (trackTileAtCenter && trackTileAtCenter.tileType.isTrackPipe && this.trackPipeExit == null) {
+            if (!(this instanceof PipeContent || this instanceof DeadPlayer || this instanceof Poof || this instanceof KeyDomino || this instanceof ShimmerRipple)) {
+                let targetDirection = trackTileAtCenter.tileType.trackDirections[0];
+                let nextTrack = trackTileAtCenter.Neighbor(targetDirection);
+                let doesNextTrackExist = false;
+                if (nextTrack && nextTrack.tileType.trackDirections.indexOf(targetDirection.Opposite()) > -1) {
+                    // fail out if no track beyond?
+                    doesNextTrackExist = true;
+                }
+
+                if (doesNextTrackExist) {
+                    let newSprite = this.ReplaceWithSpriteType(PipeContent) as PipeContent;
+                    newSprite.SetContainedSprite(this);
+                    newSprite.x = trackTileAtCenter.tileX * 12;
+                    newSprite.y = trackTileAtCenter.tileY * 12;
+                    newSprite.direction = targetDirection;
+                }
+            }
+        }
     }
 
     ReactToVerticalWind(): void {

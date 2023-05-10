@@ -90,6 +90,7 @@ var EditorHandler = /** @class */ (function () {
             new SlopeFill("Cave", TileType.CaveGround),
             new SlopeFill("White", TileType.WhiteGround),
             new SlopeFill("Candy", TileType.CandyGround),
+            new SlopeFill("Mountain", TileType.MountainGround),
         ];
         var tileRowBlocks = [
             TileType.Dirt,
@@ -103,6 +104,7 @@ var EditorHandler = /** @class */ (function () {
             TileType.CaveGround,
             TileType.WhiteGround,
             TileType.CandyGround,
+            TileType.MountainGround,
         ];
         var tilePanelButtons = [];
         var tooltips = ["Solid ground", "Solid ground", "Solid ground", "Semisolid", "Backdrop", "Ladder", "Deadly block", "Decor"];
@@ -224,6 +226,7 @@ var EditorHandler = /** @class */ (function () {
             // new EditorButtonTile(TileType.TrackLeftCap, "Track Cap").AppendImage(tiles["uiButtonAdd"][0][0]),
             // new EditorButtonTile(TileType.TrackBridge, "Track Bridge"),
             new EditorButtonTrackTool(),
+            new EditorButtonTile(TileType.TrackLeftCapEntry, "Track Pipe").AppendImage(tiles["uiButtonAdd"][0][0]),
             new EditorButtonTile(TileType.TrackBranchDownLeftOff, "Track Branch").AppendImage(tiles["uiButtonAdd"][0][0]),
             new EditorButtonSprite(Lever),
             new EditorButtonSprite(Lightbulb),

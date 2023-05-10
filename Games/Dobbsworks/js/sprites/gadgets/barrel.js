@@ -84,6 +84,9 @@ var RollingBarrel = /** @class */ (function (_super) {
         this.isActive = false;
         this.layer.sprites.push(breakingAnimation);
     };
+    RollingBarrel.prototype.OnPickup = function () {
+        return this.ReplaceWithSpriteType(Barrel);
+    };
     RollingBarrel.prototype.Update = function () {
         this.ApplyGravity();
         this.ReactToWater();
@@ -168,6 +171,9 @@ var RollingSteelBarrel = /** @class */ (function (_super) {
     };
     RollingSteelBarrel.prototype.Float = function () {
         this.ReplaceWithSpriteType(SteelBarrel);
+    };
+    RollingSteelBarrel.prototype.OnPickup = function () {
+        return this.ReplaceWithSpriteType(SteelBarrel);
     };
     return RollingSteelBarrel;
 }(RollingBarrel));

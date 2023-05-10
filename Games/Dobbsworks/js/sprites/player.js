@@ -90,9 +90,7 @@ var Player = /** @class */ (function (_super) {
         //this.HandleBumpers();
         if (this.iFrames > 0)
             this.iFrames--;
-        console.log(0, this.windDy, this.dyFromWind, this.standingOn.length);
         this.PlayerMovement(); // includes gravity
-        console.log(1, this.windDy, this.dyFromWind, this.standingOn.length);
         this.PlayerItem();
         this.HandleEnemies(); // includes gravity
         this.PlayerInertia();
@@ -128,7 +126,6 @@ var Player = /** @class */ (function (_super) {
                 this.twinleTimer--;
             }
         }
-        console.log(2, this.windDy, this.dyFromWind);
     };
     Player.prototype.PlayerMovement = function () {
         var _this = this;
@@ -563,7 +560,6 @@ var Player = /** @class */ (function (_super) {
         }
         this.isTouchingStickyWall = false;
         if (isOnSlime) {
-            console.log("slime jump");
             this.dy = 0;
             this.jumpTimer = -1;
         }
@@ -911,6 +907,7 @@ var Player = /** @class */ (function (_super) {
                 if (sprite.age < 10)
                     continue; // can't grab items that just spawned (prevent grabbing shell after shell jump)
                 if (this.IsGoingToOverlapSprite(sprite)) {
+                    sprite = sprite.OnPickup();
                     this.heldItem = sprite;
                     startedHolding = true;
                     audioHandler.PlaySound("pick-up", true);

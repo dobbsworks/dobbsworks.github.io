@@ -453,12 +453,33 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
                 statRow.AddChild(rightText);
                 leftPanel.AddChild(statRow);
             }
-            var trophyPanel = new Panel(0, 0, 400, 100);
+            var trophyPanel = new Panel(0, 0, 400, 230);
+            trophyPanel.layout = "vertical";
             rightPanel.AddChild(trophyPanel);
-            for (var _a = 0, _b = userStats.trophies; _a < _b.length; _a++) {
-                var trophy = _b[_a];
-                var trophyElement = new TrophyImage(trophy.name, trophy.displayFrame);
-                trophyPanel.AddChild(trophyElement);
+            // for (let trophy of userStats.trophies) {
+            //     let trophyElement = new TrophyImage(trophy.name, trophy.displayFrame);
+            //     trophyPanel.AddChild(trophyElement);
+            // }
+            var trophyElements = userStats.trophies.map(function (a) { return new TrophyImage(a.name, a.displayFrame); });
+            var tilesPerRow = 3;
+            var maxDisplayedRows = 2;
+            var _loop_2 = function () {
+                var rowButtons = trophyElements.splice(0, tilesPerRow);
+                var rowPanel = new Panel(0, 0, trophyPanel.width, 100);
+                rowButtons.forEach(function (a) { return rowPanel.AddChild(a); });
+                var remainingSpaces = tilesPerRow - rowButtons.length;
+                for (var i = 0; i < remainingSpaces; i++) {
+                    rowPanel.AddChild(new Spacer(0, 0, 100, 100));
+                }
+                if (trophyPanel.children.length < maxDisplayedRows) {
+                    trophyPanel.AddChild(rowPanel);
+                }
+                else {
+                    trophyPanel.scrollableChildrenDown.push(rowPanel);
+                }
+            };
+            while (trophyElements.length > 0) {
+                _loop_2();
             }
         }
     };
@@ -525,7 +546,7 @@ var LevelBrowseButton = /** @class */ (function (_super) {
         imageFromTile.xOffset = -13;
         imageFromTile.yOffset = -12;
         _this.AddChild(imageFromTile);
-        var texts = new Panel(0, 0, 400, 65);
+        var texts = new Panel(0, 0, 480, 65);
         texts.layout = "vertical";
         var titleLine = new Panel(0, 0, 290, 25);
         titleLine.margin = 0;
@@ -540,6 +561,7 @@ var LevelBrowseButton = /** @class */ (function (_super) {
             var byLineText = new UIText(0, 0, "by " + levelListing.author.username, 14, "white");
             byLineText.textAlign = "left";
             byLineText.yOffset = 20;
+            byLineText.xOffset = -80;
             var byLineTextContainer = new Panel(0, 0, 340, 20);
             byLineTextContainer.AddChild(byLineText);
             byLine.AddChild(byLineTextContainer);
@@ -548,19 +570,52 @@ var LevelBrowseButton = /** @class */ (function (_super) {
         texts.AddChild(byLine);
         texts.AddChild(new Spacer(0, 0, 0, 0));
         _this.AddChild(texts);
-        var iconPanel = new Panel(0, 0, 24, 75);
-        iconPanel.layout = "vertical";
+        var iconPanel = new Panel(0, 0, 24, 24);
+        iconPanel.yOffset = 48;
         iconPanel.margin = 0;
+        var imageOffset = 0;
+        if (levelListing.contestRank == 1) {
+            var awardImage = new ImageFromTile(0, 0, 24, 24, tiles["trophies"][0][1]);
+            awardImage.zoom = 2;
+            awardImage.xOffset -= imageOffset;
+            imageOffset += 24;
+            iconPanel.AddChild(awardImage);
+        }
+        if (levelListing.contestRank == 2) {
+            var awardImage = new ImageFromTile(0, 0, 24, 24, tiles["trophies"][1][1]);
+            awardImage.zoom = 2;
+            awardImage.xOffset -= imageOffset;
+            imageOffset += 24;
+            iconPanel.AddChild(awardImage);
+        }
+        if (levelListing.contestRank == 3) {
+            var awardImage = new ImageFromTile(0, 0, 24, 24, tiles["trophies"][2][1]);
+            awardImage.zoom = 2;
+            awardImage.xOffset -= imageOffset;
+            imageOffset += 24;
+            iconPanel.AddChild(awardImage);
+        }
         if (levelListing.isLiked || levelListing.isDisliked) {
             var col = levelListing.isLiked ? 0 : 1;
             var likeImage = new ImageFromTile(0, 0, 24, 24, tiles["menuButtons"][col][0]);
             likeImage.zoom = 1;
+            likeImage.xOffset -= imageOffset;
+            imageOffset += 24;
             iconPanel.AddChild(likeImage);
         }
         if (levelListing.contestVote > 0) {
             var voteImage = new ImageFromTile(0, 0, 24, 24, tiles["voteStars"][1][0]);
             voteImage.zoom = 1;
+            voteImage.xOffset -= imageOffset;
+            imageOffset += 24;
             iconPanel.AddChild(voteImage);
+        }
+        if (levelListing.level.isGlitch) {
+            var glitchImage = new ImageFromTile(0, 0, 24, 24, tiles["spider"][0][0]);
+            glitchImage.zoom = 2;
+            glitchImage.xOffset -= imageOffset;
+            imageOffset += 24;
+            iconPanel.AddChild(glitchImage);
         }
         _this.AddChild(iconPanel);
         _this.onClickEvents.push(function () {

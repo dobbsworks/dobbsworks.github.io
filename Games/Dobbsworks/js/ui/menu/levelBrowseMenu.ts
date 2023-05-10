@@ -479,12 +479,32 @@ class LevelBrowseMenu extends Menu {
                 leftPanel.AddChild(statRow);
             }
 
-            let trophyPanel = new Panel(0, 0, 400, 100);
+            let trophyPanel = new Panel(0, 0, 400, 230);
+            trophyPanel.layout = "vertical";
             rightPanel.AddChild(trophyPanel);
 
-            for (let trophy of userStats.trophies) {
-                let trophyElement = new TrophyImage(trophy.name, trophy.displayFrame);
-                trophyPanel.AddChild(trophyElement);
+
+            // for (let trophy of userStats.trophies) {
+            //     let trophyElement = new TrophyImage(trophy.name, trophy.displayFrame);
+            //     trophyPanel.AddChild(trophyElement);
+            // }
+
+            let trophyElements = userStats.trophies.map(a => new TrophyImage(a.name, a.displayFrame));
+            let tilesPerRow = 3;
+            let maxDisplayedRows = 2;
+            while (trophyElements.length > 0) {
+                let rowButtons = trophyElements.splice(0, tilesPerRow);
+                let rowPanel = new Panel(0, 0, trophyPanel.width, 100);
+                rowButtons.forEach(a => rowPanel.AddChild(a));
+                let remainingSpaces = tilesPerRow - rowButtons.length;
+                for (let i = 0; i < remainingSpaces; i++) {
+                    rowPanel.AddChild(new Spacer(0, 0, 100, 100))
+                }
+                if (trophyPanel.children.length < maxDisplayedRows) {
+                    trophyPanel.AddChild(rowPanel);
+                } else {
+                    trophyPanel.scrollableChildrenDown.push(rowPanel);
+                }
             }
         }
     }

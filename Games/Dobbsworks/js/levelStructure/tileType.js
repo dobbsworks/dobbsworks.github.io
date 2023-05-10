@@ -36,6 +36,7 @@ var TileType = /** @class */ (function () {
         this.isWarpWall = false;
         this.isExemptFromSlime = false;
         this.trackDirections = [];
+        this.isTrackPipe = false;
         this.isSlippery = false;
         this.hurtOnLeft = false;
         this.hurtOnRight = false;
@@ -334,6 +335,19 @@ var TileType = /** @class */ (function () {
         TileType.TrackBranchRightUpOff;
         TileType.TrackBranchRightDownOff;
         TileType.TrackBridge;
+        TileType.MountainGround;
+        TileType.MountainBrick;
+        TileType.MountainBlock;
+        TileType.MountainTop;
+        TileType.MountainBack;
+        TileType.MountainLadder;
+        TileType.MountainSpikes;
+        TileType.DecorMountain;
+        TileType.RegisterSlope("Mountain", 11);
+        TileType.TrackLeftCapEntry;
+        TileType.TrackTopCapEntry;
+        TileType.TrackRightCapEntry;
+        TileType.TrackBottomCapEntry;
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
     };
@@ -954,6 +968,53 @@ var TileType = /** @class */ (function () {
                 tileType.clockWiseRotationTileName = "DecorCandyLeft";
             });
         },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "MountainGround", {
+        get: function () { return TileType.GetTileType("MountainGround", "terrain", 0, 11, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "MountainBrick", {
+        get: function () { return TileType.GetTileType("MountainBrick", "terrain", 1, 11, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "MountainBlock", {
+        get: function () { return TileType.GetTileType("MountainBlock", "terrain", 2, 11, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "MountainTop", {
+        get: function () { return TileType.GetTileType("MountainTop", "terrain", 3, 11, Solidity.Top, TargetLayer.semisolid); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "MountainBack", {
+        get: function () { return TileType.GetTileType("MountainBack", "terrain", 4, 11, Solidity.None, TargetLayer.backdrop); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "MountainLadder", {
+        get: function () { return TileType.GetTileType("MountainLadder", "terrain", 5, 11, Solidity.None, TargetLayer.main, function (tileType) { tileType.isClimbable = true; }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "MountainSpikes", {
+        get: function () {
+            return TileType.GetTileType("MountainSpikes", "terrain", 6, 11, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.hurtOnBottom = true;
+                tileType.hurtOnTop = true;
+                tileType.hurtOnLeft = true;
+                tileType.hurtOnRight = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DecorMountain", {
+        get: function () { return TileType.GetTileType("DecorMountain", "terrain", 7, 11, Solidity.None, TargetLayer.main); },
         enumerable: false,
         configurable: true
     });
@@ -1950,6 +2011,50 @@ var TileType = /** @class */ (function () {
         get: function () {
             return TileType.GetTileType("TrackBridge", "motorTrack", 4, 4, Solidity.None, TargetLayer.wire, function (tileType) {
                 tileType.trackDirections = Direction.All;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackLeftCapEntry", {
+        get: function () {
+            return TileType.GetTileType("TrackLeftCapEntry", "motorTrack", 4, 5, Solidity.None, TargetLayer.wire, function (tileType) {
+                tileType.trackDirections = [Direction.Right];
+                tileType.clockWiseRotationTileName = "TrackTopCapEntry";
+                tileType.isTrackPipe = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackTopCapEntry", {
+        get: function () {
+            return TileType.GetTileType("TrackTopCapEntry", "motorTrack", 5, 5, Solidity.None, TargetLayer.wire, function (tileType) {
+                tileType.trackDirections = [Direction.Down];
+                tileType.clockWiseRotationTileName = "TrackRightCapEntry";
+                tileType.isTrackPipe = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackRightCapEntry", {
+        get: function () {
+            return TileType.GetTileType("TrackRightCapEntry", "motorTrack", 6, 5, Solidity.None, TargetLayer.wire, function (tileType) {
+                tileType.trackDirections = [Direction.Left];
+                tileType.clockWiseRotationTileName = "TrackBottomCapEntry";
+                tileType.isTrackPipe = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBottomCapEntry", {
+        get: function () {
+            return TileType.GetTileType("TrackBottomCapEntry", "motorTrack", 7, 5, Solidity.None, TargetLayer.wire, function (tileType) {
+                tileType.trackDirections = [Direction.Up];
+                tileType.clockWiseRotationTileName = "TrackLeftCapEntry";
+                tileType.isTrackPipe = true;
             });
         },
         enumerable: false,

@@ -136,12 +136,14 @@ var PauseMenu = /** @class */ (function (_super) {
             levelTitle.textAlign = "left";
             levelTitle.strokeColor = "black";
             ret.push(levelTitle);
-            var byText = new UIText(20, levelTitle.y + 18 + 10, "Created by " + currentLevelListing.author.username, 18, "white");
-            byText.textAlign = "left";
-            ret.push(byText);
-            var recordText = new UIText(20, byText.y + 18 + 10, "WR: " + Utility.FramesToTimeText(currentLevelListing.level.recordFrames) + " by " + currentLevelListing.wrHolder.username, 18, "white");
-            recordText.textAlign = "left";
-            ret.push(recordText);
+            if (currentLevelListing.author) {
+                var byText = new UIText(20, levelTitle.y + 18 + 10, "Created by " + currentLevelListing.author.username, 18, "white");
+                byText.textAlign = "left";
+                ret.push(byText);
+                var recordText = new UIText(20, byText.y + 18 + 10, "WR: " + Utility.FramesToTimeText(currentLevelListing.level.recordFrames) + " by " + currentLevelListing.wrHolder.username, 18, "white");
+                recordText.textAlign = "left";
+                ret.push(recordText);
+            }
             var opinionContainer = new Panel(0, 0, container.width, 60);
             if (!currentLevelListing.isLiked && !currentLevelListing.isDisliked) {
                 var opinionButtonSize = 120;

@@ -110,7 +110,7 @@ function CreateTitle() {
         `${char1} Ditches Yoshi`,
         `${char1} Taunts The Biters`,
         `${char1} Only, No Items, Final Destination`,
-
+        `${char1} Meets a Lynel`,
     ]);
 }
 

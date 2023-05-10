@@ -49,6 +49,9 @@ class BackgroundSource {
                 new BackgroundSource(tiles["bg_trees3"][0], "bottom", true, false, { h: 36, s: 0.8, l: 0.3 }, 0.5),
                 new BackgroundSource(tiles["bg_circus1"][0], "bottom", true, false, { h: 0, s: 1, l: 1 }, 0.5),
                 new BackgroundSource(tiles["bg_circus2"][0], "bottom", true, false, { h: 0, s: 1, l: 1 }, 0.5),
+                new BackgroundSource(tiles["bg_hills1"][0], "bottom", true, false, { h: 200, s: 0.35, l: 0.7 }, 0.4),
+                new BackgroundSource(tiles["bg_hills2"][0], "bottom", true, false, { h: 200, s: 0.35, l: 0.8 }, 0.3),
+                new BackgroundSource(tiles["bg_hills3"][0], "bottom", true, false, { h: 200, s: 0.35, l: 0.9 }, 0.2),
             )
         }
         return this.sources;
