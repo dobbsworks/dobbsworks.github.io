@@ -58,6 +58,8 @@ class LevelMap {
     windOpacity = 0;
     windParticles: {x:number,y:number,offset:number}[] = [];
 
+    hasHorizontalWrap = false;
+
     Update(): void {
         BenchmarkService.Log("MapUpdate");
         if (!this.isInitialized && player) {
@@ -418,6 +420,7 @@ class LevelMap {
             this.playerWaterMode ? 1 : 0,
             this.spriteWaterMode ? 1 : 0,
             this.songId,
+            this.hasHorizontalWrap ? 1 : 0,
         ];
 
         return [
@@ -520,6 +523,7 @@ class LevelMap {
 
         ret.playerWaterMode = properties[2] == "1";
         ret.spriteWaterMode = properties[3] == "1";
+        ret.hasHorizontalWrap = properties[5] == "1";
 
         if (editorHandler) {
             if (editorHandler.playerWaterModeToggle) {
@@ -527,6 +531,9 @@ class LevelMap {
             }
             if (editorHandler.spriteWaterModeToggle) {
                 editorHandler.spriteWaterModeToggle.isSelected = ret.spriteWaterMode;
+            }
+            if (editorHandler.horizontalWrapToggle) {
+                editorHandler.horizontalWrapToggle.isSelected = ret.hasHorizontalWrap;
             }
         }
 
@@ -574,8 +581,10 @@ class LevelMap {
         currentMap.lavaLevel = new FluidLevel(TileType.LavaSurface, TileType.Lava, 2);
         editorHandler.playerWaterModeToggle.isSelected = false;
         editorHandler.spriteWaterModeToggle.isSelected = false;
+        editorHandler.horizontalWrapToggle.isSelected = false;
         currentMap.playerWaterMode = false;
         currentMap.spriteWaterMode = false;
+        currentMap.hasHorizontalWrap = false;
         currentMap.mapHeight = 12;
         currentMap.cameraLocksHorizontal = [];
         currentMap.cameraLocksVertical = [];

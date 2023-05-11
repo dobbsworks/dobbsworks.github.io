@@ -171,7 +171,6 @@ abstract class Enemy extends Sprite {
                         this.layer.GetTileByPixel(this.x - 2, this.yBottom + 0.1 + this.layer.tileHeight)
                         : this.layer.GetTileByPixel(this.x - 2, this.yBottom + 0.1);
                     let isGroundToLeft = belowTile == leftFootTile || leftFootTile.tileType.solidity.IsSolidFromTop(this.direction) || leftFootTile.GetSemisolidNeighbor()?.tileType.solidity.IsSolidFromTop(this.direction);
-
                     if (!isGroundToRight) {
                         //console.log(belowTile, rightFootTile)
                         isGroundToRight = this.layer.sprites.some(a => a.isPlatform && Math.abs(a.y - this.yBottom) <= 0.11 && this.xRight >= a.x - 2 && this.xRight < a.xRight);

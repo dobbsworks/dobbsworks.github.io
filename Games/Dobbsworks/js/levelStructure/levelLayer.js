@@ -128,11 +128,17 @@ var LevelLayer = /** @class */ (function () {
         }
     };
     LevelLayer.prototype.SetTile = function (xIndex, yIndex, tileType, isInitialMapSetup) {
-        var _a;
+        var _a, _b;
         if (isInitialMapSetup === void 0) { isInitialMapSetup = false; }
         if (this.map && (yIndex >= ((_a = this.map) === null || _a === void 0 ? void 0 : _a.mapHeight) || yIndex < 0)) {
             new LevelTile(xIndex, yIndex, TileType.Air, this);
             return false;
+        }
+        if (((_b = this.map) === null || _b === void 0 ? void 0 : _b.hasHorizontalWrap) && !isInitialMapSetup) {
+            if (xIndex < 0)
+                xIndex += this.tiles.length;
+            if (xIndex >= this.tiles.length)
+                xIndex -= this.tiles.length;
         }
         var tileExists = !!(this.tiles[xIndex] && this.tiles[xIndex][yIndex]);
         var existingTile = this.GetTileByIndex(xIndex, yIndex);
@@ -200,6 +206,7 @@ var LevelLayer = /** @class */ (function () {
         }
     };
     LevelLayer.prototype.Update = function () {
+        var _a;
         if (!this.isAnimatedTileListInitialized) {
             this.animatedTileList = this.tiles.flatMap(function (a) { return a; }).filter(function (a) { return a.tileType instanceof AnimatedTileType; });
             this.isAnimatedTileListInitialized = true;
@@ -219,8 +226,8 @@ var LevelLayer = /** @class */ (function () {
         // using spread on orderedSprites to make sure we're iterating over a seaparte copy of the sprite list
         // iterating directly over orderedSprites is a problem because sprites is pointing to the same memory 
         // location, meaning that changes to the sprite list can affect which sprites are getting updated
-        for (var _i = 0, _a = __spreadArrays(orderedSprites); _i < _a.length; _i++) {
-            var sprite = _a[_i];
+        for (var _i = 0, _b = __spreadArrays(orderedSprites); _i < _b.length; _i++) {
+            var sprite = _b[_i];
             if (sprite.locked)
                 continue;
             if (sprite.updatedThisFrame)
@@ -235,14 +242,36 @@ var LevelLayer = /** @class */ (function () {
             }
         }
         this.sprites = this.sprites.filter(function (a) { return a.isActive; });
+        if ((_a = this.map) === null || _a === void 0 ? void 0 : _a.hasHorizontalWrap) {
+            var offset = this.tiles.length * 12;
+            for (var _c = 0, _d = this.sprites; _c < _d.length; _c++) {
+                var sprite = _d[_c];
+                if (sprite.xMid < 0)
+                    sprite.x += offset;
+                if (sprite.xMid > offset)
+                    sprite.x -= offset;
+            }
+        }
     };
-    LevelLayer.prototype.GetTileByPixel = function (xPixel, yPixel) {
+    LevelLayer.prototype.GetTileByPixel = function (xPixel, yPixel, allowRedirect) {
+        var _a;
+        if (allowRedirect === void 0) { allowRedirect = true; }
         var xTile = Math.floor(xPixel / this.tileWidth);
         var yTile = Math.floor(yPixel / this.tileHeight);
         if (!this.tiles)
             return new LevelTile(xTile, yTile, TileType.Air, this);
-        if (!this.tiles[xTile])
-            return new LevelTile(xTile, yTile, TileType.Air, this);
+        if (!this.tiles[xTile]) {
+            if (((_a = this.map) === null || _a === void 0 ? void 0 : _a.hasHorizontalWrap) && allowRedirect) {
+                var offset = this.tiles.length * 12;
+                var tile = (xPixel < 0) ?
+                    this.GetTileByPixel(xPixel + offset, yPixel, false) :
+                    this.GetTileByPixel(xPixel - offset, yPixel, false);
+                return new LevelTile(xTile, yTile, tile.tileType, this);
+            }
+            else {
+                return new LevelTile(xTile, yTile, TileType.Air, this);
+            }
+        }
         if (!this.tiles[xTile][yTile]) {
             if (yTile < 0) {
                 if (this.layerType == TargetLayer.wire)

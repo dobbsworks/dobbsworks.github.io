@@ -825,7 +825,7 @@ var Sprite = /** @class */ (function () {
         return { tiles: [], yPixel: -999999 };
     };
     Sprite.prototype.GetDistanceOfWall = function (yOffset, direction) {
-        var _a, _b;
+        var _a;
         var startingX = this.xMid;
         var spriteSidePixel = direction == 1 ? this.xRight : this.x;
         var footHeight = this.yBottom - 0.01;
@@ -849,13 +849,10 @@ var Sprite = /** @class */ (function () {
             }
             var _loop_2 = function (colIndex) {
                 // only checking next few cols
-                if (!this_2.layer.tiles[colIndex])
-                    return "continue";
+                //if (!this.layer.tiles[colIndex]) continue;
                 var tile = this_2.layer.GetTileByIndex(colIndex, rowIndex);
                 var semisolidTile = null;
-                if ((_a = this_2.layer.map) === null || _a === void 0 ? void 0 : _a.semisolidLayer.tiles[colIndex]) {
-                    semisolidTile = (_b = this_2.layer.map) === null || _b === void 0 ? void 0 : _b.semisolidLayer.tiles[colIndex][rowIndex];
-                }
+                semisolidTile = (_a = this_2.layer.map) === null || _a === void 0 ? void 0 : _a.semisolidLayer.GetTileByIndex(colIndex, rowIndex);
                 var pixel = (colIndex + (direction == 1 ? 0 : 1)) * this_2.layer.tileWidth;
                 [semisolidTile, tile].filter(function (a) { return a; }).forEach(function (t) {
                     if (t && t.tileType.solidity == Solidity.LeftWall) {

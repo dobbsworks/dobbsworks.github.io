@@ -644,16 +644,19 @@ var Player = /** @class */ (function (_super) {
         }
     };
     Player.prototype.KeepInBounds = function () {
-        if (this.x < 0) {
-            this.x = 0;
-            if (this.dx < 0)
-                this.dx = 0;
-        }
-        var maxX = this.layer.tiles.length * this.layer.tileWidth;
-        if (this.xRight > maxX) {
-            this.x = maxX - this.width;
-            if (this.dx > 0)
-                this.dx = 0;
+        var _a;
+        if (!((_a = this.layer.map) === null || _a === void 0 ? void 0 : _a.hasHorizontalWrap)) {
+            if (this.x < 0) {
+                this.x = 0;
+                if (this.dx < 0)
+                    this.dx = 0;
+            }
+            var maxX = this.layer.tiles.length * this.layer.tileWidth;
+            if (this.xRight > maxX) {
+                this.x = maxX - this.width;
+                if (this.dx > 0)
+                    this.dx = 0;
+            }
         }
         if (camera.isAutoscrollingHorizontally || camera.isAutoscrollingVertically) {
             var leftEdge = camera.GetLeftCameraEdge();

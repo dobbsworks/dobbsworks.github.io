@@ -117,6 +117,12 @@ class LevelLayer {
             new LevelTile(xIndex, yIndex, TileType.Air, this);
             return false;
         }
+
+        if (this.map?.hasHorizontalWrap && !isInitialMapSetup) {
+            if (xIndex < 0) xIndex += this.tiles.length;
+            if (xIndex >= this.tiles.length) xIndex -= this.tiles.length;
+        }
+
         let tileExists = !!(this.tiles[xIndex] && this.tiles[xIndex][yIndex]);
         let existingTile = this.GetTileByIndex(xIndex, yIndex);
         if (existingTile.tileType !== tileType || !tileExists) {
@@ -225,13 +231,30 @@ class LevelLayer {
             }
         }
         this.sprites = this.sprites.filter(a => a.isActive);
+        if (this.map?.hasHorizontalWrap) {
+            let offset = this.tiles.length * 12;
+            for (let sprite of this.sprites) {
+                if (sprite.xMid < 0) sprite.x += offset;
+                if (sprite.xMid > offset) sprite.x -= offset;
+            }
+        }
     }
 
-    GetTileByPixel(xPixel: number, yPixel: number): LevelTile {
+    GetTileByPixel(xPixel: number, yPixel: number, allowRedirect: boolean = true): LevelTile {
         let xTile = Math.floor(xPixel / this.tileWidth);
         let yTile = Math.floor(yPixel / this.tileHeight);
         if (!this.tiles) return new LevelTile(xTile, yTile, TileType.Air, this);
-        if (!this.tiles[xTile]) return new LevelTile(xTile, yTile, TileType.Air, this);
+        if (!this.tiles[xTile]) {
+            if (this.map?.hasHorizontalWrap && allowRedirect) {
+                let offset = this.tiles.length * 12;
+                let tile = (xPixel < 0) ? 
+                    this.GetTileByPixel(xPixel + offset, yPixel, false) :
+                    this.GetTileByPixel(xPixel - offset, yPixel, false);
+                return new LevelTile(xTile, yTile, tile.tileType, this);
+            } else {
+                return new LevelTile(xTile, yTile, TileType.Air, this);
+            }
+        }
         if (!this.tiles[xTile][yTile]) {
             if (yTile < 0) {
                 if (this.layerType == TargetLayer.wire) return new LevelTile(xTile, yTile, TileType.Air, this);

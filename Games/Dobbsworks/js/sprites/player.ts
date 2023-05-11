@@ -621,14 +621,16 @@ class Player extends Sprite {
     }
 
     KeepInBounds(): void {
-        if (this.x < 0) {
-            this.x = 0;
-            if (this.dx < 0) this.dx = 0;
-        }
-        let maxX = this.layer.tiles.length * this.layer.tileWidth;
-        if (this.xRight > maxX) {
-            this.x = maxX - this.width;
-            if (this.dx > 0) this.dx = 0;
+        if (!this.layer.map?.hasHorizontalWrap) {
+            if (this.x < 0) {
+                this.x = 0;
+                if (this.dx < 0) this.dx = 0;
+            }
+            let maxX = this.layer.tiles.length * this.layer.tileWidth;
+            if (this.xRight > maxX) {
+                this.x = maxX - this.width;
+                if (this.dx > 0) this.dx = 0;
+            }
         }
 
         if (camera.isAutoscrollingHorizontally || camera.isAutoscrollingVertically) {

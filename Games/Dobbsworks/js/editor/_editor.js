@@ -278,6 +278,7 @@ var EditorHandler = /** @class */ (function () {
         mapSizePanel.AddChild(mapSizeHandle);
         this.playerButton = new EditorButtonSprite(Player);
         this.hoverPlayerButton = new EditorButtonSprite(HoverPlayer);
+        this.horizontalWrapToggle = new EditorButtonToggle(tiles["editor"][0][9], "Toggle horizontal screen wrap", currentMap.hasHorizontalWrap, function (state) { currentMap.hasHorizontalWrap = state; });
         var levelFlowPanel = this.CreateFloatingButtonPanel([
             this.playerButton,
             this.hoverPlayerButton,
@@ -297,7 +298,10 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonSprite(CameraScrollLeft),
             new EditorButtonSprite(CameraScrollDown),
             new EditorButtonSprite(CameraScrollReset),
-        ], 3, 6);
+            //new EditorButtonSprite(CopperGear),
+            //new EditorButtonSprite(IronGear),
+            this.horizontalWrapToggle,
+        ], 4, 6);
         var levelFlowHandle = new EditorButtonDrawerHandle(tiles["editor"][5][3], "Level flow element", [levelFlowPanel]);
         var levelFlowHandlePanel = new Panel(mapSizePanel.x + 160, mapSizePanel.y, 70, 70);
         levelFlowPanel.targetX = levelFlowHandlePanel.x;

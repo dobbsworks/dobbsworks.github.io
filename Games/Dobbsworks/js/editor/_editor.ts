@@ -42,6 +42,7 @@ class EditorHandler {
     selectedFillBrush: FillBrushType = FreeformBrush;
     playerWaterModeToggle!: EditorButtonToggle;
     spriteWaterModeToggle!: EditorButtonToggle;
+    horizontalWrapToggle!: EditorButtonToggle;
 
     playerFrames: { fd: FrameData, x: number, y: number }[] = [];
 
@@ -308,6 +309,7 @@ class EditorHandler {
 
         this.playerButton = new EditorButtonSprite(Player);
         this.hoverPlayerButton = new EditorButtonSprite(HoverPlayer);
+        this.horizontalWrapToggle = new EditorButtonToggle(tiles["editor"][0][9], "Toggle horizontal screen wrap", currentMap.hasHorizontalWrap, (state) => { currentMap.hasHorizontalWrap = state });
         let levelFlowPanel = this.CreateFloatingButtonPanel([
             this.playerButton,
             this.hoverPlayerButton,
@@ -330,7 +332,9 @@ class EditorHandler {
             new EditorButtonSprite(CameraScrollReset),
             //new EditorButtonSprite(CopperGear),
             //new EditorButtonSprite(IronGear),
-        ], 3, 6);
+            this.horizontalWrapToggle,
+
+        ], 4, 6);
         let levelFlowHandle = new EditorButtonDrawerHandle(tiles["editor"][5][3], "Level flow element", [levelFlowPanel]);
         let levelFlowHandlePanel = new Panel(mapSizePanel.x + 160, mapSizePanel.y, 70, 70);
         levelFlowPanel.targetX = levelFlowHandlePanel.x;

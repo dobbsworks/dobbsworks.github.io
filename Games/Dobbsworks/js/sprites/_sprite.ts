@@ -829,13 +829,11 @@ abstract class Sprite {
 
             for (let colIndex = startColIndex; colIndex !== startColIndex + numColumnsToCheck * direction; colIndex += direction) {
                 // only checking next few cols
-                if (!this.layer.tiles[colIndex]) continue;
+                //if (!this.layer.tiles[colIndex]) continue;
                 let tile = this.layer.GetTileByIndex(colIndex, rowIndex);
                 let semisolidTile = null;
 
-                if (this.layer.map?.semisolidLayer.tiles[colIndex]) {
-                    semisolidTile = this.layer.map?.semisolidLayer.tiles[colIndex][rowIndex];
-                }
+                semisolidTile = this.layer.map?.semisolidLayer.GetTileByIndex(colIndex, rowIndex);
                 let pixel = (colIndex + (direction == 1 ? 0 : 1)) * this.layer.tileWidth;
 
                 [semisolidTile, tile].filter(a => a).forEach(t => {

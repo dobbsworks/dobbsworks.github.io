@@ -19,6 +19,22 @@ class ImageTile {
             xFlip ? -destX - this.width * zoom : destX,
             yFlip ? -destY - this.width * zoom : destY,
             this.width * zoom * scale, this.height * zoom * scale);
+
+        if (currentMap?.hasHorizontalWrap) {
+            let wrapOffset = currentMap.mainLayer.tiles.length * 12;
+                if (destX < 0) {
+                    ctx.drawImage(this.src, this.xSrc + 0.1, this.ySrc + 0.1, this.width - 0.2, this.height - 0.2,
+                        xFlip ? (-destX - this.width * zoom - wrapOffset * zoom) : (destX + wrapOffset * zoom),
+                        yFlip ? -destY - this.width * zoom : destY,
+                        this.width * zoom * scale, this.height * zoom * scale);
+                } else if (destX + this.width * zoom > wrapOffset) {
+                    ctx.drawImage(this.src, this.xSrc + 0.1, this.ySrc + 0.1, this.width - 0.2, this.height - 0.2,
+                        xFlip ? (-destX - this.width * zoom + wrapOffset * zoom) : (destX - wrapOffset * zoom),
+                        yFlip ? -destY - this.width * zoom : destY,
+                        this.width * zoom * scale, this.height * zoom * scale);
+                }
+            
+        }
         if (xFlip || yFlip) ctx.scale(xFlip ? -1 : 1, yFlip ? -1 : 1);
     }
 

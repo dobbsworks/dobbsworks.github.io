@@ -48,6 +48,7 @@ var LevelMap = /** @class */ (function () {
         this.windAnimationDy = 0;
         this.windOpacity = 0;
         this.windParticles = [];
+        this.hasHorizontalWrap = false;
         mainLayer.map = this;
         wireLayer.map = this;
         waterLayer.map = this;
@@ -438,6 +439,7 @@ var LevelMap = /** @class */ (function () {
             this.playerWaterMode ? 1 : 0,
             this.spriteWaterMode ? 1 : 0,
             this.songId,
+            this.hasHorizontalWrap ? 1 : 0,
         ];
         return __spreadArrays([
             properties.join(";"),
@@ -532,12 +534,16 @@ var LevelMap = /** @class */ (function () {
         LevelMap.ImportSprites(importSegments[7]);
         ret.playerWaterMode = properties[2] == "1";
         ret.spriteWaterMode = properties[3] == "1";
+        ret.hasHorizontalWrap = properties[5] == "1";
         if (editorHandler) {
             if (editorHandler.playerWaterModeToggle) {
                 editorHandler.playerWaterModeToggle.isSelected = ret.playerWaterMode;
             }
             if (editorHandler.spriteWaterModeToggle) {
                 editorHandler.spriteWaterModeToggle.isSelected = ret.spriteWaterMode;
+            }
+            if (editorHandler.horizontalWrapToggle) {
+                editorHandler.horizontalWrapToggle.isSelected = ret.hasHorizontalWrap;
             }
         }
         ret.songId = +(properties[4] || "0");
@@ -582,8 +588,10 @@ var LevelMap = /** @class */ (function () {
         currentMap.lavaLevel = new FluidLevel(TileType.LavaSurface, TileType.Lava, 2);
         editorHandler.playerWaterModeToggle.isSelected = false;
         editorHandler.spriteWaterModeToggle.isSelected = false;
+        editorHandler.horizontalWrapToggle.isSelected = false;
         currentMap.playerWaterMode = false;
         currentMap.spriteWaterMode = false;
+        currentMap.hasHorizontalWrap = false;
         currentMap.mapHeight = 12;
         currentMap.cameraLocksHorizontal = [];
         currentMap.cameraLocksVertical = [];
