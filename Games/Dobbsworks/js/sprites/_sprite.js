@@ -1,4 +1,11 @@
 "use strict";
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 var Sprite = /** @class */ (function () {
     function Sprite(x, y, layer, editorProps) {
         this.x = x;
@@ -97,6 +104,8 @@ var Sprite = /** @class */ (function () {
     });
     Sprite.prototype.GetPowerPoints = function () { return [{ xPixel: this.xMid, yPixel: this.yMid }]; };
     Sprite.prototype.OnStrikeEnemy = function (enemy) { };
+    Sprite.prototype.OnEnterPipe = function () { };
+    Sprite.prototype.OnExitPipe = function (exitDirection) { };
     Sprite.prototype.OnPickup = function () { return this; };
     Sprite.prototype.GetTotalDx = function () {
         var ret = this.dx;
@@ -114,7 +123,6 @@ var Sprite = /** @class */ (function () {
     };
     Sprite.prototype.SharedUpdate = function () {
         var _this = this;
-        var _a;
         if (!(this instanceof DeadPlayer || this instanceof Player)) {
             var motor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == _this; });
             if (!motor) {
@@ -178,26 +186,13 @@ var Sprite = /** @class */ (function () {
         this.windDy = tileAtCenter.windY + currentMap.globalWindY * 0.3;
         if (this.windDy < 0)
             this.gustUpTimer = 3;
-        var trackTileAtCenter = (_a = this.layer.map) === null || _a === void 0 ? void 0 : _a.wireLayer.GetTileByPixel(this.xMid, this.yMid);
-        if (trackTileAtCenter && trackTileAtCenter != this.trackPipeExit)
-            this.trackPipeExit = null;
-        if (trackTileAtCenter && trackTileAtCenter.tileType.isTrackPipe && this.trackPipeExit == null) {
-            if (!(this instanceof PipeContent || this instanceof DeadPlayer || this instanceof Poof || this instanceof KeyDomino || this instanceof ShimmerRipple)) {
-                var targetDirection = trackTileAtCenter.tileType.trackDirections[0];
-                var nextTrack = trackTileAtCenter.Neighbor(targetDirection);
-                var doesNextTrackExist = false;
-                if (nextTrack && nextTrack.tileType.trackDirections.indexOf(targetDirection.Opposite()) > -1) {
-                    // fail out if no track beyond?
-                    doesNextTrackExist = true;
-                }
-                if (doesNextTrackExist) {
-                    var newSprite = this.ReplaceWithSpriteType(PipeContent);
-                    newSprite.SetContainedSprite(this);
-                    newSprite.x = trackTileAtCenter.tileX * 12;
-                    newSprite.y = trackTileAtCenter.tileY * 12;
-                    newSprite.direction = targetDirection;
-                }
-            }
+        var trackPipe = this.GetOverlappingTrackPipe();
+        if (trackPipe) {
+            var newSprite = this.ReplaceWithSpriteType(PipeContent);
+            newSprite.SetContainedSprite(this);
+            newSprite.x = trackPipe.tileX * 12;
+            newSprite.y = trackPipe.tileY * 12;
+            newSprite.direction = trackPipe.tileType.trackDirections[0];
         }
     };
     Sprite.prototype.ReactToVerticalWind = function () {
@@ -1060,6 +1055,46 @@ var Sprite = /** @class */ (function () {
             }
         }
         return false;
+    };
+    Sprite.prototype.GetOverlappingTrackPipe = function () {
+        var _this = this;
+        var _a;
+        var xs = [this.xMid];
+        var ys = [this.yMid];
+        if (this.width > 12) {
+            // offset this.x by: [ 6, 18, 24... width-6 ]
+            xs = __spreadArrays(Array.from(new Array(Math.ceil(this.width / 12) - 1), function (x, i) { return _this.x + i * 12 + 6; }), [this.xRight - 6]);
+        }
+        if (this.height > 12) {
+            ys = __spreadArrays(Array.from(new Array(Math.ceil(this.height / 12) - 1), function (x, i) { return _this.y + i * 12 + 6; }), [this.yBottom - 6]);
+        }
+        var isTouchingPreviousTrackPipe = false;
+        for (var _i = 0, xs_1 = xs; _i < xs_1.length; _i++) {
+            var x = xs_1[_i];
+            for (var _b = 0, ys_1 = ys; _b < ys_1.length; _b++) {
+                var y = ys_1[_b];
+                var trackTileAtCenter = (_a = this.layer.map) === null || _a === void 0 ? void 0 : _a.wireLayer.GetTileByPixel(x, y);
+                if (trackTileAtCenter && trackTileAtCenter == this.trackPipeExit)
+                    isTouchingPreviousTrackPipe = true;
+                if (trackTileAtCenter && trackTileAtCenter.tileType.isTrackPipe && this.trackPipeExit == null) {
+                    if (!(this instanceof PipeContent || this instanceof DeadPlayer || this instanceof Poof || this instanceof KeyDomino || this instanceof ShimmerRipple)) {
+                        var targetDirection = trackTileAtCenter.tileType.trackDirections[0];
+                        var nextTrack = trackTileAtCenter.Neighbor(targetDirection);
+                        var doesNextTrackExist = false;
+                        if (nextTrack && nextTrack.tileType.trackDirections.indexOf(targetDirection.Opposite()) > -1) {
+                            // fail out if no track beyond?
+                            doesNextTrackExist = true;
+                        }
+                        if (doesNextTrackExist) {
+                            return trackTileAtCenter;
+                        }
+                    }
+                }
+            }
+        }
+        if (!isTouchingPreviousTrackPipe)
+            this.trackPipeExit = null;
+        return null;
     };
     return Sprite;
 }());

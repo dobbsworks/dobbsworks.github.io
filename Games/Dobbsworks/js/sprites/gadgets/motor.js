@@ -35,6 +35,9 @@ var Motor = /** @class */ (function (_super) {
         _this.direction = Direction.Right;
         return _this;
     }
+    Motor.prototype.OnEnterPipe = function () {
+        this.connectedSprite = null;
+    };
     Motor.prototype.Initialize = function () {
         var _this = this;
         var currentTile = this.layer.GetTileByPixel(this.xMid, this.yMid).GetWireNeighbor();

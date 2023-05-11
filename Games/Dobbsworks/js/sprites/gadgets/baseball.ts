@@ -18,6 +18,17 @@ class Baseball extends Sprite {
         this.dx *= 0.5;
     }
 
+    public OnExitPipe(exitDirection: Direction): void { 
+        if (exitDirection.x == 0) {
+            this.isInThrowMode = false;
+        } else {
+            if (this.isInThrowMode) {
+                this.dy = 0;
+                this.throwDirection = exitDirection.x == 1 ? 1 : -1;
+            }
+        }
+    }
+
     Update(): void {
         this.hurtsEnemies = this.isInThrowMode;
 

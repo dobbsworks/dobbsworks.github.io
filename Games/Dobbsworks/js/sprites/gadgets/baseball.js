@@ -32,6 +32,17 @@ var Baseball = /** @class */ (function (_super) {
         this.dy -= 2;
         this.dx *= 0.5;
     };
+    Baseball.prototype.OnExitPipe = function (exitDirection) {
+        if (exitDirection.x == 0) {
+            this.isInThrowMode = false;
+        }
+        else {
+            if (this.isInThrowMode) {
+                this.dy = 0;
+                this.throwDirection = exitDirection.x == 1 ? 1 : -1;
+            }
+        }
+    };
     Baseball.prototype.Update = function () {
         this.hurtsEnemies = this.isInThrowMode;
         if (player && player.heldItem == this)

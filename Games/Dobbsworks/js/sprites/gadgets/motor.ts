@@ -20,6 +20,11 @@ class Motor extends Sprite {
     protected frameY: number = 0;
     protected direction: Direction = Direction.Right;
 
+    
+    public OnEnterPipe(): void { 
+        this.connectedSprite = null;
+    }
+
     Initialize(): void {
         let currentTile = this.layer.GetTileByPixel(this.xMid, this.yMid).GetWireNeighbor();
         if (currentTile?.tileType.trackDirections.length) this.isOnTrack = true;

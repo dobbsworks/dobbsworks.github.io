@@ -350,6 +350,9 @@ var TileType = /** @class */ (function () {
         TileType.TrackBottomCapEntry;
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
+        TileType.MountainSpikesDown;
+        TileType.MountainSpikesLeft;
+        TileType.MountainSpikesRight;
     };
     TileType.RegisterSlope = function (keyBase, tileRow) {
         var colIter = 8;
@@ -1001,6 +1004,11 @@ var TileType = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(TileType, "DecorMountain", {
+        get: function () { return TileType.GetTileType("MountainBlock", "terrain", 7, 11, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(TileType, "MountainSpikes", {
         get: function () {
             return TileType.GetTileType("MountainSpikes", "terrain", 6, 11, Solidity.Block, TargetLayer.main, function (tileType) {
@@ -1008,13 +1016,48 @@ var TileType = /** @class */ (function () {
                 tileType.hurtOnTop = true;
                 tileType.hurtOnLeft = true;
                 tileType.hurtOnRight = true;
+                tileType.clockWiseRotationTileName = "MountainSpikesRight";
             });
         },
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(TileType, "DecorMountain", {
-        get: function () { return TileType.GetTileType("DecorMountain", "terrain", 7, 11, Solidity.None, TargetLayer.main); },
+    Object.defineProperty(TileType, "MountainSpikesRight", {
+        get: function () {
+            return TileType.GetTileType("MountainSpikesRight", "terrain", 13, 19, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.hurtOnBottom = true;
+                tileType.hurtOnTop = true;
+                tileType.hurtOnLeft = true;
+                tileType.hurtOnRight = true;
+                tileType.clockWiseRotationTileName = "MountainSpikesDown";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "MountainSpikesLeft", {
+        get: function () {
+            return TileType.GetTileType("MountainSpikesLeft", "terrain", 14, 19, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.hurtOnBottom = true;
+                tileType.hurtOnTop = true;
+                tileType.hurtOnLeft = true;
+                tileType.hurtOnRight = true;
+                tileType.clockWiseRotationTileName = "MountainSpikes";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "MountainSpikesDown", {
+        get: function () {
+            return TileType.GetTileType("MountainSpikesDown", "terrain", 15, 19, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.hurtOnBottom = true;
+                tileType.hurtOnTop = true;
+                tileType.hurtOnLeft = true;
+                tileType.hurtOnRight = true;
+                tileType.clockWiseRotationTileName = "MountainSpikesLeft";
+            });
+        },
         enumerable: false,
         configurable: true
     });

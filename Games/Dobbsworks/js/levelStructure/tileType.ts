@@ -393,6 +393,9 @@ class TileType {
         TileType.TrackBottomCapEntry;
         // TileType.WallWarpLeft;
         // TileType.WallWarpRight;
+        TileType.MountainSpikesDown;
+        TileType.MountainSpikesLeft;
+        TileType.MountainSpikesRight;
     }
 
 
@@ -623,12 +626,24 @@ class TileType {
     public static get MountainTop(): TileType { return TileType.GetTileType("MountainTop", "terrain", 3, 11, Solidity.Top, TargetLayer.semisolid); }
     public static get MountainBack(): TileType { return TileType.GetTileType("MountainBack", "terrain", 4, 11, Solidity.None, TargetLayer.backdrop); }
     public static get MountainLadder(): TileType { return TileType.GetTileType("MountainLadder", "terrain", 5, 11, Solidity.None, TargetLayer.main, tileType => { tileType.isClimbable = true; }); }
-    public static get MountainSpikes(): TileType {
-        return TileType.GetTileType("MountainSpikes", "terrain", 6, 11, Solidity.Block, TargetLayer.main, tileType => {
-            tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnLeft = true; tileType.hurtOnRight = true;
-        });
-    }
-    public static get DecorMountain(): TileType { return TileType.GetTileType("DecorMountain", "terrain", 7, 11, Solidity.None, TargetLayer.main); }
+    public static get DecorMountain(): TileType { return TileType.GetTileType("MountainBlock", "terrain", 7, 11, Solidity.Block, TargetLayer.main); }
+
+    public static get MountainSpikes(): TileType { return TileType.GetTileType("MountainSpikes", "terrain", 6, 11, Solidity.Block, TargetLayer.main, tileType => {
+        tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnLeft = true; tileType.hurtOnRight = true;
+        tileType.clockWiseRotationTileName = "MountainSpikesRight";
+    }); }
+    public static get MountainSpikesRight(): TileType { return TileType.GetTileType("MountainSpikesRight", "terrain", 13, 19, Solidity.Block, TargetLayer.main, tileType => {
+        tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnLeft = true; tileType.hurtOnRight = true;
+        tileType.clockWiseRotationTileName = "MountainSpikesDown";
+    }); }
+    public static get MountainSpikesLeft(): TileType { return TileType.GetTileType("MountainSpikesLeft", "terrain", 14, 19, Solidity.Block, TargetLayer.main, tileType => {
+        tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnLeft = true; tileType.hurtOnRight = true;
+        tileType.clockWiseRotationTileName = "MountainSpikes";
+    }); }
+    public static get MountainSpikesDown(): TileType { return TileType.GetTileType("MountainSpikesDown", "terrain", 15, 19, Solidity.Block, TargetLayer.main, tileType => {
+        tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnLeft = true; tileType.hurtOnRight = true;
+        tileType.clockWiseRotationTileName = "MountainSpikesLeft";
+    }); }
 
 
 

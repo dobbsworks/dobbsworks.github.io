@@ -231,7 +231,7 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonSprite(Lever),
             new EditorButtonSprite(Lightbulb),
             new EditorButtonTile(TileType.UnpoweredWindRight, "Wind Generator").AppendImage(tiles["uiButtonAdd"][0][0]),
-        ], 4, 8);
+        ], 5, 8);
         var backgroundHandle = new EditorButtonDrawerHandle(tiles["editor"][0][3], "Background customization", []);
         this.skyEditor = new SkyEditor(this.mainPanel.x - 70 - 10, 110, 700, 300);
         for (var _b = 0, _c = [0, 1, 2, 3]; _b < _c.length; _b++) {

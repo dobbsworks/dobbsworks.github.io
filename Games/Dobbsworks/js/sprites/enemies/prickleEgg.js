@@ -130,7 +130,7 @@ var PrickleRock = /** @class */ (function (_super) {
             this.direction = player.x < this.x ? -1 : 1;
         }
         this.ApplyGravity();
-        this.ApplyInertia();
+        this.dx *= 0.94;
         this.ReactToWater();
     };
     PrickleRock.prototype.GetFrameData = function (frameNum) {

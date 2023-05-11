@@ -63,6 +63,12 @@ class SpinningYoyo extends Sprite {
     canBeHeld = false;
     thrower!: Player;
 
+    public OnEnterPipe(): void { 
+        this.ReplaceWithSpriteType(Yoyo);
+        this.thrower.yoyoTarget = null;
+        this.thrower.yoyoTimer = 0;
+    }
+
     Update(): void {
         if (this.age <= 12) {
             this.MoveByVelocity();

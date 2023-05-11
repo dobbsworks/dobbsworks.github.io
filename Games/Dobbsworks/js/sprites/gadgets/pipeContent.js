@@ -26,6 +26,11 @@ var PipeContent = /** @class */ (function (_super) {
     }
     PipeContent.prototype.SetContainedSprite = function (sprite) {
         var _a;
+        sprite.OnEnterPipe();
+        var motor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == sprite; });
+        if (motor) {
+            motor.connectedSprite = null;
+        }
         this.containedSprite = sprite;
         var frames = sprite.GetFrameData(0);
         if ("xFlip" in frames)
@@ -79,6 +84,7 @@ var PipeContent = /** @class */ (function (_super) {
                         this.containedSprite.dx = 0;
                         this.containedSprite.dy = -1.7 * track_1.tileType.trackDirections[0].y;
                     }
+                    this.containedSprite.OnExitPipe(track_1.tileType.trackDirections[0].Opposite());
                 }
             }
             else if (track_1 && track_1.tileType.trackDirections.length > 0) {

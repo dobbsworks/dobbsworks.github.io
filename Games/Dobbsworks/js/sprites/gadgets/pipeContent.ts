@@ -10,6 +10,13 @@ class PipeContent extends Sprite {
     direction!: Direction;
 
     SetContainedSprite(sprite: Sprite): void {
+        sprite.OnEnterPipe();
+
+        let motor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == sprite);
+        if (motor) {
+            motor.connectedSprite = null;
+        }
+
         this.containedSprite = sprite;
         let frames = sprite.GetFrameData(0);
         if ("xFlip" in frames) this.spriteFrames.push(frames);
@@ -62,6 +69,8 @@ class PipeContent extends Sprite {
                         this.containedSprite.dx = 0;
                         this.containedSprite.dy = -1.7 * track.tileType.trackDirections[0].y;
                     }
+
+                    this.containedSprite.OnExitPipe(track.tileType.trackDirections[0].Opposite());
                 }
             } else if (track && track.tileType.trackDirections.length > 0) {
                 // check possible directions

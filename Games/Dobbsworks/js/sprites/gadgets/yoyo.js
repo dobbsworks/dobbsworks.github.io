@@ -86,6 +86,11 @@ var SpinningYoyo = /** @class */ (function (_super) {
         _this.canBeHeld = false;
         return _this;
     }
+    SpinningYoyo.prototype.OnEnterPipe = function () {
+        this.ReplaceWithSpriteType(Yoyo);
+        this.thrower.yoyoTarget = null;
+        this.thrower.yoyoTimer = 0;
+    };
     SpinningYoyo.prototype.Update = function () {
         if (this.age <= 12) {
             this.MoveByVelocity();

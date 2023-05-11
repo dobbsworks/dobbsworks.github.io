@@ -258,7 +258,7 @@ class EditorHandler {
             new EditorButtonSprite(Lever),
             new EditorButtonSprite(Lightbulb),
             new EditorButtonTile(TileType.UnpoweredWindRight, "Wind Generator").AppendImage(tiles["uiButtonAdd"][0][0]),
-        ], 4, 8);
+        ], 5, 8);
 
 
         let backgroundHandle = new EditorButtonDrawerHandle(tiles["editor"][0][3], "Background customization", []);

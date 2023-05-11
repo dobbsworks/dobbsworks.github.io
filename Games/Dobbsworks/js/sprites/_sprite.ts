@@ -88,6 +88,10 @@ abstract class Sprite {
 
     public OnStrikeEnemy(enemy: Enemy): void { }
 
+    public OnEnterPipe(): void { }
+
+    public OnExitPipe(exitDirection: Direction): void { }
+
     public OnPickup(): Sprite { return this; }
 
     public GetTotalDx(): number {
@@ -167,26 +171,13 @@ abstract class Sprite {
         this.windDy = tileAtCenter.windY + currentMap.globalWindY * 0.3;
         if (this.windDy < 0) this.gustUpTimer = 3;
 
-        let trackTileAtCenter = this.layer.map?.wireLayer.GetTileByPixel(this.xMid, this.yMid);
-        if (trackTileAtCenter && trackTileAtCenter != this.trackPipeExit) this.trackPipeExit = null;
-        if (trackTileAtCenter && trackTileAtCenter.tileType.isTrackPipe && this.trackPipeExit == null) {
-            if (!(this instanceof PipeContent || this instanceof DeadPlayer || this instanceof Poof || this instanceof KeyDomino || this instanceof ShimmerRipple)) {
-                let targetDirection = trackTileAtCenter.tileType.trackDirections[0];
-                let nextTrack = trackTileAtCenter.Neighbor(targetDirection);
-                let doesNextTrackExist = false;
-                if (nextTrack && nextTrack.tileType.trackDirections.indexOf(targetDirection.Opposite()) > -1) {
-                    // fail out if no track beyond?
-                    doesNextTrackExist = true;
-                }
-
-                if (doesNextTrackExist) {
-                    let newSprite = this.ReplaceWithSpriteType(PipeContent) as PipeContent;
-                    newSprite.SetContainedSprite(this);
-                    newSprite.x = trackTileAtCenter.tileX * 12;
-                    newSprite.y = trackTileAtCenter.tileY * 12;
-                    newSprite.direction = targetDirection;
-                }
-            }
+        let trackPipe = this.GetOverlappingTrackPipe();
+        if (trackPipe) {
+            let newSprite = this.ReplaceWithSpriteType(PipeContent) as PipeContent;
+            newSprite.SetContainedSprite(this);
+            newSprite.x = trackPipe.tileX * 12;
+            newSprite.y = trackPipe.tileY * 12;
+            newSprite.direction = trackPipe.tileType.trackDirections[0];
         }
     }
 
@@ -1042,5 +1033,43 @@ abstract class Sprite {
             }
         }
         return false;
+    }
+
+    GetOverlappingTrackPipe(): LevelTile | null {
+        let xs = [this.xMid];
+        let ys = [this.yMid];
+
+        if (this.width > 12) {
+            // offset this.x by: [ 6, 18, 24... width-6 ]
+            xs = [...Array.from(new Array(Math.ceil(this.width / 12) - 1), (x, i) => this.x + i * 12 + 6), this.xRight - 6];
+        }
+        if (this.height > 12) {
+            ys = [...Array.from(new Array(Math.ceil(this.height / 12) - 1), (x, i) => this.y + i * 12 + 6), this.yBottom - 6];
+        }
+        
+        let isTouchingPreviousTrackPipe = false;
+        for (let x of xs) {
+            for (let y of ys) {
+                let trackTileAtCenter = this.layer.map?.wireLayer.GetTileByPixel(x, y);
+                if (trackTileAtCenter && trackTileAtCenter == this.trackPipeExit) isTouchingPreviousTrackPipe = true;
+                if (trackTileAtCenter && trackTileAtCenter.tileType.isTrackPipe && this.trackPipeExit == null) {
+                    if (!(this instanceof PipeContent || this instanceof DeadPlayer || this instanceof Poof || this instanceof KeyDomino || this instanceof ShimmerRipple)) {
+                        let targetDirection = trackTileAtCenter.tileType.trackDirections[0];
+                        let nextTrack = trackTileAtCenter.Neighbor(targetDirection);
+                        let doesNextTrackExist = false;
+                        if (nextTrack && nextTrack.tileType.trackDirections.indexOf(targetDirection.Opposite()) > -1) {
+                            // fail out if no track beyond?
+                            doesNextTrackExist = true;
+                        }
+        
+                        if (doesNextTrackExist) {
+                            return trackTileAtCenter;
+                        }
+                    }
+                }
+            }
+        }
+        if (!isTouchingPreviousTrackPipe) this.trackPipeExit = null;
+        return null;
     }
 }
