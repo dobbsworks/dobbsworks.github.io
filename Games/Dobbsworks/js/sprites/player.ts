@@ -666,6 +666,12 @@ class Player extends Sprite {
         for (let sprite of sprites) {
             let isHorizontalOverlap = this.xRight > sprite.x && this.x < sprite.xRight;
 
+            if (this.layer.map?.hasHorizontalWrap && !isHorizontalOverlap) {
+                let offset = this.layer.tiles.length * 12;
+                if (this.xMid > sprite.xMid) offset *= -1;
+                isHorizontalOverlap = this.xRight + offset > sprite.x && this.x + offset < sprite.xRight;
+            }
+
             //let aboutToOverlapFromAbove = this.yBottom > sprite.y && this.yBottom - 3 < sprite.y;
             let currentlyAbove = this.yBottom <= sprite.y + 3 || this.parentSprite == sprite;
             let projectedBelow = this.yBottom + this.GetTotalDy() > sprite.y + sprite.GetTotalDy();

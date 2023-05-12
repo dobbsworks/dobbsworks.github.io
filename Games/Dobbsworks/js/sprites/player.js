@@ -687,10 +687,17 @@ var Player = /** @class */ (function (_super) {
         }
     };
     Player.prototype.HandleEnemies = function () {
+        var _a;
         var sprites = this.layer.sprites;
         for (var _i = 0, sprites_1 = sprites; _i < sprites_1.length; _i++) {
             var sprite = sprites_1[_i];
             var isHorizontalOverlap = this.xRight > sprite.x && this.x < sprite.xRight;
+            if (((_a = this.layer.map) === null || _a === void 0 ? void 0 : _a.hasHorizontalWrap) && !isHorizontalOverlap) {
+                var offset = this.layer.tiles.length * 12;
+                if (this.xMid > sprite.xMid)
+                    offset *= -1;
+                isHorizontalOverlap = this.xRight + offset > sprite.x && this.x + offset < sprite.xRight;
+            }
             //let aboutToOverlapFromAbove = this.yBottom > sprite.y && this.yBottom - 3 < sprite.y;
             var currentlyAbove = this.yBottom <= sprite.y + 3 || this.parentSprite == sprite;
             var projectedBelow = this.yBottom + this.GetTotalDy() > sprite.y + sprite.GetTotalDy();
