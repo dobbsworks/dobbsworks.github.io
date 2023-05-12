@@ -353,6 +353,8 @@ var TileType = /** @class */ (function () {
         TileType.MountainSpikesDown;
         TileType.MountainSpikesLeft;
         TileType.MountainSpikesRight;
+        TileType.TrackBridgeHorizontalOff;
+        TileType.TrackBridgeVerticalOff;
     };
     TileType.RegisterSlope = function (keyBase, tileRow) {
         var colIter = 8;
@@ -2200,6 +2202,52 @@ var TileType = /** @class */ (function () {
             tileType.trackDirections = [sharedDir, offDir.Opposite()];
         });
     };
+    Object.defineProperty(TileType, "TrackBridgeHorizontalOff", {
+        get: function () {
+            return TileType.GetTileType("TrackBridgeHorizontalOff", "motorTrack", 0, 6, Solidity.None, TargetLayer.wire, function (tileType) {
+                tileType.canBePowered = true;
+                tileType.poweredTileName = "TrackBridgeHorizontalOn";
+                tileType.trackDirections = [Direction.Left, Direction.Right];
+                tileType.clockWiseRotationTileName = "TrackBridgeVerticalOff";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBridgeHorizontalOn", {
+        get: function () {
+            return TileType.GetTileType("TrackBridgeHorizontalOn", "motorTrack", 1, 6, Solidity.None, TargetLayer.wire, function (tileType) {
+                tileType.canBePowered = true;
+                tileType.unpoweredTileName = "TrackBridgeHorizontalOff";
+                tileType.trackDirections = [Direction.Left, Direction.Right];
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBridgeVerticalOff", {
+        get: function () {
+            return TileType.GetTileType("TrackBridgeVerticalOff", "motorTrack", 2, 6, Solidity.None, TargetLayer.wire, function (tileType) {
+                tileType.canBePowered = true;
+                tileType.poweredTileName = "TrackBridgeVerticalOn";
+                tileType.trackDirections = [Direction.Up, Direction.Down];
+                tileType.clockWiseRotationTileName = "TrackBridgeHorizontalOff";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "TrackBridgeVerticalOn", {
+        get: function () {
+            return TileType.GetTileType("TrackBridgeVerticalOn", "motorTrack", 3, 6, Solidity.None, TargetLayer.wire, function (tileType) {
+                tileType.canBePowered = true;
+                tileType.unpoweredTileName = "TrackBridgeVerticalOff";
+                tileType.trackDirections = [Direction.Up, Direction.Down];
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
     TileType.OneWay = function (direction) {
         var y = [Direction.Right, Direction.Down, Direction.Left, Direction.Up].indexOf(direction);
         var frames = [

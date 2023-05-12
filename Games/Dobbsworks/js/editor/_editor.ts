@@ -256,6 +256,7 @@ class EditorHandler {
             new EditorButtonTrackTool(),
             new EditorButtonTile(TileType.TrackLeftCapEntry, "Track Pipe").AppendImage(tiles["uiButtonAdd"][0][0]),
             new EditorButtonTile(TileType.TrackBranchDownLeftOff, "Track Branch").AppendImage(tiles["uiButtonAdd"][0][0]),
+            new EditorButtonTile(TileType.TrackBridgeHorizontalOff, "Track/Wire Bridge").AppendImage(tiles["uiButtonAdd"][0][0]),
             new EditorButtonSprite(Lever),
             new EditorButtonSprite(Lightbulb),
             new EditorButtonTile(TileType.UnpoweredWindRight, "Wind Generator").AppendImage(tiles["uiButtonAdd"][0][0]),

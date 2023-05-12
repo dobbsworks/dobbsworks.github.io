@@ -396,6 +396,9 @@ class TileType {
         TileType.MountainSpikesDown;
         TileType.MountainSpikesLeft;
         TileType.MountainSpikesRight;
+
+        TileType.TrackBridgeHorizontalOff;
+        TileType.TrackBridgeVerticalOff;
     }
 
 
@@ -1358,6 +1361,40 @@ class TileType {
             tileType.canBePowered = true;
             tileType.unpoweredTileName = baseName + "Off"
             tileType.trackDirections = [sharedDir, offDir.Opposite()];
+        });
+    }
+
+    public static get TrackBridgeHorizontalOff(): TileType {
+        return TileType.GetTileType("TrackBridgeHorizontalOff", "motorTrack", 0, 6, Solidity.None, TargetLayer.wire, tileType => {
+            tileType.canBePowered = true;
+            tileType.poweredTileName = "TrackBridgeHorizontalOn";
+            tileType.trackDirections = [Direction.Left, Direction.Right];
+            tileType.clockWiseRotationTileName = "TrackBridgeVerticalOff";
+        });
+    }
+
+    public static get TrackBridgeHorizontalOn(): TileType {
+        return TileType.GetTileType("TrackBridgeHorizontalOn", "motorTrack", 1, 6, Solidity.None, TargetLayer.wire, tileType => {
+            tileType.canBePowered = true;
+            tileType.unpoweredTileName = "TrackBridgeHorizontalOff";
+            tileType.trackDirections = [Direction.Left, Direction.Right];
+        });
+    }
+
+    public static get TrackBridgeVerticalOff(): TileType {
+        return TileType.GetTileType("TrackBridgeVerticalOff", "motorTrack", 2, 6, Solidity.None, TargetLayer.wire, tileType => {
+            tileType.canBePowered = true;
+            tileType.poweredTileName = "TrackBridgeVerticalOn";
+            tileType.trackDirections = [Direction.Up, Direction.Down];
+            tileType.clockWiseRotationTileName = "TrackBridgeHorizontalOff";
+        });
+    }
+
+    public static get TrackBridgeVerticalOn(): TileType {
+        return TileType.GetTileType("TrackBridgeVerticalOn", "motorTrack", 3, 6, Solidity.None, TargetLayer.wire, tileType => {
+            tileType.canBePowered = true;
+            tileType.unpoweredTileName = "TrackBridgeVerticalOff";
+            tileType.trackDirections = [Direction.Up, Direction.Down];
         });
     }
 
