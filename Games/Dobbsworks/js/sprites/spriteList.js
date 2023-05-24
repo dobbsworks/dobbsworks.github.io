@@ -128,4 +128,5 @@ var spriteTypes = [
     Doopster,
     Dabbot,
     ClimbingSpurpider,
+    ControlledWinch,
 ];

@@ -42,11 +42,11 @@ var Winch = /** @class */ (function (_super) {
             this.Initialize();
             this.maxConnectionDistance = this.connectionDistance;
         }
-        if (Utility.Xor(this.GetIsPowered(), this.windsDown)) {
+        if (this.ShouldWindUp()) {
             this.connectionDistance -= this.winchSpeed;
             this.isWinding = true;
         }
-        else {
+        if (this.ShouldWindDown()) {
             this.connectionDistance += this.winchSpeed;
             this.isWinding = true;
         }
@@ -70,6 +70,12 @@ var Winch = /** @class */ (function (_super) {
             }
         }
     };
+    Winch.prototype.ShouldWindDown = function () {
+        return !this.ShouldWindUp();
+    };
+    Winch.prototype.ShouldWindUp = function () {
+        return Utility.Xor(this.GetIsPowered(), this.windsDown);
+    };
     Winch.prototype.GetIsPowered = function () {
         var _a;
         if (this.connectedSprite && this.connectedSprite instanceof PullSwitch && this.connectedSprite.isOn)
@@ -79,12 +85,13 @@ var Winch = /** @class */ (function (_super) {
     };
     Winch.prototype.GetFrameData = function (frameNum) {
         var col = Math.floor(frameNum / 10) % 2;
+        var row = 0;
         if (!this.isWinding)
             col = 0;
         if (this.GetIsPowered())
-            col += 2;
+            row += 1;
         return {
-            imageTile: tiles["motorTrack"][col][5],
+            imageTile: tiles["winch"][col][row],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
@@ -101,4 +108,46 @@ var ReverseWinch = /** @class */ (function (_super) {
         return _this;
     }
     return ReverseWinch;
+}(Winch));
+var ControlledWinch = /** @class */ (function (_super) {
+    __extends(ControlledWinch, _super);
+    function ControlledWinch() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ControlledWinch.prototype.ShouldWindDown = function () {
+        return KeyboardHandler.IsKeyPressed(KeyAction.Down, false);
+    };
+    ControlledWinch.prototype.ShouldWindUp = function () {
+        return KeyboardHandler.IsKeyPressed(KeyAction.Up, false);
+    };
+    ControlledWinch.prototype.GetFrameData = function (frameNum) {
+        var col = Math.floor(frameNum / 10) % 2;
+        var row = 2;
+        if (!this.isWinding)
+            col = 0;
+        if (this.ShouldWindUp()) {
+            if (this.ShouldWindDown()) {
+                row = 5;
+            }
+            else {
+                row = 3;
+            }
+        }
+        else {
+            if (this.ShouldWindDown()) {
+                row = 4;
+            }
+            else {
+                col = 0;
+            }
+        }
+        return {
+            imageTile: tiles["winch"][col][row],
+            xFlip: false,
+            yFlip: false,
+            xOffset: 0,
+            yOffset: 1
+        };
+    };
+    return ControlledWinch;
 }(Winch));

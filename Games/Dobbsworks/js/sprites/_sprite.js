@@ -1056,6 +1056,9 @@ var Sprite = /** @class */ (function () {
     Sprite.prototype.GetOverlappingTrackPipe = function () {
         var _this = this;
         var _a;
+        if (this instanceof PipeContent || this instanceof DeadPlayer || this instanceof Poof || this instanceof KeyDomino || this instanceof ShimmerRipple || this instanceof DeadEnemy) {
+            return null;
+        }
         var xs = [this.xMid];
         var ys = [this.yMid];
         if (this.width > 12) {
@@ -1074,17 +1077,15 @@ var Sprite = /** @class */ (function () {
                 if (trackTileAtCenter && trackTileAtCenter == this.trackPipeExit)
                     isTouchingPreviousTrackPipe = true;
                 if (trackTileAtCenter && trackTileAtCenter.tileType.isTrackPipe && this.trackPipeExit == null) {
-                    if (!(this instanceof PipeContent || this instanceof DeadPlayer || this instanceof Poof || this instanceof KeyDomino || this instanceof ShimmerRipple)) {
-                        var targetDirection = trackTileAtCenter.tileType.trackDirections[0];
-                        var nextTrack = trackTileAtCenter.Neighbor(targetDirection);
-                        var doesNextTrackExist = false;
-                        if (nextTrack && nextTrack.tileType.trackDirections.indexOf(targetDirection.Opposite()) > -1) {
-                            // fail out if no track beyond?
-                            doesNextTrackExist = true;
-                        }
-                        if (doesNextTrackExist) {
-                            return trackTileAtCenter;
-                        }
+                    var targetDirection = trackTileAtCenter.tileType.trackDirections[0];
+                    var nextTrack = trackTileAtCenter.Neighbor(targetDirection);
+                    var doesNextTrackExist = false;
+                    if (nextTrack && nextTrack.tileType.trackDirections.indexOf(targetDirection.Opposite()) > -1) {
+                        // fail out if no track beyond?
+                        doesNextTrackExist = true;
+                    }
+                    if (doesNextTrackExist) {
+                        return trackTileAtCenter;
                     }
                 }
             }

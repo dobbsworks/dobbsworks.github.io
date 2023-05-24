@@ -1034,6 +1034,17 @@ abstract class Sprite {
     }
 
     GetOverlappingTrackPipe(): LevelTile | null {
+        if (this instanceof PipeContent || 
+            this instanceof DeadPlayer || 
+            this instanceof Poof || 
+            this instanceof KeyDomino || 
+            this instanceof ShimmerRipple || 
+            this instanceof SpinRing || 
+            this instanceof PortalRing || 
+            this instanceof DeadEnemy) {
+            return null;
+        }
+
         let xs = [this.xMid];
         let ys = [this.yMid];
 
@@ -1051,18 +1062,16 @@ abstract class Sprite {
                 let trackTileAtCenter = this.layer.map?.wireLayer.GetTileByPixel(x, y);
                 if (trackTileAtCenter && trackTileAtCenter == this.trackPipeExit) isTouchingPreviousTrackPipe = true;
                 if (trackTileAtCenter && trackTileAtCenter.tileType.isTrackPipe && this.trackPipeExit == null) {
-                    if (!(this instanceof PipeContent || this instanceof DeadPlayer || this instanceof Poof || this instanceof KeyDomino || this instanceof ShimmerRipple)) {
-                        let targetDirection = trackTileAtCenter.tileType.trackDirections[0];
-                        let nextTrack = trackTileAtCenter.Neighbor(targetDirection);
-                        let doesNextTrackExist = false;
-                        if (nextTrack && nextTrack.tileType.trackDirections.indexOf(targetDirection.Opposite()) > -1) {
-                            // fail out if no track beyond?
-                            doesNextTrackExist = true;
-                        }
-        
-                        if (doesNextTrackExist) {
-                            return trackTileAtCenter;
-                        }
+                    let targetDirection = trackTileAtCenter.tileType.trackDirections[0];
+                    let nextTrack = trackTileAtCenter.Neighbor(targetDirection);
+                    let doesNextTrackExist = false;
+                    if (nextTrack && nextTrack.tileType.trackDirections.indexOf(targetDirection.Opposite()) > -1) {
+                        // fail out if no track beyond?
+                        doesNextTrackExist = true;
+                    }
+    
+                    if (doesNextTrackExist) {
+                        return trackTileAtCenter;
                     }
                 }
             }

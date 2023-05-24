@@ -212,6 +212,7 @@ var EditorHandler = /** @class */ (function () {
             //new EditorButtonTile(TileType.CircuitMusicOff, "Music block"),
             new EditorButtonSprite(Winch),
             new EditorButtonSprite(ReverseWinch),
+            new EditorButtonSprite(ControlledWinch),
             new EditorButtonSprite(PullSwitch),
             new EditorButtonSprite(SlowMotor),
             new EditorButtonSprite(Motor),

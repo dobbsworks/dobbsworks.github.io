@@ -29,10 +29,11 @@ class Winch extends Motor {
             this.maxConnectionDistance = this.connectionDistance;
         }
 
-        if ( Utility.Xor(this.GetIsPowered(), this.windsDown )) {
+        if ( this.ShouldWindUp()) {
             this.connectionDistance -= this.winchSpeed;
             this.isWinding = true;
-        } else {
+        } 
+        if (this.ShouldWindDown() ) {
             this.connectionDistance += this.winchSpeed;
             this.isWinding = true;
         }
@@ -57,6 +58,14 @@ class Winch extends Motor {
             }
         }
     }
+
+    protected ShouldWindDown(): boolean {
+        return !this.ShouldWindUp();
+    }
+
+    protected ShouldWindUp(): boolean {
+        return Utility.Xor(this.GetIsPowered(), this.windsDown );
+    }
     
     GetIsPowered(): boolean { 
         if (this.connectedSprite && this.connectedSprite instanceof PullSwitch && this.connectedSprite.isOn) return true;
@@ -66,11 +75,12 @@ class Winch extends Motor {
 
     GetFrameData(frameNum: number): FrameData {
         let col = Math.floor( frameNum / 10) % 2;
+        let row = 0;
         if (!this.isWinding) col = 0;
 
-        if (this.GetIsPowered()) col += 2;
+        if (this.GetIsPowered()) row += 1;
         return {
-            imageTile: tiles["motorTrack"][col][5],
+            imageTile: tiles["winch"][col][row],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
@@ -81,4 +91,41 @@ class Winch extends Motor {
 
 class ReverseWinch extends Winch {
     windsDown = true;
+}
+
+class ControlledWinch extends Winch {
+    protected ShouldWindDown(): boolean {
+        return KeyboardHandler.IsKeyPressed(KeyAction.Down, false);
+    }
+    protected ShouldWindUp(): boolean {
+        return KeyboardHandler.IsKeyPressed(KeyAction.Up, false);
+    }
+
+    GetFrameData(frameNum: number): FrameData {
+        let col = Math.floor( frameNum / 10) % 2;
+        let row = 2;
+        if (!this.isWinding) col = 0;
+        
+        if (this.ShouldWindUp()) {
+            if (this.ShouldWindDown()) {
+                row = 5;
+            } else {
+                row = 3;
+            }
+        } else {
+            if (this.ShouldWindDown()) {
+                row = 4;
+            } else {
+                col = 0;
+            }
+        }
+
+        return {
+            imageTile: tiles["winch"][col][row],
+            xFlip: false,
+            yFlip: false,
+            xOffset: 0,
+            yOffset: 1
+        };
+    }
 }

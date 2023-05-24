@@ -240,6 +240,7 @@ class EditorHandler {
 
             new EditorButtonSprite(Winch),
             new EditorButtonSprite(ReverseWinch),
+            new EditorButtonSprite(ControlledWinch),
             new EditorButtonSprite(PullSwitch),
             new EditorButtonSprite(SlowMotor),
             new EditorButtonSprite(Motor),
