@@ -629,7 +629,7 @@ class TileType {
     public static get MountainTop(): TileType { return TileType.GetTileType("MountainTop", "terrain", 3, 11, Solidity.Top, TargetLayer.semisolid); }
     public static get MountainBack(): TileType { return TileType.GetTileType("MountainBack", "terrain", 4, 11, Solidity.None, TargetLayer.backdrop); }
     public static get MountainLadder(): TileType { return TileType.GetTileType("MountainLadder", "terrain", 5, 11, Solidity.None, TargetLayer.main, tileType => { tileType.isClimbable = true; }); }
-    public static get DecorMountain(): TileType { return TileType.GetTileType("MountainBlock", "terrain", 7, 11, Solidity.Block, TargetLayer.main); }
+    public static get DecorMountain(): TileType { return TileType.GetTileType("DecorMountain", "terrain", 7, 11, Solidity.None, TargetLayer.main); }
 
     public static get MountainSpikes(): TileType { return TileType.GetTileType("MountainSpikes", "terrain", 6, 11, Solidity.Block, TargetLayer.main, tileType => {
         tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnLeft = true; tileType.hurtOnRight = true;

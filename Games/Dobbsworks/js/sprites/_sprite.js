@@ -1056,7 +1056,14 @@ var Sprite = /** @class */ (function () {
     Sprite.prototype.GetOverlappingTrackPipe = function () {
         var _this = this;
         var _a;
-        if (this instanceof PipeContent || this instanceof DeadPlayer || this instanceof Poof || this instanceof KeyDomino || this instanceof ShimmerRipple || this instanceof DeadEnemy) {
+        if (this instanceof PipeContent ||
+            this instanceof DeadPlayer ||
+            this instanceof Poof ||
+            this instanceof KeyDomino ||
+            this instanceof ShimmerRipple ||
+            this instanceof SpinRing ||
+            this instanceof PortalRing ||
+            this instanceof DeadEnemy) {
             return null;
         }
         var xs = [this.xMid];

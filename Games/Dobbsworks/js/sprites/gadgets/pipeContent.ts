@@ -12,6 +12,10 @@ class PipeContent extends Sprite {
     SetContainedSprite(sprite: Sprite): void {
         sprite.OnEnterPipe();
 
+        if (this.IsOnScreen()) {
+            audioHandler.PlaySound("pipe-in", false);
+        }
+
         let motor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == sprite);
         if (motor) {
             motor.connectedSprite = null;
@@ -71,6 +75,10 @@ class PipeContent extends Sprite {
                     }
 
                     this.containedSprite.OnExitPipe(track.tileType.trackDirections[0].Opposite());
+
+                    if (this.IsOnScreen()) {
+                        audioHandler.PlaySound("pipe-out", false);
+                    }
                 }
             } else if (track && track.tileType.trackDirections.length > 0) {
                 // check possible directions

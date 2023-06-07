@@ -1007,7 +1007,7 @@ var TileType = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(TileType, "DecorMountain", {
-        get: function () { return TileType.GetTileType("MountainBlock", "terrain", 7, 11, Solidity.Block, TargetLayer.main); },
+        get: function () { return TileType.GetTileType("DecorMountain", "terrain", 7, 11, Solidity.None, TargetLayer.main); },
         enumerable: false,
         configurable: true
     });
