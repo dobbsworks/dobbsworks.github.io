@@ -275,10 +275,14 @@ var LevelMap = /** @class */ (function () {
             }
         }
         BenchmarkService.Log("DrawDone");
-        if (player) {
-            this.timerText = Utility.FramesToTimeText(player.age + (player.isActive ? editorHandler.bankedCheckpointTime : 0));
+        var playerAge = player ? player.age : 0;
+        var playerContainer = (this.mainLayer.sprites.find(function (a) { return a instanceof PipeContent && a.containedSprite instanceof Player; }));
+        if (playerContainer)
+            playerAge = playerContainer.age + playerContainer.storedAge;
+        if (playerAge) {
+            this.timerText = Utility.FramesToTimeText(playerAge + (player && player.isActive ? editorHandler.bankedCheckpointTime : 0));
             if (levelGenerator) {
-                this.timerText = Utility.FramesToTimeText(player.age + +((levelGenerator === null || levelGenerator === void 0 ? void 0 : levelGenerator.bankedClearTime) || 0));
+                this.timerText = Utility.FramesToTimeText(playerAge + +((levelGenerator === null || levelGenerator === void 0 ? void 0 : levelGenerator.bankedClearTime) || 0));
             }
         }
         else {

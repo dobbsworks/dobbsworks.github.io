@@ -22,6 +22,7 @@ var PipeContent = /** @class */ (function (_super) {
         _this.isMovedByWind = false;
         _this.containedSprite = null;
         _this.spriteFrames = [];
+        _this.storedAge = 0;
         return _this;
     }
     PipeContent.prototype.SetContainedSprite = function (sprite) {
@@ -76,6 +77,7 @@ var PipeContent = /** @class */ (function (_super) {
                         player = this.containedSprite;
                         camera.target = player;
                         player.Jump();
+                        player.age = this.age + this.storedAge;
                     }
                     // eject from exit
                     if (track_1.tileType.trackDirections[0].y == 0) {

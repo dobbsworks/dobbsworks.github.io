@@ -193,6 +193,7 @@ var Sprite = /** @class */ (function () {
             newSprite.x = trackPipe.tileX * 12;
             newSprite.y = trackPipe.tileY * 12;
             newSprite.direction = trackPipe.tileType.trackDirections[0];
+            newSprite.storedAge = this.age;
         }
     };
     Sprite.prototype.ReactToVerticalWind = function () {

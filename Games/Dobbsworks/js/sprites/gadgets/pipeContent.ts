@@ -8,6 +8,7 @@ class PipeContent extends Sprite {
 
     spriteFrames: FrameData[] = [];
     direction!: Direction;
+    storedAge = 0;
 
     SetContainedSprite(sprite: Sprite): void {
         sprite.OnEnterPipe();
@@ -62,6 +63,7 @@ class PipeContent extends Sprite {
                         player = this.containedSprite as Player;
                         camera.target = player;
                         player.Jump();
+                        player.age = this.age + this.storedAge;
                     }
 
                     // eject from exit

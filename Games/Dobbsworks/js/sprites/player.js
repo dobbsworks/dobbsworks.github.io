@@ -658,7 +658,7 @@ var Player = /** @class */ (function (_super) {
                     this.dx = 0;
             }
         }
-        if (camera.isAutoscrollingHorizontally || camera.isAutoscrollingVertically) {
+        if (camera.isAutoscrollingHorizontally || (camera.isAutoscrollingVertically && !currentMap.hasHorizontalWrap)) {
             var leftEdge = camera.GetLeftCameraEdge();
             if (this.x < leftEdge) {
                 if (this.isTouchingRightWall && camera.autoscrollX > 0)

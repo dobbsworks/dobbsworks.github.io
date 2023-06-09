@@ -178,6 +178,7 @@ abstract class Sprite {
             newSprite.x = trackPipe.tileX * 12;
             newSprite.y = trackPipe.tileY * 12;
             newSprite.direction = trackPipe.tileType.trackDirections[0];
+            newSprite.storedAge = this.age;
         }
     }
 

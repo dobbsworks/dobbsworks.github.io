@@ -633,7 +633,7 @@ class Player extends Sprite {
             }
         }
 
-        if (camera.isAutoscrollingHorizontally || camera.isAutoscrollingVertically) {
+        if (camera.isAutoscrollingHorizontally || (camera.isAutoscrollingVertically && !currentMap.hasHorizontalWrap)) {
             let leftEdge = camera.GetLeftCameraEdge();
             if (this.x < leftEdge) {
                 if (this.isTouchingRightWall && camera.autoscrollX > 0) this.OnPlayerDead(false);
