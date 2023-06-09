@@ -1,0 +1,27 @@
+<html>
+
+<head>
+    <title>Dabble Worlds</title>
+    <link rel="stylesheet" href="app.css?v=1.1.1"> 
+</head>
+
+
+<body>
+    Click on the page and then press a key on the keyboard
+</body>
+
+
+
+<script type="text/javascript">
+    function Init() {
+        document.addEventListener("keydown", OnKeyDown, false);
+    }
+    window.onload = Init;
+
+function OnKeyDown(e) {
+    document.body.innerHTML += "<br/>" + (e.code);
+}
+
+
+
+</script>
