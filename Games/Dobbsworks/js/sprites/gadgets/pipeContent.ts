@@ -45,6 +45,8 @@ class PipeContent extends Sprite {
     }
 
     Update(): void {
+        this.dx = this.direction.x;
+        this.dy = this.direction.y;
         if (this.age % 12 == 0) {
             let oldDirection = this.direction;
             let track = this.layer.map?.wireLayer.GetTileByPixel(this.xMid, this.yMid);
@@ -134,8 +136,6 @@ class PipeContent extends Sprite {
             }
         }
 
-        this.dx = this.direction.x;
-        this.dy = this.direction.y;
 
         this.MoveByVelocity();
     }

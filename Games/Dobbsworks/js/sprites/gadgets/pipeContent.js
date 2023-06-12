@@ -61,6 +61,8 @@ var PipeContent = /** @class */ (function (_super) {
     PipeContent.prototype.Update = function () {
         var _this = this;
         var _a;
+        this.dx = this.direction.x;
+        this.dy = this.direction.y;
         if (this.age % 12 == 0) {
             var oldDirection = this.direction;
             var track_1 = (_a = this.layer.map) === null || _a === void 0 ? void 0 : _a.wireLayer.GetTileByPixel(this.xMid, this.yMid);
@@ -151,8 +153,6 @@ var PipeContent = /** @class */ (function (_super) {
                 }
             }
         }
-        this.dx = this.direction.x;
-        this.dy = this.direction.y;
         this.MoveByVelocity();
     };
     PipeContent.prototype.GetFrameData = function (frameNum) {
