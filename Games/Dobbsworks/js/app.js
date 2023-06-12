@@ -20,6 +20,7 @@ var audioHandler;
 var inputDisplay = new InputDisplay();
 var currentLevelListing = null;
 var gameLoadedState = -1;
+var myUserData = null;
 function Initialize() {
     LoadImageSources();
     var canvas = document.getElementById("canvas");

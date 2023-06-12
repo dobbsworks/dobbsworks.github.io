@@ -52,6 +52,9 @@ var InitialMenu = /** @class */ (function (_super) {
             _this.GoToMainMenu();
         });
         gameLoadedState = 0;
+        DataService.GetUserData().then(function (userData) {
+            myUserData = userData;
+        });
         return ret;
     };
     InitialMenu.prototype.GoToMainMenu = function () {

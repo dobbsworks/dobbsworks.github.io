@@ -13,6 +13,7 @@ let audioHandler: AudioHandler;
 let inputDisplay = new InputDisplay();
 let currentLevelListing: LevelListing | null = null;
 let gameLoadedState = -1;
+let myUserData: UserDT | null = null;
 
 function Initialize() {
     LoadImageSources();

@@ -42,6 +42,7 @@ class AvatarCustomizationMenu extends Menu {
     CreateElements(): UIElement[] {
 
         DataService.GetUserData().then(userData => {
+            myUserData = userData;
             this.usernameTextElement.text = userData.username;
             AvatarCustomizationMenu.username = userData.username;
             AvatarCustomizationMenu.ImportFromAvatarString(userData.avatar);

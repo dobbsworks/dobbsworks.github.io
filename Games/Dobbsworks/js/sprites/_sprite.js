@@ -1064,7 +1064,8 @@ var Sprite = /** @class */ (function () {
             this instanceof ShimmerRipple ||
             this instanceof SpinRing ||
             this instanceof PortalRing ||
-            this instanceof DeadEnemy) {
+            this instanceof DeadEnemy ||
+            this instanceof Coin) {
             return null;
         }
         var xs = [this.xMid];

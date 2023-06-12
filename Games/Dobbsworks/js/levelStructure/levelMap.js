@@ -280,7 +280,7 @@ var LevelMap = /** @class */ (function () {
         if (playerContainer)
             playerAge = playerContainer.age + playerContainer.storedAge;
         if (playerAge) {
-            this.timerText = Utility.FramesToTimeText(playerAge + (player && player.isActive ? editorHandler.bankedCheckpointTime : 0));
+            this.timerText = Utility.FramesToTimeText(playerAge + (((player && player.isActive) || playerContainer != null) ? editorHandler.bankedCheckpointTime : 0));
             if (levelGenerator) {
                 this.timerText = Utility.FramesToTimeText(playerAge + +((levelGenerator === null || levelGenerator === void 0 ? void 0 : levelGenerator.bankedClearTime) || 0));
             }

@@ -57,6 +57,7 @@ var AvatarCustomizationMenu = /** @class */ (function (_super) {
     AvatarCustomizationMenu.prototype.CreateElements = function () {
         var _this = this;
         DataService.GetUserData().then(function (userData) {
+            myUserData = userData;
             _this.usernameTextElement.text = userData.username;
             AvatarCustomizationMenu.username = userData.username;
             AvatarCustomizationMenu.ImportFromAvatarString(userData.avatar);

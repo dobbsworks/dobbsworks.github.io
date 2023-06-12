@@ -154,6 +154,13 @@ class DataService {
         })
     }
 
+    static UploadLevelAuditLog(levelData: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            let level = new LevelUploadDT ("x",levelData,"x")
+            DataService.BasePost("Levels/UploadLevelAuditLog", level, resolve, reject);
+        })
+    }
+
     static PublishLevel(levelCode: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             DataService.BasePost(`Levels/PublishLevel?levelCode=${levelCode}`, {}, resolve, reject);

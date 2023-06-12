@@ -1042,7 +1042,8 @@ abstract class Sprite {
             this instanceof ShimmerRipple || 
             this instanceof SpinRing || 
             this instanceof PortalRing || 
-            this instanceof DeadEnemy) {
+            this instanceof DeadEnemy ||
+            this instanceof Coin) {
             return null;
         }
 

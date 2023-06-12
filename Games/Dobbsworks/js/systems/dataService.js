@@ -128,6 +128,12 @@ var DataService = /** @class */ (function () {
             DataService.BasePost("Levels/UploadLevel", levelUpload, resolve, reject);
         });
     };
+    DataService.UploadLevelAuditLog = function (levelData) {
+        return new Promise(function (resolve, reject) {
+            var level = new LevelUploadDT("x", levelData, "x");
+            DataService.BasePost("Levels/UploadLevelAuditLog", level, resolve, reject);
+        });
+    };
     DataService.PublishLevel = function (levelCode) {
         return new Promise(function (resolve, reject) {
             DataService.BasePost("Levels/PublishLevel?levelCode=" + levelCode, {}, resolve, reject);

@@ -129,6 +129,11 @@ class EditorSaveSlotButton extends EditorButton {
         let thumbnail = currentMap.GenerateThumbnail();
         let thumbString = thumbnail.toDataURL();
         StorageService.SetSavedLevel(this.slotNumber, levelString, thumbString);
+
+        if (myUserData && myUserData.id == 13) {
+            DataService.UploadLevelAuditLog(levelString);
+        }
+
         this.children = [];
         let imageTile = new ImageTile(thumbnail, 0, 0, thumbnail.width, thumbnail.height);
         let imageFromTile = new ImageFromTile(0, 0, 88, 50, imageTile);

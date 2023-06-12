@@ -39,6 +39,10 @@ class InitialMenu extends Menu {
         })
         
         gameLoadedState = 0;
+        
+        DataService.GetUserData().then(userData => {
+            myUserData = userData;
+        })
         return ret;
     }
 
