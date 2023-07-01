@@ -206,7 +206,7 @@ var LevelLayer = /** @class */ (function () {
         }
     };
     LevelLayer.prototype.Update = function () {
-        var _a, _b;
+        var _a;
         if (!this.isAnimatedTileListInitialized) {
             this.animatedTileList = this.tiles.flatMap(function (a) { return a; }).filter(function (a) { return a.tileType instanceof AnimatedTileType; });
             this.isAnimatedTileListInitialized = true;
@@ -226,17 +226,14 @@ var LevelLayer = /** @class */ (function () {
         // using spread on orderedSprites to make sure we're iterating over a seaparte copy of the sprite list
         // iterating directly over orderedSprites is a problem because sprites is pointing to the same memory 
         // location, meaning that changes to the sprite list can affect which sprites are getting updated
-        for (var _i = 0, _c = __spreadArrays(orderedSprites); _i < _c.length; _i++) {
-            var sprite = _c[_i];
+        for (var _i = 0, _b = __spreadArrays(orderedSprites); _i < _b.length; _i++) {
+            var sprite = _b[_i];
             if (sprite.locked)
                 continue;
             if (sprite.updatedThisFrame)
                 continue;
             if (!sprite.isActive)
                 continue;
-            if (!(sprite instanceof Player) && (((_a = this.map) === null || _a === void 0 ? void 0 : _a.frameNum) || 0) % 5 != 0) {
-                continue;
-            }
             sprite.updatedThisFrame = true;
             sprite.SharedUpdate();
             sprite.Update();
@@ -245,10 +242,10 @@ var LevelLayer = /** @class */ (function () {
             }
         }
         this.sprites = this.sprites.filter(function (a) { return a.isActive; });
-        if ((_b = this.map) === null || _b === void 0 ? void 0 : _b.hasHorizontalWrap) {
+        if ((_a = this.map) === null || _a === void 0 ? void 0 : _a.hasHorizontalWrap) {
             var offset = this.tiles.length * 12;
-            for (var _d = 0, _e = this.sprites; _d < _e.length; _d++) {
-                var sprite = _e[_d];
+            for (var _c = 0, _d = this.sprites; _c < _d.length; _c++) {
+                var sprite = _d[_c];
                 if (sprite.xMid < 0)
                     sprite.x += offset;
                 if (sprite.xMid > offset)
