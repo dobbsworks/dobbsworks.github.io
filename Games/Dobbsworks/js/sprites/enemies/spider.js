@@ -120,10 +120,8 @@ var ClimbingSpurpider = /** @class */ (function (_super) {
         return _this;
     }
     ClimbingSpurpider.prototype.Initialize = function () {
-        var _this = this;
         if (!this.isInitialized) {
-            var motor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == _this; });
-            if (motor)
+            if (this.GetParentMotor())
                 return;
             this.isInitialized = true;
             this.anchorX = this.x;

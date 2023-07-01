@@ -39,46 +39,37 @@ var Motor = /** @class */ (function (_super) {
         this.connectedSprite = null;
     };
     Motor.prototype.Initialize = function () {
-        var _this = this;
         var currentTile = this.layer.GetTileByPixel(this.xMid, this.yMid).GetWireNeighbor();
         if (currentTile === null || currentTile === void 0 ? void 0 : currentTile.tileType.trackDirections.length)
             this.isOnTrack = true;
         // find closest non-player sprite below motor
-        var possibleConnectionSprites = this.connectionDirectionY == 1 ?
-            this.layer.sprites.filter(function (a) { return a.x < _this.xRight && a.xRight > _this.x && a.y >= _this.yBottom && a.canMotorHold; }) :
-            this.layer.sprites.filter(function (a) { return a.x < _this.xRight && a.xRight > _this.x && a.yBottom <= _this.y && a.canMotorHold; });
-        if (possibleConnectionSprites.length == 0) {
-            return;
-        }
-        if (this.connectionDirectionY == 1)
-            possibleConnectionSprites.sort(function (a, b) { return a.y - b.y; });
-        if (this.connectionDirectionY == -1)
-            possibleConnectionSprites.sort(function (a, b) { return -a.y + b.y; });
-        var targetAlreadyOnMotor = this.layer.sprites.some(function (a) { return a instanceof Motor && a.connectedSprite == possibleConnectionSprites[0]; });
-        if (!targetAlreadyOnMotor) {
-            this.connectedSprite = possibleConnectionSprites[0];
-            this.connectionDistance = this.connectedSprite.y - this.y;
-        }
-        else {
-            // Below comment block can duplicate already held sprites (useful for ferris motor setups)
-            var targetSprite = possibleConnectionSprites[0];
-            var spriteType = targetSprite.constructor;
-            this.connectedSprite = new spriteType(targetSprite.x, targetSprite.y, targetSprite.layer, []);
-            this.layer.sprites.push(this.connectedSprite);
-            this.connectionDistance = this.connectedSprite.y - this.y;
+        var possibleConnectionSprite = this.GetPotentialMotorCargo(this.connectionDirectionY);
+        if (possibleConnectionSprite) {
+            var targetAlreadyOnMotor = possibleConnectionSprite.GetParentMotor();
+            if (!targetAlreadyOnMotor) {
+                this.connectedSprite = possibleConnectionSprite;
+                this.connectionDistance = this.connectedSprite.y - this.y;
+            }
+            else {
+                // Below comment block can duplicate already held sprites (useful for ferris motor setups)
+                var targetSprite = possibleConnectionSprite;
+                var spriteType = targetSprite.constructor;
+                this.connectedSprite = new spriteType(targetSprite.x, targetSprite.y, targetSprite.layer, []);
+                this.layer.sprites.push(this.connectedSprite);
+                this.connectionDistance = this.connectedSprite.y - this.y;
+            }
         }
     };
     Motor.prototype.GetTileRatio = function (num) {
         return (num % 12) / 12;
     };
     Motor.prototype.Update = function () {
-        var _this = this;
         var _a, _b;
         if (!this.isInitialized) {
             this.isInitialized = true;
             this.Initialize();
         }
-        var parentMotor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == _this; });
+        var parentMotor = this.GetParentMotor();
         if (!parentMotor) {
             this.trackTile = this.layer.GetTileByPixel(this.xMid, this.yMid).GetWireNeighbor() || null;
             if (this.isOnTrack && ((_a = this.trackTile) === null || _a === void 0 ? void 0 : _a.tileType.trackDirections.length)) {

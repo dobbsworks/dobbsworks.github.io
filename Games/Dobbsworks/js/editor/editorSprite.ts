@@ -60,7 +60,7 @@ class EditorSprite {
     }
 
     ResetStack(): void {
-        if (this.spriteInstance instanceof Enemy) {
+        if (this.spriteInstance instanceof Enemy && !(this.spriteInstance instanceof Bigby)) {
             let belowCoords: TileCoordinate[] = [];
             for (let xOff = 0; xOff < this.width; xOff++) {
                 belowCoords.push({tileX: this.tileCoord.tileX + xOff, tileY: this.tileCoord.tileY + this.height});

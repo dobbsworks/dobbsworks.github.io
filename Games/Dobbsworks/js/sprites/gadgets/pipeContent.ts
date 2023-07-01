@@ -5,6 +5,7 @@ class PipeContent extends Sprite {
     respectsSolidTiles = false;
     isMovedByWind = false;
     containedSprite: Sprite | null = null;
+    canMotorHold = false;
 
     spriteFrames: FrameData[] = [];
     direction!: Direction;
@@ -17,7 +18,7 @@ class PipeContent extends Sprite {
             audioHandler.PlaySound("pipe-in", false);
         }
 
-        let motor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == sprite);
+        let motor = sprite.GetParentMotor();
         if (motor) {
             motor.connectedSprite = null;
         }
@@ -59,6 +60,9 @@ class PipeContent extends Sprite {
                     this.containedSprite.x = this.xMid - this.containedSprite.width / 2;
                     this.containedSprite.y = this.yMid - this.containedSprite.height / 2;
                     this.containedSprite.isActive = true;
+                    this.containedSprite.isInQuicksand = false;
+                    this.containedSprite.isInWater = false;
+                    this.containedSprite.isInWaterfall = false;
                     this.containedSprite.trackPipeExit = track;
 
                     if (camera.target == this) {

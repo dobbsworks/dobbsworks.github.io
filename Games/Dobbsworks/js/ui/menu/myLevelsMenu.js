@@ -26,6 +26,7 @@ var MyLevelsMenu = /** @class */ (function (_super) {
         _this.publishButton = null;
         _this.cloudDeleteButton = null;
         _this.contestSubmit = null;
+        _this.contestUnsubmit = null;
         _this.cloudSavesOptionsPanel = null;
         _this.localSavesOptionsPanel = null;
         _this.buttonLocalEdit = null;
@@ -162,6 +163,25 @@ var MyLevelsMenu = /** @class */ (function (_super) {
         });
         this.contestSubmit = contestSubmitButton;
         this.cloudSavesOptionsPanel.AddChild(contestSubmitButton);
+        var contestUnsubmitButton = this.CreateActionButton("Submit to Contest", function () {
+            var _a;
+            if (MyLevelsMenu.selectedCloudCode !== "") {
+                var level = (_a = _this.myLevelsData) === null || _a === void 0 ? void 0 : _a.myLevels.find(function (a) { return a.code === MyLevelsMenu.selectedCloudCode; });
+                if (level) {
+                    var publishPromise = DataService.UnsubmitContestLevel(MyLevelsMenu.selectedCloudCode);
+                    publishPromise.then(function () {
+                        var contest = ContestService.currentContest;
+                        if (contest) {
+                            contest.submittedLevel = MyLevelsMenu.selectedCloudCode;
+                        }
+                        _this.ResetCloudSavesPanel();
+                        UIDialog.Alert("Your level has been pulled from the contest!", "Thanks");
+                    }).catch(function () { });
+                }
+            }
+        });
+        this.contestUnsubmit = contestUnsubmitButton;
+        this.cloudSavesOptionsPanel.AddChild(contestUnsubmitButton);
         var cloudPlayButton = this.CreateActionButton("Play", function () {
             var _a;
             var level = (_a = _this.myLevelsData) === null || _a === void 0 ? void 0 : _a.myLevels.find(function (a) { return a.code === MyLevelsMenu.selectedCloudCode; });
@@ -298,17 +318,21 @@ var MyLevelsMenu = /** @class */ (function (_super) {
                 this.localSavesPanel.targetX = this.baseRightX + 2000;
                 this.localSavesTitlePanel.targetX = this.baseRightX + 2000;
                 this.cloudSavesOptionsPanel.targetY = this.baseY;
-                if (this.publishButton && this.contestSubmit && this.cloudDeleteButton) {
+                if (this.publishButton && this.contestSubmit && this.contestUnsubmit && this.cloudDeleteButton) {
                     var levelDt = (_a = this.myLevelsData) === null || _a === void 0 ? void 0 : _a.myLevels.find(function (a) { return a.code == MyLevelsMenu.selectedCloudCode; });
                     if (levelDt) {
                         this.publishButton.isHidden = (levelDt.levelState != LevelState.cleared);
                         var contest = ContestService.currentContest;
-                        this.contestSubmit.isHidden = (levelDt.levelState != LevelState.cleared || contest == null || (contest.submittedLevel != "" && contest.submittedLevel != null));
+                        // contest status 1 == "accepting submissions"
+                        var canSeeUnsubmit = contest != null && contest.status == 1 && contest.submittedLevel == levelDt.code;
+                        this.contestUnsubmit.isHidden = !canSeeUnsubmit;
+                        this.contestSubmit.isHidden = (levelDt.levelState != LevelState.cleared || contest == null || contest.status != 1 || (contest.submittedLevel != "" && contest.submittedLevel != null));
                         this.cloudDeleteButton.isHidden = (contest != null && contest.submittedLevel == MyLevelsMenu.selectedCloudCode);
                     }
                     else {
                         this.publishButton.isHidden = true;
                         this.contestSubmit.isHidden = true;
+                        this.contestUnsubmit.isHidden = true;
                     }
                 }
             }

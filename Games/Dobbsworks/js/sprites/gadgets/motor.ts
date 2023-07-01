@@ -20,8 +20,8 @@ class Motor extends Sprite {
     protected frameY: number = 0;
     protected direction: Direction = Direction.Right;
 
-    
-    public OnEnterPipe(): void { 
+
+    public OnEnterPipe(): void {
         this.connectedSprite = null;
     }
 
@@ -29,27 +29,21 @@ class Motor extends Sprite {
         let currentTile = this.layer.GetTileByPixel(this.xMid, this.yMid).GetWireNeighbor();
         if (currentTile?.tileType.trackDirections.length) this.isOnTrack = true;
         // find closest non-player sprite below motor
-        let possibleConnectionSprites = this.connectionDirectionY == 1 ?
-            this.layer.sprites.filter(a => a.x < this.xRight && a.xRight > this.x && a.y >= this.yBottom && a.canMotorHold) :
-            this.layer.sprites.filter(a => a.x < this.xRight && a.xRight > this.x && a.yBottom <= this.y && a.canMotorHold);
-        if (possibleConnectionSprites.length == 0) {
-            return;
-        }
-        if (this.connectionDirectionY == 1) possibleConnectionSprites.sort((a, b) => a.y - b.y);
-        if (this.connectionDirectionY == -1) possibleConnectionSprites.sort((a, b) => -a.y + b.y);
+        let possibleConnectionSprite = this.GetPotentialMotorCargo(this.connectionDirectionY);
+        if (possibleConnectionSprite) {
+            let targetAlreadyOnMotor = possibleConnectionSprite.GetParentMotor();
+            if (!targetAlreadyOnMotor) {
+                this.connectedSprite = possibleConnectionSprite;
+                this.connectionDistance = this.connectedSprite.y - this.y;
+            } else {
+                // Below comment block can duplicate already held sprites (useful for ferris motor setups)
 
-        let targetAlreadyOnMotor = this.layer.sprites.some(a => a instanceof Motor && a.connectedSprite == possibleConnectionSprites[0]);
-        if (!targetAlreadyOnMotor) {
-            this.connectedSprite = possibleConnectionSprites[0];
-            this.connectionDistance = this.connectedSprite.y - this.y;
-        } else {
-            // Below comment block can duplicate already held sprites (useful for ferris motor setups)
-
-            let targetSprite = possibleConnectionSprites[0];
-            let spriteType = <SpriteType>targetSprite.constructor;
-            this.connectedSprite = new spriteType(targetSprite.x, targetSprite.y, targetSprite.layer, []);
-            this.layer.sprites.push(this.connectedSprite);
-            this.connectionDistance = this.connectedSprite.y - this.y;
+                let targetSprite = possibleConnectionSprite;
+                let spriteType = <SpriteType>targetSprite.constructor;
+                this.connectedSprite = new spriteType(targetSprite.x, targetSprite.y, targetSprite.layer, []);
+                this.layer.sprites.push(this.connectedSprite);
+                this.connectionDistance = this.connectedSprite.y - this.y;
+            }
         }
     }
 
@@ -63,7 +57,7 @@ class Motor extends Sprite {
             this.Initialize();
         }
 
-        let parentMotor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == this);
+        let parentMotor = this.GetParentMotor();
         if (!parentMotor) {
             this.trackTile = this.layer.GetTileByPixel(this.xMid, this.yMid).GetWireNeighbor() || null;
             if (this.isOnTrack && this.trackTile?.tileType.trackDirections.length) {

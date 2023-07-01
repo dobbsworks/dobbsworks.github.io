@@ -23,11 +23,10 @@ var RisingPlatform = /** @class */ (function (_super) {
         return _this;
     }
     RisingPlatform.prototype.Update = function () {
-        var _this = this;
         if (!this.isInitialized) {
             this.isInitialized = true;
-            var motor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == _this; });
-            if (motor) {
+            var motor = this.GetParentMotor();
+            if (motor instanceof Motor) {
                 this.motor = motor;
                 motor.motorSpeedRatio = 0;
             }

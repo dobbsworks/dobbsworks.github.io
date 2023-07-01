@@ -21,6 +21,7 @@ var PipeContent = /** @class */ (function (_super) {
         _this.respectsSolidTiles = false;
         _this.isMovedByWind = false;
         _this.containedSprite = null;
+        _this.canMotorHold = false;
         _this.spriteFrames = [];
         _this.storedAge = 0;
         return _this;
@@ -31,7 +32,7 @@ var PipeContent = /** @class */ (function (_super) {
         if (this.IsOnScreen()) {
             audioHandler.PlaySound("pipe-in", false);
         }
-        var motor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == sprite; });
+        var motor = sprite.GetParentMotor();
         if (motor) {
             motor.connectedSprite = null;
         }
@@ -74,6 +75,9 @@ var PipeContent = /** @class */ (function (_super) {
                     this.containedSprite.x = this.xMid - this.containedSprite.width / 2;
                     this.containedSprite.y = this.yMid - this.containedSprite.height / 2;
                     this.containedSprite.isActive = true;
+                    this.containedSprite.isInQuicksand = false;
+                    this.containedSprite.isInWater = false;
+                    this.containedSprite.isInWaterfall = false;
                     this.containedSprite.trackPipeExit = track_1;
                     if (camera.target == this) {
                         player = this.containedSprite;

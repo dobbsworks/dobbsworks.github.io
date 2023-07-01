@@ -74,7 +74,7 @@ var Baseball = /** @class */ (function (_super) {
     Baseball.prototype.GetFrameData = function (frameNum) {
         var totalFrames = Object.keys(tiles["baseball"]).length;
         var rot = ((this.rotation % (Math.PI * 2)) + (Math.PI * 2)) % (Math.PI * 2);
-        var frame = Math.floor(rot / (Math.PI * 2) * totalFrames) || 1;
+        var frame = Math.floor(rot / (Math.PI * 2) * totalFrames) || 0;
         if (frame < 0)
             frame = 0;
         return {

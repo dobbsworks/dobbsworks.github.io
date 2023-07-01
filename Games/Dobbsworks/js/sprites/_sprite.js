@@ -57,6 +57,7 @@ var Sprite = /** @class */ (function () {
         this.isExemptFromSpriteKillCheck = false;
         this.rotation = 0; // used for animating round objects
         this.rolls = false;
+        this.isHeavy = false;
         this.isPowerSource = false;
         this.zIndex = 0; //draw order
         this.maxDY = 2;
@@ -121,10 +122,31 @@ var Sprite = /** @class */ (function () {
             ret += this.dyFromWind;
         return ret;
     };
-    Sprite.prototype.SharedUpdate = function () {
+    Sprite.prototype.GetParentMotor = function () {
         var _this = this;
+        var motor = this.layer.sprites.find(function (a) { return (a instanceof Motor || a instanceof Bigby) && a.connectedSprite == _this; });
+        if (motor)
+            return motor;
+        return null;
+    };
+    Sprite.prototype.GetPotentialMotorCargo = function (connectionDirectionY, buffer) {
+        var _this = this;
+        if (buffer === void 0) { buffer = 0; }
+        var possibleConnectionSprites = connectionDirectionY == 1 ?
+            this.layer.sprites.filter(function (a) { return a.x < _this.xRight && a.xRight > _this.x && a.y >= _this.yBottom - buffer && a.canMotorHold; }) :
+            this.layer.sprites.filter(function (a) { return a.x < _this.xRight && a.xRight > _this.x && a.yBottom <= _this.y + buffer && a.canMotorHold; });
+        if (possibleConnectionSprites.length == 0) {
+            return null;
+        }
+        if (connectionDirectionY == 1)
+            possibleConnectionSprites.sort(function (a, b) { return a.y - b.y; });
+        if (connectionDirectionY == -1)
+            possibleConnectionSprites.sort(function (a, b) { return -a.y + b.y; });
+        return possibleConnectionSprites[0];
+    };
+    Sprite.prototype.SharedUpdate = function () {
         if (!(this instanceof DeadPlayer || this instanceof Player)) {
-            var motor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == _this; });
+            var motor = this.GetParentMotor();
             if (!motor) {
                 if (this.xRight < -36 || this.x > this.layer.GetMaxX() + 36 ||
                     this.y > this.layer.GetMaxY() + 36 || this.yBottom < -240) {
@@ -144,24 +166,23 @@ var Sprite = /** @class */ (function () {
         // 2. clearance! Need to check if there's enough room on the other side!
         // 3. what in the world was happening with shells
         //TODO: repeat this for sprites that never touch wall
-        var leftWarpWall = this.touchedLeftWalls.find(function (a) { return a instanceof LevelTile && a.tileType.isWarpWall; });
-        if (leftWarpWall) {
-            var yIndex_1 = leftWarpWall.tileY;
-            var acrossWarpWall = leftWarpWall.layer.tiles.map(function (a) { return a[yIndex_1]; }).find(function (a) { return a.tileX > leftWarpWall.tileX && a.tileType == TileType.WallWarpRight; });
-            if (acrossWarpWall) {
-                this.x = acrossWarpWall.tileX * this.layer.tileWidth - this.width;
-            }
-        }
-        else {
-            var rightWarpWall_1 = this.touchedRightWalls.find(function (a) { return a instanceof LevelTile && a.tileType.isWarpWall; });
-            if (rightWarpWall_1) {
-                var yIndex_2 = rightWarpWall_1.tileY;
-                var acrossWarpWall = rightWarpWall_1.layer.tiles.map(function (a) { return a[yIndex_2]; }).find(function (a) { return a.tileX < rightWarpWall_1.tileX && a.tileType == TileType.WallWarpLeft; });
-                if (acrossWarpWall) {
-                    this.x = (acrossWarpWall.tileX + 1) * this.layer.tileWidth;
-                }
-            }
-        }
+        // let leftWarpWall = <LevelTile>this.touchedLeftWalls.find(a => a instanceof LevelTile && a.tileType.isWarpWall)
+        // if (leftWarpWall) {
+        //     let yIndex = leftWarpWall.tileY;
+        //     let acrossWarpWall = leftWarpWall.layer.tiles.map(a => a[yIndex]).find(a => a.tileX > leftWarpWall.tileX && a.tileType == TileType.WallWarpRight);
+        //     if (acrossWarpWall) {
+        //         this.x = acrossWarpWall.tileX * this.layer.tileWidth - this.width;
+        //     }
+        // } else {
+        //     let rightWarpWall = <LevelTile>this.touchedRightWalls.find(a => a instanceof LevelTile && a.tileType.isWarpWall)
+        //     if (rightWarpWall) {
+        //         let yIndex = rightWarpWall.tileY;
+        //         let acrossWarpWall = rightWarpWall.layer.tiles.map(a => a[yIndex]).find(a => a.tileX < rightWarpWall.tileX && a.tileType == TileType.WallWarpLeft);
+        //         if (acrossWarpWall) {
+        //             this.x = (acrossWarpWall.tileX + 1) * this.layer.tileWidth;
+        //         }
+        //     }
+        // }
         var tileAtCenter = this.layer.GetTileByPixel(this.xMid, this.yMid).tileType;
         // if the wind speed is greater than the sprite's speed,
         // give a bit more dx to the sprite (but don't exceed wind speed?)
@@ -333,6 +354,11 @@ var Sprite = /** @class */ (function () {
             }
             if (Math.abs(this.dxFromPlatform) < 0.015)
                 this.dxFromPlatform = 0;
+        }
+    };
+    Sprite.prototype.ApplyAirDrag = function () {
+        if (!this.isOnGround && !this.parentSprite) {
+            this.dx *= 0.98;
         }
     };
     Sprite.prototype.ReactToPlatforms = function () {
@@ -1010,7 +1036,7 @@ var Sprite = /** @class */ (function () {
         hearts.forEach(function (a) { return a.isBroken = true; });
     };
     Sprite.prototype.LaunchSprite = function (sprite, direction) {
-        var parentMotor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == sprite; });
+        var parentMotor = sprite.GetParentMotor();
         if (parentMotor) {
             parentMotor.connectedSprite = null;
         }
@@ -1038,6 +1064,8 @@ var Sprite = /** @class */ (function () {
         }
     };
     Sprite.prototype.CanInteractWithSpringBox = function () {
+        if (this instanceof Bigby)
+            return false;
         return this.respectsSolidTiles || this instanceof SapphireSnail || (this instanceof BasePlatform && !(this instanceof FloatingPlatform));
     };
     Sprite.prototype.DoesOverlapSpriteKiller = function () {

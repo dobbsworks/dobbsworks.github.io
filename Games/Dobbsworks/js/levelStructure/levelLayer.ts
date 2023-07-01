@@ -202,16 +202,16 @@ class LevelLayer {
             this.wireFlatMap = this.tiles.flatMap(a => a);
         }
         this.sprites.forEach(a => a.updatedThisFrame = false);
-        let motors = this.sprites.filter(a => a instanceof Motor);
+        let motors = this.sprites.filter(a => a instanceof Motor || a instanceof Bigby);
         motors.sort((a, b) => a.y - b.y)
-        let platforms = this.sprites.filter(a => a.isPlatform && !(a instanceof Motor));
+        let platforms = this.sprites.filter(a => a.isPlatform && !(a instanceof Motor || a instanceof Bigby));
         let players = this.sprites.filter(a => a instanceof Player);
         platforms.sort((a, b) => a.y - b.y)
         let orderedSprites = [
             ...motors,
             ...platforms,
             ...players,
-            ...this.sprites.filter(a => !a.isPlatform && !(a instanceof Motor) && !(a instanceof Player)),
+            ...this.sprites.filter(a => !a.isPlatform && !(a instanceof Motor || a instanceof Bigby) && !(a instanceof Player)),
         ];
         this.sprites = orderedSprites;
 

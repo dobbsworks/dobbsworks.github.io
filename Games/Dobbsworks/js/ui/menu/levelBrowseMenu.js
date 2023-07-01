@@ -496,6 +496,16 @@ var LevelBrowseMenu = /** @class */ (function (_super) {
         this.backButton.isHidden = true;
         this.backButtonUserPanel.isHidden = false;
     };
+    LevelBrowseMenu.prototype.Update = function () {
+        var _this = this;
+        var _a;
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Debug1, true) && (myUserData === null || myUserData === void 0 ? void 0 : myUserData.id) == 1) {
+            if (this.selectedCloudCode) {
+                var modMenu = MenuHandler.SubMenu(ModerationMenu);
+                modMenu.level = ((_a = this.levels.find(function (a) { return a.level.code == _this.selectedCloudCode; })) === null || _a === void 0 ? void 0 : _a.level) || null;
+            }
+        }
+    };
     return LevelBrowseMenu;
 }(Menu));
 var TrophyImage = /** @class */ (function (_super) {

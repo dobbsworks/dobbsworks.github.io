@@ -9,7 +9,7 @@ class Ring extends Sprite {
 
 
     Update(): void {
-        let parentMotor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == this);
+        let parentMotor = this.GetParentMotor();
         if (!parentMotor) {
             this.dx *= 0.9;
             this.dy *= 0.9;
@@ -39,7 +39,7 @@ class PullSwitch extends Ring {
     isPowerSource = true;
 
     Update(): void {
-        let parentMotor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == this);
+        let parentMotor = this.GetParentMotor();
         if (!parentMotor) {
             this.dx *= 0.9;
             this.dy *= 0.9;

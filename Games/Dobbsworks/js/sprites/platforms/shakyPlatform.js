@@ -37,7 +37,7 @@ var ShakyPlatform = /** @class */ (function (_super) {
                 if (this.shakeCounter >= 20) {
                     this.xRenderOffset = 0;
                     this.isFalling = true;
-                    var motors = this.layer.sprites.filter(function (a) { return a instanceof Motor && a.connectedSprite == _this; });
+                    var motors = this.layer.sprites.filter(function (a) { return (a instanceof Motor || a instanceof Bigby) && a.connectedSprite == _this; });
                     motors.forEach(function (a) { return a.connectedSprite = null; });
                 }
             }

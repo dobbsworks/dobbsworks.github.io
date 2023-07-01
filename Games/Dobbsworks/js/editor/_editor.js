@@ -132,13 +132,13 @@ var EditorHandler = /** @class */ (function () {
         var tilePanel = this.CreateFloatingButtonPanel(tilePanelButtons, 5, 9);
         /* ENEMY PANEL */
         var enemyTypes = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, Wooly, WoolyBooly, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
-            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, BaddleTrigger,];
+            Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, BaddleTrigger,];
         var enemyButtons = enemyTypes.map(function (a) { return new EditorButtonSprite(a); });
         enemyButtons.filter(function (a) { return a.spriteType == Piggle || a.spriteType == Snail; }).forEach(function (a) { return hotbarDefaults.push(a); });
         var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 8);
         var gizmoTypes = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform,
-            MushroomSpring, Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
+            MushroomSpring, Baseball, SoccerBall, BowlingBall, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
             SpinRing, FragileSpinRing, PortalRing,
         ];
         var gizmoButtons = gizmoTypes.map(function (a) { return new EditorButtonSprite(a); });

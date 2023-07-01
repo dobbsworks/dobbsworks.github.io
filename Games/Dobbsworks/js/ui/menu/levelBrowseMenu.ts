@@ -518,6 +518,16 @@ class LevelBrowseMenu extends Menu {
         this.backButton.isHidden = true;
         this.backButtonUserPanel.isHidden = false;
     }
+
+
+    Update(): void {
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Debug1, true) && myUserData?.id == 1) {
+            if (this.selectedCloudCode) {
+                let modMenu = MenuHandler.SubMenu(ModerationMenu) as ModerationMenu;
+                modMenu.level = this.levels.find(a => a.level.code == this.selectedCloudCode)?.level || null;
+            }
+        }
+    }
 }
 
 

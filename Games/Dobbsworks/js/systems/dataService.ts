@@ -254,6 +254,11 @@ class DataService {
             DataService.BasePost(`Contest/SubmitContestLevel?levelCode=${levelCode}`, {}, resolve, reject);
         })
     }
+    static UnsubmitContestLevel(levelCode: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            DataService.BasePost(`Contest/UnsubmitContestLevel?levelCode=${levelCode}`, {}, resolve, reject);
+        })
+    }
     static GetContestLevels(pageIndex: number): Promise<LevelBrowseResults> {
         return new Promise<LevelBrowseResults>((resolve, reject) => {
             DataService.BaseGet("LevelSearch/ContestLevels?pageIndex=" + pageIndex, resolve, reject);
@@ -265,4 +270,15 @@ class DataService {
         })
     }
 
+
+    static MarkLevelAsGlitch(levelCode: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            DataService.BasePost(`Moderation/MarkLevelAsGlitch?levelCode=${levelCode}`, {}, resolve, reject);
+        })
+    }
+    static MarkLevelAsNotGlitch(levelCode: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            DataService.BasePost(`Moderation/MarkLevelAsNotGlitch?levelCode=${levelCode}`, {}, resolve, reject);
+        })
+    }
 }

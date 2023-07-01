@@ -129,7 +129,7 @@ var Player = /** @class */ (function (_super) {
     };
     Player.prototype.PlayerMovement = function () {
         var _this = this;
-        var _a, _b, _c, _d, _e;
+        var _a, _b, _c, _d, _e, _f;
         if (this.yoyoTimer > 0) {
             this.yoyoTimer--;
             return;
@@ -220,6 +220,8 @@ var Player = /** @class */ (function (_super) {
             }
             // below controls how many frames of upward velocity we get
             var numJumpFrames = 18;
+            if ((_e = this.heldItem) === null || _e === void 0 ? void 0 : _e.isHeavy)
+                numJumpFrames = 6;
             if (this.jumpTimer > numJumpFrames)
                 this.jumpTimer = -1;
             // jumptimer 14
@@ -241,8 +243,6 @@ var Player = /** @class */ (function (_super) {
                 this.ApplyGravity();
                 if (isJumpHeld && this.dy > 0)
                     this.dy *= 0.97;
-                // can call this twice for "heavy" movement
-                //this.ApplyGravity();
             }
         }
         if (this.dy > this.maxDY)
@@ -301,7 +301,7 @@ var Player = /** @class */ (function (_super) {
         this.climbCooldownTimer++;
         var tileAtMid = this.layer.GetTileByPixel(this.xMid, this.yMid);
         var tileAtFoot = this.layer.GetTileByPixel(this.xMid, this.yBottom - 0.25);
-        var isAtLadderTop = (tileAtFoot.tileType.isClimbable && ((_e = tileAtFoot.GetSemisolidNeighbor()) === null || _e === void 0 ? void 0 : _e.tileType.solidity) == Solidity.Top);
+        var isAtLadderTop = (tileAtFoot.tileType.isClimbable && ((_f = tileAtFoot.GetSemisolidNeighbor()) === null || _f === void 0 ? void 0 : _f.tileType.solidity) == Solidity.Top);
         var isTouchingLadder = tileAtMid.tileType.isClimbable || isAtLadderTop;
         if (upPressed && isTouchingLadder && this.climbCooldownTimer > 20 && this.heldItem == null) {
             this.isClimbing = true;
@@ -457,6 +457,9 @@ var Player = /** @class */ (function (_super) {
         if (this.isOnGround || this.isClimbing || wasClimbing || this.isInWater || this.isInQuicksand) {
             this.RefreshFloatTimer();
         }
+    };
+    Player.prototype.OnEnterPipe = function () {
+        this.heldItem = null;
     };
     Player.prototype.RefreshFloatTimer = function () {
         this.floatFramesLeftForThisJump = this.maxFloatDuration;
@@ -673,6 +676,8 @@ var Player = /** @class */ (function (_super) {
                 else
                     this.x = rightEdge - this.width;
             }
+        }
+        if (camera.isAutoscrollingVertically) {
             if (camera.autoscrollY > 0) {
                 // scrolling down
                 if (this.yBottom < camera.GetTopCameraEdge() - 24 && this.standingOn.length) {

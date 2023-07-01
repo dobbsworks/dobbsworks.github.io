@@ -17,7 +17,7 @@ var BasePlatform = /** @class */ (function (_super) {
     function BasePlatform(x, y, layer, editorProps) {
         var _this = _super.call(this, x, y, layer, editorProps) || this;
         _this.sourceImage = "platform";
-        _this.height = 2;
+        _this.height = 4;
         _this.isPlatform = true;
         _this.respectsSolidTiles = false;
         _this.xRenderOffset = 0;

@@ -206,7 +206,7 @@ var LevelLayer = /** @class */ (function () {
         }
     };
     LevelLayer.prototype.Update = function () {
-        var _a;
+        var _a, _b;
         if (!this.isAnimatedTileListInitialized) {
             this.animatedTileList = this.tiles.flatMap(function (a) { return a; }).filter(function (a) { return a.tileType instanceof AnimatedTileType; });
             this.isAnimatedTileListInitialized = true;
@@ -216,24 +216,27 @@ var LevelLayer = /** @class */ (function () {
             this.wireFlatMap = this.tiles.flatMap(function (a) { return a; });
         }
         this.sprites.forEach(function (a) { return a.updatedThisFrame = false; });
-        var motors = this.sprites.filter(function (a) { return a instanceof Motor; });
+        var motors = this.sprites.filter(function (a) { return a instanceof Motor || a instanceof Bigby; });
         motors.sort(function (a, b) { return a.y - b.y; });
-        var platforms = this.sprites.filter(function (a) { return a.isPlatform && !(a instanceof Motor); });
+        var platforms = this.sprites.filter(function (a) { return a.isPlatform && !(a instanceof Motor || a instanceof Bigby); });
         var players = this.sprites.filter(function (a) { return a instanceof Player; });
         platforms.sort(function (a, b) { return a.y - b.y; });
-        var orderedSprites = __spreadArrays(motors, platforms, players, this.sprites.filter(function (a) { return !a.isPlatform && !(a instanceof Motor) && !(a instanceof Player); }));
+        var orderedSprites = __spreadArrays(motors, platforms, players, this.sprites.filter(function (a) { return !a.isPlatform && !(a instanceof Motor || a instanceof Bigby) && !(a instanceof Player); }));
         this.sprites = orderedSprites;
         // using spread on orderedSprites to make sure we're iterating over a seaparte copy of the sprite list
         // iterating directly over orderedSprites is a problem because sprites is pointing to the same memory 
         // location, meaning that changes to the sprite list can affect which sprites are getting updated
-        for (var _i = 0, _b = __spreadArrays(orderedSprites); _i < _b.length; _i++) {
-            var sprite = _b[_i];
+        for (var _i = 0, _c = __spreadArrays(orderedSprites); _i < _c.length; _i++) {
+            var sprite = _c[_i];
             if (sprite.locked)
                 continue;
             if (sprite.updatedThisFrame)
                 continue;
             if (!sprite.isActive)
                 continue;
+            if (!(sprite instanceof Player) && (((_a = this.map) === null || _a === void 0 ? void 0 : _a.frameNum) || 0) % 5 != 0) {
+                continue;
+            }
             sprite.updatedThisFrame = true;
             sprite.SharedUpdate();
             sprite.Update();
@@ -242,10 +245,10 @@ var LevelLayer = /** @class */ (function () {
             }
         }
         this.sprites = this.sprites.filter(function (a) { return a.isActive; });
-        if ((_a = this.map) === null || _a === void 0 ? void 0 : _a.hasHorizontalWrap) {
+        if ((_b = this.map) === null || _b === void 0 ? void 0 : _b.hasHorizontalWrap) {
             var offset = this.tiles.length * 12;
-            for (var _c = 0, _d = this.sprites; _c < _d.length; _c++) {
-                var sprite = _d[_c];
+            for (var _d = 0, _e = this.sprites; _d < _e.length; _d++) {
+                var sprite = _e[_d];
                 if (sprite.xMid < 0)
                     sprite.x += offset;
                 if (sprite.xMid > offset)

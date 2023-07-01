@@ -76,6 +76,7 @@ abstract class Sprite {
 
     protected rotation: number = 0; // used for animating round objects
     public rolls: boolean = false;
+    public isHeavy: boolean = false;
     public isPowerSource: boolean = false;
     public zIndex: number = 0; //draw order
     public maxDY = 2;
@@ -107,9 +108,27 @@ abstract class Sprite {
         return ret;
     }
 
+    public GetParentMotor(): Motor | Bigby | null {
+        let motor = <Motor | Bigby>this.layer.sprites.find(a => (a instanceof Motor || a instanceof Bigby) && a.connectedSprite == this);
+        if (motor) return motor;
+        return null;
+    }
+
+    public GetPotentialMotorCargo(connectionDirectionY: -1 | 1, buffer = 0): Sprite | null {
+        let possibleConnectionSprites = connectionDirectionY == 1 ?
+            this.layer.sprites.filter(a => a.x < this.xRight && a.xRight > this.x && a.y >= this.yBottom - buffer && a.canMotorHold) :
+            this.layer.sprites.filter(a => a.x < this.xRight && a.xRight > this.x && a.yBottom <= this.y + buffer && a.canMotorHold);
+        if (possibleConnectionSprites.length == 0) {
+            return null;
+        }
+        if (connectionDirectionY == 1) possibleConnectionSprites.sort((a, b) => a.y - b.y);
+        if (connectionDirectionY == -1) possibleConnectionSprites.sort((a, b) => -a.y + b.y);
+        return possibleConnectionSprites[0];
+    }
+
     SharedUpdate(): void {
         if (!(this instanceof DeadPlayer || this instanceof Player)) {
-            let motor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == this);
+            let motor = this.GetParentMotor();
             if (!motor) {
                 if (
                     this.xRight < -36 || this.x > this.layer.GetMaxX() + 36 ||
@@ -132,23 +151,23 @@ abstract class Sprite {
         // 3. what in the world was happening with shells
 
         //TODO: repeat this for sprites that never touch wall
-        let leftWarpWall = <LevelTile>this.touchedLeftWalls.find(a => a instanceof LevelTile && a.tileType.isWarpWall)
-        if (leftWarpWall) {
-            let yIndex = leftWarpWall.tileY;
-            let acrossWarpWall = leftWarpWall.layer.tiles.map(a => a[yIndex]).find(a => a.tileX > leftWarpWall.tileX && a.tileType == TileType.WallWarpRight);
-            if (acrossWarpWall) {
-                this.x = acrossWarpWall.tileX * this.layer.tileWidth - this.width;
-            }
-        } else {
-            let rightWarpWall = <LevelTile>this.touchedRightWalls.find(a => a instanceof LevelTile && a.tileType.isWarpWall)
-            if (rightWarpWall) {
-                let yIndex = rightWarpWall.tileY;
-                let acrossWarpWall = rightWarpWall.layer.tiles.map(a => a[yIndex]).find(a => a.tileX < rightWarpWall.tileX && a.tileType == TileType.WallWarpLeft);
-                if (acrossWarpWall) {
-                    this.x = (acrossWarpWall.tileX + 1) * this.layer.tileWidth;
-                }
-            }
-        }
+        // let leftWarpWall = <LevelTile>this.touchedLeftWalls.find(a => a instanceof LevelTile && a.tileType.isWarpWall)
+        // if (leftWarpWall) {
+        //     let yIndex = leftWarpWall.tileY;
+        //     let acrossWarpWall = leftWarpWall.layer.tiles.map(a => a[yIndex]).find(a => a.tileX > leftWarpWall.tileX && a.tileType == TileType.WallWarpRight);
+        //     if (acrossWarpWall) {
+        //         this.x = acrossWarpWall.tileX * this.layer.tileWidth - this.width;
+        //     }
+        // } else {
+        //     let rightWarpWall = <LevelTile>this.touchedRightWalls.find(a => a instanceof LevelTile && a.tileType.isWarpWall)
+        //     if (rightWarpWall) {
+        //         let yIndex = rightWarpWall.tileY;
+        //         let acrossWarpWall = rightWarpWall.layer.tiles.map(a => a[yIndex]).find(a => a.tileX < rightWarpWall.tileX && a.tileType == TileType.WallWarpLeft);
+        //         if (acrossWarpWall) {
+        //             this.x = (acrossWarpWall.tileX + 1) * this.layer.tileWidth;
+        //         }
+        //     }
+        // }
 
         let tileAtCenter = this.layer.GetTileByPixel(this.xMid, this.yMid).tileType;
         // if the wind speed is greater than the sprite's speed,
@@ -323,6 +342,12 @@ abstract class Sprite {
                 this.dxFromPlatform *= inertiaRatio;
             }
             if (Math.abs(this.dxFromPlatform) < 0.015) this.dxFromPlatform = 0;
+        }
+    }
+
+    ApplyAirDrag(): void {
+        if (!this.isOnGround && !this.parentSprite ) {
+            this.dx *= 0.98;
         }
     }
 
@@ -992,7 +1017,7 @@ abstract class Sprite {
 
 
     LaunchSprite(sprite: Sprite, direction: -1 | 1): void {
-        let parentMotor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == sprite);
+        let parentMotor = sprite.GetParentMotor();
         if (parentMotor) {
             parentMotor.connectedSprite = null;
         }
@@ -1017,6 +1042,7 @@ abstract class Sprite {
     }
 
     CanInteractWithSpringBox(): boolean {
+        if (this instanceof Bigby) return false;
         return this.respectsSolidTiles || this instanceof SapphireSnail || (this instanceof BasePlatform && !(this instanceof FloatingPlatform));
     }
 
@@ -1035,13 +1061,13 @@ abstract class Sprite {
     }
 
     GetOverlappingTrackPipe(): LevelTile | null {
-        if (this instanceof PipeContent || 
-            this instanceof DeadPlayer || 
-            this instanceof Poof || 
-            this instanceof KeyDomino || 
-            this instanceof ShimmerRipple || 
-            this instanceof SpinRing || 
-            this instanceof PortalRing || 
+        if (this instanceof PipeContent ||
+            this instanceof DeadPlayer ||
+            this instanceof Poof ||
+            this instanceof KeyDomino ||
+            this instanceof ShimmerRipple ||
+            this instanceof SpinRing ||
+            this instanceof PortalRing ||
             this instanceof DeadEnemy ||
             this instanceof Coin) {
             return null;
@@ -1057,7 +1083,7 @@ abstract class Sprite {
         if (this.height > 12) {
             ys = [...Array.from(new Array(Math.ceil(this.height / 12) - 1), (x, i) => this.y + i * 12 + 6), this.yBottom - 6];
         }
-        
+
         let isTouchingPreviousTrackPipe = false;
         for (let x of xs) {
             for (let y of ys) {
@@ -1071,7 +1097,7 @@ abstract class Sprite {
                         // fail out if no track beyond?
                         doesNextTrackExist = true;
                     }
-    
+
                     if (doesNextTrackExist) {
                         return trackTileAtCenter;
                     }

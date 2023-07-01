@@ -150,7 +150,7 @@ class EditorHandler {
 
         /* ENEMY PANEL */
         let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, Wooly, WoolyBooly, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
-            Snouter, PricklySnouter, BeeWithSunglasses, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, BaddleTrigger, /*, BigYufo */];
+            Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, BaddleTrigger, /*, BigYufo */];
         let enemyButtons = enemyTypes.map(a => new EditorButtonSprite(a));
 
         enemyButtons.filter(a => a.spriteType == Piggle || a.spriteType == Snail).forEach(a => hotbarDefaults.push(a));
@@ -158,7 +158,7 @@ class EditorHandler {
 
         let gizmoTypes: (SpriteType)[] = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform,
-            MushroomSpring, Baseball, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
+            MushroomSpring, Baseball, SoccerBall, BowlingBall, Battery, Door, Fan, Key, FlatKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
             SpinRing, FragileSpinRing, PortalRing,
         ];
         let gizmoButtons: EditorButton[] = gizmoTypes.map(a => new EditorButtonSprite(a));

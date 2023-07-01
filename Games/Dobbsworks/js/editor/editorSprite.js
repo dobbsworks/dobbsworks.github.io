@@ -75,7 +75,7 @@ var EditorSprite = /** @class */ (function () {
         this.frameData = this.spriteInstance.GetFrameData(0);
     };
     EditorSprite.prototype.ResetStack = function () {
-        if (this.spriteInstance instanceof Enemy) {
+        if (this.spriteInstance instanceof Enemy && !(this.spriteInstance instanceof Bigby)) {
             var belowCoords = [];
             for (var xOff = 0; xOff < this.width; xOff++) {
                 belowCoords.push({ tileX: this.tileCoord.tileX + xOff, tileY: this.tileCoord.tileY + this.height });

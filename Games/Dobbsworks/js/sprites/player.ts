@@ -212,6 +212,7 @@ class Player extends Sprite {
             // below controls how many frames of upward velocity we get
 
             let numJumpFrames = 18;
+            if (this.heldItem?.isHeavy) numJumpFrames = 6;
             if (this.jumpTimer > numJumpFrames) this.jumpTimer = -1;
             // jumptimer 14
         }
@@ -229,8 +230,6 @@ class Player extends Sprite {
             if (this.jumpTimer == -1 && !this.isClimbing) {
                 this.ApplyGravity();
                 if (isJumpHeld && this.dy > 0) this.dy *= 0.97;
-                // can call this twice for "heavy" movement
-                //this.ApplyGravity();
             }
         }
         if (this.dy > this.maxDY) this.dy = this.maxDY;
@@ -433,6 +432,10 @@ class Player extends Sprite {
         if (this.isOnGround || this.isClimbing || wasClimbing || this.isInWater || this.isInQuicksand) {
             this.RefreshFloatTimer();
         }
+    }
+
+    public OnEnterPipe(): void { 
+        this.heldItem = null;
     }
 
     RefreshFloatTimer(): void {
@@ -644,7 +647,8 @@ class Player extends Sprite {
                 if (this.isTouchingLeftWall && camera.autoscrollX < 0) this.OnPlayerDead(false);
                 else this.x = rightEdge - this.width;
             }
-
+        } 
+        if (camera.isAutoscrollingVertically) {
             if (camera.autoscrollY > 0) {
                 // scrolling down
                 if (this.yBottom < camera.GetTopCameraEdge() - 24 && this.standingOn.length) {

@@ -25,8 +25,7 @@ var Ring = /** @class */ (function (_super) {
         return _this;
     }
     Ring.prototype.Update = function () {
-        var _this = this;
-        var parentMotor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == _this; });
+        var parentMotor = this.GetParentMotor();
         if (!parentMotor) {
             this.dx *= 0.9;
             this.dy *= 0.9;
@@ -59,8 +58,7 @@ var PullSwitch = /** @class */ (function (_super) {
         return _this;
     }
     PullSwitch.prototype.Update = function () {
-        var _this = this;
-        var parentMotor = this.layer.sprites.find(function (a) { return a instanceof Motor && a.connectedSprite == _this; });
+        var parentMotor = this.GetParentMotor();
         if (!parentMotor) {
             this.dx *= 0.9;
             this.dy *= 0.9;

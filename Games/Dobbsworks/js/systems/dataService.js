@@ -211,6 +211,11 @@ var DataService = /** @class */ (function () {
             DataService.BasePost("Contest/SubmitContestLevel?levelCode=" + levelCode, {}, resolve, reject);
         });
     };
+    DataService.UnsubmitContestLevel = function (levelCode) {
+        return new Promise(function (resolve, reject) {
+            DataService.BasePost("Contest/UnsubmitContestLevel?levelCode=" + levelCode, {}, resolve, reject);
+        });
+    };
     DataService.GetContestLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
             DataService.BaseGet("LevelSearch/ContestLevels?pageIndex=" + pageIndex, resolve, reject);
@@ -219,6 +224,16 @@ var DataService = /** @class */ (function () {
     DataService.SubmitContestVote = function (levelCode, vote) {
         return new Promise(function (resolve, reject) {
             DataService.BasePost("Contest/SubmitContestVote?levelCode=" + levelCode + "&vote=" + vote, {}, resolve, reject);
+        });
+    };
+    DataService.MarkLevelAsGlitch = function (levelCode) {
+        return new Promise(function (resolve, reject) {
+            DataService.BasePost("Moderation/MarkLevelAsGlitch?levelCode=" + levelCode, {}, resolve, reject);
+        });
+    };
+    DataService.MarkLevelAsNotGlitch = function (levelCode) {
+        return new Promise(function (resolve, reject) {
+            DataService.BasePost("Moderation/MarkLevelAsNotGlitch?levelCode=" + levelCode, {}, resolve, reject);
         });
     };
     return DataService;

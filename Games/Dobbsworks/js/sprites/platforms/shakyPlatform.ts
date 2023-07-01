@@ -19,7 +19,7 @@ class ShakyPlatform extends BasePlatform {
                     this.xRenderOffset = 0;
                     this.isFalling = true;
 
-                    let motors = <Motor[]>this.layer.sprites.filter(a => a instanceof Motor && a.connectedSprite == this);
+                    let motors = <Motor[]>this.layer.sprites.filter(a => (a instanceof Motor || a instanceof Bigby) && a.connectedSprite == this);
                     motors.forEach(a => a.connectedSprite = null);
                 }
             }

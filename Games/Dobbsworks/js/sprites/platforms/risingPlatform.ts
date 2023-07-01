@@ -8,8 +8,8 @@ class RisingPlatform extends BasePlatform {
     Update(): void {
         if (!this.isInitialized) {
             this.isInitialized = true;
-            let motor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == this);
-            if (motor) {
+            let motor = this.GetParentMotor();
+            if (motor instanceof Motor) {
                 this.motor = motor;
                 motor.motorSpeedRatio = 0;
             }

@@ -103,8 +103,7 @@ class ClimbingSpurpider extends Spurpider {
 
     Initialize(): void {
         if (!this.isInitialized) {
-            let motor = <Motor>this.layer.sprites.find(a => a instanceof Motor && a.connectedSprite == this);
-            if (motor) return;
+            if (this.GetParentMotor()) return;
 
             this.isInitialized = true;
             this.anchorX = this.x;

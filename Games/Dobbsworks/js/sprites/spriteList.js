@@ -129,4 +129,7 @@ var spriteTypes = [
     Dabbot,
     ClimbingSpurpider,
     ControlledWinch,
+    Bigby,
+    SoccerBall,
+    BowlingBall,
 ];

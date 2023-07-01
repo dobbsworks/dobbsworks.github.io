@@ -61,7 +61,7 @@ class Baseball extends Sprite {
     GetFrameData(frameNum: number): FrameData {
         let totalFrames = Object.keys(tiles["baseball"]).length;
         let rot = ((this.rotation % (Math.PI*2)) + (Math.PI*2)) % (Math.PI*2);
-        let frame = Math.floor(rot / (Math.PI*2) * totalFrames) || 1;
+        let frame = Math.floor(rot / (Math.PI*2) * totalFrames) || 0;
         if (frame < 0) frame = 0;
         return {
             imageTile: tiles["baseball"][frame][0],

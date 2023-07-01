@@ -1,13 +1,3 @@
-SEPTEMBER 28th   TRAILER DROP
-OCTOBER 12th     FULL RELEASE 1.0.0
-
-
-FINAL TO-DOs 
-    GDB Level collection 
-    Create account
-    Re-submit website/trailer to igdb 
-    
-
 BUGS
     Physics engine does not like things being inside walls
         Throwing right while under center of pair of ceilings, item goes FLYING right
@@ -16,66 +6,49 @@ FEATURES
     New enemies 
         fire lizard - shoots fireballs, then vulnerable
         winged pig
-        winged snail
-            gale snail
         thunder cloud - activates wires with strikes
-        bouncy enemy
         Mimic - angry eyebrows attach to sprite below (not to enemies/platforms)
     New wires - Pulse extender
     bonk particle for landing on enemy
-    cursor
 
-    Controller mapping???
-    Pen for tracks?
-    store attempts in levelOpinion table?
+
     Warn user when leveldata gets too big
     List level status in MyLevels
     
 
 
 MENU/UI CHANGES
-    WAITING - On clear screen include current/previous WR 
-        Added new data to returned payload, wait for deploy to continue work
-    avatars
-    Update WR info after clear
-    Loading circle on recent levels panel
     Moderation
-    Privacy?
-    Registration
-
-
     search by ID
-    ON BOARDING
-    Level collection for GDB
-        World type
-            ground color 
-            path color 
-            closed path color 
-            background
-            underground color 
-        
-
 
 LATER CONTENT RELEASES
     link takes you directly to a level
-    procedural levels???
     escarghosts
     blueprints
     magnet
-    water currents 
     fuse + candle + fused cannon
         waterfall extinguishes fuse, blocked by umbrella
-    lantern 
-        lights fuse, illuminates dark
-    darkness effect (using composite operation)
-    scroll stop
-    corner boost
     low gravity
     reverse gravity
     lasers/mirrors
     echo = https://blog.gskinner.com/archives/2019/02/reverb-web-audio-api.html
     magic stopwatch - hold a clock or hourglass item thing and then all other sprite update functions only get called once per X frames or something
+        issue here: platforms are really rough to land on if they're moving, is that true when they're full speed?
+        many enemy animations are map frameNum based
+        can't just reduce velocity because of enemy internal timers
 
+
+
+    rotate tiles
+        https://discord.com/channels/690030990285865087/985265286225747988/1118935788323872818
+    ratchet scroll
+        https://discord.com/channels/690030990285865087/985265286225747988/1118677659476574289
+    ghost house?
+        https://discord.com/channels/690030990285865087/985265286225747988/1113623737607131246
+        
+    bigbee
+        known issue: bee holding balloon holding platform
+        
 
 
 teaser vid https://youtu.be/DfL6jg2ONuE?t=1527
