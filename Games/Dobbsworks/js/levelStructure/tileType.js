@@ -23,7 +23,6 @@ var TileType = /** @class */ (function () {
         this.isWaterfall = false;
         this.isQuicksand = false;
         this.isClimbable = false;
-        this.isBumper = false;
         this.isHangable = false;
         this.conveyorSpeed = 0; // positive = clockwise
         this.windX = 0;
@@ -355,6 +354,19 @@ var TileType = /** @class */ (function () {
         TileType.MountainSpikesRight;
         TileType.TrackBridgeHorizontalOff;
         TileType.TrackBridgeVerticalOff;
+        TileType.MetalGround2;
+        TileType.HauntGround;
+        TileType.HauntBrick;
+        TileType.HauntBlock;
+        TileType.HauntTop;
+        TileType.HauntBack;
+        TileType.HauntLadder;
+        TileType.HauntSpikes;
+        TileType.DecorHaunt;
+        TileType.RegisterSlope("Haunt", 12);
+        TileType.DecorHauntDown;
+        TileType.DecorHauntLeft;
+        TileType.DecorHauntRight;
     };
     TileType.RegisterSlope = function (keyBase, tileRow) {
         var colIter = 8;
@@ -523,7 +535,12 @@ var TileType = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(TileType, "RedGirder", {
-        get: function () { return TileType.GetTileType("RedGirder", "terrain", 1, 3, Solidity.Block, TargetLayer.main); },
+        get: function () { return TileType.GetTileType("RedGirder", "terrain", 1, 3, Solidity.Block, TargetLayer.main, function (tileType) { tileType.clockWiseRotationTileName = "RedGirder2"; }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "RedGirder2", {
+        get: function () { return TileType.GetTileType("RedGirder2", "terrain", 17, 19, Solidity.Block, TargetLayer.main, function (tileType) { tileType.clockWiseRotationTileName = "RedGirder"; }); },
         enumerable: false,
         configurable: true
     });
@@ -732,7 +749,12 @@ var TileType = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(TileType, "MetalGround", {
-        get: function () { return TileType.GetTileType("MetalGround", "terrain", 0, 7, Solidity.Block, TargetLayer.main); },
+        get: function () { return TileType.GetTileType("MetalGround", "terrain", 0, 7, Solidity.Block, TargetLayer.main, function (tileType) { tileType.clockWiseRotationTileName = "MetalGround2"; }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "MetalGround2", {
+        get: function () { return TileType.GetTileType("MetalGround2", "terrain", 16, 19, Solidity.Block, TargetLayer.main, function (tileType) { tileType.clockWiseRotationTileName = "MetalGround"; }); },
         enumerable: false,
         configurable: true
     });
@@ -1063,17 +1085,79 @@ var TileType = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(TileType, "Bridge", {
+    Object.defineProperty(TileType, "HauntGround", {
+        get: function () { return TileType.GetTileType("HauntGround", "terrain", 0, 12, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "HauntBrick", {
+        get: function () { return TileType.GetTileType("HauntBrick", "terrain", 1, 12, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "HauntBlock", {
+        get: function () { return TileType.GetTileType("HauntBlock", "terrain", 2, 12, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "HauntTop", {
+        get: function () { return TileType.GetTileType("HauntTop", "terrain", 3, 12, Solidity.Top, TargetLayer.semisolid); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "HauntBack", {
+        get: function () { return TileType.GetTileType("HauntBack", "terrain", 4, 12, Solidity.None, TargetLayer.backdrop); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "HauntLadder", {
+        get: function () { return TileType.GetTileType("HauntLadder", "terrain", 5, 12, Solidity.None, TargetLayer.main, function (tileType) { tileType.isClimbable = true; }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "HauntSpikes", {
         get: function () {
-            return TileType.GetTileType("Bridge", "terrain", 2, 3, Solidity.Top, TargetLayer.semisolid);
+            return TileType.GetTileType("HauntSpikes", "terrain", 6, 12, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.hurtOnBottom = true;
+                tileType.hurtOnTop = true;
+                tileType.hurtOnLeft = true;
+                tileType.hurtOnRight = true;
+            });
         },
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(TileType, "Bumper", {
+    Object.defineProperty(TileType, "DecorHaunt", {
         get: function () {
-            return TileType.GetTileType("Bumper", "bumper", 0, 0, Solidity.None, TargetLayer.main, function (tileType) {
-                tileType.isBumper = true;
+            return TileType.GetTileType("DecorHaunt", "terrain", 7, 12, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.clockWiseRotationTileName = "DecorHauntRight";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DecorHauntRight", {
+        get: function () {
+            return TileType.GetTileType("DecorHauntRight", "terrain", 18, 19, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.clockWiseRotationTileName = "DecorHauntDown";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DecorHauntLeft", {
+        get: function () {
+            return TileType.GetTileType("DecorHauntLeft", "terrain", 20, 19, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.clockWiseRotationTileName = "DecorHaunt";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DecorHauntDown", {
+        get: function () {
+            return TileType.GetTileType("DecorHauntDown", "terrain", 19, 19, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.clockWiseRotationTileName = "DecorHauntLeft";
             });
         },
         enumerable: false,

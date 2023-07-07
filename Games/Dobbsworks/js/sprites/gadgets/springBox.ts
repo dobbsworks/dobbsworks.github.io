@@ -108,7 +108,7 @@ class SpringBox extends Sprite {
                     this.LaunchSprite(sprite, -1);
                 }
             }
-            audioHandler.PlaySound("boing", true);
+            if (this.IsOnScreen()) audioHandler.PlaySound("boing", true);
         }
 
     }

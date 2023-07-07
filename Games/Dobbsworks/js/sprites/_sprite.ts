@@ -74,7 +74,7 @@ abstract class Sprite {
     public isExemptFromSpriteKillCheck: boolean = false;
 
 
-    protected rotation: number = 0; // used for animating round objects
+    protected _rotation: number = 0; // used for animating round objects
     public rolls: boolean = false;
     public isHeavy: boolean = false;
     public isPowerSource: boolean = false;

@@ -46,8 +46,15 @@ LATER CONTENT RELEASES
     ghost house?
         https://discord.com/channels/690030990285865087/985265286225747988/1113623737607131246
         
-    bigbee
-        known issue: bee holding balloon holding platform
+    bouncing skull that also bounces off of backdrop tiles!
+    slidy thwomp, varieties for different directions
+    candle that can burn things?
+    breakable blocks
+    
+    Wallop
+    Wallopeño
+        need to center the art for easier spin move
+
         
 
 

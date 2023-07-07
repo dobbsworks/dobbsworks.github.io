@@ -38,7 +38,7 @@ var RightSideButton = /** @class */ (function (_super) {
                 (a.xRight == _this.x && a.y < _this.yBottom && a.yBottom > _this.y);
         });
         if (spritesAtLeft.length > 0) {
-            if (this.onTimer != 30)
+            if (this.onTimer != 30 && this.IsOnScreen())
                 audioHandler.PlaySound("erase", true);
             this.onTimer = 30;
         }

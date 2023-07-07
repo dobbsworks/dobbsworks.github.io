@@ -146,4 +146,6 @@ var spriteTypes: SpriteType[] = [
     Bigby,
     SoccerBall,
     BowlingBall,
+    Wallop,
+    Wallopeño,
 ];

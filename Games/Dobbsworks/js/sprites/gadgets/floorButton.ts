@@ -15,7 +15,7 @@ class FloorButton extends Sprite {
     Update(): void { 
         let spritesOnTop = this.layer.sprites.filter(a => a.parentSprite == this);
         if (spritesOnTop.length > 0) {
-            if (this.onTimer != 30) audioHandler.PlaySound("erase", true);
+            if (this.onTimer != 30 && this.IsOnScreen()) audioHandler.PlaySound("erase", true);
             this.onTimer = 30;
         } else {
             if (this.onTimer > 0) this.onTimer--;

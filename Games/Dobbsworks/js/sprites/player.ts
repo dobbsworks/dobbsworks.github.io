@@ -589,33 +589,6 @@ class Player extends Sprite {
         ].some(a => (a?.tileType == TileType.WallJumpLeft && direction == -1) || (a?.tileType == TileType.WallJumpRight && direction == 1)));
     }
 
-    HandleBumpers(): void {
-        // maybe todo:
-        // check all 4 corners, then for each bumper in that list see if center to center dist < 8.5 (p.wid/2 + tile.wid/2)
-        // if couble bump, cancel conflicts
-        let tileAtMid = this.layer.GetTileByPixel(this.xMid, this.yMid);
-        if (tileAtMid.tileType.isBumper) {
-            let bumperAngle = Math.atan2(this.yMid - (tileAtMid.tileY + 0.5) * this.layer.tileHeight, this.xMid - (tileAtMid.tileX + 0.5) * this.layer.tileWidth);
-            bumperAngle += 2 * Math.PI;
-            bumperAngle *= 8 / (2 * Math.PI); // [0, 8)
-            bumperAngle = +(bumperAngle.toFixed(0));
-            bumperAngle /= 8 / (2 * Math.PI);
-            this.dxFromBumper = Math.cos(bumperAngle) * 1.5;
-            this.dyFromBumper = Math.sin(bumperAngle) * 1.5;
-            this.jumpTimer = 0;
-            this.jumpBufferTimer = -1;
-            this.coyoteTimer = 999999;
-            this.isClimbing = false;
-            this.bumperTimer = 8;
-        } else {
-            this.bumperTimer--;
-        }
-        if (this.bumperTimer > 0) {
-            this.dx = this.dxFromBumper;
-            this.dy = this.dyFromBumper;
-        }
-    }
-
     PushByAutoscroll(): void {
         if (camera.isAutoscrollingHorizontally) {
             if (this.x < camera.GetLeftCameraEdge() && this.dx < camera.autoscrollX) this.dx = camera.autoscrollX

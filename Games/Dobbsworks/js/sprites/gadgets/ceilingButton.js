@@ -37,7 +37,7 @@ var CeilingButton = /** @class */ (function (_super) {
             return (a.y == _this.yBottom && a.x < _this.xRight && a.xRight > _this.x);
         });
         if (spritesAtBottom.length > 0) {
-            if (this.onTimer != 30)
+            if (this.onTimer != 30 && this.IsOnScreen())
                 audioHandler.PlaySound("erase", true);
             this.onTimer = 30;
         }

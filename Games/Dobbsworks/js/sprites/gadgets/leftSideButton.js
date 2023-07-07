@@ -38,7 +38,7 @@ var LeftSideButton = /** @class */ (function (_super) {
                 (a.x == _this.xRight && a.y < _this.yBottom && a.yBottom > _this.y);
         });
         if (spritesAtRight.length > 0) {
-            if (this.onTimer != 30)
+            if (this.onTimer != 30 && this.IsOnScreen())
                 audioHandler.PlaySound("erase", true);
             this.onTimer = 30;
         }

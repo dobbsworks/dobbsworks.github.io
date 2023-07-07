@@ -17,7 +17,6 @@ class TileType {
     public isWaterfall: boolean = false;
     public isQuicksand: boolean = false;
     public isClimbable: boolean = false;
-    public isBumper: boolean = false;
     public isHangable: boolean = false;
     public conveyorSpeed: number = 0; // positive = clockwise
     public windX: number = 0;
@@ -399,6 +398,20 @@ class TileType {
 
         TileType.TrackBridgeHorizontalOff;
         TileType.TrackBridgeVerticalOff;
+        TileType.MetalGround2;
+
+        TileType.HauntGround;
+        TileType.HauntBrick;
+        TileType.HauntBlock;
+        TileType.HauntTop;
+        TileType.HauntBack;
+        TileType.HauntLadder;
+        TileType.HauntSpikes;
+        TileType.DecorHaunt;
+        TileType.RegisterSlope("Haunt", 12);
+        TileType.DecorHauntDown;
+        TileType.DecorHauntLeft;
+        TileType.DecorHauntRight;
     }
 
 
@@ -466,7 +479,8 @@ class TileType {
     public static get Rock(): TileType { return TileType.GetTileType("Rock", "terrain", 7, 2, Solidity.None, TargetLayer.main); }
 
     public static get GreenStone(): TileType { return TileType.GetTileType("GreenStone", "terrain", 0, 3, Solidity.Block, TargetLayer.main); }
-    public static get RedGirder(): TileType { return TileType.GetTileType("RedGirder", "terrain", 1, 3, Solidity.Block, TargetLayer.main); }
+    public static get RedGirder(): TileType { return TileType.GetTileType("RedGirder", "terrain", 1, 3, Solidity.Block, TargetLayer.main, tileType => { tileType.clockWiseRotationTileName = "RedGirder2"; }); }
+    public static get RedGirder2(): TileType { return TileType.GetTileType("RedGirder2", "terrain", 17, 19, Solidity.Block, TargetLayer.main, tileType => { tileType.clockWiseRotationTileName = "RedGirder"; }); }
     public static get GreenBlock(): TileType { return TileType.GetTileType("GreenBlock", "terrain", 2, 3, Solidity.Block, TargetLayer.main); }
     public static get PinkTop(): TileType { return TileType.GetTileType("PinkTop", "terrain", 3, 3, Solidity.Top, TargetLayer.semisolid); }
     public static get ScaleBack(): TileType { return TileType.GetTileType("ScaleBack", "terrain", 4, 3, Solidity.None, TargetLayer.backdrop); }
@@ -537,7 +551,8 @@ class TileType {
     }
     public static get Lantern(): TileType { return TileType.GetTileType("Lantern", "terrain", 7, 6, Solidity.None, TargetLayer.main); }
 
-    public static get MetalGround(): TileType { return TileType.GetTileType("MetalGround", "terrain", 0, 7, Solidity.Block, TargetLayer.main); }
+    public static get MetalGround(): TileType { return TileType.GetTileType("MetalGround", "terrain", 0, 7, Solidity.Block, TargetLayer.main, tileType => { tileType.clockWiseRotationTileName = "MetalGround2"; }); }
+    public static get MetalGround2(): TileType { return TileType.GetTileType("MetalGround2", "terrain", 16, 19, Solidity.Block, TargetLayer.main, tileType => { tileType.clockWiseRotationTileName = "MetalGround"; }); }
     public static get MetalBrick(): TileType { return TileType.GetTileType("MetalBrick", "terrain", 1, 7, Solidity.Block, TargetLayer.main); }
     public static get MetalBlock(): TileType { return TileType.GetTileType("MetalBlock", "terrain", 2, 7, Solidity.Block, TargetLayer.main); }
     public static get MetalTop(): TileType { return TileType.GetTileType("MetalTop", "terrain", 3, 7, Solidity.Top, TargetLayer.semisolid); }
@@ -649,16 +664,32 @@ class TileType {
     }); }
 
 
-
-    public static get Bridge(): TileType {
-        return TileType.GetTileType("Bridge", "terrain", 2, 3, Solidity.Top, TargetLayer.semisolid);
-    }
-
-    public static get Bumper(): TileType {
-        return TileType.GetTileType("Bumper", "bumper", 0, 0, Solidity.None, TargetLayer.main, tileType => {
-            tileType.isBumper = true;
+    
+    public static get HauntGround(): TileType { return TileType.GetTileType("HauntGround", "terrain", 0, 12, Solidity.Block, TargetLayer.main); }
+    public static get HauntBrick(): TileType { return TileType.GetTileType("HauntBrick", "terrain", 1, 12, Solidity.Block, TargetLayer.main); }
+    public static get HauntBlock(): TileType { return TileType.GetTileType("HauntBlock", "terrain", 2, 12, Solidity.Block, TargetLayer.main); }
+    public static get HauntTop(): TileType { return TileType.GetTileType("HauntTop", "terrain", 3, 12, Solidity.Top, TargetLayer.semisolid); }
+    public static get HauntBack(): TileType { return TileType.GetTileType("HauntBack", "terrain", 4, 12, Solidity.None, TargetLayer.backdrop); }
+    public static get HauntLadder(): TileType { return TileType.GetTileType("HauntLadder", "terrain", 5, 12, Solidity.None, TargetLayer.main, tileType => { tileType.isClimbable = true; }); }
+    public static get HauntSpikes(): TileType {
+        return TileType.GetTileType("HauntSpikes", "terrain", 6, 12, Solidity.Block, TargetLayer.main, tileType => {
+            tileType.hurtOnBottom = true; tileType.hurtOnTop = true; tileType.hurtOnLeft = true; tileType.hurtOnRight = true;
         });
     }
+    public static get DecorHaunt(): TileType { return TileType.GetTileType("DecorHaunt", "terrain", 7, 12, Solidity.None, TargetLayer.main, tileType => {
+        tileType.clockWiseRotationTileName = "DecorHauntRight";
+    }); }
+    public static get DecorHauntRight(): TileType { return TileType.GetTileType("DecorHauntRight", "terrain", 18, 19, Solidity.None, TargetLayer.main, tileType => {
+        tileType.clockWiseRotationTileName = "DecorHauntDown";
+    }); }
+    public static get DecorHauntLeft(): TileType { return TileType.GetTileType("DecorHauntLeft", "terrain", 20, 19, Solidity.None, TargetLayer.main, tileType => {
+        tileType.clockWiseRotationTileName = "DecorHaunt";
+    }); }
+    public static get DecorHauntDown(): TileType { return TileType.GetTileType("DecorHauntDown", "terrain", 19, 19, Solidity.None, TargetLayer.main, tileType => {
+        tileType.clockWiseRotationTileName = "DecorHauntLeft";
+    }); }
+
+
 
     public static get PurpleWater(): TileType {
         return TileType.GetTileType("PurpleWater", "water", 0, 3, Solidity.None, TargetLayer.water, tileType => {

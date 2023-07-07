@@ -143,7 +143,8 @@ var SpringBox = /** @class */ (function (_super) {
                     this.LaunchSprite(sprite, -1);
                 }
             }
-            audioHandler.PlaySound("boing", true);
+            if (this.IsOnScreen())
+                audioHandler.PlaySound("boing", true);
         }
     };
     SpringBox.prototype.GetFrameData = function (frameNum) {
