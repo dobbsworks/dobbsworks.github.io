@@ -1,11 +1,12 @@
 "use strict";
 var ImageTile = /** @class */ (function () {
-    function ImageTile(src, xSrc, ySrc, width, height) {
+    function ImageTile(src, xSrc, ySrc, width, height, tileMap) {
         this.src = src;
         this.xSrc = xSrc;
         this.ySrc = ySrc;
         this.width = width;
         this.height = height;
+        this.tileMap = tileMap;
         // Image tile represents a rectangular slice of a larger image file
         this.yOffset = 0;
         this.xOffset = 0;

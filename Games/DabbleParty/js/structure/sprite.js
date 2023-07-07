@@ -21,6 +21,8 @@ var Sprite = /** @class */ (function () {
         this.rotation = 0;
         this.dx = 0;
         this.dy = 0;
+        this.name = "";
+        this.age = 0;
         this.xScale = 1;
         this.yScale = 1;
     }
@@ -35,6 +37,19 @@ var Sprite = /** @class */ (function () {
         this.xScale *= ratio;
         this.yScale *= ratio;
         return this;
+    };
+    Sprite.prototype.Overlaps = function (sprite) {
+        if (!this.isActive)
+            return false;
+        if (!sprite.isActive)
+            return false;
+        return this.x < sprite.x + sprite.width &&
+            this.x + this.width > sprite.x &&
+            this.y < sprite.y + sprite.height &&
+            this.y + this.height > sprite.y;
+    };
+    Sprite.prototype.DistanceBetweenCenters = function (sprite) {
+        return Math.sqrt(Math.pow((this.x - sprite.x), 2) + Math.pow((this.y - sprite.y), 2));
     };
     return Sprite;
 }());
@@ -61,5 +76,40 @@ var SimpleSprite = /** @class */ (function (_super) {
             yOffset: 0
         };
     };
+    SimpleSprite.prototype.Animate = function (animationSpeed) {
+        if (currentMinigame && this.imageTile) {
+            var totalFrames = this.imageTile.tileMap.rows * this.imageTile.tileMap.cols;
+            var frameIndex = Math.floor(animationSpeed * currentMinigame.timer) % totalFrames;
+            var col = frameIndex % this.imageTile.tileMap.cols;
+            var row = Math.floor(frameIndex / this.imageTile.tileMap.cols);
+            this.imageTile = this.imageTile.tileMap[col][row];
+        }
+    };
     return SimpleSprite;
+}(Sprite));
+var ScoreSprite = /** @class */ (function (_super) {
+    __extends(ScoreSprite, _super);
+    function ScoreSprite(x, y, index) {
+        if (index === void 0) { index = 0; }
+        var _this = _super.call(this, x, y) || this;
+        _this.index = index;
+        _this.width = 0;
+        _this.height = 0;
+        return _this;
+    }
+    ScoreSprite.prototype.Update = function () {
+        this.y -= 2;
+        if (this.age >= 33)
+            this.isActive = false;
+    };
+    ScoreSprite.prototype.GetFrameData = function (frameNum) {
+        return {
+            imageTile: tiles["texts"][0][this.index],
+            xFlip: false,
+            yFlip: false,
+            xOffset: 0,
+            yOffset: 0
+        };
+    };
+    return ScoreSprite;
 }(Sprite));

@@ -3,8 +3,27 @@ let tiles: any = {};
 let camera: Camera;
 let mouseHandler: MouseHandler;
 let audioHandler: AudioHandler;
+let playerIndex: number = 0;
 
 let currentMinigame: MinigameBase | null = null;
+
+let minigames = [
+    MinigameChip,
+    MinigameConveyor,
+    MinigameDodgePodge,
+    MinigameFightOrFlightless,
+    MinigameHoopstersForever,
+    MinigameJustPlunkIt,
+    MinigameLift,
+    MinigameMatch,
+    MinigameMushroomBounce,
+    MinigamePointAndQuick,
+    MinigameSlots,
+    MinigameSnowtemPole,
+    MinigameSpaceRace,
+    MinigameThanksForTheCream,
+    MinigameWhenPigsFly
+]
 
 function Initialize() {
     LoadImageSources();
@@ -14,13 +33,16 @@ function Initialize() {
     mouseHandler = new MouseHandler(canvas);
     audioHandler = new AudioHandler();
     audioHandler.Initialize();
+    //setTimeout(() => {audioHandler.SetBackgroundMusic("menuJazz");}, 199);
     new FocusHandler().Initialize();
     
     UnloadHandler.RegisterUnloadHandler();
     KeyboardHandler.InitKeyHandlers();
     setInterval(MainLoop, 1000 / 60);
 
-    currentMinigame = new MinigameMushroomBounce();
+    //currentMinigame = new MinigameChip();
+    let instructions = new Instructions(new MinigameChip());
+    instructions.Draw(camera);
 }
 
 var times: number[] = [];
@@ -49,7 +71,7 @@ function Update(): void {
     KeyboardHandler.AfterUpdate();
 }
 function Draw(): void {
-    camera.Clear();
+    //camera.Clear();
     
     if (currentMinigame) {
         currentMinigame.Draw(camera);
@@ -69,11 +91,14 @@ function LoadImageSources() {
         let cols = +(img.dataset.cols ?? 1) || 1;
         let rowHeight = img.height / rows;
         let colWidth = img.width / cols;
+        tileMap.rows = rows;
+        tileMap.cols = cols;
+        
         for (let col = 0; col < cols; col++) {
             let tileCol: any = {};
             for (let row = 0; row < rows; row++) {
                 let imageTile = new ImageTile(
-                    img, col * colWidth, row * rowHeight, colWidth, rowHeight);
+                    img, col * colWidth, row * rowHeight, colWidth, rowHeight, tileMap);
                 tileCol[row] = imageTile;
             }
             tileMap[col] = tileCol;

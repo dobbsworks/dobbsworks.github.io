@@ -14,6 +14,7 @@ class BounceMushroom extends Sprite {
 
     Bounce() {
         this.bounceTimer = 30;
+        audioHandler.PlaySound("boing", true);
     }
 
     Update(): void {
@@ -46,7 +47,7 @@ class BounceMushroom extends Sprite {
     GetFrameData(frameNum: number): FrameData {
         let col = 2 - Math.floor(Math.sin(this.bounceTimer) / (31 - this.bounceTimer) * 2);
         return {
-            imageTile: tiles["bounceMush"][col][0],
+            imageTile: tiles["bounceMush"][col][playerIndex],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
@@ -92,14 +93,19 @@ class BounceEgg extends Sprite {
                 brokenEgg.dy -= 3;
                 brokenEgg.y += 45;
                 this.minigame.sprites.push(brokenEgg);
+                audioHandler.PlaySound("pop", false);
             }
         } else if (this.x >= 360) {
             // nest!
             this.isActive = false;
-            this.minigame.eggsSaved++;
+            this.minigame.score++;
+            audioHandler.PlaySound("dobbloon", false);
             let scoreUp = new SimpleSprite(this.x, this.y, tiles["droppingItems"][3][0], (s) => {
                 s.y -= 2;
-                if (s.y < -100) s.isActive = false;
+                if (s.y < -100) {
+                    s.isActive = false;
+                    console.log(s.age);
+                }
             }).Scale(2);
             this.minigame.sprites.push(scoreUp);
         }
@@ -117,10 +123,21 @@ class BounceEgg extends Sprite {
 }
 
 class MinigameMushroomBounce extends MinigameBase {
+    title = "Fungus Amongus";
+    instructions = [
+        "Bounce the eggs safely to the nest with the mushroom.",
+        "The branch will shake when an egg is about to fall,",
+        "so keep your eyes peeled."
+    ];
+    backdropTile: ImageTile = tiles["forest"][0][0];
+    thumbnail: ImageTile = tiles["thumbnails"][0][2];
+    controls: InstructionControl[] = [
+        new InstructionControl(Control.Horizontal, "Move mushroom")
+    ];
+    songId = "forest";
     mushroom!: BounceMushroom;
     branch!: SimpleSprite;
     branchWiggleTimer = 0;
-    eggsSaved = 0;
 
     Initialize(): void {
         camera.targetX = 30;
@@ -150,11 +167,12 @@ class MinigameMushroomBounce extends MinigameBase {
             egg.bounceHeight = 240 / spawn.s;
             egg.speed = spawn.s;
             this.sprites.push(egg);
+            audioHandler.PlaySound("bwump", false);
         }
 
         let gameOverTime = (Math.max(...this.eggList.map(a => a.t)) + 5) * 60;
         if (gameOverTime == this.timer) {
-            this.SubmitScore(this.eggsSaved);
+            this.SubmitScore(this.score);
         }
     }
 

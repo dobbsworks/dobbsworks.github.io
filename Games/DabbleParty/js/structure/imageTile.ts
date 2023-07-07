@@ -4,7 +4,8 @@ class ImageTile {
         public xSrc: number,
         public ySrc: number,
         public width: number,
-        public height: number
+        public height: number,
+        public tileMap: any
     ) { }
 
     // Image tile represents a rectangular slice of a larger image file

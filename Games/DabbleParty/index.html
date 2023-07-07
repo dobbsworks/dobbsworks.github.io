@@ -4,32 +4,48 @@
     <title>Dabble Party</title>
     <!-- <link rel="icon" type="image/x-icon" href="images/favicon.ico" /> -->
 
-    <link rel="stylesheet" href="css/app.css?v=0.0.0">
+    <link rel="stylesheet" href="css/app.css">
     
     <script src="js/structure/pixel.js"></script>
     
 
-    <script src="js/systems/version.js?v=0.0.0"></script>
-    <script src="js/systems/storageService.js?v=0.0.0"></script>
-    <script src="js/systems/keyboardHandler.js?v=0.0.0"></script>
-    <script src="js/systems/mouseHandler.js?v=0.0.0"></script>
-    <script src="js/systems/camera.js?v=0.0.0"></script>
-    <script src="js/systems/audioHandler.js?v=0.0.0"></script>
-    <script src="js/systems/focusHandler.js?v=0.0.0"></script>
-    <script src="js/systems/dataService.js?v=0.0.0"></script>
-    <script src="js/systems/unloadHandler.js?v=0.0.0"></script>
+    <script src="js/systems/version.js"></script>
+    <script src="js/systems/random.js"></script>
+    <script src="js/systems/storageService.js"></script>
+    <script src="js/systems/keyboardHandler.js"></script>
+    <script src="js/systems/mouseHandler.js"></script>
+    <script src="js/systems/camera.js"></script>
+    <script src="js/systems/audioHandler.js"></script>
+    <script src="js/systems/focusHandler.js"></script>
+    <script src="js/systems/dataService.js"></script>
+    <script src="js/systems/unloadHandler.js"></script>
 
-    <script src="js/structure/imageTile.js?v=0.0.0"></script>
-    <script src="js/structure/frameData.js?v=0.0.0"></script>
-    <script src="js/structure/sprite.js?v=0.0.0"></script>
+    <script src="js/structure/imageTile.js"></script>
+    <script src="js/structure/frameData.js"></script>
+    <script src="js/structure/sprite.js"></script>
+    <script src="js/systems/instructions.js"></script>
 
-    <script src="js/minigames/_minigame.js?v=0.0.0"></script>
-    <script src="js/minigames/mushroomBounce.js?v=0.0.0"></script>
+    <script src="js/minigames/_minigame.js"></script>
+    <script src="js/minigames/minigameMushroomBounce.js"></script>
+    <script src="js/minigames/minigameSpaceRace.js"></script>
+    <script src="js/minigames/minigameDodgePodge.js"></script>
+    <script src="js/minigames/minigameSnowtemPole.js"></script>
+    <script src="js/minigames/minigamePointAndQuick.js"></script>
+    <script src="js/minigames/minigameHoopstersForever.js"></script>
+    <script src="js/minigames/minigameThanksForTheCream.js"></script>
+    <script src="js/minigames/minigameJustPlunkIt.js"></script>
+    <script src="js/minigames/minigameFightOrFlightless.js"></script>
+    <script src="js/minigames/minigameMatch.js"></script>
+    <script src="js/minigames/minigameChip.js"></script>
+    <script src="js/minigames/minigameConveyor.js"></script>
+    <script src="js/minigames/minigameLift.js"></script>
+    <script src="js/minigames/minigameSlots.js"></script>
+    <script src="js/minigames/minigameWhenPigsFly.js"></script>
 
-    <script src="js/board/boardSpace.js?v=0.0.0"></script>
-    <script src="js/board/boardMap.js?v=0.0.0"></script>
+    <script src="js/board/boardSpace.js"></script>
+    <script src="js/board/boardMap.js"></script>
 
-    <script src="js/app.js?v=0.0.0"></script>
+    <script src="js/app.js"></script>
     
     <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
 </head>
@@ -52,17 +68,143 @@
         <img src="images/nest.png" data-cols="1" data-rows="1" />
         <img src="images/text.png" data-cols="1" data-rows="3" />
         <img src="images/particles.png" data-cols="4" data-rows="1" />
+        <img src="images/texts.png" data-cols="1" data-rows="12" />
+        <img src="images/digits.png" data-cols="10" data-rows="3" />
+        <img src="images/thumbnails.png" data-cols="4" data-rows="4" />
+        <img src="images/controls.png" data-cols="6" data-rows="1" />
+        <img src="images/bgInstructions.png" data-cols="1" data-rows="1" />
+        <img src="images/instructionsPanel.png" data-cols="1" data-rows="1" />
+        <img src="images/instructionsBoard.png" data-cols="1" data-rows="1" />
         
         <img src="images/space.png" data-cols="1" data-rows="1" />
+        <img src="images/rocket.png" data-cols="1" data-rows="4" />
         <img src="images/spaceThings.png" data-cols="4" data-rows="1" />
+        
+        <img src="images/bgBalloon.png" data-cols="1" data-rows="1" />
+        <img src="images/cannon.png" data-cols="5" data-rows="2" />
+        <img src="images/dobbloon.png" data-cols="6" data-rows="1" />
+
+        <img src="images/bgSnow.png" data-cols="1" data-rows="1" />
+        <img src="images/snowman.png" data-cols="2" data-rows="1" />
+
+        <img src="images/bgParty.png" data-cols="1" data-rows="4" />
+        <img src="images/directionBox.png" data-cols="1" data-rows="6" />
+        <img src="images/conveyor.png" data-cols="1" data-rows="1" />
+
+        <img src="images/bgHoops.png" data-cols="1" data-rows="1" />
+        <img src="images/hoops.png" data-cols="4" data-rows="2" />
+
+        <img src="images/bgBeach.png" data-cols="1" data-rows="1" />
+        <img src="images/iceCream.png" data-cols="5" data-rows="1" />
+
+        <img src="images/bgPlunk.png" data-cols="1" data-rows="1" />
+        <img src="images/plunkControls.png" data-cols="3" data-rows="1" />
+        <img src="images/plunkDisplay.png" data-cols="10" data-rows="1" />
+        
+        <img src="images/bgGraph.png" data-cols="1" data-rows="1" />
+        <img src="images/penguin.png" data-cols="4" data-rows="1" />
+
+        <img src="images/bgCardTable.png" data-cols="1" data-rows="1" />
+        <img src="images/cards.png" data-cols="6" data-rows="3" />
+
+        <img src="images/bgGQ.png" data-cols="1" data-rows="1" />
+        <img src="images/chips.png" data-cols="5" data-rows="2" />
+
+        <img src="images/bgConveyor.png" data-cols="1" data-rows="1" />
+        <img src="images/conveyorBlocks.png" data-cols="5" data-rows="3" />
+        <img src="images/conveyorCrates.png" data-cols="5" data-rows="1" />
+
+        <img src="images/bgElevator.png" data-cols="1" data-rows="1" />
+        <img src="images/skyscrapers.png" data-cols="1" data-rows="1" />
+        <img src="images/bigSkyscraper.png" data-cols="1" data-rows="1" />
+        <img src="images/elevatorDisplay.png" data-cols="13" data-rows="1" />
+        <img src="images/elevatorButton.png" data-cols="3" data-rows="1" />
+
+        <img src="images/bgSlots.png" data-cols="1" data-rows="1" />
+        <img src="images/slotsOverlay.png" data-cols="1" data-rows="1" />
+        <img src="images/slotWheels.png" data-cols="4" data-rows="1" />
+
+
+        <img src="images/bgStage.png" data-cols="1" data-rows="1" />
+        <img src="images/pigs.png" data-cols="5" data-rows="8" />
+        <img src="images/pogos.png" data-cols="2" data-rows="8" />
+        <img src="images/aviators.png" data-cols="2" data-rows="8" />
+        <img src="images/curtain.png" data-cols="1" data-rows="1" />
     </div>
 
     <div id="audioResources" style="display:none;">
         <div id="music">
-            <!-- <audio id="levelEnd" controls src="audio/music/LevelEnd.mp3" data-bpm="160" data-intro-beats="8" data-loop-beats="80"></audio> -->
+            <audio id="silence" controls src="audio/music/Silence.mp3" data-bpm="120" data-intro-beats="0" data-loop-beats="2"></audio>
+            <audio id="levelEnd" controls src="audio/music/LevelEnd.mp3" data-bpm="160" data-intro-beats="8" data-loop-beats="80"></audio>
+            <audio id="menuJazz" controls src="audio/music/MenuJazz.mp3" data-bpm="151" data-intro-beats="16" data-loop-beats="96"></audio>
+
+            <audio id="intro" controls src="audio/music/Intro.mp3" data-bpm="160" data-intro-beats="8" data-loop-beats="128"></audio>
+            <audio id="halloween" controls src="audio/music/Halloween.mp3" data-bpm="160" data-intro-beats="8" data-loop-beats="128"></audio>
+            <audio id="desert" controls src="audio/music/Desert.mp3" data-bpm="128" data-intro-beats="8" data-loop-beats="96"></audio>
+            <audio id="grassland" controls src="audio/music/Grassland.mp3" data-bpm="150" data-intro-beats="0" data-loop-beats="104"></audio>
+            <audio id="adventure" controls src="audio/music/Adventure.mp3" data-bpm="150" data-intro-beats="8" data-loop-beats="96"></audio>
+            <audio id="carnival" controls src="audio/music/Carnival.mp3" data-bpm="190" data-intro-beats="0" data-loop-beats="108"></audio>
+            <audio id="haunt" controls src="audio/music/Haunt.mp3" data-bpm="144" data-intro-beats="12" data-loop-beats="144"></audio>
+            <audio id="sky" controls src="audio/music/Sky.mp3" data-bpm="95" data-intro-beats="24" data-loop-beats="64"></audio>
+            <audio id="chill" controls src="audio/music/Chill.mp3" data-bpm="176" data-intro-beats="32" data-loop-beats="128"></audio>
+            <audio id="computer" controls src="audio/music/Computer.mp3" data-bpm="150" data-intro-beats="40" data-loop-beats="128"></audio>
+            <audio id="crunch" controls src="audio/music/Crunch.mp3" data-bpm="150" data-intro-beats="0" data-loop-beats="160"></audio>
+            <audio id="frost" controls src="audio/music/Frost.mp3" data-bpm="130" data-intro-beats="0" data-loop-beats="192"></audio>
+            <audio id="forest" controls src="audio/music/Forest.mp3" data-bpm="156" data-intro-beats="24" data-loop-beats="48"></audio>
+            <audio id="waltz" controls src="audio/music/Waltz.mp3" data-bpm="158" data-intro-beats="12" data-loop-beats="240"></audio>
+            <audio id="faire" controls src="audio/music/Faire.mp3" data-bpm="172" data-intro-beats="54" data-loop-beats="144"></audio>
+            <audio id="choir" controls src="audio/music/Choir.mp3" data-bpm="164" data-intro-beats="16" data-loop-beats="96"></audio>
+            <audio id="meditate" controls src="audio/music/Meditate.mp3" data-bpm="120" data-intro-beats="0" data-loop-beats="120"></audio>
+            <audio id="slime" controls src="audio/music/Slime.mp3" data-bpm="110" data-intro-beats="16" data-loop-beats="112"></audio>
+            <audio id="chipper" controls src="audio/music/Chipper.mp3" data-bpm="150" data-intro-beats="0" data-loop-beats="96"></audio>
+            <audio id="jungle" controls src="audio/music/Jungle.mp3" data-bpm="120" data-intro-beats="8" data-loop-beats="48"></audio>
+            <audio id="clocktower" controls src="audio/music/Clocktower.mp3" data-bpm="150" data-intro-beats="0" data-loop-beats="232"></audio>
+            <audio id="overdue" controls src="audio/music/Overdue.mp3" data-bpm="170" data-intro-beats="8" data-loop-beats="192"></audio>
+            <audio id="cherry" controls src="audio/music/Cherry.mp3" data-bpm="176" data-intro-beats="28" data-loop-beats="168"></audio>
         </div>
         <div id="sfx">
-            <!-- <audio src="audio/sfx/bap.mp3"></audio> -->
+            <audio src="audio/sfx/pick-up.mp3?v=0"></audio>
+            <audio src="audio/sfx/throw.mp3?v=0"></audio>
+            <audio src="audio/sfx/jump.mp3?v=0"></audio>
+            <audio src="audio/sfx/stuck-jump.mp3"></audio>
+            <audio src="audio/sfx/swim.mp3"></audio>
+            <audio src="audio/sfx/dead.mp3"></audio>
+            <audio src="audio/sfx/hurt.mp3"></audio>
+            <audio src="audio/sfx/oink.mp3"></audio>
+            <audio src="audio/sfx/baa.mp3"></audio>
+            <audio src="audio/sfx/baa-dead.mp3"></audio>
+            <audio src="audio/sfx/bop.mp3"></audio>
+            <audio src="audio/sfx/confirm.mp3"></audio>
+            <audio src="audio/sfx/small-confirm.mp3?v=0"></audio>
+            <audio src="audio/sfx/small-beep.mp3"></audio>
+            <audio src="audio/sfx/crash.mp3"></audio>
+            <audio src="audio/sfx/error.mp3"></audio>
+            <audio src="audio/sfx/scroll.mp3"></audio>
+            <audio src="audio/sfx/thump.mp3"></audio>
+            <audio src="audio/sfx/erase.mp3"></audio>
+            <audio src="audio/sfx/bwump.mp3"></audio>
+            <audio src="audio/sfx/pomp.mp3"></audio>
+            <audio src="audio/sfx/coin.mp3"></audio>
+            <audio src="audio/sfx/dobbloon.mp3"></audio>
+            <audio src="audio/sfx/unlock.mp3"></audio>
+            <audio src="audio/sfx/rocket.mp3"></audio>
+            <audio src="audio/sfx/airBubble.mp3"></audio>
+            <audio src="audio/sfx/bwow.mp3"></audio>
+            <audio src="audio/sfx/checkpoint.mp3"></audio>
+            <audio src="audio/sfx/heart.mp3"></audio>
+            <audio src="audio/sfx/boing.mp3"></audio>
+            <audio src="audio/sfx/pop.mp3"></audio>
+            <audio src="audio/sfx/yoyo.mp3"></audio>
+            <audio src="audio/sfx/spinBounce.mp3"></audio>
+            <audio src="audio/sfx/spinRing.mp3"></audio>
+            <audio src="audio/sfx/carnivalVictoryShort.mp3"></audio>
+            <audio src="audio/sfx/respawn.mp3"></audio>
+            <audio src="audio/sfx/warp.mp3"></audio>
+            <audio src="audio/sfx/bap.mp3"></audio>
+            <audio src="audio/sfx/pipe-in.mp3"></audio>
+            <audio src="audio/sfx/pipe-out.mp3"></audio>
+            <audio src="audio/sfx/pins.mp3"></audio>
+            <audio src="audio/sfx/soccer.mp3"></audio>
         </div>
     </div>
 </body>

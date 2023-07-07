@@ -28,6 +28,7 @@ var BounceMushroom = /** @class */ (function (_super) {
     }
     BounceMushroom.prototype.Bounce = function () {
         this.bounceTimer = 30;
+        audioHandler.PlaySound("boing", true);
     };
     BounceMushroom.prototype.Update = function () {
         if (this.bounceTimer > 0) {
@@ -61,7 +62,7 @@ var BounceMushroom = /** @class */ (function (_super) {
     BounceMushroom.prototype.GetFrameData = function (frameNum) {
         var col = 2 - Math.floor(Math.sin(this.bounceTimer) / (31 - this.bounceTimer) * 2);
         return {
-            imageTile: tiles["bounceMush"][col][0],
+            imageTile: tiles["bounceMush"][col][playerIndex],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
@@ -110,16 +111,20 @@ var BounceEgg = /** @class */ (function (_super) {
                 brokenEgg.dy -= 3;
                 brokenEgg.y += 45;
                 this.minigame.sprites.push(brokenEgg);
+                audioHandler.PlaySound("pop", false);
             }
         }
         else if (this.x >= 360) {
             // nest!
             this.isActive = false;
-            this.minigame.eggsSaved++;
+            this.minigame.score++;
+            audioHandler.PlaySound("dobbloon", false);
             var scoreUp = new SimpleSprite(this.x, this.y, tiles["droppingItems"][3][0], function (s) {
                 s.y -= 2;
-                if (s.y < -100)
+                if (s.y < -100) {
                     s.isActive = false;
+                    console.log(s.age);
+                }
             }).Scale(2);
             this.minigame.sprites.push(scoreUp);
         }
@@ -139,8 +144,9 @@ var MinigameMushroomBounce = /** @class */ (function (_super) {
     __extends(MinigameMushroomBounce, _super);
     function MinigameMushroomBounce() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.backdropTile = tiles["forest"][0][0];
+        _this.songId = "forest";
         _this.branchWiggleTimer = 0;
-        _this.eggsSaved = 0;
         _this.eggList = [
             { t: 1, s: 1 },
             { t: 12, s: 1 },
@@ -197,10 +203,11 @@ var MinigameMushroomBounce = /** @class */ (function (_super) {
             egg.bounceHeight = 240 / spawn.s;
             egg.speed = spawn.s;
             this.sprites.push(egg);
+            audioHandler.PlaySound("bwump", false);
         }
         var gameOverTime = (Math.max.apply(Math, this.eggList.map(function (a) { return a.t; })) + 5) * 60;
         if (gameOverTime == this.timer) {
-            this.SubmitScore(this.eggsSaved);
+            this.SubmitScore(this.score);
         }
     };
     return MinigameMushroomBounce;
