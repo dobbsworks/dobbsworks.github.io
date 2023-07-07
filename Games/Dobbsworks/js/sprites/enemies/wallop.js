@@ -93,7 +93,7 @@ var Wallopeño = /** @class */ (function (_super) {
         _this.isSpinning = false;
         return _this;
     }
-    Object.defineProperty(Wallopeño.prototype, "rotation", {
+    Object.defineProperty(Wallopeño.prototype, "safeRotation", {
         get: function () {
             return Math.round((this._rotation % 6) + 6) % 6;
         },
@@ -114,7 +114,7 @@ var Wallopeño = /** @class */ (function (_super) {
             if (this.dRotation < -0.5)
                 this.dRotation = -0.5;
             this._rotation += this.dRotation;
-            var theta = this.rotation / 6 * (Math.PI);
+            var theta = this.safeRotation / 6 * (Math.PI);
             this.dx = -this.dRotation * Math.sin(theta) * 1.67;
             this.walkCycleTimer++;
             if (this.walkCycleTimer == 34) {
@@ -130,8 +130,8 @@ var Wallopeño = /** @class */ (function (_super) {
             }
             // look in currect direction for player
             var p = this.layer.sprites.find(function (a) { return a instanceof Player &&
-                ((_this.direction == -1 && a.xMid < _this.xMid && a.xMid > _this.xMid - 100) ||
-                    (_this.direction == 1 && a.xMid > _this.xMid && a.xMid < _this.xMid + 100)) &&
+                ((_this.direction == -1 && a.xMid < _this.xMid && a.xMid > _this.xMid - 50) ||
+                    (_this.direction == 1 && a.xMid > _this.xMid && a.xMid < _this.xMid + 50)) &&
                 _this.yMid > a.yMid && _this.yMid < a.yMid + 80; });
             if (p && this.isOnGround) {
                 this.target = p;
@@ -188,7 +188,7 @@ var Wallopeño = /** @class */ (function (_super) {
         }
     };
     Wallopeño.prototype.GetFrameData = function (frameNum) {
-        var frame = this.rotation;
+        var frame = this.safeRotation;
         var yOffset = 6;
         if (this.isSpinning) {
             if (frame == 2 || frame == 3 || frame == 4)

@@ -74,7 +74,7 @@ class Wallopeño extends Enemy {
     stareTimer = 0;
     resetTimer = 0;
     isSpinning = false;
-    private get rotation(): number {
+    private get safeRotation(): number {
         return Math.round((this._rotation % 6) + 6) % 6;
     }
 
@@ -89,7 +89,7 @@ class Wallopeño extends Enemy {
             if (this.dRotation > 0.5) this.dRotation = 0.5;
             if (this.dRotation < -0.5) this.dRotation = -0.5;
             this._rotation += this.dRotation;
-            let theta = this.rotation / 6 * (Math.PI);
+            let theta = this.safeRotation / 6 * (Math.PI);
             this.dx = -this.dRotation * Math.sin(theta) * 1.67;
             this.walkCycleTimer++;
             if (this.walkCycleTimer == 34) {
@@ -106,8 +106,8 @@ class Wallopeño extends Enemy {
 
             // look in currect direction for player
             let p = this.layer.sprites.find(a => a instanceof Player &&
-                ((this.direction == -1 && a.xMid < this.xMid && a.xMid > this.xMid - 100) ||
-                    (this.direction == 1 && a.xMid > this.xMid && a.xMid < this.xMid + 100)) &&
+                ((this.direction == -1 && a.xMid < this.xMid && a.xMid > this.xMid - 50) ||
+                    (this.direction == 1 && a.xMid > this.xMid && a.xMid < this.xMid + 50)) &&
                 this.yMid > a.yMid && this.yMid < a.yMid + 80
             );
             if (p && this.isOnGround) {
@@ -163,7 +163,7 @@ class Wallopeño extends Enemy {
 
 
     GetFrameData(frameNum: number): FrameData {
-        let frame = this.rotation;
+        let frame = this.safeRotation;
         let yOffset = 6;
         if (this.isSpinning) {
             if (frame == 2 || frame == 3 || frame == 4) yOffset = 7;
