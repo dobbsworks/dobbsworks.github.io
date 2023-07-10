@@ -2,8 +2,8 @@
 var Camera = /** @class */ (function () {
     function Camera(canvas) {
         this.canvas = canvas;
-        this.x = 0;
-        this.y = 9999;
+        this._x = 0;
+        this._y = 9999;
         this.prevX = 0;
         this.prevY = 9999;
         this.targetX = 0;
@@ -28,11 +28,47 @@ var Camera = /** @class */ (function () {
         this.rightLockTimer = 0;
         this.upLockTimer = 0;
         this.downLockTimer = 0;
+        this.shakeTimerX = 0;
+        this.shakeTimerY = 0;
         this.ctx = canvas.getContext("2d");
         this.ctx.imageSmoothingEnabled = false;
     }
+    Object.defineProperty(Camera.prototype, "x", {
+        get: function () {
+            var shakeStrength = this.shakeTimerX / 10;
+            if (shakeStrength > 5)
+                shakeStrength = 5;
+            return this._x + Math.sin(this.shakeTimerX / 2) * shakeStrength;
+        },
+        set: function (val) { this._x = val; },
+        enumerable: false,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(Camera.prototype, "y", {
+        get: function () {
+            var shakeStrength = this.shakeTimerY / 10;
+            if (shakeStrength > 5)
+                shakeStrength = 5;
+            return this._y + Math.sin(this.shakeTimerY / 2) * shakeStrength;
+        },
+        set: function (val) { this._y = val; },
+        enumerable: false,
+        configurable: true
+    });
+    ;
+    ;
+    ;
     Camera.prototype.Update = function () {
         var _this = this;
+        if (this.shakeTimerX > 0)
+            this.shakeTimerX--;
+        if (this.shakeTimerY > 0)
+            this.shakeTimerY--;
+        if (this.shakeTimerX < 0)
+            this.shakeTimerX = 0;
+        if (this.shakeTimerY < 0)
+            this.shakeTimerY = 0;
         this.prevX = this.x;
         this.prevY = this.y;
         if (this.transitionTimer > 0) {

@@ -134,7 +134,7 @@ var EditorHandler = /** @class */ (function () {
         var tilePanel = this.CreateFloatingButtonPanel(tilePanelButtons, 5, 9);
         /* ENEMY PANEL */
         var enemyTypes = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Snail, SapphireSnail, Wooly, WoolyBooly, Prickle, PrickleEgg, PrickleShell, PrickleRock, DrSnips, AFish, Lurchin, Clammy, Pufferfish,
-            Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, Wallop, Wallopeño, BaddleTrigger,];
+            Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, BaddleTrigger,];
         var enemyButtons = enemyTypes.map(function (a) { return new EditorButtonSprite(a); });
         enemyButtons.filter(function (a) { return a.spriteType == Piggle || a.spriteType == Snail; }).forEach(function (a) { return hotbarDefaults.push(a); });
         var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 8);

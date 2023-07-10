@@ -32,6 +32,23 @@ var BaseSolidity = /** @class */ (function () {
         }
         return false;
     };
+    BaseSolidity.prototype.IsSolidInDirection = function (dir) {
+        if (this == Solidity.None)
+            return false;
+        if (this == Solidity.Block)
+            return true;
+        if (this == Solidity.SolidForNonplayer)
+            return true;
+        if (dir == Direction.Up && this == Solidity.Bottom)
+            return true;
+        if (dir == Direction.Down && this == Solidity.Top)
+            return true;
+        if (dir == Direction.Left && this == Solidity.LeftWall)
+            return true;
+        if (dir == Direction.Right && this == Solidity.RightWall)
+            return true;
+        return false;
+    };
     return BaseSolidity;
 }());
 var SlopeSolidity = /** @class */ (function (_super) {

@@ -192,7 +192,7 @@ var MapSizeEditor = /** @class */ (function (_super) {
             ctx.fillRect(subPanelX, subPanelY, subpanelWidth, subpanelHeight);
             for (var _i = 0, _a = currentMap.GetLayerList(); _i < _a.length; _i++) {
                 var layer = _a[_i];
-                ctx.drawImage(layer.cachedCanvas, subPanelX, subPanelY, subpanelWidth, subpanelHeight);
+                ctx.drawImage(layer.cachedCanvas, 12, 12, layer.cachedCanvas.width - 12, layer.cachedCanvas.height - 12, subPanelX, subPanelY, subpanelWidth, subpanelHeight);
             }
         }
     };

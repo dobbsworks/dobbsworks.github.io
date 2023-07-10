@@ -660,7 +660,6 @@ class Player extends Sprite {
             let landingOnTop = aboutToOverlapFromAbove && isHorizontalOverlap;
 
             if (sprite instanceof Enemy) {
-
                 if (sprite.framesSinceThrown >= 0 && sprite.framesSinceThrown < 25) continue; // can't bounce on items that have just been thrown
                 if (landingOnTop && sprite.canBeBouncedOn) {
                     this.Bounce();
@@ -680,7 +679,6 @@ class Player extends Sprite {
                     this.layer.sprites.push(particle);
 
                 } else if (sprite.canStandOn && currentlyAbove && isHorizontalOverlap) {
-
                 } else if (!sprite.isInDeathAnimation && this.xRight > sprite.x && this.x < sprite.xRight && this.yBottom > sprite.y && this.y < sprite.yBottom) {
                     if (this.isSliding && sprite.killedByProjectiles) {
                         sprite.isActive = false;
@@ -691,6 +689,8 @@ class Player extends Sprite {
                             this.OnPlayerHurt();
                         }
                     }
+                } else if (sprite.isSolidBox && (this.touchedLeftWalls.indexOf(sprite) > -1 || this.touchedRightWalls.indexOf(sprite) > -1 || (this.parentSprite == sprite && !sprite.canStandOn)) && sprite.damagesPlayer) {
+                    this.OnPlayerHurt();
                 }
             } else if (sprite instanceof Player && sprite !== this && sprite.Overlaps(this)) {
                 // bumping in to a DOOPLICATE
@@ -1148,6 +1148,8 @@ class DeadPlayer extends Sprite {
                         camera.x = camera.target.xMid;
                         camera.y = camera.target.yMid;
                     }
+                    camera.shakeTimerX = 0;
+                    camera.shakeTimerY = 0;
                     camera.targetX = camera.x;
                     camera.targetY = camera.y;
                 }

@@ -37,6 +37,8 @@ abstract class Sprite {
     public touchedCeilings: (LevelTile)[] = [];
     public touchedLeftWalls: (LevelTile | Sprite)[] = [];
     public touchedRightWalls: (LevelTile | Sprite)[] = [];
+    public reactedLeftWalls: (Sprite)[] = [];
+    public reactedRightWalls: (Sprite)[] = [];
 
     public get isOnCeiling(): boolean { return this.touchedCeilings.length > 0 }
     public get isTouchingLeftWall(): boolean { return this.touchedLeftWalls.length > 0 }
@@ -362,6 +364,11 @@ abstract class Sprite {
             // }
         }
 
+        this.touchedLeftWalls.push(...this.reactedLeftWalls);
+        this.touchedRightWalls.push(...this.reactedRightWalls);
+        this.reactedLeftWalls = [];
+        this.reactedRightWalls = [];
+
         for (let sprite of this.layer.sprites) {
             if ((sprite.isPlatform || sprite.isSolidBox) && this.IsGoingToOverlapSprite(sprite)) {
                 if (sprite.isSolidBox) {
@@ -374,8 +381,16 @@ abstract class Sprite {
                             this.dxFromWind = 0;
                             if (this.x < sprite.x) {
                                 this.touchedRightWalls.push(sprite);
+                                if (this.isSolidBox) {
+                                    sprite.touchedLeftWalls.push(this);
+                                    sprite.reactedLeftWalls.push(this);
+                                }
                             } else {
                                 this.touchedLeftWalls.push(sprite);
+                                if (this.isSolidBox) {
+                                    sprite.touchedRightWalls.push(this);
+                                    sprite.reactedRightWalls.push(this);
+                                }
                             }
                             this.x = (this.x < sprite.x) ? (sprite.x - this.width) : (sprite.x + sprite.width);
                         }
@@ -1106,5 +1121,13 @@ abstract class Sprite {
         }
         if (!isTouchingPreviousTrackPipe) this.trackPipeExit = null;
         return null;
+    }
+
+    public isBlocked(dir: Direction): boolean {
+        if (dir == Direction.Up) return this.isOnCeiling;
+        if (dir == Direction.Down) return this.isOnGround;
+        if (dir == Direction.Left) return this.touchedLeftWalls.length > 0;
+        if (dir == Direction.Right) return this.touchedRightWalls.length > 0;
+        return false;
     }
 }

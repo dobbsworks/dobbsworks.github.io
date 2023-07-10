@@ -38,7 +38,7 @@ var LevelLayer = /** @class */ (function () {
                 this.UpdateWaterTiles();
             this.cachedCanvas = document.createElement("canvas");
             if (this.tiles.length)
-                this.DrawSectionToCanvas(this.cachedCanvas, 0, 0, this.tiles.length - 1, this.tiles[0].length - 1);
+                this.DrawSectionToCanvas(this.cachedCanvas, 0, 0, this.tiles.length - 1, this.tiles[0].length);
             this.spriteCanvas.width = camera.canvas.width;
             this.spriteCanvas.height = camera.canvas.height;
         }
@@ -71,22 +71,30 @@ var LevelLayer = /** @class */ (function () {
         }
     };
     LevelLayer.prototype.DrawSectionToCanvas = function (canvas, left, top, right, bottom) {
-        var targetWidth = this.tileWidth * (right - left + 1);
+        var targetWidth = this.tileWidth * (right - left + 1 + 2);
         if (canvas.width != targetWidth)
             canvas.width = targetWidth;
-        var targetHeight = this.tileHeight * (bottom - top + 1);
+        var targetHeight = this.tileHeight * (bottom - top + 1 + 2); // extra 2 for drawing for screen shake
         if (canvas.height != targetHeight)
             canvas.height = targetHeight;
         var ctx = canvas.getContext("2d");
         var waterTiles = [TileType.Water, TileType.Waterfall, TileType.PurpleWater, TileType.Lava];
         var x = 0;
-        for (var colIndex = left; colIndex <= right; colIndex++, x++) {
+        for (var colIndex = left - 1; colIndex <= right + 1; colIndex++, x++) {
             var col = this.tiles[colIndex];
+            if (colIndex < 0)
+                col = this.tiles[0];
+            if (colIndex >= this.tiles.length)
+                col = this.tiles[this.tiles.length - 1];
             if (!col)
                 continue;
             var y = 0;
-            for (var rowIndex = top; rowIndex <= bottom; rowIndex++, y++) {
+            for (var rowIndex = top - 1; rowIndex <= bottom + 1; rowIndex++, y++) {
                 var tile = col[rowIndex];
+                if (rowIndex < 0)
+                    tile = col[0];
+                if (rowIndex >= col.length)
+                    tile = col[col.length - 1];
                 if (!tile)
                     continue;
                 var imageTile = tile.tileType.imageTile;
@@ -193,15 +201,17 @@ var LevelLayer = /** @class */ (function () {
     };
     LevelLayer.prototype.RedrawTile = function (xIndex, yIndex, imageTile) {
         var cachedCtx = this.cachedCanvas.getContext("2d");
-        cachedCtx.clearRect(xIndex * this.tileWidth, yIndex * this.tileHeight, this.tileWidth, this.tileHeight);
-        imageTile.Draw(cachedCtx, xIndex * this.tileWidth, yIndex * this.tileHeight, 1);
+        var x = (xIndex + 1) * this.tileWidth;
+        var y = (yIndex + 1) * this.tileHeight;
+        cachedCtx.clearRect(x, y, this.tileWidth, this.tileHeight);
+        imageTile.Draw(cachedCtx, x, y, 1);
         if (imageTile.yOffset != 0) {
             this.isDirty = true;
         }
         if (this.map && this.map.silhoutteColor) {
             cachedCtx.globalCompositeOperation = "source-atop";
             cachedCtx.fillStyle = this.map.silhoutteColor;
-            cachedCtx.fillRect(xIndex * this.tileWidth, yIndex * this.tileHeight, this.tileWidth, this.tileHeight);
+            cachedCtx.fillRect(x, y, this.tileWidth, this.tileHeight);
             cachedCtx.globalCompositeOperation = "source-over";
         }
     };
@@ -289,7 +299,7 @@ var LevelLayer = /** @class */ (function () {
     LevelLayer.prototype.DrawTiles = function (camera, frameNum) {
         this.DrawToCache(frameNum);
         var scale = camera.scale;
-        camera.ctx.drawImage(this.cachedCanvas, -camera.x * scale + camera.canvas.width / 2, -camera.y * scale + camera.canvas.height / 2, this.cachedCanvas.width * scale, this.cachedCanvas.height * scale);
+        camera.ctx.drawImage(this.cachedCanvas, -(camera.x + 12) * scale + camera.canvas.width / 2, -(camera.y + 12) * scale + camera.canvas.height / 2, this.cachedCanvas.width * scale, this.cachedCanvas.height * scale);
     };
     LevelLayer.prototype.DrawSprites = function (camera, frameNum) {
         // draw player on top of other sprites

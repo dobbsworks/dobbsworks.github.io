@@ -719,6 +719,9 @@ var Player = /** @class */ (function (_super) {
                         }
                     }
                 }
+                else if (sprite.isSolidBox && (this.touchedLeftWalls.indexOf(sprite) > -1 || this.touchedRightWalls.indexOf(sprite) > -1 || (this.parentSprite == sprite && !sprite.canStandOn)) && sprite.damagesPlayer) {
+                    this.OnPlayerHurt();
+                }
             }
             else if (sprite instanceof Player && sprite !== this && sprite.Overlaps(this)) {
                 // bumping in to a DOOPLICATE
@@ -1188,6 +1191,8 @@ var DeadPlayer = /** @class */ (function (_super) {
                         camera.x = camera.target.xMid;
                         camera.y = camera.target.yMid;
                     }
+                    camera.shakeTimerX = 0;
+                    camera.shakeTimerY = 0;
                     camera.targetX = camera.x;
                     camera.targetY = camera.y;
                 }

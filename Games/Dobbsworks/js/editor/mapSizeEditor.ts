@@ -73,7 +73,7 @@ class MapSizeEditor extends Panel {
                 }
             });
         }
-        
+
         // CHANGING BOTTOM SIDE
         if (dBottom < 0) {
             currentMap.mapHeight += dBottom;
@@ -91,7 +91,7 @@ class MapSizeEditor extends Panel {
                 });
             }
         }
-        
+
         // CHANGING LEFT SIDE
         if (dLeft != 0) {
             layers.forEach(a => {
@@ -186,7 +186,7 @@ class MapSizeEditor extends Panel {
             ctx.fillRect(subPanelX, subPanelY, subpanelWidth, subpanelHeight);
 
             for (let layer of currentMap.GetLayerList()) {
-                ctx.drawImage(layer.cachedCanvas, subPanelX, subPanelY, subpanelWidth, subpanelHeight);
+                ctx.drawImage(layer.cachedCanvas, 12, 12, layer.cachedCanvas.width - 12, layer.cachedCanvas.height - 12, subPanelX, subPanelY, subpanelWidth, subpanelHeight);
             }
         }
     }

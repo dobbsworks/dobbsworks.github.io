@@ -7,8 +7,23 @@ class Camera {
     }
 
     public ctx: CanvasRenderingContext2D;
-    public x: number = 0;
-    public y: number = 9999;
+
+    private _x: number = 0;
+    private _y: number = 9999;
+
+    public get x(): number {  
+        let shakeStrength = this.shakeTimerX / 10;
+        if (shakeStrength > 5) shakeStrength = 5;
+        return this._x + Math.sin(this.shakeTimerX / 2) * shakeStrength;  
+    };
+    public get y(): number { 
+        let shakeStrength = this.shakeTimerY / 10;
+        if (shakeStrength > 5) shakeStrength = 5;
+        return this._y + Math.sin(this.shakeTimerY / 2) * shakeStrength;  
+    };
+    public set x(val: number) { this._x = val };
+    public set y(val: number) { this._y = val };
+
     public prevX: number = 0;
     public prevY: number = 9999;
     public targetX = 0;
@@ -35,8 +50,15 @@ class Camera {
     public rightLockTimer = 0;
     public upLockTimer = 0;
     public downLockTimer = 0;
+    public shakeTimerX = 0;
+    public shakeTimerY = 0;
 
     public Update(): void {
+        if (this.shakeTimerX > 0) this.shakeTimerX--;
+        if (this.shakeTimerY > 0) this.shakeTimerY--;
+        if (this.shakeTimerX < 0) this.shakeTimerX = 0;
+        if (this.shakeTimerY < 0) this.shakeTimerY = 0;
+
         this.prevX = this.x;
         this.prevY = this.y;
         if (this.transitionTimer > 0) {

@@ -33,7 +33,7 @@ class LevelLayer {
             if (this.layerType == TargetLayer.water) this.UpdateWaterTiles();
             this.cachedCanvas = document.createElement("canvas");
             if (this.tiles.length) this.DrawSectionToCanvas(this.cachedCanvas,
-                0, 0, this.tiles.length - 1, this.tiles[0].length - 1);
+                0, 0, this.tiles.length - 1, this.tiles[0].length );
             this.spriteCanvas.width = camera.canvas.width;
             this.spriteCanvas.height = camera.canvas.height;
         }
@@ -64,21 +64,25 @@ class LevelLayer {
     }
 
     DrawSectionToCanvas(canvas: HTMLCanvasElement, left: number, top: number, right: number, bottom: number): void {
-        let targetWidth = this.tileWidth * (right - left + 1);
+        let targetWidth = this.tileWidth * (right - left + 1 + 2);
         if (canvas.width != targetWidth) canvas.width = targetWidth
-        let targetHeight = this.tileHeight * (bottom - top + 1);
+        let targetHeight = this.tileHeight * (bottom - top + 1 + 2); // extra 2 for drawing for screen shake
         if (canvas.height != targetHeight) canvas.height = targetHeight;
         let ctx = <CanvasRenderingContext2D>canvas.getContext("2d");
 
         let waterTiles = [TileType.Water, TileType.Waterfall, TileType.PurpleWater, TileType.Lava];
 
         let x = 0;
-        for (let colIndex = left; colIndex <= right; colIndex++, x++) {
+        for (let colIndex = left - 1; colIndex <= right + 1; colIndex++, x++) {
             let col = this.tiles[colIndex];
+            if (colIndex < 0) col = this.tiles[0];
+            if (colIndex >= this.tiles.length) col = this.tiles[this.tiles.length - 1];
             if (!col) continue;
             let y = 0;
-            for (let rowIndex = top; rowIndex <= bottom; rowIndex++, y++) {
+            for (let rowIndex = top - 1; rowIndex <= bottom + 1; rowIndex++, y++) {
                 let tile = col[rowIndex];
+                if (rowIndex < 0) tile = col[0];
+                if (rowIndex >= col.length) tile = col[col.length-1];
                 if (!tile) continue;
                 let imageTile = tile.tileType.imageTile;
                 if (!imageTile) continue;
@@ -177,8 +181,10 @@ class LevelLayer {
 
     RedrawTile(xIndex: number, yIndex: number, imageTile: ImageTile) {
         let cachedCtx = <CanvasRenderingContext2D>this.cachedCanvas.getContext("2d");
-        cachedCtx.clearRect(xIndex * this.tileWidth, yIndex * this.tileHeight, this.tileWidth, this.tileHeight);
-        imageTile.Draw(cachedCtx, xIndex * this.tileWidth, yIndex * this.tileHeight, 1);
+        let x = (xIndex + 1) * this.tileWidth ;
+        let y = (yIndex + 1) * this.tileHeight;
+        cachedCtx.clearRect(x, y, this.tileWidth, this.tileHeight);
+        imageTile.Draw(cachedCtx, x, y, 1);
 
         if (imageTile.yOffset != 0) {
             this.isDirty = true;
@@ -187,7 +193,7 @@ class LevelLayer {
         if (this.map && this.map.silhoutteColor) {
             cachedCtx.globalCompositeOperation = "source-atop";
             cachedCtx.fillStyle = this.map.silhoutteColor;
-            cachedCtx.fillRect(xIndex * this.tileWidth, yIndex * this.tileHeight, this.tileWidth, this.tileHeight);
+            cachedCtx.fillRect(x, y, this.tileWidth, this.tileHeight);
             cachedCtx.globalCompositeOperation = "source-over";
         }
     }
@@ -274,8 +280,8 @@ class LevelLayer {
         this.DrawToCache(frameNum);
         let scale = camera.scale;
         camera.ctx.drawImage(this.cachedCanvas,
-            -camera.x * scale + camera.canvas.width / 2,
-            -camera.y * scale + camera.canvas.height / 2,
+            -(camera.x + 12) * scale + camera.canvas.width / 2,
+            -(camera.y + 12) * scale + camera.canvas.height / 2,
             this.cachedCanvas.width * scale, this.cachedCanvas.height * scale);
     }
 

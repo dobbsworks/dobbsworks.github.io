@@ -13,6 +13,17 @@ class BaseSolidity {
         }
         return false;
     }
+
+    public IsSolidInDirection(dir: Direction): boolean {
+        if (this == Solidity.None) return false;
+        if (this == Solidity.Block) return true;
+        if (this == Solidity.SolidForNonplayer) return true;
+        if (dir == Direction.Up && this == Solidity.Bottom) return true;
+        if (dir == Direction.Down && this == Solidity.Top) return true;
+        if (dir == Direction.Left && this == Solidity.LeftWall) return true;
+        if (dir == Direction.Right && this == Solidity.RightWall) return true;
+        return false;
+    }
 }
 
 class SlopeSolidity extends BaseSolidity {

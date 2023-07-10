@@ -28,6 +28,8 @@ var Sprite = /** @class */ (function () {
         this.touchedCeilings = [];
         this.touchedLeftWalls = [];
         this.touchedRightWalls = [];
+        this.reactedLeftWalls = [];
+        this.reactedRightWalls = [];
         this.isInWater = false;
         this.isInWaterfall = false;
         this.isInQuicksand = false;
@@ -362,6 +364,7 @@ var Sprite = /** @class */ (function () {
         }
     };
     Sprite.prototype.ReactToPlatforms = function () {
+        var _a, _b;
         // this velocity stored separately to better manage momentum jumps
         if (this.parentSprite) {
             // currently on platform, see if still valid
@@ -373,8 +376,12 @@ var Sprite = /** @class */ (function () {
             //     this.parentSprite = null;
             // }
         }
-        for (var _i = 0, _a = this.layer.sprites; _i < _a.length; _i++) {
-            var sprite = _a[_i];
+        (_a = this.touchedLeftWalls).push.apply(_a, this.reactedLeftWalls);
+        (_b = this.touchedRightWalls).push.apply(_b, this.reactedRightWalls);
+        this.reactedLeftWalls = [];
+        this.reactedRightWalls = [];
+        for (var _i = 0, _c = this.layer.sprites; _i < _c.length; _i++) {
+            var sprite = _c[_i];
             if ((sprite.isPlatform || sprite.isSolidBox) && this.IsGoingToOverlapSprite(sprite)) {
                 if (sprite.isSolidBox) {
                     if ((this.xRight <= sprite.x && this.GetTotalDx() > sprite.GetTotalDx())
@@ -386,9 +393,17 @@ var Sprite = /** @class */ (function () {
                             this.dxFromWind = 0;
                             if (this.x < sprite.x) {
                                 this.touchedRightWalls.push(sprite);
+                                if (this.isSolidBox) {
+                                    sprite.touchedLeftWalls.push(this);
+                                    sprite.reactedLeftWalls.push(this);
+                                }
                             }
                             else {
                                 this.touchedLeftWalls.push(sprite);
+                                if (this.isSolidBox) {
+                                    sprite.touchedRightWalls.push(this);
+                                    sprite.reactedRightWalls.push(this);
+                                }
                             }
                             this.x = (this.x < sprite.x) ? (sprite.x - this.width) : (sprite.x + sprite.width);
                         }
@@ -435,8 +450,8 @@ var Sprite = /** @class */ (function () {
             this.dyFromPlatform = this.parentSprite.GetTotalDy();
             this.dy = 0;
             //}
-            for (var _b = 0, _c = this.standingOn; _b < _c.length; _b++) {
-                var ground = _c[_b];
+            for (var _d = 0, _e = this.standingOn; _d < _e.length; _d++) {
+                var ground = _e[_d];
                 var yPixel = ground.GetTopPixel();
                 if (this.yBottom > yPixel) {
                     this.y = yPixel - this.height;
@@ -1130,6 +1145,17 @@ var Sprite = /** @class */ (function () {
         if (!isTouchingPreviousTrackPipe)
             this.trackPipeExit = null;
         return null;
+    };
+    Sprite.prototype.isBlocked = function (dir) {
+        if (dir == Direction.Up)
+            return this.isOnCeiling;
+        if (dir == Direction.Down)
+            return this.isOnGround;
+        if (dir == Direction.Left)
+            return this.touchedLeftWalls.length > 0;
+        if (dir == Direction.Right)
+            return this.touchedRightWalls.length > 0;
+        return false;
     };
     return Sprite;
 }());

@@ -147,5 +147,12 @@ var spriteTypes: SpriteType[] = [
     SoccerBall,
     BowlingBall,
     Wallop,
+    WallopPlatform,
     Wallopeño,
+    WallopSlider,
+    WallopPlatformSlider,
+    BigWallop,
+    BigWallopSlider,
+    BigWallopPlatform,
+    BigWallopPlatformSlider,
 ];
