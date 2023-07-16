@@ -30,6 +30,8 @@ var AudioHandler = /** @class */ (function () {
             "clocktower",
             "overdue",
             "cherry",
+            "shake",
+            "stairs",
         ];
     }
     AudioHandler.prototype.Initialize = function () {
