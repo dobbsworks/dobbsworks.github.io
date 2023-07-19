@@ -25,17 +25,28 @@ var Sprite = /** @class */ (function () {
         this.age = 0;
         this.xScale = 1;
         this.yScale = 1;
+        this.scrollSpeed = 1;
     }
     Sprite.prototype.Draw = function (camera) {
         var fd = this.GetFrameData(0);
-        if (fd)
-            fd.imageTile.Draw(camera, this.x, this.y, this.xScale, this.yScale, fd.xFlip, fd.yFlip, this.rotation);
+        if ('xFlip' in fd)
+            fd.imageTile.Draw(camera, this.x + fd.xOffset, this.y + fd.yOffset, this.xScale, this.yScale, fd.xFlip, fd.yFlip, this.rotation, this.scrollSpeed);
+        else {
+            for (var _i = 0, fd_1 = fd; _i < fd_1.length; _i++) {
+                var f = fd_1[_i];
+                f.imageTile.Draw(camera, this.x + f.xOffset, this.y + f.yOffset, this.xScale, this.yScale, f.xFlip, f.yFlip, this.rotation, this.scrollSpeed);
+            }
+        }
     };
     Sprite.prototype.Scale = function (ratio) {
         this.width *= ratio;
         this.height *= ratio;
         this.xScale *= ratio;
         this.yScale *= ratio;
+        return this;
+    };
+    Sprite.prototype.SetScrollSpeed = function (value) {
+        this.scrollSpeed = value;
         return this;
     };
     Sprite.prototype.Overlaps = function (sprite) {

@@ -6,6 +6,7 @@ let audioHandler: AudioHandler;
 let playerIndex: number = 0;
 
 let currentMinigame: MinigameBase | null = null;
+let board: BoardMap | null = null;
 
 let minigames = [
     MinigameChip,
@@ -35,14 +36,15 @@ function Initialize() {
     audioHandler.Initialize();
     //setTimeout(() => {audioHandler.SetBackgroundMusic("menuJazz");}, 199);
     new FocusHandler().Initialize();
-    
+
     UnloadHandler.RegisterUnloadHandler();
     KeyboardHandler.InitKeyHandlers();
     setInterval(MainLoop, 1000 / 60);
 
+    board = new BoardMap();
     //currentMinigame = new MinigameChip();
-    let instructions = new Instructions(new MinigameChip());
-    instructions.Draw(camera);
+    // let instructions = new Instructions(new MinigameChip());
+    // instructions.Draw(camera);
 }
 
 var times: number[] = [];
@@ -56,14 +58,16 @@ function MainLoop() {
     if (times.length > 60) times.shift();
 }
 function GetLoopTime() {
-    return times.reduce((a,b) => a+b,0) / times.length;
+    return times.reduce((a, b) => a + b, 0) / times.length;
 }
 
 function Update(): void {
     KeyboardHandler.Update();
-    
+
     if (currentMinigame) {
         currentMinigame.BaseUpdate();
+    } else if (board) {
+        board.Update();
     }
 
     camera.Update();
@@ -71,10 +75,12 @@ function Update(): void {
     KeyboardHandler.AfterUpdate();
 }
 function Draw(): void {
-    //camera.Clear();
-    
     if (currentMinigame) {
+        camera.ctx.imageSmoothingEnabled = false;
         currentMinigame.Draw(camera);
+    } else if (board) {
+        camera.ctx.imageSmoothingEnabled = true;
+        board.Draw(camera);
     }
 }
 
@@ -93,7 +99,7 @@ function LoadImageSources() {
         let colWidth = img.width / cols;
         tileMap.rows = rows;
         tileMap.cols = cols;
-        
+
         for (let col = 0; col < cols; col++) {
             let tileCol: any = {};
             for (let row = 0; row < rows; row++) {

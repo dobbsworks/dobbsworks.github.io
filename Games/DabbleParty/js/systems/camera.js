@@ -20,35 +20,65 @@ var Camera = /** @class */ (function () {
     Camera.prototype.Update = function () {
         this.prevX = this.x;
         this.prevY = this.y;
-        if (this.targetScale < 1)
-            this.targetScale = 1;
+        if (this.targetScale < 0.421875)
+            this.targetScale = 0.421875;
         if (this.targetScale > 8)
             this.targetScale = 8;
         if (this.scale != this.targetScale) {
-            if (Math.abs(this.scale - this.targetScale) < 0.03)
+            //this.scale = this.targetScale;
+            // this.x = this.targetX;
+            // this.y = this.targetY;
+            if (Math.abs(this.scale - this.targetScale) < 0.001)
                 this.scale = this.targetScale;
             else
-                this.scale += (this.targetScale - this.scale) * 0.01;
+                this.scale += (this.targetScale - this.scale) * 0.1;
         }
-        this.x = this.targetX;
-        this.y = this.targetY;
+        if (this.x != this.targetX) {
+            if (Math.abs(this.x - this.targetX) < 0.001)
+                this.x = this.targetX;
+            else
+                this.x += (this.targetX - this.x) * 0.1;
+        }
+        if (this.y != this.targetY) {
+            if (Math.abs(this.y - this.targetY) < 0.001)
+                this.y = this.targetY;
+            else
+                this.y += (this.targetY - this.y) * 0.1;
+        }
     };
     Camera.prototype.SnapCamera = function () {
         this.x = this.targetX;
         this.y = this.targetY;
     };
-    // public GetLeftCameraEdge(): number {
-    //     return this.targetX - this.canvas.width / 2 / this.scale;
-    // }
-    // public GetRightCameraEdge(): number {
-    //     return this.targetX + this.canvas.width / 2 / this.scale;
-    // }
-    // public GetTopCameraEdge(): number {
-    //     return this.targetY - this.canvas.height / 2 / this.scale;
-    // }
-    // public GetBottomCameraEdge(): number {
-    //     return this.targetY + this.canvas.height / 2 / this.scale;
-    // }
+    Camera.prototype.GameCoordToCanvas = function (gameX, gameY) {
+        var x = camera.canvas.width / 2 - (-gameX + camera.x) * camera.scale;
+        var y = camera.canvas.height / 2 - (-gameY + camera.y) * camera.scale;
+        return { canvasX: x, canvasY: y };
+    };
+    Camera.prototype.GetLeftCameraEdge = function () {
+        return this.targetX - this.canvas.width / 2 / this.scale;
+    };
+    Camera.prototype.SetLeftCameraEdge = function (value) {
+        this.targetX = value + this.canvas.width / 2 / this.scale;
+    };
+    Camera.prototype.GetRightCameraEdge = function () {
+        return this.targetX + this.canvas.width / 2 / this.scale;
+    };
+    Camera.prototype.SetRightCameraEdge = function (value) {
+        this.targetX = value - this.canvas.width / 2 / this.scale;
+    };
+    Camera.prototype.GetTopCameraEdge = function () {
+        return this.targetY - this.canvas.height / 2 / this.scale;
+    };
+    Camera.prototype.SetTopCameraEdge = function (value) {
+        this.targetY = value + this.canvas.height / 2 / this.scale;
+    };
+    Camera.prototype.GetBottomCameraEdge = function () {
+        return this.targetY + this.canvas.height / 2 / this.scale;
+    };
+    Camera.prototype.SetBottomCameraEdge = function (value) {
+        this.targetY = value - this.canvas.height / 2 / this.scale;
+    };
     Camera.prototype.Clear = function () {
         this.ctx.save();
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);

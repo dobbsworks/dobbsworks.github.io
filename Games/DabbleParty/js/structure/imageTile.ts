@@ -17,7 +17,7 @@ class ImageTile {
         gameX: number, gameY: number, 
         xScale: number, yScale: number,
         xFlip: boolean, yFlip: boolean,
-        rotation: number
+        rotation: number, scrollSpeed: number = 1
         ) {
 
         let ctx = camera.ctx;
@@ -27,9 +27,9 @@ class ImageTile {
 
         // first move the center of the canvas to the center of the object to be drawn
         // next, scale and rotate
-        ctx.translate(camera.canvas.width / 2 - (-gameX + camera.x) * camera.scale, camera.canvas.height / 2 - (-gameY + camera.y) * camera.scale);
-        ctx.rotate(rotation);
+        ctx.translate(camera.canvas.width / 2 - (-gameX + camera.x) * camera.scale * scrollSpeed, camera.canvas.height / 2 - (-gameY + camera.y) * camera.scale * scrollSpeed);
         ctx.scale(xScale * camera.scale * (xFlip ? -1 : 1), yScale * camera.scale * (yFlip ? -1 : 1));
+        ctx.rotate(rotation);
 
 
         // finally, draw and restore

@@ -21,9 +21,14 @@ var InstructionControl = /** @class */ (function () {
 var Instructions = /** @class */ (function () {
     function Instructions(minigame) {
         this.minigame = minigame;
+        this.timer = 0;
     }
     Instructions.prototype.Draw = function (camera) {
-        camera.ctx.drawImage(tiles["bgInstructions"][0][0].src, 0, 0);
+        var myCam = new Camera(camera.canvas);
+        var bgImage = tiles["bgInstructions"][0][0];
+        var offset = Math.sin(((board === null || board === void 0 ? void 0 : board.timer) || 0) / 240) * 96;
+        bgImage.Draw(myCam, offset, 0, 1.2, 1.2, false, false, 0);
+        //camera.ctx.drawImage(tiles["bgInstructions"][0][0].src, 0, 0);
         camera.ctx.drawImage(tiles["instructionsPanel"][0][0].src, 0, 100);
         camera.ctx.drawImage(tiles["instructionsBoard"][0][0].src, 30, 380);
         camera.ctx.drawImage(this.minigame.thumbnail.src, this.minigame.thumbnail.xSrc, this.minigame.thumbnail.ySrc, 480, 270, 50, 111, 480, 270);
@@ -53,6 +58,12 @@ var Instructions = /** @class */ (function () {
             var instruction = _c[_b];
             camera.ctx.fillText(instruction, 420, y);
             y += 27;
+        }
+        this.timer++;
+        if (this.timer < 20) {
+            var opacity = Math.max(0, Math.min(1, (20 - this.timer) / 20));
+            camera.ctx.fillStyle = "rgba(0, 0, 0, " + opacity.toFixed(2) + ")";
+            camera.ctx.fillRect(0, 0, 960, 540);
         }
     };
     return Instructions;

@@ -19,17 +19,28 @@ abstract class Sprite {
     public xScale = 1;
     public yScale = 1;
 
+    public scrollSpeed = 1;
+
     abstract Update(): void;
-    abstract GetFrameData(frameNum: number): FrameData | null;
+    abstract GetFrameData(frameNum: number): FrameData | FrameData[];
     Draw(camera: Camera): void {
         let fd = this.GetFrameData(0);
-        if (fd) fd.imageTile.Draw(camera, this.x, this.y, this.xScale, this.yScale, fd.xFlip, fd.yFlip, this.rotation);
+        if ('xFlip' in fd) fd.imageTile.Draw(camera, this.x + fd.xOffset, this.y + fd.yOffset, this.xScale, this.yScale, fd.xFlip, fd.yFlip, this.rotation, this.scrollSpeed);
+        else {
+            for (let f of fd) {
+                f.imageTile.Draw(camera, this.x + f.xOffset, this.y + f.yOffset, this.xScale, this.yScale, f.xFlip, f.yFlip, this.rotation, this.scrollSpeed);
+            }
+        }
     }
     Scale(ratio: number): Sprite {
         this.width *= ratio;
         this.height *= ratio;
         this.xScale *= ratio;
         this.yScale *= ratio;
+        return this;
+    }
+    SetScrollSpeed(value: number): Sprite {
+        this.scrollSpeed = value;
         return this;
     }
     Overlaps(sprite: Sprite): boolean {
@@ -41,7 +52,7 @@ abstract class Sprite {
             this.y + this.height > sprite.y;
     }
     DistanceBetweenCenters(sprite: Sprite): number {
-        return Math.sqrt( (this.x - sprite.x)**2 + (this.y - sprite.y)**2 );
+        return Math.sqrt((this.x - sprite.x) ** 2 + (this.y - sprite.y) ** 2);
     }
 }
 
@@ -79,15 +90,15 @@ class SimpleSprite extends Sprite {
 
 class ScoreSprite extends Sprite {
     constructor(x: number, y: number, private index: number = 0) {
-        super(x,y);
+        super(x, y);
     }
     public width = 0;
     public height = 0;
 
     Update(): void {
-            this.y -= 2;
-            if (this.age >= 33) this.isActive = false;
-        
+        this.y -= 2;
+        if (this.age >= 33) this.isActive = false;
+
     }
 
     GetFrameData(frameNum: number): FrameData {

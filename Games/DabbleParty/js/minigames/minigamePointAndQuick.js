@@ -140,7 +140,7 @@ var MinigamePointAndQuick = /** @class */ (function (_super) {
                             this.targetIndex++;
                             if (this.targetIndex >= this.boxStacks[0].length) {
                                 // stack complete
-                                audioHandler.PlaySound("dobbloon", false);
+                                audioHandler.PlaySound("coin", false);
                                 this.score++;
                                 this.targetIndex = 0;
                                 var completedStack = this.boxStacks.shift() || [];

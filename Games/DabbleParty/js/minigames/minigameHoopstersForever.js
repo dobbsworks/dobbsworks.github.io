@@ -19,7 +19,7 @@ var MinigameHoopstersForever = /** @class */ (function (_super) {
         _this.title = "Hoopsters Forever";
         _this.instructions = [
             "Line up your shot and go for the goal! Try to find",
-            "the right angle and power for your shot. And remember",
+            "the right angle and power for your shot. And remember:",
             "hoopsters are forever."
         ];
         _this.backdropTile = tiles["bgHoops"][0][0];

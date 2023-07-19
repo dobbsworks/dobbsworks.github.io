@@ -6,6 +6,7 @@ var mouseHandler;
 var audioHandler;
 var playerIndex = 0;
 var currentMinigame = null;
+var board = null;
 var minigames = [
     MinigameChip,
     MinigameConveyor,
@@ -35,9 +36,10 @@ function Initialize() {
     UnloadHandler.RegisterUnloadHandler();
     KeyboardHandler.InitKeyHandlers();
     setInterval(MainLoop, 1000 / 60);
+    board = new BoardMap();
     //currentMinigame = new MinigameChip();
-    var instructions = new Instructions(new MinigameChip());
-    instructions.Draw(camera);
+    // let instructions = new Instructions(new MinigameChip());
+    // instructions.Draw(camera);
 }
 var times = [];
 function MainLoop() {
@@ -58,14 +60,21 @@ function Update() {
     if (currentMinigame) {
         currentMinigame.BaseUpdate();
     }
+    else if (board) {
+        board.Update();
+    }
     camera.Update();
     mouseHandler.UpdateMouseChanged();
     KeyboardHandler.AfterUpdate();
 }
 function Draw() {
-    //camera.Clear();
     if (currentMinigame) {
+        camera.ctx.imageSmoothingEnabled = false;
         currentMinigame.Draw(camera);
+    }
+    else if (board) {
+        camera.ctx.imageSmoothingEnabled = true;
+        board.Draw(camera);
     }
 }
 function LoadImageSources() {

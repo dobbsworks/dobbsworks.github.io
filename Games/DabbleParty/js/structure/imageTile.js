@@ -11,15 +11,16 @@ var ImageTile = /** @class */ (function () {
         this.yOffset = 0;
         this.xOffset = 0;
     }
-    ImageTile.prototype.Draw = function (camera, gameX, gameY, xScale, yScale, xFlip, yFlip, rotation) {
+    ImageTile.prototype.Draw = function (camera, gameX, gameY, xScale, yScale, xFlip, yFlip, rotation, scrollSpeed) {
+        if (scrollSpeed === void 0) { scrollSpeed = 1; }
         var ctx = camera.ctx;
         // destY += this.yOffset;
         // destX += this.xOffset;
         // first move the center of the canvas to the center of the object to be drawn
         // next, scale and rotate
-        ctx.translate(camera.canvas.width / 2 - (-gameX + camera.x) * camera.scale, camera.canvas.height / 2 - (-gameY + camera.y) * camera.scale);
-        ctx.rotate(rotation);
+        ctx.translate(camera.canvas.width / 2 - (-gameX + camera.x) * camera.scale * scrollSpeed, camera.canvas.height / 2 - (-gameY + camera.y) * camera.scale * scrollSpeed);
         ctx.scale(xScale * camera.scale * (xFlip ? -1 : 1), yScale * camera.scale * (yFlip ? -1 : 1));
+        ctx.rotate(rotation);
         // finally, draw and restore
         ctx.drawImage(this.src, this.xSrc + 0.1, this.ySrc + 0.1, this.width - 0.2, this.height - 0.2, -this.width / 2, -this.height / 2, this.width, this.height);
         ctx.setTransform(1, 0, 0, 1, 0, 0);
