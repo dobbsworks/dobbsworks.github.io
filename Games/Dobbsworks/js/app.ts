@@ -126,7 +126,7 @@ function Update() {
     if (KeyboardHandler.IsKeyPressed(KeyAction.Fullscreen, true)) document.getElementById("canvas")?.requestFullscreen();
 
     if (!MenuHandler.Dialog) {
-        if (window.location.href.indexOf("localhost") > -1 || window.location.href.startsWith("http://127.0.0.1:5500")) {
+        if (window.location.href.indexOf("localhost") > -1 || window.location.href.startsWith("http://127.0.0.1")) {
             if (KeyboardHandler.IsKeyPressed(KeyAction.Debug1, true)) debugMode = !debugMode;
         }
         //if (KeyboardHandler.IsKeyPressed(KeyAction.Reset, true)) window.location.reload();

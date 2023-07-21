@@ -109,6 +109,7 @@ class EditorHandler {
             new SlopeFill("Candy", TileType.CandyGround),
             new SlopeFill("Mountain", TileType.MountainGround),
             new SlopeFill("Haunt", TileType.HauntGround),
+            //new SlopeFill("Derelict", TileType.DerelictGround),
         ];
         let tileRowBlocks: TileType[] = [
             TileType.Dirt,
@@ -124,6 +125,7 @@ class EditorHandler {
             TileType.CandyGround,
             TileType.MountainGround,
             TileType.HauntGround,
+      //      TileType.DerelictGround,
         ]
         let tilePanelButtons: EditorButton[] = [];
         let tooltips = ["Solid ground", "Solid ground", "Solid ground", "Semisolid", "Backdrop", "Ladder", "Deadly block", "Decor"];

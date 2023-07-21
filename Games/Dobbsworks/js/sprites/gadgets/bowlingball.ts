@@ -17,9 +17,13 @@ class BowlingBall extends Sprite {
     }
 
     OnThrow(thrower: Sprite, direction: -1 | 1) {
-        this.dx = direction * 0.5 + thrower.GetTotalDx();
         this.dy = 0;
-        thrower.dx += -1;
+        if (thrower instanceof Player) {
+            this.dx = direction * 0.5 + thrower.GetTotalDx();
+            thrower.dx += -1 * direction;
+        } else {
+            this.dx = direction * 1 + thrower.GetTotalDx();
+        }
     }
 
     OnUpThrow(thrower: Sprite, direction: -1 | 1) {
@@ -30,7 +34,9 @@ class BowlingBall extends Sprite {
     OnDownThrow(thrower: Sprite, direction: -1 | 1) {
         this.dx = (direction * 1) / 4 + thrower.GetTotalDx();
         this.dy = 2;
-        thrower.dy -= 2;
+        if (thrower instanceof Player) {
+            thrower.dy -= 2;
+        }
     }
 
     Update(): void {

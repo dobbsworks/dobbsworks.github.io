@@ -367,6 +367,18 @@ var TileType = /** @class */ (function () {
         TileType.DecorHauntDown;
         TileType.DecorHauntLeft;
         TileType.DecorHauntRight;
+        TileType.DerelictGround;
+        TileType.DerelictBrick;
+        TileType.DerelictBlock;
+        TileType.DerelictTop;
+        TileType.DerelictBack;
+        TileType.DerelictLadder;
+        TileType.DerelictSpikes;
+        TileType.DecorDerelict;
+        TileType.RegisterSlope("Derelict", 13);
+        TileType.DerelictSpikesDown;
+        TileType.DerelictSpikesLeft;
+        TileType.DerelictSpikesRight;
     };
     TileType.RegisterSlope = function (keyBase, tileRow) {
         var colIter = 8;
@@ -1158,6 +1170,81 @@ var TileType = /** @class */ (function () {
         get: function () {
             return TileType.GetTileType("DecorHauntDown", "terrain", 19, 19, Solidity.None, TargetLayer.main, function (tileType) {
                 tileType.clockWiseRotationTileName = "DecorHauntLeft";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DerelictGround", {
+        get: function () { return TileType.GetTileType("DerelictGround", "terrain", 0, 13, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DerelictBrick", {
+        get: function () { return TileType.GetTileType("DerelictBrick", "terrain", 1, 13, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DerelictBlock", {
+        get: function () { return TileType.GetTileType("DerelictBlock", "terrain", 2, 13, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DerelictTop", {
+        get: function () { return TileType.GetTileType("DerelictTop", "terrain", 3, 13, Solidity.Top, TargetLayer.semisolid); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DerelictBack", {
+        get: function () { return TileType.GetTileType("DerelictBack", "terrain", 4, 13, Solidity.None, TargetLayer.backdrop); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DerelictLadder", {
+        get: function () { return TileType.GetTileType("DerelictLadder", "terrain", 5, 13, Solidity.None, TargetLayer.main, function (tileType) { tileType.isClimbable = true; }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DecorDerelict", {
+        get: function () { return TileType.GetTileType("DecorDerelict", "terrain", 7, 13, Solidity.None, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DerelictSpikes", {
+        get: function () {
+            return TileType.GetTileType("DerelictSpikes", "terrain", 6, 13, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.hurtOnTop = true;
+                tileType.clockWiseRotationTileName = "DerelictSpikesLeft";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DerelictSpikesRight", {
+        get: function () {
+            return TileType.GetTileType("DerelictSpikesRight", "terrain", 21, 19, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.hurtOnLeft = true;
+                tileType.clockWiseRotationTileName = "DerelictSpikes";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DerelictSpikesLeft", {
+        get: function () {
+            return TileType.GetTileType("DerelictSpikesLeft", "terrain", 22, 19, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.hurtOnRight = true;
+                tileType.clockWiseRotationTileName = "DerelictSpikesDown";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DerelictSpikesDown", {
+        get: function () {
+            return TileType.GetTileType("DerelictSpikesDown", "terrain", 23, 19, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.hurtOnBottom = true;
+                tileType.clockWiseRotationTileName = "DerelictSpikesRight";
             });
         },
         enumerable: false,

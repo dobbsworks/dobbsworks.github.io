@@ -92,6 +92,7 @@ var EditorHandler = /** @class */ (function () {
             new SlopeFill("Candy", TileType.CandyGround),
             new SlopeFill("Mountain", TileType.MountainGround),
             new SlopeFill("Haunt", TileType.HauntGround),
+            new SlopeFill("Derelict", TileType.DerelictGround),
         ];
         var tileRowBlocks = [
             TileType.Dirt,
@@ -107,6 +108,7 @@ var EditorHandler = /** @class */ (function () {
             TileType.CandyGround,
             TileType.MountainGround,
             TileType.HauntGround,
+            TileType.DerelictGround,
         ];
         var tilePanelButtons = [];
         var tooltips = ["Solid ground", "Solid ground", "Solid ground", "Semisolid", "Backdrop", "Ladder", "Deadly block", "Decor"];

@@ -15,7 +15,7 @@ class Wallop extends Enemy {
     frameRow = 2;
     waitTimer = 0;
 
-    watchDirections: Direction[] = [Direction.Down];
+    watchDirections: Direction[] = [Direction.Down, Direction.Up];
     moveDirection: Direction | null = null;
 
     maxSpeed = 2.0;

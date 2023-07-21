@@ -129,7 +129,7 @@ function Update() {
     if (KeyboardHandler.IsKeyPressed(KeyAction.Fullscreen, true))
         (_b = document.getElementById("canvas")) === null || _b === void 0 ? void 0 : _b.requestFullscreen();
     if (!MenuHandler.Dialog) {
-        if (window.location.href.indexOf("localhost") > -1 || window.location.href.startsWith("http://127.0.0.1:5500")) {
+        if (window.location.href.indexOf("localhost") > -1 || window.location.href.startsWith("http://127.0.0.1")) {
             if (KeyboardHandler.IsKeyPressed(KeyAction.Debug1, true))
                 debugMode = !debugMode;
         }

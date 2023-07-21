@@ -412,6 +412,19 @@ class TileType {
         TileType.DecorHauntDown;
         TileType.DecorHauntLeft;
         TileType.DecorHauntRight;
+
+        TileType.DerelictGround;
+        TileType.DerelictBrick;
+        TileType.DerelictBlock;
+        TileType.DerelictTop;
+        TileType.DerelictBack;
+        TileType.DerelictLadder;
+        TileType.DerelictSpikes;
+        TileType.DecorDerelict;
+        TileType.RegisterSlope("Derelict", 13);
+        TileType.DerelictSpikesDown;
+        TileType.DerelictSpikesLeft;
+        TileType.DerelictSpikesRight;
     }
 
 
@@ -687,6 +700,34 @@ class TileType {
     }); }
     public static get DecorHauntDown(): TileType { return TileType.GetTileType("DecorHauntDown", "terrain", 19, 19, Solidity.None, TargetLayer.main, tileType => {
         tileType.clockWiseRotationTileName = "DecorHauntLeft";
+    }); }
+
+
+
+    
+    public static get DerelictGround(): TileType { return TileType.GetTileType("DerelictGround", "terrain", 0, 13, Solidity.Block, TargetLayer.main); }
+    public static get DerelictBrick(): TileType { return TileType.GetTileType("DerelictBrick", "terrain", 1, 13, Solidity.Block, TargetLayer.main); }
+    public static get DerelictBlock(): TileType { return TileType.GetTileType("DerelictBlock", "terrain", 2, 13, Solidity.Block, TargetLayer.main); }
+    public static get DerelictTop(): TileType { return TileType.GetTileType("DerelictTop", "terrain", 3, 13, Solidity.Top, TargetLayer.semisolid); }
+    public static get DerelictBack(): TileType { return TileType.GetTileType("DerelictBack", "terrain", 4, 13, Solidity.None, TargetLayer.backdrop); }
+    public static get DerelictLadder(): TileType { return TileType.GetTileType("DerelictLadder", "terrain", 5, 13, Solidity.None, TargetLayer.main, tileType => { tileType.isClimbable = true; }); }
+    public static get DecorDerelict(): TileType { return TileType.GetTileType("DecorDerelict", "terrain", 7, 13, Solidity.None, TargetLayer.main); }
+
+    public static get DerelictSpikes(): TileType { return TileType.GetTileType("DerelictSpikes", "terrain", 6, 13, Solidity.Block, TargetLayer.main, tileType => {
+        tileType.hurtOnTop = true;
+        tileType.clockWiseRotationTileName = "DerelictSpikesLeft";
+    }); }
+    public static get DerelictSpikesRight(): TileType { return TileType.GetTileType("DerelictSpikesRight", "terrain", 21, 19, Solidity.Block, TargetLayer.main, tileType => {
+        tileType.hurtOnLeft = true;
+        tileType.clockWiseRotationTileName = "DerelictSpikes";
+    }); }
+    public static get DerelictSpikesLeft(): TileType { return TileType.GetTileType("DerelictSpikesLeft", "terrain", 22, 19, Solidity.Block, TargetLayer.main, tileType => {
+        tileType.hurtOnRight = true;
+        tileType.clockWiseRotationTileName = "DerelictSpikesDown";
+    }); }
+    public static get DerelictSpikesDown(): TileType { return TileType.GetTileType("DerelictSpikesDown", "terrain", 23, 19, Solidity.Block, TargetLayer.main, tileType => {
+        tileType.hurtOnBottom = true;
+        tileType.clockWiseRotationTileName = "DerelictSpikesRight";
     }); }
 
 
