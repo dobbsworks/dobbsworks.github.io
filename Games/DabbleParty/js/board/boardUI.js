@@ -14,14 +14,16 @@ var BoardUI = /** @class */ (function () {
         this.combineTimer = 0;
         this.combinedNumber = 0;
         this.combinedNumberScale = 1;
+        this.roundStarttimer = 0;
         this.slideFrames = 30;
         this.waitFrames = 30;
         this.playerStartTimer = 0;
         this.useAltStartText = false;
-        this.showMenu = false;
-        this.selectedMenuItem = -1;
+        this.currentMenu = null;
         this.isChoosingMinigame = false;
         this.minigameTextTime = 0;
+        this.isShowingScores = false;
+        this.scoreBoxes = []; // indexes into board.players
         this.fakeMinigameNames = [
             "Turtle Will Love This One",
             "The Rise And Fall",
@@ -64,8 +66,7 @@ var BoardUI = /** @class */ (function () {
     };
     BoardUI.prototype.StartPlayerStartText = function () {
         this.playerStartTimer = 1;
-        this.useAltStartText = (Math.random() > 0.95);
-        this.selectedMenuItem = -1;
+        this.useAltStartText = (Math.random() > 0.95 && this.board.currentRound > 3);
     };
     BoardUI.prototype.StartRoll = function () {
         if (this.board.currentPlayer) {
@@ -87,22 +88,59 @@ var BoardUI = /** @class */ (function () {
             _loop_1(i);
         }
     };
+    BoardUI.prototype.UpdateScoreboxes = function () {
+        var players = __spreadArrays(this.board.players);
+        // sort by place, tiebreaker uses turn order
+        players.sort(function (a, b) { return (a.CurrentPlace() + a.turnOrder / 10) - (b.CurrentPlace() + b.turnOrder / 10); });
+        if (this.scoreBoxes.length == 0) {
+            this.scoreBoxes = players.map(function (a) { return ({ player: a, y: 0, targetY: 0 }); });
+        }
+        else {
+            // sort by placement
+            this.scoreBoxes.sort(function (a, b) { return players.indexOf(a.player) - players.indexOf(b.player); });
+        }
+        for (var i = 0; i < this.scoreBoxes.length; i++) {
+            this.scoreBoxes[i].targetY = i * 110 + 95;
+        }
+        var boxSpeed = 4;
+        for (var _i = 0, _a = this.scoreBoxes; _i < _a.length; _i++) {
+            var scorebox = _a[_i];
+            if (Math.abs(scorebox.y - scorebox.targetY) < boxSpeed)
+                scorebox.y = scorebox.targetY;
+            if (scorebox.y < scorebox.targetY)
+                scorebox.y += boxSpeed;
+            if (scorebox.y > scorebox.targetY)
+                scorebox.y -= boxSpeed;
+        }
+    };
     BoardUI.prototype.Update = function () {
         if (this.playerStartTimer > 0)
             this.playerStartTimer++;
-        if (this.playerStartTimer == this.slideFrames * 2 + this.waitFrames)
-            this.showMenu = true;
+        if (this.playerStartTimer == this.slideFrames * 2 + this.waitFrames) {
+            this.currentMenu = BoardMenu.CreateItemMenu();
+        }
         if (this.isChoosingMinigame) {
             this.minigameTextTime++;
             this.rouletteTheta += 0.1;
             if (this.minigameTextTime == 540) {
                 this.isChoosingMinigame = false;
                 this.board.instructions = new Instructions(this.board.pendingMinigame);
+                this.board.CreateButtonToToggleToUserViewInOBS();
             }
         }
         else {
             this.minigameTextTime = 0;
             this.rouletteTheta = 0;
+        }
+        if (this.isShowingScores) {
+            this.UpdateScoreboxes();
+        }
+        if (this.roundStarttimer > 0) {
+            this.roundStarttimer++;
+            if (this.roundStarttimer > 100) {
+                this.roundStarttimer = 0;
+                this.board.CurrentPlayerTurnEnd();
+            }
         }
         this.dice.forEach(function (a) { return a.Update(); });
         if (this.dice.some(function (a) { return !a.IsStopped(); })) {
@@ -140,30 +178,8 @@ var BoardUI = /** @class */ (function () {
             }
         }
         // item menu handling
-        var player = this.board.currentPlayer;
-        if (this.showMenu && player) {
-            if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
-                this.showMenu = false;
-                if (this.selectedMenuItem == -1) {
-                    // Roll the dice!
-                    this.StartRoll();
-                }
-                else {
-                    var item_1 = player.inventory[this.selectedMenuItem];
-                    player.inventory = player.inventory.filter(function (a) { return a != item_1; });
-                    item_1.OnUse(player, this.board);
-                }
-            }
-            else if (KeyboardHandler.IsKeyPressed(KeyAction.Up, true)) {
-                if (this.selectedMenuItem >= 0) {
-                    this.selectedMenuItem--;
-                }
-            }
-            else if (KeyboardHandler.IsKeyPressed(KeyAction.Down, true)) {
-                if (this.selectedMenuItem < player.inventory.length - 1) {
-                    this.selectedMenuItem++;
-                }
-            }
+        if (this.currentMenu) {
+            this.currentMenu.Update();
         }
     };
     BoardUI.prototype.Draw = function (ctx) {
@@ -183,11 +199,44 @@ var BoardUI = /** @class */ (function () {
         if (this.combinedNumber > 0) {
             DrawNumber(0, -100, this.combinedNumber, this.uiCamera, this.combinedNumberScale);
         }
-        if (this.showMenu)
-            this.DrawItemMenu(ctx);
-        this.DrawScoreboard(ctx);
+        if (this.roundStarttimer > 0)
+            this.DrawRoundStart(ctx);
+        if (this.currentMenu)
+            this.currentMenu.Draw(ctx);
+        if (this.isShowingScores) {
+            this.DrawScoreboxes(ctx);
+        }
+        else {
+            if (this.roundStarttimer == 0) {
+                this.DrawScoreboard(ctx);
+            }
+        }
         if (this.isChoosingMinigame)
             this.DrawMinigameChoose(ctx);
+    };
+    BoardUI.prototype.DrawRoundStart = function (ctx) {
+        var fontSize = 72 + (20 - this.roundStarttimer) * 100;
+        if (this.roundStarttimer >= 20)
+            fontSize = 72;
+        if (this.roundStarttimer > 80)
+            fontSize = (this.roundStarttimer - 80) * -4 + 72;
+        if (fontSize > 0) {
+            ctx.textBaseline = "middle";
+            ctx.strokeStyle = "#000";
+            ctx.fillStyle = "#FFF";
+            ctx.lineWidth = 12;
+            ctx.font = "900 " + fontSize + "px " + "arial";
+            ctx.textAlign = "center";
+            var text = "ROUND " + this.board.currentRound + " START";
+            var lastXRound = this.board.finalRound - this.board.currentRound + 1;
+            if (lastXRound <= 5)
+                text = "LAST " + lastXRound + " ROUNDS";
+            if (lastXRound == 1)
+                text = "FINAL ROUND!";
+            ctx.strokeText(text, 480, 270);
+            ctx.fillText(text, 480, 270);
+            ctx.textBaseline = "alphabetic";
+        }
     };
     BoardUI.prototype.DrawScoreboard = function (ctx) {
         var x = 510;
@@ -235,49 +284,33 @@ var BoardUI = /** @class */ (function () {
             _loop_2(turn);
         }
     };
-    BoardUI.prototype.DrawItemMenu = function (ctx) {
-        var player = this.board.currentPlayer || this.board.players[0];
-        ctx.lineWidth = 4;
-        ctx.setLineDash([]);
+    BoardUI.prototype.DrawScoreboxes = function (ctx) {
+        ctx.fillStyle = "#000B";
         ctx.strokeStyle = "#FFF";
-        var xOptions = 60;
-        var offset = Math.sin(this.board.timer / 10) * 3 + 3;
-        for (var i = -1; i < 3; i++) {
-            var y = 190 + 110 * i;
-            if (i < player.inventory.length) {
-                ctx.fillStyle = "#000B";
-                ctx.fillRect(xOptions, y, 300, 100);
-                if (this.selectedMenuItem == i) {
-                    ctx.strokeRect(xOptions - offset, y - offset, 300 + offset * 2, 100 + offset * 2);
-                }
-            }
-            if (i == -1) {
-                ctx.font = "800 " + 36 + "px " + "arial";
-                ctx.textAlign = "left";
-                ctx.fillStyle = "#FFF";
-                ctx.fillText("Roll!", y + 20, 145);
-                var dice = player.diceBag.GetDiceSprites();
-                var dx = -250;
-                for (var _i = 0, dice_1 = dice; _i < dice_1.length; _i++) {
-                    var die = dice_1[_i];
-                    var image = die.GetImage(this.selectedMenuItem == -1 ? this.board.timer / 5 : 0);
-                    image.Draw(this.uiCamera, dx, y - 220, 0.5, 0.5, false, false, 0);
-                    dx += 60;
-                }
-            }
-            else {
-                var item = player.inventory[i];
-                if (item) {
-                    var rotation = this.selectedMenuItem == i ? Math.sin(this.board.timer / 30) / 3 : 0;
-                    item.imageTile.Draw(this.uiCamera, xOptions - 480 + 45, y - 230, 0.5, 0.5, false, false, rotation);
-                    ctx.fillStyle = "#FFF";
-                    ctx.textAlign = "left";
-                    ctx.font = "600 " + 18 + "px " + "arial";
-                    ctx.fillText(item.name, xOptions + 90, y + 45);
-                    ctx.font = "400 " + 14 + "px " + "arial";
-                    ctx.fillText(item.description, xOptions + 20, y + 90);
-                }
-            }
+        ctx.lineWidth = 4;
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.font = "800 " + 36 + "px " + "arial";
+        ctx.textAlign = "right";
+        var title = tiles["minigameText"][0][1];
+        title.Draw(this.uiCamera, 0, -220, 1, 1, false, false, 0);
+        var x = 180;
+        var gearIcon = tiles["uiLargeIcons"][0][0];
+        var coinIcon = tiles["uiLargeIcons"][0][1];
+        for (var _i = 0, _a = this.scoreBoxes; _i < _a.length; _i++) {
+            var scorebox = _a[_i];
+            var image = tiles["playerIcons"][scorebox.player.avatarIndex][0];
+            var y = scorebox.y;
+            var imageY = y - 270 + 50;
+            ctx.fillStyle = "#000D";
+            ctx.fillRect(x, y, 600, 100);
+            ctx.strokeRect(x, y, 600, 100);
+            image.Draw(this.uiCamera, x - 480 + 50, imageY, 0.4, 0.4, false, false, 0);
+            gearIcon.Draw(this.uiCamera, x - 480 + 300, imageY, 1, 1, false, false, 0);
+            coinIcon.Draw(this.uiCamera, x - 480 + 470, imageY, 1, 1, false, false, 0);
+            ctx.fillStyle = "#FFF";
+            ctx.fillText(scorebox.player.CurrentPlaceText(), x + 200, y + 50 + 14);
+            ctx.fillText(scorebox.player.gears.toString(), x + 400, y + 50 + 14);
+            ctx.fillText(scorebox.player.coins.toString(), x + 570, y + 50 + 14);
         }
     };
     BoardUI.prototype.DrawMinigameChoose = function (ctx) {

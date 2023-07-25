@@ -1,4 +1,4 @@
-abstract class BoardSpace {
+class BoardSpace {
 
     // auto-genenerate IDs for each space to make it easier to send cyclical JSON packages of board state
     static numConstructed = 0;
@@ -6,11 +6,12 @@ abstract class BoardSpace {
         BoardSpace.numConstructed++;
         return BoardSpace.numConstructed;
     }
-    static allConstructedSpaces: {label: string, space: BoardSpace}[] = [];
+    static allConstructedSpaces: { label: string, space: BoardSpace }[] = [];
 
-    constructor(public gameX: number, public gameY: number, public label: string = "") {
+    constructor(public spaceType: BoardSpaceType, public gameX: number, public gameY: number, public label: string = "") {
         this.id = BoardSpace.GenerateId();
-        BoardSpace.allConstructedSpaces.push({label: label, space: this});
+        BoardSpace.allConstructedSpaces.push({ label: label, space: this });
+        //this.originalType = 
     }
 
     ConnectFromPrevious(): BoardSpace {
@@ -55,69 +56,127 @@ abstract class BoardSpace {
     }
 
     id!: number;
-    imageTile!: ImageTile;
     nextSpaces: BoardSpace[] = [];
-    costsMovement: boolean = true;  // if false, this is not a real space, just a link between multiple spaces 
-
-    // on pass event
-    // on land event
-
 
     Draw(camera: Camera): void {
-        this.imageTile.Draw(camera, this.gameX, this.gameY, 0.2, 0.2, false, false, 0, 1);
+        this.spaceType.getImageTile().Draw(camera, this.gameX, this.gameY, 0.2, 0.2, false, false, 0, 1);
         let coord1 = camera.GameCoordToCanvas(this.gameX, this.gameY);
         camera.ctx.font = `200 ${10}px ${"arial"}`;
         camera.ctx.fillText(this.id.toString(), coord1.canvasX, coord1.canvasY);
     }
 
     DrawConnections(camera: Camera): void {
-
-        camera.ctx.strokeStyle = "black";
+        camera.ctx.fillStyle = "#3f454a";
+        camera.ctx.strokeStyle = "#3f454a";
         camera.ctx.lineWidth = camera.scale * 4;
-        camera.ctx.setLineDash([8 * camera.scale, 4 * camera.scale]);
         if (board) {
             camera.ctx.lineDashOffset = (-board.timer) * 0.1;
         }
-        
+
+        let ratio = ((board?.timer || 0) % 60) / 60;
         for (let connection of this.nextSpaces) {
             let coord1 = camera.GameCoordToCanvas(this.gameX, this.gameY);
             let coord2 = camera.GameCoordToCanvas(connection.gameX, connection.gameY);
+            let coord3 = {
+                canvasX: coord1.canvasX + (coord2.canvasX - coord1.canvasX) * ratio,
+                canvasY: coord1.canvasY + (coord2.canvasY - coord1.canvasY) * ratio
+            }
             camera.ctx.beginPath();
             camera.ctx.moveTo(coord1.canvasX, coord1.canvasY);
             camera.ctx.lineTo(coord2.canvasX, coord2.canvasY);
             camera.ctx.stroke();
+
+            camera.ctx.beginPath();
+            camera.ctx.ellipse(coord3.canvasX, coord3.canvasY, 6 * camera.scale, 4 * camera.scale, 0, 0, 2 * Math.PI);
+            camera.ctx.fill();
         }
     }
 
-    OnLand(player: Player): void {}
 }
 
-class BlueBoardSpace extends BoardSpace {
-    imageTile = tiles["partySquares"][0][0];
-    OnLand(player: Player): void {
-        player.coins += 3; // todo add to some sort of animated tick up pool
-        player.AddCoinsOverToken(3);
-    }
-}
 
-class RedBoardSpace extends BoardSpace {
-    imageTile = tiles["partySquares"][0][1];
-    OnLand(player: Player): void {
-        player.coins -= 3; // todo add to some sort of animated tick up pool
-        // boundary check to avoid going negative
-        if (player.coins < 0) player.coins = 0;
-        player.DeductCoinsOverToken(3);
-    }
-}
+class BoardSpaceType {
+    constructor(
+        public getImageTile: () => ImageTile,
+        public costsMovement: boolean,
+        public OnLand: (player: Player) => void,
+        public OnPass: (player: Player) => void
+    ) { }
 
-class DiceUpgradeSpace extends BoardSpace {
-    imageTile = tiles["partySquares"][0][4];
-    OnLand(player: Player): void {
-        player.diceBag.Upgrade();
-    }
-}
-
-class GrayBoardSpace extends BoardSpace {
-    imageTile = tiles["partySquares"][0][2];
-    costsMovement = false;
+    static BlueBoardSpace = new BoardSpaceType(
+        () => tiles["partySquares"][0][0],
+        true,
+        (player: Player) => {
+            player.coins += 3; // todo add to some sort of animated tick up pool
+            player.AddCoinsOverToken(3);
+        },
+        () => { });
+    static UpgradedBlueBoardSpace = new BoardSpaceType(
+        () => tiles["partySquares"][1][0],
+        true,
+        (player: Player) => {
+            player.coins += 6;
+            player.AddCoinsOverToken(6);
+        },
+        () => { });
+    static RedBoardSpace = new BoardSpaceType(
+        () => tiles["partySquares"][0][1],
+        true,
+        (player: Player) => {
+            player.coins -= 3;
+            if (player.coins < 0) player.coins = 0;
+            player.DeductCoinsOverToken(3);
+        },
+        () => { });
+    static UpgradedRedBoardSpace = new BoardSpaceType(
+        () => tiles["partySquares"][1][1],
+        true,
+        (player: Player) => {
+            player.coins -= 6;
+            if (player.coins < 0) player.coins = 0;
+            player.DeductCoinsOverToken(6);
+        },
+        () => { });
+    static DiceUpgradeSpace = new BoardSpaceType(
+        () => tiles["partySquares"][0][4],
+        true,
+        (player: Player) => {
+            player.diceBag.Upgrade();
+        },
+        () => { });
+    static GrayBoardSpace = new BoardSpaceType(
+        () => tiles["partySquares"][0][2],
+        false,
+        () => { },
+        () => { });
+    static ShopSpace = new BoardSpaceType(
+        () => tiles["partySquares"][1][2],
+        true,
+        (player: Player) => { 
+            // TODO - full inventory?
+            // TODO - special bonus for landing on space?
+            player.isInShop = true;
+            player.landedOnShop = true;
+            if (board) board.boardUI.currentMenu = BoardMenu.CreateShopMenu();
+        },
+        (player: Player) => { 
+            if (player.inventory.length >= 3) {
+                // full inventory
+            } else {
+                player.isInShop = true;
+                if (board) board.boardUI.currentMenu = BoardMenu.CreateShopMenu();
+            }
+        });
+    static GearSpace = new BoardSpaceType(
+        () => tiles["partySquares"][1][3],
+        true,
+        (player: Player) => { 
+            player.isInShop = true;
+            player.landedOnShop = true;
+            if (board) board.boardUI.currentMenu = BoardMenu.CreateGoldGearMenu();
+        },
+        (player: Player) => { 
+            player.isInShop = true;
+            if (board) board.boardUI.currentMenu = BoardMenu.CreateGoldGearMenu();
+        });
 }

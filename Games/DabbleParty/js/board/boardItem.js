@@ -17,6 +17,51 @@ var BoardItem = /** @class */ (function () {
     }
     return BoardItem;
 }());
+var GoldenGear = /** @class */ (function (_super) {
+    __extends(GoldenGear, _super);
+    function GoldenGear() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.imageTile = tiles["itemIcons"][2][1];
+        _this.name = "Golden Gear";
+        _this.description = "Collect the most gears to win the game!";
+        return _this;
+    }
+    GoldenGear.prototype.OnUse = function (player, board) {
+        // this is just a placeholder item for shops rendering, can't be bought
+        throw new Error("Method not implemented.");
+    };
+    return GoldenGear;
+}(BoardItem));
+var GoldenGearX2 = /** @class */ (function (_super) {
+    __extends(GoldenGearX2, _super);
+    function GoldenGearX2() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.imageTile = tiles["itemIcons"][3][1];
+        _this.name = "Golden Gear x2";
+        _this.description = "Collect the most gears to win the game!";
+        return _this;
+    }
+    GoldenGearX2.prototype.OnUse = function (player, board) {
+        // this is just a placeholder item for shops rendering, can't be bought
+        throw new Error("Method not implemented.");
+    };
+    return GoldenGearX2;
+}(BoardItem));
+var GoldenGearX3 = /** @class */ (function (_super) {
+    __extends(GoldenGearX3, _super);
+    function GoldenGearX3() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.imageTile = tiles["itemIcons"][4][1];
+        _this.name = "Golden Gear x3";
+        _this.description = "Collect the most gears to win the game!";
+        return _this;
+    }
+    GoldenGearX3.prototype.OnUse = function (player, board) {
+        // this is just a placeholder item for shops rendering, can't be bought
+        throw new Error("Method not implemented.");
+    };
+    return GoldenGearX3;
+}(BoardItem));
 var BoardItemFragileDice = /** @class */ (function (_super) {
     __extends(BoardItemFragileDice, _super);
     function BoardItemFragileDice() {

@@ -6,6 +6,35 @@ abstract class BoardItem {
 }
 
 
+class GoldenGear extends BoardItem {
+    imageTile = tiles["itemIcons"][2][1];
+    name: string = "Golden Gear";
+    description: string = "Collect the most gears to win the game!";
+    OnUse(player: Player, board: BoardMap): void {
+        // this is just a placeholder item for shops rendering, can't be bought
+        throw new Error("Method not implemented.");
+    }
+}
+class GoldenGearX2 extends BoardItem {
+    imageTile = tiles["itemIcons"][3][1];
+    name: string = "Golden Gear x2";
+    description: string = "Collect the most gears to win the game!";
+    OnUse(player: Player, board: BoardMap): void {
+        // this is just a placeholder item for shops rendering, can't be bought
+        throw new Error("Method not implemented.");
+    }
+}
+class GoldenGearX3 extends BoardItem {
+    imageTile = tiles["itemIcons"][4][1];
+    name: string = "Golden Gear x3";
+    description: string = "Collect the most gears to win the game!";
+    OnUse(player: Player, board: BoardMap): void {
+        // this is just a placeholder item for shops rendering, can't be bought
+        throw new Error("Method not implemented.");
+    }
+}
+
+
 abstract class BoardItemFragileDice extends BoardItem {
     abstract numFaces: number;
     get name(): string { return `Fragile D${this.numFaces}` }

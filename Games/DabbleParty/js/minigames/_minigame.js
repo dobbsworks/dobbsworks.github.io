@@ -1,4 +1,11 @@
 "use strict";
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 var MinigameBase = /** @class */ (function () {
     function MinigameBase() {
         this.sprites = [];
@@ -92,4 +99,15 @@ var MinigameBase = /** @class */ (function () {
         camera.ctx.fillText(Math.floor(this.score).toString(), camera.canvas.width - 5, camera.canvas.height - fontSize / 4);
     };
     return MinigameBase;
+}());
+var MinigameGenerator = /** @class */ (function () {
+    function MinigameGenerator() {
+    }
+    MinigameGenerator.RandomGame = function () {
+        var games = __spreadArrays(minigames);
+        var i = Math.floor(Math.random() * games.length);
+        var game = games[i];
+        return new game();
+    };
+    return MinigameGenerator;
 }());

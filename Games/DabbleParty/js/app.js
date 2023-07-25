@@ -1,5 +1,5 @@
 "use strict";
-window.onload = Initialize;
+window.onload = function () { setTimeout(Initialize, 100); };
 var tiles = {};
 var camera;
 var mouseHandler;

@@ -1,5 +1,7 @@
 class BoardMap {
     backdropTile: ImageTile = tiles["bgBoard"][0][0];
+    currentRound = 1;
+    finalRound = 15;
     boardSprites: Sprite[] = [];
     boardOverlaySprites: Sprite[] = [];
     boardSpaces: BoardSpace[] = [];
@@ -11,9 +13,10 @@ class BoardMap {
     topEdge = -640;
     bottomEdge = 640;
     isManualCamera = false;
+    scoreTimer = 0;
 
     currentPlayer: Player | null = null;
-    pendingMinigame = new MinigameLift();
+    pendingMinigame: MinigameBase = new MinigameLift();
     instructions: Instructions | null = null;
 
     initialized = false;
@@ -28,77 +31,75 @@ class BoardMap {
             new SimpleSprite(176, 22, tiles["boardDome"][0][0]),
         ]
         // board.boardSpaces.map(a => {
-        //     return `new BlueBoardSpace(${a.gameX.toFixed(0)}, ${a.gameY.toFixed(0)}).ConnectFromPrevious(),`;
+        //     return `new BoardSpace(BoardSpaceType.BlueBoardSpace, ${a.gameX.toFixed(0)}, ${a.gameY.toFixed(0)}).ConnectFromPrevious(),`;
         // }).join("\n")
         this.boardSpaces = [
-            new BlueBoardSpace(497, 250, "first"),
-            new BlueBoardSpace(468, 296).ConnectFromPrevious(),
-            new BlueBoardSpace(440, 347).ConnectFromPrevious(),
-            new BlueBoardSpace(435, 391).ConnectFromPrevious(),
-            new BlueBoardSpace(411, 443).ConnectFromPrevious(),
-            new BlueBoardSpace(358, 480).ConnectFromPrevious(),
-            new DiceUpgradeSpace(283, 489).ConnectFromPrevious(),
-            new BlueBoardSpace(217, 495).ConnectFromPrevious(),
-            new BlueBoardSpace(155, 482).ConnectFromPrevious(),
-            new BlueBoardSpace(87, 471, "10").ConnectFromPrevious(),
-            new BlueBoardSpace(25, 482).ConnectFromPrevious(),
-            new BlueBoardSpace(-47, 468).ConnectFromPrevious(),
-            new BlueBoardSpace(-104, 440).ConnectFromPrevious(),
-            new DiceUpgradeSpace(-166, 407).ConnectFromPrevious(),
-            new BlueBoardSpace(-238, 561).ConnectFromPrevious(),
-            new BlueBoardSpace(-309, 576).ConnectFromPrevious(),
-            new BlueBoardSpace(-382, 557).ConnectFromPrevious(),
-            new BlueBoardSpace(-458, 535).ConnectFromPrevious(),
-            new BlueBoardSpace(-521, 492).ConnectFromPrevious(),
-            new DiceUpgradeSpace(-526, 431).ConnectFromPrevious(),
-            new BlueBoardSpace(-522, 224).ConnectFromPrevious(),
-            new BlueBoardSpace(-494, 174, "22").ConnectFromPrevious(),
-            new BlueBoardSpace(-464, 118).ConnectFromPrevious(),
-            new BlueBoardSpace(-432, 55).ConnectFromPrevious(),
-            new BlueBoardSpace(-412, -13).ConnectFromPrevious(),
-            new BlueBoardSpace(-425, -81).ConnectFromPrevious(),
-            new BlueBoardSpace(-448, -145).ConnectFromPrevious(),
-            new BlueBoardSpace(-421, -207).ConnectFromPrevious(),
-            new BlueBoardSpace(-343, -239).ConnectFromPrevious(),
-            new BlueBoardSpace(-257, -229).ConnectFromPrevious(),
-            new BlueBoardSpace(-181, -222).ConnectFromPrevious(),
-            new BlueBoardSpace(-100, -207).ConnectFromPrevious(),
-            new BlueBoardSpace(-22, -215).ConnectFromPrevious(),
-            new BlueBoardSpace(37, -222).ConnectFromPrevious(),
-            new BlueBoardSpace(125, -215).ConnectFromPrevious(),
-            new BlueBoardSpace(195, -186).ConnectFromPrevious(),
-            new BlueBoardSpace(250, -153).ConnectFromPrevious(),
-            new BlueBoardSpace(326, -166).ConnectFromPrevious(),
-            new BlueBoardSpace(390, -146).ConnectFromPrevious(),
-            new BlueBoardSpace(469, -99).ConnectFromPrevious(),
-            new BlueBoardSpace(493, -23).ConnectFromPrevious(),
-            new BlueBoardSpace(504, 49).ConnectFromPrevious(),
-            new BlueBoardSpace(510, 121).ConnectFromPrevious(),
-            new BlueBoardSpace(482, 183, "last").ConnectFromPrevious(),
-            new BlueBoardSpace(50, 407, "45"),
-            new BlueBoardSpace(-27, 344).ConnectFromPrevious(),
-            new BlueBoardSpace(-72, 301).ConnectFromPrevious(),
-            new BlueBoardSpace(-133, 242).ConnectFromPrevious(),
-            new BlueBoardSpace(-209, 201).ConnectFromPrevious(),
-            new BlueBoardSpace(-286, 214).ConnectFromPrevious(),
-            new BlueBoardSpace(-364, 220).ConnectFromPrevious(),
-            new BlueBoardSpace(-441, 199, "52").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 497, 250, "first"),
+            new BoardSpace(BoardSpaceType.ShopSpace, 468, 296).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 440, 347).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 435, 391).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 411, 443).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 358, 480).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.DiceUpgradeSpace, 283, 489).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 217, 495).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 155, 482).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 87, 471, "10").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 25, 482).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -47, 468).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -104, 440).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.DiceUpgradeSpace, -166, 407).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -238, 561).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -309, 576).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -382, 557).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -458, 535).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -521, 492).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.DiceUpgradeSpace, -526, 431).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -522, 224).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -494, 174, "22").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -464, 118).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -432, 55).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -412, -13).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -425, -81).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -448, -145).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -421, -207).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -343, -239).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -257, -229).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -181, -222).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -100, -207).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -22, -215).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 37, -222).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 125, -215).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 195, -186).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 250, -153).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 326, -166).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 390, -146).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 469, -99).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 493, -23).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 504, 49).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 510, 121).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 482, 183, "last").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, 50, 407, "45"),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -27, 344).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -72, 301).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -133, 242).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -209, 201).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -286, 214).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -364, 220).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.BlueBoardSpace, -441, 199, "52").ConnectFromPrevious(),
 
-            
-            new GrayBoardSpace(560, 250, "starting position")
+            new BoardSpace(BoardSpaceType.GrayBoardSpace, 560, 250, "starting position")
         ];
 
         this.players = [
             new Player(0),
-            // new Player(1),
-            // new Player(2),
-            // new Player(3),
+            new Player(1),
+            new Player(2),
+            new Player(3),
         ];
 
-        for (let i = 1; i <= this.players.length; i++ ) {
+        for (let i = 1; i <= this.players.length; i++) {
             let p = Random.RandFrom(this.players.filter(a => a.turnOrder == 0));
             p.turnOrder = i;
-            if (i == 1) this.currentPlayer = p; // todo - determine turn order
         }
 
         this.players.forEach(a => {
@@ -111,7 +112,7 @@ class BoardMap {
         BoardSpace.ConnectLabels("starting position", "first");
 
         this.players.forEach(a => a.Update());
-        this.StartTurn();
+        this.boardUI.roundStarttimer = 1;
     }
 
 
@@ -121,13 +122,21 @@ class BoardMap {
         this.boardSprites.forEach(a => a.Update());
         this.players.forEach(a => a.Update());
         this.ManualCameraControl();
-        if (this.currentPlayer && this.currentPlayer?.token?.currentSpace == null) this.CameraFollow(this.currentPlayer || this.players[0]);
+        if (this.currentPlayer) this.CameraFollow(this.currentPlayer || this.players[0]);
+        if (this.scoreTimer > 0) {
+            this.scoreTimer++;
+            if (this.scoreTimer > 100 && KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
+                this.boardUI.isShowingScores = false;
+                this.scoreTimer = 0;
+                this.currentRound++;
+                this.boardUI.roundStarttimer = 1;
+            }
+        }
         this.CameraBounds();
         this.boardUI.Update();
     }
 
     StartTurn(): void {
-        this.CameraFocus(this.currentPlayer || this.players[0]);
         this.boardUI.StartPlayerStartText();
     }
 
@@ -143,6 +152,8 @@ class BoardMap {
             this.currentPlayer = null;
             camera.targetScale = 0.421875;
             this.boardUI.isChoosingMinigame = true;
+
+            this.pendingMinigame = MinigameGenerator.RandomGame();
             // this is when I need to set the pending minigame and send it to the database for clients to poll
             this.boardUI.GenerateMinigameRouletteTexts(this.pendingMinigame);
         }
@@ -154,14 +165,12 @@ class BoardMap {
             camera.targetX = player.token.x;
             camera.targetY = player.token.y;
             camera.targetScale = 1.5;
-        }
-    }
 
-    CameraFocus(player: Player): void {
-        if (player.token) {
-            camera.targetX = player.token.x;
-            camera.targetY = player.token.y;
-            camera.targetScale = 2;
+            if (this.boardUI.currentMenu) {
+                camera.targetX = player.token.x - 80;
+                camera.targetY = player.token.y - 20;
+                camera.targetScale = 2;
+            }
         }
     }
 
@@ -187,7 +196,7 @@ class BoardMap {
 
         // if (mouseHandler.isMouseClicked()) {
         //     let pos = mouseHandler.GetGameMousePixel(camera);
-        //     let boardSpace = new BlueBoardSpace(pos.xPixel, pos.yPixel);
+        //     let boardSpace = new BoardSpace(BoardSpaceType.BlueBoardSpace, pos.xPixel, pos.yPixel);
         //     this.boardSpaces.push(boardSpace);
         // }
         // if (KeyboardHandler.IsKeyPressed(KeyAction.EditorDelete, true)) {
@@ -204,9 +213,88 @@ class BoardMap {
         if (camera.scale < 0.75) camera.targetX = 0;
     }
 
+    CreateButtonToToggleToUserViewInOBS(): void {
+        let container = document.getElementById("scoreInput");
+        if (container) {
+            container.innerHTML = "";
+            let button = document.createElement("button");
+            button.textContent = "I HAVE SWITCHED OBS SCENE";
+            button.onclick = () => {
+                //todo - mute audio here
+                this.CreateScoreInputDOM.bind(this)();
+            }
+            container.appendChild(button);
+        }
+    }
+
+    CreateScoreInputDOM(): void {
+        this.instructions = null;
+        let container = document.getElementById("scoreInput");
+        if (container) {
+            container.innerHTML = "";
+            for (let player of this.players) {
+                let row = document.createElement("div");
+                row.className = "scoreRow";
+                let canvas = document.createElement("canvas");
+                canvas.width = 20;
+                canvas.height = 20;
+                canvas.style.margin = "-6px";
+                canvas.style.backgroundColor = "#0000";
+                let image = tiles["playerIcons"][player.avatarIndex][0] as ImageTile;
+                image.Draw(new Camera(canvas), 0, 0, 0.1, 0.1, false, false, 0);
+                let input = document.createElement("input");
+                input.type = "number";
+                input.className = "scoreInput";
+                row.appendChild(canvas);
+                row.appendChild(input);
+                container.appendChild(row);
+            }
+            let submitButton = document.createElement("button");
+            submitButton.textContent = "SUBMIT SCORES";
+            submitButton.onclick = () => { this.OnSubmitScores.bind(this)(); }
+            container.appendChild(submitButton);
+        }
+        this.boardUI.isShowingScores = true;
+    }
+
+    OnSubmitScores(): void {
+        this.scoreTimer = 1;
+        let container = document.getElementById("scoreInput");
+        if (container) {
+
+            let inputs = Array.from(document.getElementsByClassName("scoreInput")) as HTMLInputElement[];
+            let scores = inputs.map(input => +(input.value));
+            if (scores.length != this.players.length) {
+                console.error("WRONG INPUT COUNT");
+            } else if (scores.some(a => isNaN(a))) {
+                console.error("INVALID SCORE");
+            } else if (inputs.some(a => a.value.length == 0)) {
+                console.error("MISSING SCORE");
+            } else {
+                // all good 
+
+                container.innerHTML = "";
+
+                //award coins
+
+                let sortedScores = [...scores]; sortedScores.sort((a,b) => b-a);
+                let topScore = sortedScores[0];
+
+                for (let playerIndex = 0; playerIndex < this.players.length; playerIndex++) {
+                    if (scores[playerIndex] == topScore) {
+                        // minigame winner! (could be multiple players triggering this block)
+                        this.players[playerIndex].coins += 10;
+                        // todo put into animated value instead
+                    }
+                }
+
+            }
+        }
+    }
+
     Draw(camera: Camera): void {
         let backdropScale = 1;
-        if (camera.scale < 1) backdropScale = 1/camera.scale;
+        if (camera.scale < 1) backdropScale = 1 / camera.scale;
         this.backdropTile.Draw(camera, camera.x, camera.y, backdropScale, backdropScale, false, false, 0);
         this.boardSprites.forEach(a => a.Draw(camera));
         this.boardSpaces.forEach(a => a.DrawConnections(camera));

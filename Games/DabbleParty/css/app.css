@@ -24,3 +24,7 @@ canvas {
     color: white;
     text-align: center;
 }
+
+.scoreRow {
+    padding: 3px;
+}

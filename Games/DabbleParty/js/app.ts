@@ -1,4 +1,4 @@
-window.onload = Initialize;
+window.onload = () => { setTimeout(Initialize, 100) };
 let tiles: any = {};
 let camera: Camera;
 let mouseHandler: MouseHandler;
@@ -8,7 +8,7 @@ let playerIndex: number = 0;
 let currentMinigame: MinigameBase | null = null;
 let board: BoardMap | null = null;
 
-let minigames = [
+let minigames: (new() => MinigameBase)[] = [
     MinigameChip,
     MinigameConveyor,
     MinigameDodgePodge,

@@ -1,9 +1,9 @@
 class Player {
     token: BoardToken | null = null;
-    coins: number = 0;
-    gears: number = 0;
+    coins: number = 30;
+    gears: number = 1;
     diceBag = new DiceBag();
-    inventory: BoardItem[] = [new BoardItemFragileD4(), new BoardItemFragileD10(), new BoardItemFragileD20()];
+    inventory: BoardItem[] = [new BoardItemFragileD4(), new BoardItemFragileD10()];
 
     turnOrder: number = 0;
     amountOfMovementLeft = 0;
@@ -16,11 +16,18 @@ class Player {
     floatingTextDirection = 1;
     floatingTextColor = 0;
 
+    isInShop = false;
+    landedOnShop = false;
+
     constructor(public avatarIndex: number) { }
+
+    get avatarName(): string {
+        return ["GameQueued", "germdove", "Al", "Turtle"][this.avatarIndex];
+    }
 
     Update(): void {
         if (this.token) {
-            this.token.Update();
+            if (!this.isInShop) this.token.Update();
 
             if (this.choosingPath && this.token.currentSpace) {
                 let dirKeys = [KeyAction.Left, KeyAction.Right, KeyAction.Up, KeyAction.Down];
@@ -36,15 +43,17 @@ class Player {
                 }
             } else {
                 if (this.token.currentSpace && this.amountOfMovementLeft > 0) {
-                    this.moving = true;
-                    if (this.token.currentSpace.costsMovement) {
+                    if (this.token.currentSpace.spaceType.costsMovement && this.moving) {
                         this.amountOfMovementLeft--;
                     }
+                    let wasMoving = this.moving;
+                    this.moving = true;
     
                     if (this.amountOfMovementLeft > 0) {
                         let options = this.token.currentSpace.nextSpaces;
                         if (options.length == 1) {
                             let nextSpace = options[0];
+                            if (wasMoving) this.token.currentSpace.spaceType.OnPass(this);
                             this.token.MoveToSpace(nextSpace);
                         } else {
                             this.choosingPath = true;
@@ -55,7 +64,7 @@ class Player {
     
                 if (this.token.currentSpace && this.amountOfMovementLeft == 0 && this.moving) {
                     this.moving = false;
-                    this.token.currentSpace.OnLand(this);
+                    this.token.currentSpace.spaceType.OnLand(this);
                     setTimeout(() => {
                         let me = this;
                         me.TurnOver();
@@ -74,7 +83,12 @@ class Player {
     }
 
     TurnOver(): void {
-        board?.CurrentPlayerTurnEnd();
+        let me = this;
+        if (this.isInShop) {
+            setTimeout( () => {me.TurnOver()}, 1000);
+        } else {
+            board?.CurrentPlayerTurnEnd();
+        }
     }
 
     AddCoinsOverToken(amount: number): void {
@@ -147,7 +161,7 @@ class DiceBag {
     // represents how many/what face dice a player rolls 
     // which can be upgraded as the game progresses
 
-    dieFaces: faceCount[] = [6, 6];
+    dieFaces: faceCount[] = [4];
     fragileFaces: faceCount[] = [];
 
     GetDiceSprites(): DiceSprite[] {

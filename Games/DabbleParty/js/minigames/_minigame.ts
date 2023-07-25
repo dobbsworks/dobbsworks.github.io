@@ -102,3 +102,11 @@ abstract class MinigameBase {
     }
 }
 
+class MinigameGenerator {
+    static RandomGame(): MinigameBase {
+        let games = [...minigames];
+        let i = Math.floor(Math.random() * games.length);
+        let game = games[i];
+        return new game();
+    }
+}

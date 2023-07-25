@@ -10,10 +10,10 @@ var Player = /** @class */ (function () {
     function Player(avatarIndex) {
         this.avatarIndex = avatarIndex;
         this.token = null;
-        this.coins = 0;
-        this.gears = 0;
+        this.coins = 30;
+        this.gears = 1;
         this.diceBag = new DiceBag();
-        this.inventory = [new BoardItemFragileD4(), new BoardItemFragileD10(), new BoardItemFragileD20()];
+        this.inventory = [new BoardItemFragileD4(), new BoardItemFragileD10()];
         this.turnOrder = 0;
         this.amountOfMovementLeft = 0;
         this.moving = false;
@@ -23,11 +23,21 @@ var Player = /** @class */ (function () {
         this.floatingTextTimer = 0;
         this.floatingTextDirection = 1;
         this.floatingTextColor = 0;
+        this.isInShop = false;
+        this.landedOnShop = false;
     }
+    Object.defineProperty(Player.prototype, "avatarName", {
+        get: function () {
+            return ["GameQueued", "germdove", "Al", "Turtle"][this.avatarIndex];
+        },
+        enumerable: false,
+        configurable: true
+    });
     Player.prototype.Update = function () {
         var _this = this;
         if (this.token) {
-            this.token.Update();
+            if (!this.isInShop)
+                this.token.Update();
             if (this.choosingPath && this.token.currentSpace) {
                 var dirKeys = [KeyAction.Left, KeyAction.Right, KeyAction.Up, KeyAction.Down];
                 if (dirKeys.some(function (a) { return KeyboardHandler.IsKeyPressed(a, true); })) {
@@ -44,14 +54,17 @@ var Player = /** @class */ (function () {
             }
             else {
                 if (this.token.currentSpace && this.amountOfMovementLeft > 0) {
-                    this.moving = true;
-                    if (this.token.currentSpace.costsMovement) {
+                    if (this.token.currentSpace.spaceType.costsMovement && this.moving) {
                         this.amountOfMovementLeft--;
                     }
+                    var wasMoving = this.moving;
+                    this.moving = true;
                     if (this.amountOfMovementLeft > 0) {
                         var options = this.token.currentSpace.nextSpaces;
                         if (options.length == 1) {
                             var nextSpace = options[0];
+                            if (wasMoving)
+                                this.token.currentSpace.spaceType.OnPass(this);
                             this.token.MoveToSpace(nextSpace);
                         }
                         else {
@@ -62,7 +75,7 @@ var Player = /** @class */ (function () {
                 }
                 if (this.token.currentSpace && this.amountOfMovementLeft == 0 && this.moving) {
                     this.moving = false;
-                    this.token.currentSpace.OnLand(this);
+                    this.token.currentSpace.spaceType.OnLand(this);
                     setTimeout(function () {
                         var me = _this;
                         me.TurnOver();
@@ -79,7 +92,13 @@ var Player = /** @class */ (function () {
         }
     };
     Player.prototype.TurnOver = function () {
-        board === null || board === void 0 ? void 0 : board.CurrentPlayerTurnEnd();
+        var me = this;
+        if (this.isInShop) {
+            setTimeout(function () { me.TurnOver(); }, 1000);
+        }
+        else {
+            board === null || board === void 0 ? void 0 : board.CurrentPlayerTurnEnd();
+        }
     };
     Player.prototype.AddCoinsOverToken = function (amount) {
         this.floatingText = "+" + amount.toString();
@@ -146,7 +165,7 @@ var DiceBag = /** @class */ (function () {
     function DiceBag() {
         // represents how many/what face dice a player rolls 
         // which can be upgraded as the game progresses
-        this.dieFaces = [6, 6];
+        this.dieFaces = [4];
         this.fragileFaces = [];
     }
     DiceBag.prototype.GetDiceSprites = function () {
