@@ -106,7 +106,7 @@ class BoardMenu {
 
     static DrawPlayerPanel(ctx: CanvasRenderingContext2D, x: number, y: number, isHighlighted: boolean, avatarIndex: number, mainText: string, subText: string): void {
         let image = tiles["playerIcons"][avatarIndex][0] as ImageTile;
-        image.Draw(new Camera(camera.canvas), x - 480 + 45, y - 230, 0.5, 0.5, false, false, 0);
+        image.Draw(new Camera(camera.canvas), x - 480 + 45, y - 230, 0.35, 0.35, false, false, 0);
         ctx.fillStyle = "#FFF";
         ctx.textAlign = "left";
         ctx.font = `600 ${18}px ${"arial"}`;
@@ -195,7 +195,6 @@ class BoardMenu {
                     board.currentPlayer.isInShop = false;
                     board.currentPlayer.landedOnShop = false;
                     board.currentPlayer.coins -= actualPrice;
-                    board.currentPlayer.DeductCoinsOverToken(actualPrice);
                     board.currentPlayer.inventory.push(item.item);
                 },
                 actualPrice <= board.currentPlayer.coins
@@ -213,9 +212,9 @@ class BoardMenu {
     static CreateGoldGearMenu(): BoardMenu {
         if (!board || !board.currentPlayer) return new BoardMenu([]);
 
-        let availableGears = [new GoldenGear()];
+        let availableGears = [new ShopItemGoldenGear()];
         if (board.currentPlayer.landedOnShop) {
-            availableGears.push(new GoldenGearX2());
+            availableGears.push(new ShopItemGoldenGearX2());
         }
 
         let gearOptions = availableGears.map((item, index) => {
@@ -231,8 +230,9 @@ class BoardMenu {
                     board.currentPlayer.isInShop = false;
                     board.currentPlayer.landedOnShop = false;
                     board.currentPlayer.coins -= gearPrice;
-                    board.currentPlayer.gears += 1;
+                    board.currentPlayer.gears += (index + 1);
                     board.currentPlayer.DeductCoinsOverToken(gearPrice);
+                    board.PlaceGearSpace();
                 },
                 gearPrice < (board?.currentPlayer?.coins || 0)
             )
@@ -262,7 +262,7 @@ class BoardMenu {
         let ret = new BoardMenu(
             targetablePlayers.map(p => (new BoardMenuOption(
                 (ctx: CanvasRenderingContext2D, x: number, y: number, isHighlighted: boolean) => {
-                    BoardMenu.DrawPlayerPanel(ctx, x, y, isHighlighted, p.avatarIndex, p.avatarName, `Swap places with ${p.avatarIndex}`);
+                    BoardMenu.DrawPlayerPanel(ctx, x, y, isHighlighted, p.avatarIndex, p.avatarName, `Swap places with ${p.avatarName}`);
                 },
                 () => {
                     if (!board || !board.currentPlayer || !board.currentPlayer.token || !p.token) return;
@@ -270,10 +270,206 @@ class BoardMenu {
                     p.token.currentSpace = board.currentPlayer.token.currentSpace;
                     board.currentPlayer.token.currentSpace = targetSquare;
                     // and then start the player's roll (NOT THE ITEM MENU)
-                    // TODO
+                    board.boardUI.StartRoll();
                 }
             )
             )));
+        return ret;
+    }
+
+    static CreateWallopMenu(): BoardMenu {
+        if (!board || !board.currentPlayer) return new BoardMenu([]);
+
+        let itemsForSale = [];
+        if (board.players.some(a => a.coins > 0 && a != board?.currentPlayer)) {
+            itemsForSale.push({ price: 5, item: new ShopItemStealCoins(), menu: BoardMenu.CreateWallopCoinMenu() });
+        }
+        if (board.players.some(a => a.gears > 0 && a != board?.currentPlayer)) {
+            itemsForSale.push({ price: 50, item: new ShopItemStealGears(), menu: BoardMenu.CreateWallopGearMenu() });
+        }
+
+        let ret = new BoardMenu([new BoardMenuOption(
+            (ctx: CanvasRenderingContext2D, x: number, y: number, isHighlighted: boolean) => {
+                if (!board || !board.currentPlayer) return;
+                ctx.font = `800 ${36}px ${"arial"}`;
+                ctx.textAlign = "left";
+                ctx.fillStyle = "#FFF";
+                ctx.fillText("No thanks!", x + 40, y + 65);
+            },
+            () => {
+                if (!board || !board.currentPlayer) return;
+                board.currentPlayer.isInShop = false;
+                board.currentPlayer.landedOnShop = false;
+            }
+        )]);
+
+        for (let item of itemsForSale) {
+            let displayPrice = item.price;
+            let actualPrice = board.currentPlayer.landedOnShop ? displayPrice - 5 : displayPrice;
+            ret.options.push(new BoardMenuOption(
+                (ctx: CanvasRenderingContext2D, x: number, y: number, isHighlighted: boolean) => {
+                    if (!board || !board.currentPlayer) return;
+                    BoardMenu.DrawItemPanel(ctx, x, y, isHighlighted, item.item);
+                    BoardMenu.DrawPricePanel(ctx, x, y, displayPrice, actualPrice);
+                },
+                () => {
+                    if (!board || !board.currentPlayer) return;
+                    board.currentPlayer.coins -= actualPrice;
+                    board.boardUI.currentMenu = item.menu;
+                },
+                actualPrice <= board.currentPlayer.coins
+            ))
+
+
+        }
+
+        ret.talkingHead = tiles["talkingHeads"][1][0];
+        ret.text = "I'm ready to rock!";
+
+        return ret;
+    }
+
+    static CreateWallopCoinMenu(): BoardMenu {
+        if (!board || !board.currentPlayer) return new BoardMenu([]);
+        let user = board.currentPlayer;
+        let targetablePlayers = board.players.filter(a => a.coins > 0 && a != user);
+
+        let ret = new BoardMenu(
+            targetablePlayers.map(p => (new BoardMenuOption(
+                (ctx: CanvasRenderingContext2D, x: number, y: number, isHighlighted: boolean) => {
+                    BoardMenu.DrawPlayerPanel(ctx, x, y, isHighlighted, p.avatarIndex, p.avatarName, `Steal coins from ${p.avatarName}`);
+                },
+                () => {
+                    if (!board || !board.currentPlayer || !board.currentPlayer.token || !p.token) return;
+
+                    let coinsToSteal = 7 + Math.floor(Math.random() * 8 + p.coins / 20);
+                    coinsToSteal = Math.min(p.coins, coinsToSteal);
+                    user.coins += coinsToSteal;
+                    p.coins -= coinsToSteal;
+                    user.isInShop = false;
+                    user.landedOnShop = false;
+                }
+            )
+            )));
+        return ret;
+    }
+
+    static CreateWallopGearMenu(): BoardMenu {
+        if (!board || !board.currentPlayer) return new BoardMenu([]);
+        let user = board.currentPlayer;
+        let targetablePlayers = board.players.filter(a => a.gears > 0 && a != user);
+
+        let ret = new BoardMenu(
+            targetablePlayers.map(p => (new BoardMenuOption(
+                (ctx: CanvasRenderingContext2D, x: number, y: number, isHighlighted: boolean) => {
+                    BoardMenu.DrawPlayerPanel(ctx, x, y, isHighlighted, p.avatarIndex, p.avatarName, `Steal a golden gear from ${p.avatarName}`);
+                },
+                () => {
+                    if (!board || !board.currentPlayer || !board.currentPlayer.token || !p.token) return;
+                    user.gears++;
+                    p.gears--;
+                    user.isInShop = false;
+                    user.landedOnShop = false;
+                }
+            )
+            )));
+        return ret;
+    }
+
+    
+
+    static CreateBiodomeMenu(): BoardMenu {
+        if (!board || !board.currentPlayer) return new BoardMenu([]);
+
+        let itemsForSale = [
+            { price: board.biodomePrice, item: new ShopItemEnterBiodome(), action: () => {} },
+            { price: board.biodomePrice + 10, item: new ShopItemEnterAndRaise(), action: () => {
+                if (board) board.biodomePrice += 5;
+            } }
+        ];
+
+        let ret = new BoardMenu([new BoardMenuOption(
+            (ctx: CanvasRenderingContext2D, x: number, y: number, isHighlighted: boolean) => {
+                if (!board || !board.currentPlayer) return;
+                ctx.font = `800 ${36}px ${"arial"}`;
+                ctx.textAlign = "left";
+                ctx.fillStyle = "#FFF";
+                ctx.fillText("No thanks!", x + 40, y + 65);
+            },
+            () => {
+                if (!board || !board.currentPlayer || !board.currentPlayer.token) return;
+                board.currentPlayer.isInShop = false;
+                board.currentPlayer.landedOnShop = false;
+                let targetSpace = board.boardSpaces.find(x => x.label == "65") as BoardSpace;
+                board.currentPlayer.token.currentSpace = board.currentPlayer.token.movementStartingSpace;
+                board.currentPlayer.token.MoveToSpace(targetSpace);
+            }
+        )]);
+
+        for (let item of itemsForSale) {
+            ret.options.push(new BoardMenuOption(
+                (ctx: CanvasRenderingContext2D, x: number, y: number, isHighlighted: boolean) => {
+                    if (!board || !board.currentPlayer) return;
+                    BoardMenu.DrawItemPanel(ctx, x, y, isHighlighted, item.item);
+                    BoardMenu.DrawPricePanel(ctx, x, y, item.price, item.price);
+                },
+                () => {
+                    if (!board || !board.currentPlayer) return;
+                    board.currentPlayer.coins -= item.price;
+                    item.action();
+                    board.currentPlayer.isInShop = false;
+                },
+                item.price <= board.currentPlayer.coins
+            ))
+        }
+
+        ret.talkingHead = tiles["talkingHeads"][2][0];
+        ret.text = "You like Pauly Shore movies?";
+
+        return ret;
+    }
+    
+
+    static CreateWarpPointMenu(targetSpaceLabel: string): BoardMenu {
+        if (!board || !board.currentPlayer) return new BoardMenu([]);
+
+        let warpPrice = 5;
+
+        let ret = new BoardMenu([new BoardMenuOption(
+            (ctx: CanvasRenderingContext2D, x: number, y: number, isHighlighted: boolean) => {
+                if (!board || !board.currentPlayer) return;
+                ctx.font = `800 ${36}px ${"arial"}`;
+                ctx.textAlign = "left";
+                ctx.fillStyle = "#FFF";
+                ctx.fillText("No thanks!", x + 40, y + 65);
+            },
+            () => {
+                if (!board || !board.currentPlayer || !board.currentPlayer.token) return;
+                board.currentPlayer.isInShop = false;
+                board.currentPlayer.landedOnShop = false;
+            }
+        ), new BoardMenuOption(
+            (ctx: CanvasRenderingContext2D, x: number, y: number, isHighlighted: boolean) => {
+                if (!board || !board.currentPlayer) return;
+                BoardMenu.DrawItemPanel(ctx, x, y, isHighlighted, new ShopItemWarp());
+                BoardMenu.DrawPricePanel(ctx, x, y, warpPrice, warpPrice);
+            },
+            () => {
+                if (!board || !board.currentPlayer || !board.currentPlayer.token) return;
+                board.currentPlayer.coins -= warpPrice;
+                board.currentPlayer.isInShop = false;
+                let targetSpace = board.boardSpaces.find(x => x.label == targetSpaceLabel) as BoardSpace;
+                board.currentPlayer.token.currentSpace = targetSpace;
+                board.currentPlayer.token.MoveToSpace(targetSpace.nextSpaces[0]);
+            },
+            warpPrice <= board.currentPlayer.coins
+        )
+    ]);
+
+
+        ret.talkingHead = tiles["talkingHeads"][2][0];
+        ret.text = "You ever see The Fly?";
+
         return ret;
     }
 }

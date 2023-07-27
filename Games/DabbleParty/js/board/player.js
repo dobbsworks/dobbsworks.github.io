@@ -10,10 +10,10 @@ var Player = /** @class */ (function () {
     function Player(avatarIndex) {
         this.avatarIndex = avatarIndex;
         this.token = null;
-        this.coins = 30;
+        this.coins = 50;
         this.gears = 1;
         this.diceBag = new DiceBag();
-        this.inventory = [new BoardItemFragileD4(), new BoardItemFragileD10()];
+        this.inventory = [new BoardItemDevExit(), new BoardItemFragileD10()];
         this.turnOrder = 0;
         this.amountOfMovementLeft = 0;
         this.moving = false;
@@ -165,7 +165,7 @@ var DiceBag = /** @class */ (function () {
     function DiceBag() {
         // represents how many/what face dice a player rolls 
         // which can be upgraded as the game progresses
-        this.dieFaces = [4];
+        this.dieFaces = [20, 20, 20];
         this.fragileFaces = [];
     }
     DiceBag.prototype.GetDiceSprites = function () {

@@ -78,7 +78,7 @@ var BoardMenu = /** @class */ (function () {
             ctx.fillStyle = "#FFF";
             ctx.textAlign = "left";
             ctx.font = "400 " + 20 + "px " + "arial";
-            var charCount = Math.floor(this.shopTimer * 0.3);
+            var charCount = Math.floor(this.shopTimer * 0.25);
             ctx.fillText(this.text.substring(0, charCount), 485, talkingHeadY + 270 + 40);
         }
     };
@@ -111,7 +111,7 @@ var BoardMenu = /** @class */ (function () {
     };
     BoardMenu.DrawPlayerPanel = function (ctx, x, y, isHighlighted, avatarIndex, mainText, subText) {
         var image = tiles["playerIcons"][avatarIndex][0];
-        image.Draw(new Camera(camera.canvas), x - 480 + 45, y - 230, 0.5, 0.5, false, false, 0);
+        image.Draw(new Camera(camera.canvas), x - 480 + 45, y - 230, 0.35, 0.35, false, false, 0);
         ctx.fillStyle = "#FFF";
         ctx.textAlign = "left";
         ctx.font = "600 " + 18 + "px " + "arial";
@@ -197,7 +197,6 @@ var BoardMenu = /** @class */ (function () {
                 board.currentPlayer.isInShop = false;
                 board.currentPlayer.landedOnShop = false;
                 board.currentPlayer.coins -= actualPrice;
-                board.currentPlayer.DeductCoinsOverToken(actualPrice);
                 board.currentPlayer.inventory.push(item.item);
             }, actualPrice <= board.currentPlayer.coins));
         };
@@ -212,9 +211,9 @@ var BoardMenu = /** @class */ (function () {
     BoardMenu.CreateGoldGearMenu = function () {
         if (!board || !board.currentPlayer)
             return new BoardMenu([]);
-        var availableGears = [new GoldenGear()];
+        var availableGears = [new ShopItemGoldenGear()];
         if (board.currentPlayer.landedOnShop) {
-            availableGears.push(new GoldenGearX2());
+            availableGears.push(new ShopItemGoldenGearX2());
         }
         var gearOptions = availableGears.map(function (item, index) {
             var _a;
@@ -230,8 +229,9 @@ var BoardMenu = /** @class */ (function () {
                 board.currentPlayer.isInShop = false;
                 board.currentPlayer.landedOnShop = false;
                 board.currentPlayer.coins -= gearPrice;
-                board.currentPlayer.gears += 1;
+                board.currentPlayer.gears += (index + 1);
                 board.currentPlayer.DeductCoinsOverToken(gearPrice);
+                board.PlaceGearSpace();
             }, gearPrice < (((_a = board === null || board === void 0 ? void 0 : board.currentPlayer) === null || _a === void 0 ? void 0 : _a.coins) || 0));
         });
         return new BoardMenu(__spreadArrays(gearOptions, [new BoardMenuOption(function (ctx, x, y, isHighlighted) {
@@ -254,7 +254,7 @@ var BoardMenu = /** @class */ (function () {
         var user = board.currentPlayer;
         var targetablePlayers = board.players.filter(function (a) { var _a, _b; return ((_a = a.token) === null || _a === void 0 ? void 0 : _a.currentSpace) != ((_b = user.token) === null || _b === void 0 ? void 0 : _b.currentSpace); });
         var ret = new BoardMenu(targetablePlayers.map(function (p) { return (new BoardMenuOption(function (ctx, x, y, isHighlighted) {
-            BoardMenu.DrawPlayerPanel(ctx, x, y, isHighlighted, p.avatarIndex, p.avatarName, "Swap places with " + p.avatarIndex);
+            BoardMenu.DrawPlayerPanel(ctx, x, y, isHighlighted, p.avatarIndex, p.avatarName, "Swap places with " + p.avatarName);
         }, function () {
             var _a;
             if (!board || !board.currentPlayer || !board.currentPlayer.token || !p.token)
@@ -263,8 +263,173 @@ var BoardMenu = /** @class */ (function () {
             p.token.currentSpace = board.currentPlayer.token.currentSpace;
             board.currentPlayer.token.currentSpace = targetSquare;
             // and then start the player's roll (NOT THE ITEM MENU)
-            // TODO
+            board.boardUI.StartRoll();
         })); }));
+        return ret;
+    };
+    BoardMenu.CreateWallopMenu = function () {
+        if (!board || !board.currentPlayer)
+            return new BoardMenu([]);
+        var itemsForSale = [];
+        if (board.players.some(function (a) { return a.coins > 0 && a != (board === null || board === void 0 ? void 0 : board.currentPlayer); })) {
+            itemsForSale.push({ price: 5, item: new ShopItemStealCoins(), menu: BoardMenu.CreateWallopCoinMenu() });
+        }
+        if (board.players.some(function (a) { return a.gears > 0 && a != (board === null || board === void 0 ? void 0 : board.currentPlayer); })) {
+            itemsForSale.push({ price: 50, item: new ShopItemStealGears(), menu: BoardMenu.CreateWallopGearMenu() });
+        }
+        var ret = new BoardMenu([new BoardMenuOption(function (ctx, x, y, isHighlighted) {
+                if (!board || !board.currentPlayer)
+                    return;
+                ctx.font = "800 " + 36 + "px " + "arial";
+                ctx.textAlign = "left";
+                ctx.fillStyle = "#FFF";
+                ctx.fillText("No thanks!", x + 40, y + 65);
+            }, function () {
+                if (!board || !board.currentPlayer)
+                    return;
+                board.currentPlayer.isInShop = false;
+                board.currentPlayer.landedOnShop = false;
+            })]);
+        var _loop_3 = function (item) {
+            var displayPrice = item.price;
+            var actualPrice = board.currentPlayer.landedOnShop ? displayPrice - 5 : displayPrice;
+            ret.options.push(new BoardMenuOption(function (ctx, x, y, isHighlighted) {
+                if (!board || !board.currentPlayer)
+                    return;
+                BoardMenu.DrawItemPanel(ctx, x, y, isHighlighted, item.item);
+                BoardMenu.DrawPricePanel(ctx, x, y, displayPrice, actualPrice);
+            }, function () {
+                if (!board || !board.currentPlayer)
+                    return;
+                board.currentPlayer.coins -= actualPrice;
+                board.boardUI.currentMenu = item.menu;
+            }, actualPrice <= board.currentPlayer.coins));
+        };
+        for (var _i = 0, itemsForSale_2 = itemsForSale; _i < itemsForSale_2.length; _i++) {
+            var item = itemsForSale_2[_i];
+            _loop_3(item);
+        }
+        ret.talkingHead = tiles["talkingHeads"][1][0];
+        ret.text = "I'm ready to rock!";
+        return ret;
+    };
+    BoardMenu.CreateWallopCoinMenu = function () {
+        if (!board || !board.currentPlayer)
+            return new BoardMenu([]);
+        var user = board.currentPlayer;
+        var targetablePlayers = board.players.filter(function (a) { return a.coins > 0 && a != user; });
+        var ret = new BoardMenu(targetablePlayers.map(function (p) { return (new BoardMenuOption(function (ctx, x, y, isHighlighted) {
+            BoardMenu.DrawPlayerPanel(ctx, x, y, isHighlighted, p.avatarIndex, p.avatarName, "Steal coins from " + p.avatarName);
+        }, function () {
+            if (!board || !board.currentPlayer || !board.currentPlayer.token || !p.token)
+                return;
+            var coinsToSteal = 7 + Math.floor(Math.random() * 8 + p.coins / 20);
+            coinsToSteal = Math.min(p.coins, coinsToSteal);
+            user.coins += coinsToSteal;
+            p.coins -= coinsToSteal;
+            user.isInShop = false;
+            user.landedOnShop = false;
+        })); }));
+        return ret;
+    };
+    BoardMenu.CreateWallopGearMenu = function () {
+        if (!board || !board.currentPlayer)
+            return new BoardMenu([]);
+        var user = board.currentPlayer;
+        var targetablePlayers = board.players.filter(function (a) { return a.gears > 0 && a != user; });
+        var ret = new BoardMenu(targetablePlayers.map(function (p) { return (new BoardMenuOption(function (ctx, x, y, isHighlighted) {
+            BoardMenu.DrawPlayerPanel(ctx, x, y, isHighlighted, p.avatarIndex, p.avatarName, "Steal a golden gear from " + p.avatarName);
+        }, function () {
+            if (!board || !board.currentPlayer || !board.currentPlayer.token || !p.token)
+                return;
+            user.gears++;
+            p.gears--;
+            user.isInShop = false;
+            user.landedOnShop = false;
+        })); }));
+        return ret;
+    };
+    BoardMenu.CreateBiodomeMenu = function () {
+        if (!board || !board.currentPlayer)
+            return new BoardMenu([]);
+        var itemsForSale = [
+            { price: board.biodomePrice, item: new ShopItemEnterBiodome(), action: function () { } },
+            { price: board.biodomePrice + 10, item: new ShopItemEnterAndRaise(), action: function () {
+                    if (board)
+                        board.biodomePrice += 5;
+                } }
+        ];
+        var ret = new BoardMenu([new BoardMenuOption(function (ctx, x, y, isHighlighted) {
+                if (!board || !board.currentPlayer)
+                    return;
+                ctx.font = "800 " + 36 + "px " + "arial";
+                ctx.textAlign = "left";
+                ctx.fillStyle = "#FFF";
+                ctx.fillText("No thanks!", x + 40, y + 65);
+            }, function () {
+                if (!board || !board.currentPlayer || !board.currentPlayer.token)
+                    return;
+                board.currentPlayer.isInShop = false;
+                board.currentPlayer.landedOnShop = false;
+                var targetSpace = board.boardSpaces.find(function (x) { return x.label == "65"; });
+                board.currentPlayer.token.currentSpace = board.currentPlayer.token.movementStartingSpace;
+                board.currentPlayer.token.MoveToSpace(targetSpace);
+            })]);
+        var _loop_4 = function (item) {
+            ret.options.push(new BoardMenuOption(function (ctx, x, y, isHighlighted) {
+                if (!board || !board.currentPlayer)
+                    return;
+                BoardMenu.DrawItemPanel(ctx, x, y, isHighlighted, item.item);
+                BoardMenu.DrawPricePanel(ctx, x, y, item.price, item.price);
+            }, function () {
+                if (!board || !board.currentPlayer)
+                    return;
+                board.currentPlayer.coins -= item.price;
+                item.action();
+                board.currentPlayer.isInShop = false;
+            }, item.price <= board.currentPlayer.coins));
+        };
+        for (var _i = 0, itemsForSale_3 = itemsForSale; _i < itemsForSale_3.length; _i++) {
+            var item = itemsForSale_3[_i];
+            _loop_4(item);
+        }
+        ret.talkingHead = tiles["talkingHeads"][2][0];
+        ret.text = "You like Pauly Shore movies?";
+        return ret;
+    };
+    BoardMenu.CreateWarpPointMenu = function (targetSpaceLabel) {
+        if (!board || !board.currentPlayer)
+            return new BoardMenu([]);
+        var warpPrice = 5;
+        var ret = new BoardMenu([new BoardMenuOption(function (ctx, x, y, isHighlighted) {
+                if (!board || !board.currentPlayer)
+                    return;
+                ctx.font = "800 " + 36 + "px " + "arial";
+                ctx.textAlign = "left";
+                ctx.fillStyle = "#FFF";
+                ctx.fillText("No thanks!", x + 40, y + 65);
+            }, function () {
+                if (!board || !board.currentPlayer || !board.currentPlayer.token)
+                    return;
+                board.currentPlayer.isInShop = false;
+                board.currentPlayer.landedOnShop = false;
+            }), new BoardMenuOption(function (ctx, x, y, isHighlighted) {
+                if (!board || !board.currentPlayer)
+                    return;
+                BoardMenu.DrawItemPanel(ctx, x, y, isHighlighted, new ShopItemWarp());
+                BoardMenu.DrawPricePanel(ctx, x, y, warpPrice, warpPrice);
+            }, function () {
+                if (!board || !board.currentPlayer || !board.currentPlayer.token)
+                    return;
+                board.currentPlayer.coins -= warpPrice;
+                board.currentPlayer.isInShop = false;
+                var targetSpace = board.boardSpaces.find(function (x) { return x.label == targetSpaceLabel; });
+                board.currentPlayer.token.currentSpace = targetSpace;
+                board.currentPlayer.token.MoveToSpace(targetSpace.nextSpaces[0]);
+            }, warpPrice <= board.currentPlayer.coins)
+        ]);
+        ret.talkingHead = tiles["talkingHeads"][2][0];
+        ret.text = "You ever see The Fly?";
         return ret;
     };
     return BoardMenu;

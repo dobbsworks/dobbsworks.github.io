@@ -8,10 +8,13 @@ class BoardSpace {
     }
     static allConstructedSpaces: { label: string, space: BoardSpace }[] = [];
 
+    id!: number;
+    nextSpaces: BoardSpace[] = [];
+    isPotentialGearSpace = false;
+
     constructor(public spaceType: BoardSpaceType, public gameX: number, public gameY: number, public label: string = "") {
         this.id = BoardSpace.GenerateId();
         BoardSpace.allConstructedSpaces.push({ label: label, space: this });
-        //this.originalType = 
     }
 
     ConnectFromPrevious(): BoardSpace {
@@ -54,9 +57,6 @@ class BoardSpace {
 
         space1[0].space.nextSpaces.push(space2[0].space);
     }
-
-    id!: number;
-    nextSpaces: BoardSpace[] = [];
 
     Draw(camera: Camera): void {
         this.spaceType.getImageTile().Draw(camera, this.gameX, this.gameY, 0.2, 0.2, false, false, 0, 1);
@@ -111,14 +111,6 @@ class BoardSpaceType {
             player.AddCoinsOverToken(3);
         },
         () => { });
-    static UpgradedBlueBoardSpace = new BoardSpaceType(
-        () => tiles["partySquares"][1][0],
-        true,
-        (player: Player) => {
-            player.coins += 6;
-            player.AddCoinsOverToken(6);
-        },
-        () => { });
     static RedBoardSpace = new BoardSpaceType(
         () => tiles["partySquares"][0][1],
         true,
@@ -126,15 +118,6 @@ class BoardSpaceType {
             player.coins -= 3;
             if (player.coins < 0) player.coins = 0;
             player.DeductCoinsOverToken(3);
-        },
-        () => { });
-    static UpgradedRedBoardSpace = new BoardSpaceType(
-        () => tiles["partySquares"][1][1],
-        true,
-        (player: Player) => {
-            player.coins -= 6;
-            if (player.coins < 0) player.coins = 0;
-            player.DeductCoinsOverToken(6);
         },
         () => { });
     static DiceUpgradeSpace = new BoardSpaceType(
@@ -152,16 +135,16 @@ class BoardSpaceType {
     static ShopSpace = new BoardSpaceType(
         () => tiles["partySquares"][1][2],
         true,
-        (player: Player) => { 
+        (player: Player) => {
             // TODO - full inventory?
             // TODO - special bonus for landing on space?
-            player.isInShop = true;
             player.landedOnShop = true;
-            if (board) board.boardUI.currentMenu = BoardMenu.CreateShopMenu();
+            BoardSpaceType.ShopSpace.OnPass(player);
         },
-        (player: Player) => { 
+        (player: Player) => {
             if (player.inventory.length >= 3) {
                 // full inventory
+                player.landedOnShop = false;
             } else {
                 player.isInShop = true;
                 if (board) board.boardUI.currentMenu = BoardMenu.CreateShopMenu();
@@ -170,13 +153,47 @@ class BoardSpaceType {
     static GearSpace = new BoardSpaceType(
         () => tiles["partySquares"][1][3],
         true,
-        (player: Player) => { 
-            player.isInShop = true;
+        (player: Player) => {
             player.landedOnShop = true;
-            if (board) board.boardUI.currentMenu = BoardMenu.CreateGoldGearMenu();
+            BoardSpaceType.GearSpace.OnPass(player);
         },
-        (player: Player) => { 
+        (player: Player) => {
             player.isInShop = true;
             if (board) board.boardUI.currentMenu = BoardMenu.CreateGoldGearMenu();
+        });
+    static WallopSpace = new BoardSpaceType(
+        () => tiles["partySquares"][1][5],
+        true,
+        (player: Player) => {
+            player.landedOnShop = true;
+            BoardSpaceType.WallopSpace.OnPass(player);
+        },
+        (player: Player) => {
+            player.isInShop = true;
+            if (board) board.boardUI.currentMenu = BoardMenu.CreateWallopMenu();
+        });
+    static BiodomeEntryBoardSpace = new BoardSpaceType(
+        () => tiles["partySquares"][0][2],
+        false,
+        () => { },
+        (player: Player) => {
+            player.isInShop = true;
+            if (board) board.boardUI.currentMenu = BoardMenu.CreateBiodomeMenu();
+        });
+    static Warp1BoardSpace = new BoardSpaceType(
+        () => tiles["partySquares"][0][2],
+        false,
+        () => { },
+        (player: Player) => {
+            player.isInShop = true;
+            if (board) board.boardUI.currentMenu = BoardMenu.CreateWarpPointMenu("warp2");
+        });
+    static Warp2BoardSpace = new BoardSpaceType(
+        () => tiles["partySquares"][0][2],
+        false,
+        () => { },
+        (player: Player) => {
+            player.isInShop = true;
+            if (board) board.boardUI.currentMenu = BoardMenu.CreateWarpPointMenu("warp1");
         });
 }

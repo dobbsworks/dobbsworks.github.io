@@ -27,8 +27,12 @@ class ImageTile {
 
         // first move the center of the canvas to the center of the object to be drawn
         // next, scale and rotate
+        let scale = camera.scale;
+        if (scrollSpeed != 1) {
+            scale = 1 + (camera.scale - 1) * scrollSpeed;
+        }
         ctx.translate(camera.canvas.width / 2 - (-gameX + camera.x) * camera.scale * scrollSpeed, camera.canvas.height / 2 - (-gameY + camera.y) * camera.scale * scrollSpeed);
-        ctx.scale(xScale * camera.scale * (xFlip ? -1 : 1), yScale * camera.scale * (yFlip ? -1 : 1));
+        ctx.scale(xScale * scale * (xFlip ? -1 : 1), yScale * scale * (yFlip ? -1 : 1));
         ctx.rotate(rotation);
 
 

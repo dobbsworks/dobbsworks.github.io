@@ -1,9 +1,9 @@
 class Player {
     token: BoardToken | null = null;
-    coins: number = 30;
+    coins: number = 50;
     gears: number = 1;
     diceBag = new DiceBag();
-    inventory: BoardItem[] = [new BoardItemFragileD4(), new BoardItemFragileD10()];
+    inventory: BoardItem[] = [new BoardItemDevExit(), new BoardItemFragileD10()];
 
     turnOrder: number = 0;
     amountOfMovementLeft = 0;
@@ -161,7 +161,7 @@ class DiceBag {
     // represents how many/what face dice a player rolls 
     // which can be upgraded as the game progresses
 
-    dieFaces: faceCount[] = [4];
+    dieFaces: faceCount[] = [20, 20, 20];
     fragileFaces: faceCount[] = [];
 
     GetDiceSprites(): DiceSprite[] {

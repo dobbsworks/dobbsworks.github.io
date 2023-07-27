@@ -17,50 +17,160 @@ var BoardItem = /** @class */ (function () {
     }
     return BoardItem;
 }());
-var GoldenGear = /** @class */ (function (_super) {
-    __extends(GoldenGear, _super);
-    function GoldenGear() {
+var ShopItemGoldenGear = /** @class */ (function (_super) {
+    __extends(ShopItemGoldenGear, _super);
+    function ShopItemGoldenGear() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.imageTile = tiles["itemIcons"][2][1];
         _this.name = "Golden Gear";
         _this.description = "Collect the most gears to win the game!";
         return _this;
     }
-    GoldenGear.prototype.OnUse = function (player, board) {
+    ShopItemGoldenGear.prototype.OnUse = function (player, board) {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     };
-    return GoldenGear;
+    return ShopItemGoldenGear;
 }(BoardItem));
-var GoldenGearX2 = /** @class */ (function (_super) {
-    __extends(GoldenGearX2, _super);
-    function GoldenGearX2() {
+var ShopItemGoldenGearX2 = /** @class */ (function (_super) {
+    __extends(ShopItemGoldenGearX2, _super);
+    function ShopItemGoldenGearX2() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.imageTile = tiles["itemIcons"][3][1];
         _this.name = "Golden Gear x2";
         _this.description = "Collect the most gears to win the game!";
         return _this;
     }
-    GoldenGearX2.prototype.OnUse = function (player, board) {
+    ShopItemGoldenGearX2.prototype.OnUse = function (player, board) {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     };
-    return GoldenGearX2;
+    return ShopItemGoldenGearX2;
 }(BoardItem));
-var GoldenGearX3 = /** @class */ (function (_super) {
-    __extends(GoldenGearX3, _super);
-    function GoldenGearX3() {
+var ShopItemGoldenGearX3 = /** @class */ (function (_super) {
+    __extends(ShopItemGoldenGearX3, _super);
+    function ShopItemGoldenGearX3() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.imageTile = tiles["itemIcons"][4][1];
         _this.name = "Golden Gear x3";
         _this.description = "Collect the most gears to win the game!";
         return _this;
     }
-    GoldenGearX3.prototype.OnUse = function (player, board) {
+    ShopItemGoldenGearX3.prototype.OnUse = function (player, board) {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     };
-    return GoldenGearX3;
+    return ShopItemGoldenGearX3;
+}(BoardItem));
+var ShopItemStealCoins = /** @class */ (function (_super) {
+    __extends(ShopItemStealCoins, _super);
+    function ShopItemStealCoins() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.imageTile = tiles["itemIcons"][5][1];
+        _this.name = "Steal coins";
+        _this.description = "I'll smack the coins right out of 'em";
+        return _this;
+    }
+    ShopItemStealCoins.prototype.OnUse = function (player, board) {
+        // this is just a placeholder item for shops rendering, can't be bought
+        throw new Error("Method not implemented.");
+    };
+    return ShopItemStealCoins;
+}(BoardItem));
+var ShopItemStealGears = /** @class */ (function (_super) {
+    __extends(ShopItemStealGears, _super);
+    function ShopItemStealGears() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.imageTile = tiles["itemIcons"][2][1];
+        _this.name = "Steal a golden gear";
+        _this.description = "All's fair in love, war, and party games";
+        return _this;
+    }
+    ShopItemStealGears.prototype.OnUse = function (player, board) {
+        // this is just a placeholder item for shops rendering, can't be bought
+        throw new Error("Method not implemented.");
+    };
+    return ShopItemStealGears;
+}(BoardItem));
+var ShopItemEnterBiodome = /** @class */ (function (_super) {
+    __extends(ShopItemEnterBiodome, _super);
+    function ShopItemEnterBiodome() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.imageTile = tiles["itemIcons"][0][2];
+        _this.name = "Enter the biodome";
+        _this.description = "Look, I'm in the shop interface, wheeee";
+        return _this;
+    }
+    ShopItemEnterBiodome.prototype.OnUse = function (player, board) {
+        // this is just a placeholder item for shops rendering, can't be bought
+        throw new Error("Method not implemented.");
+    };
+    return ShopItemEnterBiodome;
+}(BoardItem));
+var ShopItemEnterAndRaise = /** @class */ (function (_super) {
+    __extends(ShopItemEnterAndRaise, _super);
+    function ShopItemEnterAndRaise() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.imageTile = tiles["itemIcons"][1][2];
+        _this.name = "Enter, & raise price";
+        _this.description = "How did I get here let me out lol";
+        return _this;
+    }
+    ShopItemEnterAndRaise.prototype.OnUse = function (player, board) {
+        // this is just a placeholder item for shops rendering, can't be bought
+        throw new Error("Method not implemented.");
+    };
+    return ShopItemEnterAndRaise;
+}(BoardItem));
+var ShopItemWarp = /** @class */ (function (_super) {
+    __extends(ShopItemWarp, _super);
+    function ShopItemWarp() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.imageTile = tiles["itemIcons"][0][2];
+        _this.name = "Warpetize me, cap'n!";
+        _this.description = "4 days since last teleporter accident";
+        return _this;
+    }
+    ShopItemWarp.prototype.OnUse = function (player, board) {
+        // this is just a placeholder item for shops rendering, can't be bought
+        throw new Error("Method not implemented.");
+    };
+    return ShopItemWarp;
+}(BoardItem));
+var BoardItemDevExit = /** @class */ (function (_super) {
+    __extends(BoardItemDevExit, _super);
+    function BoardItemDevExit() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.imageTile = tiles["itemIcons"][0][1];
+        _this.name = "Dev Exit";
+        _this.description = "Warps you close to the Golden Gear";
+        return _this;
+    }
+    BoardItemDevExit.prototype.OnUse = function (player, board) {
+        var targetSpace = board.boardSpaces.find(function (a) { return a.spaceType == BoardSpaceType.GearSpace; });
+        if (targetSpace) {
+            targetSpace = board.boardSpaces.find(function (a) { return a.nextSpaces.indexOf(targetSpace) > -1; });
+        }
+        if (player.token && targetSpace) {
+            player.token.currentSpace = targetSpace;
+        }
+        board.boardUI.StartRoll();
+    };
+    return BoardItemDevExit;
+}(BoardItem));
+var BoardItemWarpPortal = /** @class */ (function (_super) {
+    __extends(BoardItemWarpPortal, _super);
+    function BoardItemWarpPortal() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.imageTile = tiles["itemIcons"][1][1];
+        _this.name = "Warp Portal";
+        _this.description = "Swaps your position with any chosen player's";
+        return _this;
+    }
+    BoardItemWarpPortal.prototype.OnUse = function (player, board) {
+        board.boardUI.currentMenu = BoardMenu.CreateSwapPlacesMenu();
+    };
+    return BoardItemWarpPortal;
 }(BoardItem));
 var BoardItemFragileDice = /** @class */ (function (_super) {
     __extends(BoardItemFragileDice, _super);
