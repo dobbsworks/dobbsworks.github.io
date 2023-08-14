@@ -152,7 +152,7 @@
 
 		<h2>When is GDB?</h2>
 
-		<!-- <p>GDB 2023 will be held October 8th and 9th this year!</p> -->
+		<p>GDB 2023 will be held October 14th and 15th this year!</p>
 		<p>GDB is usually held in October. Stay tuned for the exact dates!</p>
 
 		<div id="schedule"></div>
@@ -172,11 +172,11 @@
 </body>
 
 <script type="text/javascript">
-	//document.body.onload = Initialize;
+	document.body.onload = Initialize;
 
 	function Initialize() {
 		SetupStreamerList();
-		SetupSchedule();
+		//SetupSchedule();
 	}
 
 	function SetupStreamerList() {
@@ -195,10 +195,11 @@
 			{ name: "sun_berry", avatar: "sun_berry.png" },
 			{ name: "HillbillyAl", avatar: "HillbillyAl.png" },
 			{ name: "hover_cat13", avatar: "hover_cat13.png" },
-			{ name: "Kirbska", avatar: "kirbska.png" },
+			//{ name: "Kirbska", avatar: "kirbska.png" },
 			{ name: "GameSamurai_x", avatar: "GameSamurai_x.png" },
 			{ name: "WhoIsDoopu", avatar: "whoisdoopu.png" },
 			{ name: "SuperBeastGN", avatar: "superbeastgn.png" },
+			{ name: "zft96_", avatar: "zft96_.png" },
 			
 		];
  
@@ -243,7 +244,7 @@
 
 		let container = document.getElementById("schedule");
 		let tableContents = "";
-		let days = ["Saturday, October 8", "Sunday, October 9"];
+		let days = ["Saturday, October 14", "Sunday, October 15"];
 		let timezoneOffset = +((new Date().getTimezoneOffset() / 60).toFixed(0));
 		for (let dayIndex in days) {
 			let day = days[dayIndex];
