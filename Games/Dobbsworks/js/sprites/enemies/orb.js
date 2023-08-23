@@ -52,7 +52,6 @@ var Orbbit = /** @class */ (function (_super) {
                     this.connectedSprite = targetSprite;
                     this.connectionDistance = Math.sqrt(Math.pow((this.connectedSprite.yMid - this.yMid), 2) + Math.pow((this.connectedSprite.xMid - this.xMid), 2));
                     this.theta = Math.atan2(this.connectedSprite.yMid - this.yMid, this.connectedSprite.xMid - this.xMid);
-                    console.log(this.theta);
                 }
             }
         }

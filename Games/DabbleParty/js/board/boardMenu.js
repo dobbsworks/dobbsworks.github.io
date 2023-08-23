@@ -196,8 +196,9 @@ var BoardMenu = /** @class */ (function () {
                     return;
                 board.currentPlayer.isInShop = false;
                 board.currentPlayer.landedOnShop = false;
-                board.currentPlayer.coins -= actualPrice;
-                board.currentPlayer.inventory.push(item.item);
+                cutsceneService.AddScene(new BoardCutSceneAddCoins(-actualPrice, board.currentPlayer));
+                board.currentPlayer.statNonGearSpending += actualPrice;
+                cutsceneService.AddScene(new BoardCutSceneAddItem(item.item, board.currentPlayer));
             }, actualPrice <= board.currentPlayer.coins));
         };
         for (var _i = 0, itemsForSale_1 = itemsForSale; _i < itemsForSale_1.length; _i++) {
@@ -212,8 +213,11 @@ var BoardMenu = /** @class */ (function () {
         if (!board || !board.currentPlayer)
             return new BoardMenu([]);
         var availableGears = [new ShopItemGoldenGear()];
-        if (board.currentPlayer.landedOnShop) {
+        if (board.currentPlayer.landedOnShop || board.IsInLast5Turns()) {
             availableGears.push(new ShopItemGoldenGearX2());
+        }
+        if (board.currentPlayer.landedOnShop && board.IsInLast5Turns()) {
+            availableGears.push(new ShopItemGoldenGearX3());
         }
         var gearOptions = availableGears.map(function (item, index) {
             var _a;
@@ -228,9 +232,9 @@ var BoardMenu = /** @class */ (function () {
                     return;
                 board.currentPlayer.isInShop = false;
                 board.currentPlayer.landedOnShop = false;
-                board.currentPlayer.coins -= gearPrice;
-                board.currentPlayer.gears += (index + 1);
-                board.currentPlayer.DeductCoinsOverToken(gearPrice);
+                cutsceneService.AddScene(new BoardCutSceneAddCoins(-gearPrice, board.currentPlayer));
+                cutsceneService.AddScene(new BoardCutSceneAddItem(new ShopItemGoldenGear(), board.currentPlayer));
+                cutsceneService.AddScene(new BoardCutSceneMoveGear());
                 board.PlaceGearSpace();
             }, gearPrice < (((_a = board === null || board === void 0 ? void 0 : board.currentPlayer) === null || _a === void 0 ? void 0 : _a.coins) || 0));
         });
@@ -301,7 +305,7 @@ var BoardMenu = /** @class */ (function () {
             }, function () {
                 if (!board || !board.currentPlayer)
                     return;
-                board.currentPlayer.coins -= actualPrice;
+                cutsceneService.AddScene(new BoardCutSceneAddCoins(-actualPrice, board.currentPlayer));
                 board.boardUI.currentMenu = item.menu;
             }, actualPrice <= board.currentPlayer.coins));
         };
@@ -325,8 +329,8 @@ var BoardMenu = /** @class */ (function () {
                 return;
             var coinsToSteal = 7 + Math.floor(Math.random() * 8 + p.coins / 20);
             coinsToSteal = Math.min(p.coins, coinsToSteal);
-            user.coins += coinsToSteal;
-            p.coins -= coinsToSteal;
+            cutsceneService.AddScene(new BoardCutSceneAddCoins(-coinsToSteal, p));
+            cutsceneService.AddScene(new BoardCutSceneAddCoins(coinsToSteal, board.currentPlayer));
             user.isInShop = false;
             user.landedOnShop = false;
         })); }));
@@ -342,8 +346,8 @@ var BoardMenu = /** @class */ (function () {
         }, function () {
             if (!board || !board.currentPlayer || !board.currentPlayer.token || !p.token)
                 return;
-            user.gears++;
             p.gears--;
+            cutsceneService.AddScene(new BoardCutSceneAddItem(new ShopItemGoldenGear(), user));
             user.isInShop = false;
             user.landedOnShop = false;
         })); }));
@@ -384,7 +388,8 @@ var BoardMenu = /** @class */ (function () {
             }, function () {
                 if (!board || !board.currentPlayer)
                     return;
-                board.currentPlayer.coins -= item.price;
+                cutsceneService.AddScene(new BoardCutSceneAddCoins(-item.price, board.currentPlayer));
+                board.currentPlayer.statNonGearSpending += item.price;
                 item.action();
                 board.currentPlayer.isInShop = false;
             }, item.price <= board.currentPlayer.coins));
@@ -421,7 +426,8 @@ var BoardMenu = /** @class */ (function () {
             }, function () {
                 if (!board || !board.currentPlayer || !board.currentPlayer.token)
                     return;
-                board.currentPlayer.coins -= warpPrice;
+                cutsceneService.AddScene(new BoardCutSceneAddCoins(-warpPrice, board.currentPlayer));
+                board.currentPlayer.statNonGearSpending += warpPrice;
                 board.currentPlayer.isInShop = false;
                 var targetSpace = board.boardSpaces.find(function (x) { return x.label == targetSpaceLabel; });
                 board.currentPlayer.token.currentSpace = targetSpace;

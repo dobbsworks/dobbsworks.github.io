@@ -42,13 +42,18 @@ var Enemy = /** @class */ (function (_super) {
             var boolyLaunched = false;
             for (var _i = 0, sprites_1 = sprites; _i < sprites_1.length; _i++) {
                 var projectile = sprites_1[_i];
-                if ((this instanceof WoolyBooly && this.state !== BoolyState.Patrol) && ((projectile.x < this.x && this.direction == -1) || (projectile.xRight > this.xRight && this.direction == 1))) {
-                    this.LaunchSprite(projectile, this.xMid < projectile.xMid ? -1 : 1);
+                var isLaunchingBooly = (this instanceof WoolyBooly && this.state !== BoolyState.Patrol) && ((projectile.x < this.x && this.direction == -1) || (projectile.xRight > this.xRight && this.direction == 1));
+                var isLaunchingSkitter = (this instanceof Skitter && this.isHiding);
+                if (isLaunchingBooly || isLaunchingSkitter) {
+                    this.LaunchSprite(projectile, this.xMid > projectile.xMid ? -1 : 1);
                     boolyLaunched = true;
+                    if (projectile instanceof Bullet) {
+                        audioHandler.PlaySound("plink", true);
+                    }
                 }
             }
             if (!boolyLaunched) {
-                if (sprites.length) {
+                if (sprites.length > 0) {
                     this.isActive = false;
                     var deadSprite = new DeadEnemy(this);
                     this.layer.sprites.push(deadSprite);
@@ -59,6 +64,7 @@ var Enemy = /** @class */ (function (_super) {
                     if (!this.isExemptFromSpriteKillCheck) {
                         this.OnDead();
                     }
+                    audioHandler.PlaySound("bop", true);
                 }
             }
         }

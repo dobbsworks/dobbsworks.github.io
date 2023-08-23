@@ -38,7 +38,7 @@ var LevelLayer = /** @class */ (function () {
                 this.UpdateWaterTiles();
             this.cachedCanvas = document.createElement("canvas");
             if (this.tiles.length)
-                this.DrawSectionToCanvas(this.cachedCanvas, 0, 0, this.tiles.length - 1, this.tiles[0].length);
+                this.DrawSectionToCanvasWithOverdraw(this.cachedCanvas, 0, 0, this.tiles.length - 1, this.tiles[0].length - 1);
             this.spriteCanvas.width = camera.canvas.width;
             this.spriteCanvas.height = camera.canvas.height;
         }
@@ -70,17 +70,21 @@ var LevelLayer = /** @class */ (function () {
             }
         }
     };
-    LevelLayer.prototype.DrawSectionToCanvas = function (canvas, left, top, right, bottom) {
-        var targetWidth = this.tileWidth * (right - left + 1 + 2);
+    LevelLayer.prototype.DrawSectionToCanvasWithOverdraw = function (canvas, left, top, right, bottom) {
+        this.DrawSectionToCanvas(canvas, left, top, right, bottom, true);
+    };
+    LevelLayer.prototype.DrawSectionToCanvas = function (canvas, left, top, right, bottom, overdraw) {
+        if (overdraw === void 0) { overdraw = false; }
+        var overdrawAmount = overdraw ? 1 : 0;
+        var targetWidth = this.tileWidth * (right - left + 1 + 2 * overdrawAmount);
         if (canvas.width != targetWidth)
             canvas.width = targetWidth;
-        var targetHeight = this.tileHeight * (bottom - top + 1 + 2); // extra 2 for drawing for screen shake
+        var targetHeight = this.tileHeight * (bottom - top + 1 + 2 * overdrawAmount); // extra 2 for drawing for screen shake
         if (canvas.height != targetHeight)
             canvas.height = targetHeight;
         var ctx = canvas.getContext("2d");
-        var waterTiles = [TileType.Water, TileType.Waterfall, TileType.PurpleWater, TileType.Lava];
         var x = 0;
-        for (var colIndex = left - 1; colIndex <= right + 1; colIndex++, x++) {
+        for (var colIndex = left - overdrawAmount; colIndex <= right + overdrawAmount; colIndex++, x++) {
             var col = this.tiles[colIndex];
             if (colIndex < 0)
                 col = this.tiles[0];
@@ -89,7 +93,7 @@ var LevelLayer = /** @class */ (function () {
             if (!col)
                 continue;
             var y = 0;
-            for (var rowIndex = top - 1; rowIndex <= bottom + 1; rowIndex++, y++) {
+            for (var rowIndex = top - overdrawAmount; rowIndex <= bottom + overdrawAmount; rowIndex++, y++) {
                 var tile = col[rowIndex];
                 if (rowIndex < 0)
                     tile = col[0];
@@ -102,27 +106,28 @@ var LevelLayer = /** @class */ (function () {
                     continue;
                 for (var _i = 0, _a = [TileType.Water, TileType.PurpleWater, TileType.Lava]; _i < _a.length; _i++) {
                     var waterType = _a[_i];
-                    var baseRow = (waterType == TileType.Water ? 0 : 3);
-                    if (waterType == TileType.Lava)
-                        baseRow = 5;
+                    var img = waterType == TileType.Water ? "water" : (waterType == TileType.PurpleWater ? "purpleWater" : "lava");
                     if (this.layerType == TargetLayer.water && tile.tileType == waterType) {
-                        var isWaterLeft = waterTiles.indexOf(this.GetTileByIndex(x - 1, y).tileType) > -1;
-                        var isWaterRight = waterTiles.indexOf(this.GetTileByIndex(x + 1, y).tileType) > -1;
-                        var isWaterDown = waterTiles.indexOf(this.GetTileByIndex(x, y + 1).tileType) > -1;
+                        var waterTiles = [waterType];
+                        if (waterType == TileType.Water)
+                            waterTiles.push(TileType.Waterfall);
+                        var isWaterLeft = waterTiles.indexOf(this.GetTileByIndex(colIndex - 1, rowIndex).tileType) > -1;
+                        var isWaterRight = waterTiles.indexOf(this.GetTileByIndex(colIndex + 1, rowIndex).tileType) > -1;
+                        var isWaterDown = waterTiles.indexOf(this.GetTileByIndex(colIndex, rowIndex + 1).tileType) > -1;
                         if (isWaterDown && isWaterLeft && !isWaterRight)
-                            imageTile = tiles["water"][7][baseRow];
+                            imageTile = tiles[img][7][0];
                         if (isWaterDown && !isWaterLeft && isWaterRight)
-                            imageTile = tiles["water"][5][baseRow];
+                            imageTile = tiles[img][5][0];
                         if (isWaterDown && !isWaterLeft && !isWaterRight)
-                            imageTile = tiles["water"][6][baseRow];
+                            imageTile = tiles[img][6][0];
                         if (!isWaterDown && isWaterLeft && isWaterRight)
-                            imageTile = tiles["water"][6][1 + baseRow];
+                            imageTile = tiles[img][6][1];
                         if (!isWaterDown && isWaterLeft && !isWaterRight)
-                            imageTile = tiles["water"][7][1 + baseRow];
+                            imageTile = tiles[img][7][1];
                         if (!isWaterDown && !isWaterLeft && isWaterRight)
-                            imageTile = tiles["water"][5][1 + baseRow];
+                            imageTile = tiles[img][5][1];
                         if (!isWaterDown && !isWaterLeft && !isWaterRight)
-                            imageTile = tiles["water"][4][1 + baseRow];
+                            imageTile = tiles[img][4][1];
                     }
                 }
                 imageTile.Draw(ctx, x * this.tileWidth, y * this.tileHeight, 1);
@@ -165,6 +170,7 @@ var LevelLayer = /** @class */ (function () {
                 console.error("Invalid tiletype!");
             this.RedrawTile(xIndex, yIndex, tileType.imageTile);
             if (tileType.autoChange) {
+                currentMap.autoChangeTiles = currentMap.autoChangeTiles.filter(function (a) { return a.tile != existingTile; });
                 currentMap.autoChangeTiles.push({ tile: existingTile, standDuration: 0 });
             }
             var existingAnimatedEntry_1 = this.animatedTileList.find(function (a) { return a.tileX == xIndex && a.tileY == yIndex; });
@@ -177,6 +183,26 @@ var LevelLayer = /** @class */ (function () {
             return true;
         }
         return false;
+    };
+    LevelLayer.prototype.ExplodeTile = function (tile) {
+        var oldTileType = tile.tileType;
+        this.SetTile(tile.tileX, tile.tileY, TileType.Air);
+        if (oldTileType != TileType.Air) {
+            // create shards
+            for (var _i = 0, _a = [-1, 1]; _i < _a.length; _i++) {
+                var x = _a[_i];
+                for (var _b = 0, _c = [-1, 1]; _b < _c.length; _b++) {
+                    var y = _c[_b];
+                    var shard = new BlockShard(tile.tileX * 12 + 6, tile.tileY * 12 + 6, this, []);
+                    shard.dx = x * 1;
+                    shard.dy = y * 0.5 - 1;
+                    shard.tilePortionX = x == -1 ? 0 : 1;
+                    shard.tilePortionY = y == -1 ? 0 : 1;
+                    shard.sourceTileType = oldTileType;
+                    this.sprites.push(shard);
+                }
+            }
+        }
     };
     LevelLayer.prototype.UpdateWaterTiles = function () {
         for (var x = 0; x < this.tiles.length; x++) {
@@ -208,12 +234,12 @@ var LevelLayer = /** @class */ (function () {
         if (imageTile.yOffset != 0) {
             this.isDirty = true;
         }
-        if (this.map && this.map.silhoutteColor) {
-            cachedCtx.globalCompositeOperation = "source-atop";
-            cachedCtx.fillStyle = this.map.silhoutteColor;
-            cachedCtx.fillRect(x, y, this.tileWidth, this.tileHeight);
-            cachedCtx.globalCompositeOperation = "source-over";
-        }
+        // if (this.map && this.map.silhoutteColor) {
+        //     cachedCtx.globalCompositeOperation = "source-atop";
+        //     cachedCtx.fillStyle = this.map.silhoutteColor;
+        //     cachedCtx.fillRect(x, y, this.tileWidth, this.tileHeight);
+        //     cachedCtx.globalCompositeOperation = "source-over";
+        // }
     };
     LevelLayer.prototype.Update = function () {
         var _a;
@@ -296,6 +322,45 @@ var LevelLayer = /** @class */ (function () {
     LevelLayer.prototype.GetTileByIndex = function (xTile, yTile) {
         return this.GetTileByPixel(xTile * this.tileWidth, yTile * this.tileHeight);
     };
+    LevelLayer.prototype.AttemptToCoatTile = function (xIndex, yIndex, coatType) {
+        var _a;
+        var tile = this.GetTileByIndex(xIndex, yIndex);
+        var semisolid = tile.GetSemisolidNeighbor();
+        if (tile.tileType == TileType.Air) {
+            if (semisolid && semisolid.tileType.solidity == Solidity.Top) {
+                if (this.CanSlimeTile(semisolid)) {
+                    semisolid.layer.SetTile(xIndex, yIndex, coatType);
+                }
+            }
+        }
+        else {
+            if (tile.tileType.solidity == Solidity.Block && this.CanSlimeTile(tile)) {
+                semisolid = (_a = tile.layer.map) === null || _a === void 0 ? void 0 : _a.semisolidLayer.GetTileByIndex(xIndex, yIndex);
+            }
+        }
+        if (semisolid) {
+            if (coatType == TileType.FireTop && semisolid.uncoatedType == TileType.IceTop) {
+                // fire melts away ice
+                semisolid.layer.SetTile(xIndex, yIndex, semisolid.uncoatedType);
+            }
+            else if (false) {
+                // TODO, more combos
+            }
+            else {
+                semisolid.layer.SetTile(xIndex, yIndex, coatType);
+            }
+        }
+    };
+    LevelLayer.prototype.ClearTile = function (xIndex, yIndex) {
+        var tile = this.GetTileByIndex(xIndex, yIndex);
+        var semisolid = tile.GetSemisolidNeighbor();
+        if (semisolid) {
+            semisolid.tileType = semisolid.uncoatedType;
+        }
+    };
+    LevelLayer.prototype.CanSlimeTile = function (tile) {
+        return !tile.tileType.isExemptFromSlime;
+    };
     LevelLayer.prototype.DrawTiles = function (camera, frameNum) {
         this.DrawToCache(frameNum);
         var scale = camera.scale;
@@ -307,22 +372,8 @@ var LevelLayer = /** @class */ (function () {
         orderedSprites.sort(function (a, b) { return a.zIndex - b.zIndex; });
         for (var _i = 0, orderedSprites_1 = orderedSprites; _i < orderedSprites_1.length; _i++) {
             var sprite = orderedSprites_1[_i];
-            this.DrawSprite(sprite, camera, frameNum);
+            sprite.Draw(camera, frameNum);
         }
-    };
-    LevelLayer.prototype.DrawSprite = function (sprite, camera, frameNum) {
-        sprite.OnBeforeDraw(camera);
-        var frameData = sprite.GetFrameData(frameNum);
-        if ('xFlip' in frameData) {
-            this.DrawFrame(frameData, camera.scale, sprite);
-        }
-        else {
-            for (var _i = 0, _a = frameData; _i < _a.length; _i++) {
-                var fd = _a[_i];
-                this.DrawFrame(fd, camera.scale, sprite);
-            }
-        }
-        sprite.OnAfterDraw(camera);
     };
     LevelLayer.prototype.DrawFrame = function (frameData, scale, sprite) {
         var ctx = camera.ctx;

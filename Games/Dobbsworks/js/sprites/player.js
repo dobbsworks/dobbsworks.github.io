@@ -65,6 +65,8 @@ var Player = /** @class */ (function (_super) {
         _this.maxFloatDuration = 100;
         _this.canPlayerFloatJump = false;
         _this.sourceImageOffset = 0;
+        _this.hasGun = false;
+        _this.gunCooldown = 0;
         return _this;
     }
     Player.prototype.LogProps = function () {
@@ -92,6 +94,7 @@ var Player = /** @class */ (function (_super) {
             this.iFrames--;
         this.PlayerMovement(); // includes gravity
         this.PlayerItem();
+        this.HandleGun();
         this.HandleEnemies(); // includes gravity
         this.PlayerInertia();
         this.PushByAutoscroll();
@@ -789,6 +792,9 @@ var Player = /** @class */ (function (_super) {
             this.OnPlayerHurt();
         }
     };
+    Player.prototype.OnStandInFire = function () {
+        this.OnPlayerHurt();
+    };
     Player.prototype.OnPlayerHurt = function () {
         var _this = this;
         if (this.heldItem && this.heldItem instanceof GoldHeart)
@@ -796,8 +802,7 @@ var Player = /** @class */ (function (_super) {
         if (this.iFrames == 0) {
             var nextHeart_1 = this.layer.sprites.find(function (a) { return a instanceof ExtraHitHeartSmall && a.parent == _this; });
             if (nextHeart_1) {
-                this.iFrames += 130;
-                audioHandler.PlaySound("hurt", true);
+                this.ActivateIFrames();
                 // hurt heart animation
                 var childHeart = this.layer.sprites.find(function (a) { return a instanceof ExtraHitHeartSmall && a.parent == nextHeart_1; });
                 if (childHeart)
@@ -805,10 +810,23 @@ var Player = /** @class */ (function (_super) {
                 nextHeart_1.isActive = false;
                 nextHeart_1.ReplaceWithSpriteType(ExtraHitHeartSmallLoss);
             }
+            else if (this.hasGun) {
+                this.hasGun = false;
+                audioHandler.PlaySound("gun-down", true);
+                var drop = new GunDropped(this.x, this.y, this.layer, []);
+                drop.dy = -1;
+                drop.dx = this.direction == 1 ? -1 : 1;
+                this.layer.sprites.push(drop);
+                this.ActivateIFrames();
+            }
             else {
                 this.OnPlayerDead(true);
             }
         }
+    };
+    Player.prototype.ActivateIFrames = function () {
+        this.iFrames += 130;
+        audioHandler.PlaySound("hurt", true);
     };
     Player.prototype.OnPlayerDead = function (canRespawn) {
         if (!this.isActive) {
@@ -891,7 +909,8 @@ var Player = /** @class */ (function (_super) {
             && !this.isClimbing
             && !this.isHanging
             && !isInCannon
-            && this.throwTimer > 20) {
+            && this.throwTimer > 20
+            && !this.hasGun) {
             // try to grab item?
             for (var _i = 0, _b = this.layer.sprites.filter(function (a) { return a.canBeHeld; }); _i < _b.length; _i++) {
                 var sprite = _b[_i];
@@ -1021,6 +1040,23 @@ var Player = /** @class */ (function (_super) {
             this.heldItem.dyFromPlatform = 0;
         }
     };
+    Player.prototype.HandleGun = function () {
+        if (!this.hasGun)
+            return;
+        if (this.gunCooldown > 0) {
+            this.gunCooldown--;
+        }
+        else if (KeyboardHandler.IsKeyPressed(KeyAction.Action2, true)) {
+            var bullet = new Bullet(this.x + this.direction * 5, this.yMid - 2, this.layer, []);
+            bullet.targetDx = this.direction * 2;
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false)) {
+                bullet.targetDy = -2;
+            }
+            this.layer.sprites.push(bullet);
+            this.gunCooldown = 20;
+            audioHandler.PlaySound("gun-pew", true);
+        }
+    };
     Player.prototype.HandleDoors = function () {
         var _this = this;
         var _a;
@@ -1042,6 +1078,8 @@ var Player = /** @class */ (function (_super) {
         var _this = this;
         var sourceImage = "dobbs";
         var sourceImageOffset = this.sourceImageOffset;
+        if (this.hasGun)
+            sourceImageOffset = 8;
         if (this.iFrames > 64) {
             if (Math.floor(this.iFrames / 8) % 2 == 0)
                 sourceImage = "dobbsGhost";

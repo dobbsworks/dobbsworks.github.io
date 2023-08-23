@@ -13,18 +13,20 @@ var Player = /** @class */ (function () {
         this.coins = 50;
         this.gears = 1;
         this.diceBag = new DiceBag();
-        this.inventory = [new BoardItemDevExit(), new BoardItemFragileD10()];
+        this.inventory = [new BoardItemDevExit(), new BoardItemFragileD20()];
         this.turnOrder = 0;
         this.amountOfMovementLeft = 0;
         this.moving = false;
         this.choosingPath = false;
         this.selectedPathIndex = 0;
-        this.floatingText = "";
-        this.floatingTextTimer = 0;
-        this.floatingTextDirection = 1;
-        this.floatingTextColor = 0;
         this.isInShop = false;
         this.landedOnShop = false;
+        // track stats for final bonuses/graph
+        this.statDiceTotal = 0;
+        this.statNonGearSpending = 0;
+        this.statMinigameWinnings = 0;
+        this.statListOfLandings = [];
+        this.statListOfPassings = [];
     }
     Object.defineProperty(Player.prototype, "avatarName", {
         get: function () {
@@ -36,81 +38,69 @@ var Player = /** @class */ (function () {
     Player.prototype.Update = function () {
         var _this = this;
         if (this.token) {
-            if (!this.isInShop)
-                this.token.Update();
-            if (this.choosingPath && this.token.currentSpace) {
-                var dirKeys = [KeyAction.Left, KeyAction.Right, KeyAction.Up, KeyAction.Down];
-                if (dirKeys.some(function (a) { return KeyboardHandler.IsKeyPressed(a, true); })) {
-                    this.selectedPathIndex++;
-                    if (this.selectedPathIndex >= this.token.currentSpace.nextSpaces.length) {
-                        this.selectedPathIndex = 0;
-                    }
-                }
-                else if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
-                    var nextSpace = this.token.currentSpace.nextSpaces[this.selectedPathIndex];
-                    this.token.MoveToSpace(nextSpace);
-                    this.choosingPath = false;
-                }
-            }
-            else {
-                if (this.token.currentSpace && this.amountOfMovementLeft > 0) {
-                    if (this.token.currentSpace.spaceType.costsMovement && this.moving) {
-                        this.amountOfMovementLeft--;
-                    }
-                    var wasMoving = this.moving;
-                    this.moving = true;
-                    if (this.amountOfMovementLeft > 0) {
-                        var options = this.token.currentSpace.nextSpaces;
-                        if (options.length == 1) {
-                            var nextSpace = options[0];
-                            if (wasMoving)
-                                this.token.currentSpace.spaceType.OnPass(this);
-                            this.token.MoveToSpace(nextSpace);
-                        }
-                        else {
-                            this.choosingPath = true;
+            if (!cutsceneService.isCutsceneActive) {
+                if (!this.isInShop)
+                    this.token.Update();
+                if (this.choosingPath && this.token.currentSpace) {
+                    var dirKeys = [KeyAction.Left, KeyAction.Right, KeyAction.Up, KeyAction.Down];
+                    if (dirKeys.some(function (a) { return KeyboardHandler.IsKeyPressed(a, true); })) {
+                        this.selectedPathIndex++;
+                        if (this.selectedPathIndex >= this.token.currentSpace.nextSpaces.length) {
                             this.selectedPathIndex = 0;
                         }
                     }
+                    else if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
+                        var nextSpace = this.token.currentSpace.nextSpaces[this.selectedPathIndex];
+                        this.token.MoveToSpace(nextSpace);
+                        this.choosingPath = false;
+                    }
                 }
-                if (this.token.currentSpace && this.amountOfMovementLeft == 0 && this.moving) {
-                    this.moving = false;
-                    this.token.currentSpace.spaceType.OnLand(this);
-                    setTimeout(function () {
-                        var me = _this;
-                        me.TurnOver();
-                    }, 1000);
-                }
-            }
-            if (this.floatingText.length > 0) {
-                this.floatingTextTimer++;
-                if (this.floatingTextTimer > 50) {
-                    this.floatingTextTimer = 0;
-                    this.floatingText = "";
+                else {
+                    if (this.token.currentSpace && this.amountOfMovementLeft > 0) {
+                        if (this.token.currentSpace.spaceType.costsMovement && this.moving) {
+                            this.amountOfMovementLeft--;
+                        }
+                        var wasMoving = this.moving;
+                        this.moving = true;
+                        if (this.amountOfMovementLeft > 0) {
+                            var options = this.token.currentSpace.nextSpaces;
+                            if (options.length == 1) {
+                                var nextSpace = options[0];
+                                if (wasMoving) {
+                                    this.token.currentSpace.spaceType.OnPass(this);
+                                    if (this.token.currentSpace.spaceType.OnPass != BoardSpaceType.DoNothing) {
+                                        this.statListOfPassings.push(this.token.currentSpace.spaceType);
+                                    }
+                                }
+                                this.token.MoveToSpace(nextSpace);
+                            }
+                            else {
+                                this.choosingPath = true;
+                                this.selectedPathIndex = 0;
+                            }
+                        }
+                    }
+                    if (this.token.currentSpace && this.amountOfMovementLeft == 0 && this.moving) {
+                        this.moving = false;
+                        this.token.currentSpace.spaceType.OnLand(this);
+                        this.statListOfLandings.push(this.token.currentSpace.spaceType);
+                        setTimeout(function () {
+                            var me = _this;
+                            me.TurnOver();
+                        }, 1000);
+                    }
                 }
             }
         }
     };
     Player.prototype.TurnOver = function () {
         var me = this;
-        if (this.isInShop) {
+        if (this.isInShop || cutsceneService.isCutsceneActive) {
             setTimeout(function () { me.TurnOver(); }, 1000);
         }
         else {
             board === null || board === void 0 ? void 0 : board.CurrentPlayerTurnEnd();
         }
-    };
-    Player.prototype.AddCoinsOverToken = function (amount) {
-        this.floatingText = "+" + amount.toString();
-        this.floatingTextColor = 3;
-        this.floatingTextTimer = 0;
-        this.floatingTextDirection = -1;
-    };
-    Player.prototype.DeductCoinsOverToken = function (amount) {
-        this.floatingText = "-" + (Math.abs(amount)).toString();
-        this.floatingTextColor = 4;
-        this.floatingTextTimer = 0;
-        this.floatingTextDirection = 1;
     };
     Player.prototype.DrawToken = function (camera) {
         if (this.token) {
@@ -133,11 +123,6 @@ var Player = /** @class */ (function () {
                 DrawNumber(this.token.x, this.token.y - 100, displayedMovementRemaining, camera, 0.5);
             }
             this.token.Draw(camera);
-            if (this.floatingText.length > 0) {
-                var baseY = this.token.y - 100 + (this.floatingTextDirection == 1 ? 0 : 50);
-                var y = this.token.y - 100 + this.floatingTextDirection * this.floatingTextTimer * 0.5;
-                DrawText(this.token.x, y, this.floatingText, camera, 0.5, this.floatingTextColor);
-            }
         }
     };
     Player.prototype.CurrentPlace = function () {
@@ -165,7 +150,7 @@ var DiceBag = /** @class */ (function () {
     function DiceBag() {
         // represents how many/what face dice a player rolls 
         // which can be upgraded as the game progresses
-        this.dieFaces = [20, 20, 20];
+        this.dieFaces = [4, 6];
         this.fragileFaces = [];
     }
     DiceBag.prototype.GetDiceSprites = function () {

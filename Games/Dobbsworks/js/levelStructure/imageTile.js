@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var ImageTile = /** @class */ (function () {
     function ImageTile(src, xSrc, ySrc, width, height) {
         this.src = src;
@@ -133,6 +144,18 @@ function rgbStringToHSL(rgb) {
     }
     return rgbToHSL(parseInt(rgb.substring(0, 2), 16), parseInt(rgb.substring(2, 4), 16), parseInt(rgb.substring(4, 6), 16));
 }
+function rgbaStringToHSLA(rgba) {
+    // strip the leading # if it's there
+    rgba = rgba.replace(/^\s*#|\s*$/g, '');
+    // convert 4 char codes --> 6, e.g. `E0Fa` --> `EE00FFaa`
+    if (rgba.length == 4) {
+        rgba = rgba.replace(/(.)/g, '$1$1');
+    }
+    var hsl = rgbToHSL(parseInt(rgba.substring(0, 2), 16), parseInt(rgba.substring(2, 4), 16), parseInt(rgba.substring(4, 6), 16));
+    //console.log(rgba, rgba.substring(6, 8), parseInt(rgba.substring(6, 8), 16) / 255)
+    var hsla = __assign(__assign({}, hsl), { a: parseInt(rgba.substring(6, 8), 16) / 255 });
+    return hsla;
+}
 // exepcts a string and returns an object
 function rgbToHSL(r, g, b) {
     r /= 255;
@@ -202,6 +225,19 @@ function hslToRGB(hsl) {
     g = normalize_rgb_value(g, m);
     b = normalize_rgb_value(b, m);
     return rgbToHex(r, g, b);
+}
+function hslaToRGBA(hsla) {
+    var rgb = hslToRGB(hsla);
+    function alphaToString(a) {
+        // a is [0,255]
+        var str = a.toString(16);
+        if (str.length > 2)
+            str = str.substring(0, 2);
+        if (str.length == 1)
+            return "0" + str;
+        return str;
+    }
+    return rgb + alphaToString(hsla.a * 255);
 }
 function normalize_rgb_value(color, m) {
     color = Math.floor((color + m) * 255);

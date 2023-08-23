@@ -15,7 +15,6 @@ class ExtraHitHeart extends Sprite {
         this.MoveByVelocity();
         if (player && player.Overlaps(this)) {
             audioHandler.PlaySound("heart", false);
-            player.heldItem = null;
             this.isActive = false;
             this.layer.sprites.push(new ExtraHitHeartAnimation(this.x, this.y, this.layer, []));
             let floatingHeart = new ExtraHitHeartSmall(this.x, this.y, this.layer, []);

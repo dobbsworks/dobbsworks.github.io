@@ -31,22 +31,23 @@ var BowlingBall = /** @class */ (function (_super) {
         audioHandler.PlaySound("pins", true);
     };
     BowlingBall.prototype.OnThrow = function (thrower, direction) {
+        this.dy = 0;
         if (thrower instanceof Player) {
             this.dx = direction * 0.5 + thrower.GetTotalDx();
-            this.dy = 0;
-            thrower.dx += -1;
+            thrower.dx += -1 * direction;
+        }
+        else {
+            this.dx = direction * 1 + thrower.GetTotalDx();
         }
     };
     BowlingBall.prototype.OnUpThrow = function (thrower, direction) {
-        if (thrower instanceof Player) {
-            this.dx = (direction * 1) * 0 + thrower.GetTotalDx();
-            this.dy = -1;
-        }
+        this.dx = (direction * 1) * 0 + thrower.GetTotalDx();
+        this.dy = -1;
     };
     BowlingBall.prototype.OnDownThrow = function (thrower, direction) {
+        this.dx = (direction * 1) / 4 + thrower.GetTotalDx();
+        this.dy = 2;
         if (thrower instanceof Player) {
-            this.dx = (direction * 1) / 4 + thrower.GetTotalDx();
-            this.dy = 2;
             thrower.dy -= 2;
         }
     };

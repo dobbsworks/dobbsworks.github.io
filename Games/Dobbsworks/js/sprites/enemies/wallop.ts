@@ -28,6 +28,8 @@ class Wallop extends Enemy {
 
     collideSound = "thump";
 
+    doubleCheckSlam = false;
+
     initialized = false;
     Initialize(): void {
         this.initialized = true;
@@ -101,10 +103,17 @@ class Wallop extends Enemy {
                 this.OnSlam(this.moveDirection);
                 if (this.moveDirection.x == 0) this.dy = 0;
                 if (this.moveDirection.y == 0) this.dx = 0;
-                this.moveDirection = null;
-                this.watchDirections = this.watchDirections.map(a => a.Opposite());
-                this.waitTimer = 30;
+                if (this.doubleCheckSlam) {
+                    this.moveDirection = null;
+                    this.watchDirections = this.watchDirections.map(a => a.Opposite());
+                    this.waitTimer = 30;
+                    this.doubleCheckSlam = false;
+                } else {
+                    this.doubleCheckSlam = true;
+                }
                 audioHandler.PlaySound(this.collideSound, false);
+            } else {
+                this.doubleCheckSlam = false;
             }
         }
 
@@ -190,6 +199,30 @@ class BigWallop extends Wallop {
         if (this.IsOnScreen()) {
             camera.shakeTimerX = 50 * Math.abs(dir.x);
             camera.shakeTimerY = 50 * Math.abs(dir.y);
+        }
+
+        if (dir.x == 0) {
+            //vertical landing
+            let y = dir.y == -1 ? this.y - 6 : this.yBottom + 6;
+            for (let xIter = this.x; xIter < this.xRight; xIter += 12) {
+                let tile = this.layer.GetTileByPixel(xIter, y);
+                let wireTile = tile.GetWireNeighbor();
+                if (wireTile && wireTile.tileType == TileType.Cracks) {
+                    this.layer.map?.wireLayer.SetTile(tile.tileX, tile.tileY, TileType.Air);
+                    this.layer.ExplodeTile(tile);
+                } 
+            }
+        } else {
+            // horizontal landing
+            let x = dir.x == -1 ? this.x - 6 : this.xRight + 6;
+            for (let yIter = this.y; yIter < this.yBottom; yIter += 12) {
+                let tile = this.layer.GetTileByPixel(x, yIter);
+                let wireTile = tile.GetWireNeighbor();
+                if (wireTile && wireTile.tileType == TileType.Cracks) {
+                    this.layer.map?.wireLayer.SetTile(tile.tileX, tile.tileY, TileType.Air);
+                    this.layer.ExplodeTile(tile);
+                }
+            }
         }
     }
 

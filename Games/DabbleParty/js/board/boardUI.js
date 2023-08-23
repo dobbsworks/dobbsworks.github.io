@@ -135,6 +135,8 @@ var BoardUI = /** @class */ (function () {
         if (this.isShowingScores) {
             this.UpdateScoreboxes();
         }
+        if (cutsceneService.isCutsceneActive)
+            return;
         if (this.roundStarttimer > 0) {
             this.roundStarttimer++;
             if (this.roundStarttimer > 100) {
@@ -162,9 +164,11 @@ var BoardUI = /** @class */ (function () {
                 }
             }
             this.combineTimer++;
-            if (this.combineTimer > 20) {
+            if (this.combineTimer == 20) {
                 this.combinedNumber = this.dice.map(function (a) { return a.chosenValue; }).reduce(function (a, b) { return a + b; }, 0);
                 this.dice = [];
+                if (this.board.currentPlayer)
+                    this.board.currentPlayer.statDiceTotal += this.combinedNumber;
             }
         }
         if (this.combinedNumber > 0) {
@@ -185,6 +189,8 @@ var BoardUI = /** @class */ (function () {
     BoardUI.prototype.Draw = function (ctx) {
         var _this = this;
         var _a;
+        if (cutsceneService.isCutsceneActive)
+            return;
         if (this.playerStartTimer > 0) {
             var turnStartName = tiles["turnStartText"][this.useAltStartText ? 1 : 0][((_a = this.board.currentPlayer) === null || _a === void 0 ? void 0 : _a.avatarIndex) || 0];
             var x = Math.pow((this.playerStartTimer - this.slideFrames), 2);

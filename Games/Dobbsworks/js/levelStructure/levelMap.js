@@ -28,6 +28,10 @@ var LevelMap = /** @class */ (function () {
         this.mapHeight = 20;
         this.timerText = "";
         this.silhoutteColor = ""; //"#000" //"#867e1dee" // "#000F";
+        // fluid colors
+        this.waterColor = "#1358eccc";
+        this.purpleWaterColor = "#5f23b8cc";
+        this.lavaColor = "#cf2f17ff";
         this.bgDarknessRatio = 0;
         this.fullDarknessRatio = 0;
         this.standChangeTiles = [];
@@ -271,7 +275,7 @@ var LevelMap = /** @class */ (function () {
                 if (deadPlayer.dooplicateDeath) {
                     new ImageFromTile(0, 0, 960, 576, tiles["bluescreen"][0][0]).Draw(ctx);
                 }
-                this.mainLayer.DrawSprite(deadPlayer, camera, this.frameNum);
+                deadPlayer.Draw(camera, this.frameNum);
             }
         }
         BenchmarkService.Log("DrawDone");
@@ -465,9 +469,16 @@ var LevelMap = /** @class */ (function () {
             this.bgColorBottom = skyDataPieces[1];
             editorHandler.skyEditor.bottomColorPanel.SetColor(this.bgColorBottom);
         }
-        for (var i = 0; i < importedSections.length; i++) {
-            this.backgroundLayers[i] = BackgroundLayer.FromImportString(i, importedSections[i]);
+        for (var i = 0; i < 4; i++) {
+            if (importedSections[i])
+                this.backgroundLayers[i] = BackgroundLayer.FromImportString(i, importedSections[i]);
         }
+        this.waterColor = importedSections[4] || "#1358eccc";
+        this.purpleWaterColor = importedSections[5] || "#5f23b8cc";
+        this.lavaColor = importedSections[6] || "#cf2f17ff";
+        editorHandler.waterColorEditor.colorPanel.SetColorWithAlpha(this.waterColor);
+        editorHandler.purpleWaterColorEditor.colorPanel.SetColorWithAlpha(this.purpleWaterColor);
+        editorHandler.lavaColorEditor.colorPanel.SetColorWithAlpha(this.lavaColor);
     };
     LevelMap.prototype.GetBackgroundExportString = function () {
         this.GenerateThumbnail();
@@ -478,7 +489,8 @@ var LevelMap = /** @class */ (function () {
             this.bgColorBottomPositionRatio.toFixed(2),
             this.overlayOpacity.toFixed(2)
         ].join(",");
-        return skyString + ";" + this.backgroundLayers.map(function (a) { return a.ExportToString(); }).join(";");
+        return skyString + ";" + this.backgroundLayers.map(function (a) { return a.ExportToString(); }).join(";")
+            + ";" + this.waterColor + ";" + this.purpleWaterColor + ";" + this.lavaColor;
     };
     LevelMap.prototype.GenerateThumbnail = function () {
         var canvas = document.createElement("canvas");
@@ -518,6 +530,7 @@ var LevelMap = /** @class */ (function () {
         // 134ms
         if (isResettingLevel || true) {
             ret.LoadBackgroundsFromImportString(importSegments[1]);
+            new WaterRecolor().ApplyRecolors();
         }
         else {
             // TODO : about 0.5 seconds available if we can recycle existing backgrounds
@@ -600,6 +613,9 @@ var LevelMap = /** @class */ (function () {
         currentMap.cameraLocksHorizontal = [];
         currentMap.cameraLocksVertical = [];
         editorHandler.sprites = [];
+        currentMap.waterColor = "#1358eccc";
+        currentMap.purpleWaterColor = "#5f23b8cc";
+        currentMap.lavaColor = "#cf2f17ff";
         currentMap.GetLayerList().forEach(function (layer, index) {
             var newLayer = LevelLayer.FromImportString("AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AA/AAP", index, currentMap.mapHeight, currentMap);
             (currentMap[TargetLayer[index] + "Layer"]) = newLayer;

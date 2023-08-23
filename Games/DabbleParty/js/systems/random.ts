@@ -31,4 +31,16 @@ class Random {
         let index = Random.GetRandInt(0, list.length - 1);
         return list[index];
     }
+
+
+    public static GetShuffledCopy<T>(list: T[]): T[] {
+        let ret = [];
+        let copy = [...list];
+        for (let i = 0; i < list.length; i++) {
+            let indexToRemove = Random.GetRandInt(0, copy.length - 1);
+            let el = copy.splice(indexToRemove, 1)[0];
+            ret.push(el);
+        }
+        return ret;
+    }
 }

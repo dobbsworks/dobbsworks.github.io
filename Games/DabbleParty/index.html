@@ -5,11 +5,12 @@
     <!-- <link rel="icon" type="image/x-icon" href="images/favicon.ico" /> -->
 
     <link rel="stylesheet" href="css/app.css">
-    
+
     <script src="js/structure/pixel.js"></script>
-    
+
 
     <script src="js/types.js"></script>
+    <script src="js/systems/utility.js"></script>
     <script src="js/systems/version.js"></script>
     <script src="js/systems/random.js"></script>
     <script src="js/systems/storageService.js"></script>
@@ -20,6 +21,7 @@
     <script src="js/systems/focusHandler.js"></script>
     <script src="js/systems/dataService.js"></script>
     <script src="js/systems/unloadHandler.js"></script>
+    <script src="js/systems/cutsceneService.js"></script>
 
     <script src="js/structure/imageTile.js"></script>
     <script src="js/structure/frameData.js"></script>
@@ -43,16 +45,19 @@
     <script src="js/minigames/minigameSlots.js"></script>
     <script src="js/minigames/minigameWhenPigsFly.js"></script>
 
+    <script src="js/board/twitchSpace.js"></script>
     <script src="js/board/boardItem.js"></script>
     <script src="js/board/boardSpace.js"></script>
     <script src="js/board/boardMenu.js"></script>
     <script src="js/board/boardUI.js"></script>
+    <script src="js/board/boardCutscene.js"></script>
     <script src="js/board/boardToken.js"></script>
     <script src="js/board/player.js"></script>
     <script src="js/board/boardMap.js"></script>
+    <script src="js/board/gameEnd.js"></script>
 
     <script src="js/app.js"></script>
-    
+
     <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
 </head>
 
@@ -60,8 +65,16 @@
 <body>
     <canvas id="canvas" width="960" height="540"></canvas>
 
-    <div id="scoreInput"></div>
+    <div id="inputSection">
+        <div id="scoreInput"></div>
+        <div>
+            <table id="twitchSpaceInput">
+                <tbody></tbody>
+            </table>
+            <button onclick="LockInTwitchSpaceWeights()">Lock in weights</button>
+        </div>
 
+    </div>
     <div id="footer">
         <div>© Dobbsworks 2023</div>
     </div>
@@ -83,6 +96,8 @@
         <img src="images/bgInstructions.png" data-cols="1" data-rows="1" />
         <img src="images/instructionsPanel.png" data-cols="1" data-rows="1" />
         <img src="images/instructionsBoard.png" data-cols="1" data-rows="1" />
+        <img src="images/spaceBoardBlur.png" data-cols="1" data-rows="1" />
+        <img src="images/spaceBoardTitle.png" data-cols="1" data-rows="1" />
 
         <img src="images/d4.png" data-cols="8" data-rows="6" />
         <img src="images/d6.png" data-cols="8" data-rows="6" />
@@ -106,8 +121,10 @@
         <img src="images/uiSmallIcons.png" data-cols="1" data-rows="2" />
         <img src="images/itemIcons.png" data-cols="6" data-rows="3" />
         <img src="images/playerIcons.png" data-cols="4" data-rows="1" />
-        <img src="images/turnStartText.png" data-cols="2" data-rows="4" />
+        <img src="images/turnStartText.png" data-cols="3" data-rows="4" />
         <img src="images/priceTag.png" data-cols="1" data-rows="1" />
+        <img src="images/emote.png" data-cols="4" data-rows="1" />
+
         <img src="images/boardTokens.png" data-cols="4" data-rows="1" />
         <img src="images/boardPlanet.png" data-cols="1" data-rows="1" />
         <img src="images/boardTestTerrain.png" data-cols="1" data-rows="1" />
@@ -115,11 +132,11 @@
         <img src="images/boardWarp.png" data-cols="1" data-rows="1" />
         <img src="images/boardWarpBase.png" data-cols="1" data-rows="1" />
 
-        
+
         <img src="images/space.png" data-cols="1" data-rows="1" />
         <img src="images/rocket.png" data-cols="1" data-rows="4" />
         <img src="images/spaceThings.png" data-cols="4" data-rows="1" />
-        
+
         <img src="images/bgBalloon.png" data-cols="1" data-rows="1" />
         <img src="images/cannon.png" data-cols="5" data-rows="2" />
         <img src="images/dobbloon.png" data-cols="6" data-rows="1" />
@@ -140,7 +157,7 @@
         <img src="images/bgPlunk.png" data-cols="1" data-rows="1" />
         <img src="images/plunkControls.png" data-cols="3" data-rows="1" />
         <img src="images/plunkDisplay.png" data-cols="10" data-rows="1" />
-        
+
         <img src="images/bgGraph.png" data-cols="1" data-rows="1" />
         <img src="images/penguin.png" data-cols="4" data-rows="1" />
 
@@ -174,33 +191,59 @@
 
     <div id="audioResources" style="display:none;">
         <div id="music">
-            <audio id="silence" controls src="audio/music/Silence.mp3" data-bpm="120" data-intro-beats="0" data-loop-beats="2"></audio>
-            <audio id="levelEnd" controls src="audio/music/LevelEnd.mp3" data-bpm="160" data-intro-beats="8" data-loop-beats="80"></audio>
-            <audio id="menuJazz" controls src="audio/music/MenuJazz.mp3" data-bpm="151" data-intro-beats="16" data-loop-beats="96"></audio>
+            <audio id="silence" controls src="audio/music/Silence.mp3" data-bpm="120" data-intro-beats="0"
+                data-loop-beats="2"></audio>
+            <audio id="levelEnd" controls src="audio/music/LevelEnd.mp3" data-bpm="160" data-intro-beats="8"
+                data-loop-beats="80"></audio>
+            <audio id="menuJazz" controls src="audio/music/MenuJazz.mp3" data-bpm="151" data-intro-beats="16"
+                data-loop-beats="96"></audio>
 
-            <audio id="intro" controls src="audio/music/Intro.mp3" data-bpm="160" data-intro-beats="8" data-loop-beats="128"></audio>
-            <audio id="halloween" controls src="audio/music/Halloween.mp3" data-bpm="160" data-intro-beats="8" data-loop-beats="128"></audio>
-            <audio id="desert" controls src="audio/music/Desert.mp3" data-bpm="128" data-intro-beats="8" data-loop-beats="96"></audio>
-            <audio id="grassland" controls src="audio/music/Grassland.mp3" data-bpm="150" data-intro-beats="0" data-loop-beats="104"></audio>
-            <audio id="adventure" controls src="audio/music/Adventure.mp3" data-bpm="150" data-intro-beats="8" data-loop-beats="96"></audio>
-            <audio id="carnival" controls src="audio/music/Carnival.mp3" data-bpm="190" data-intro-beats="0" data-loop-beats="108"></audio>
-            <audio id="haunt" controls src="audio/music/Haunt.mp3" data-bpm="144" data-intro-beats="12" data-loop-beats="144"></audio>
-            <audio id="sky" controls src="audio/music/Sky.mp3" data-bpm="95" data-intro-beats="24" data-loop-beats="64"></audio>
-            <audio id="chill" controls src="audio/music/Chill.mp3" data-bpm="176" data-intro-beats="32" data-loop-beats="128"></audio>
-            <audio id="computer" controls src="audio/music/Computer.mp3" data-bpm="150" data-intro-beats="40" data-loop-beats="128"></audio>
-            <audio id="crunch" controls src="audio/music/Crunch.mp3" data-bpm="150" data-intro-beats="0" data-loop-beats="160"></audio>
-            <audio id="frost" controls src="audio/music/Frost.mp3" data-bpm="130" data-intro-beats="0" data-loop-beats="192"></audio>
-            <audio id="forest" controls src="audio/music/Forest.mp3" data-bpm="156" data-intro-beats="24" data-loop-beats="48"></audio>
-            <audio id="waltz" controls src="audio/music/Waltz.mp3" data-bpm="158" data-intro-beats="12" data-loop-beats="240"></audio>
-            <audio id="faire" controls src="audio/music/Faire.mp3" data-bpm="172" data-intro-beats="54" data-loop-beats="144"></audio>
-            <audio id="choir" controls src="audio/music/Choir.mp3" data-bpm="164" data-intro-beats="16" data-loop-beats="96"></audio>
-            <audio id="meditate" controls src="audio/music/Meditate.mp3" data-bpm="120" data-intro-beats="0" data-loop-beats="120"></audio>
-            <audio id="slime" controls src="audio/music/Slime.mp3" data-bpm="110" data-intro-beats="16" data-loop-beats="112"></audio>
-            <audio id="chipper" controls src="audio/music/Chipper.mp3" data-bpm="150" data-intro-beats="0" data-loop-beats="96"></audio>
-            <audio id="jungle" controls src="audio/music/Jungle.mp3" data-bpm="120" data-intro-beats="8" data-loop-beats="48"></audio>
-            <audio id="clocktower" controls src="audio/music/Clocktower.mp3" data-bpm="150" data-intro-beats="0" data-loop-beats="232"></audio>
-            <audio id="overdue" controls src="audio/music/Overdue.mp3" data-bpm="170" data-intro-beats="8" data-loop-beats="192"></audio>
-            <audio id="cherry" controls src="audio/music/Cherry.mp3" data-bpm="176" data-intro-beats="28" data-loop-beats="168"></audio>
+            <audio id="intro" controls src="audio/music/Intro.mp3" data-bpm="160" data-intro-beats="8"
+                data-loop-beats="128"></audio>
+            <audio id="halloween" controls src="audio/music/Halloween.mp3" data-bpm="160" data-intro-beats="8"
+                data-loop-beats="128"></audio>
+            <audio id="desert" controls src="audio/music/Desert.mp3" data-bpm="128" data-intro-beats="8"
+                data-loop-beats="96"></audio>
+            <audio id="grassland" controls src="audio/music/Grassland.mp3" data-bpm="150" data-intro-beats="0"
+                data-loop-beats="104"></audio>
+            <audio id="adventure" controls src="audio/music/Adventure.mp3" data-bpm="150" data-intro-beats="8"
+                data-loop-beats="96"></audio>
+            <audio id="carnival" controls src="audio/music/Carnival.mp3" data-bpm="190" data-intro-beats="0"
+                data-loop-beats="108"></audio>
+            <audio id="haunt" controls src="audio/music/Haunt.mp3" data-bpm="144" data-intro-beats="12"
+                data-loop-beats="144"></audio>
+            <audio id="sky" controls src="audio/music/Sky.mp3" data-bpm="95" data-intro-beats="24"
+                data-loop-beats="64"></audio>
+            <audio id="chill" controls src="audio/music/Chill.mp3" data-bpm="176" data-intro-beats="32"
+                data-loop-beats="128"></audio>
+            <audio id="computer" controls src="audio/music/Computer.mp3" data-bpm="150" data-intro-beats="40"
+                data-loop-beats="128"></audio>
+            <audio id="crunch" controls src="audio/music/Crunch.mp3" data-bpm="150" data-intro-beats="0"
+                data-loop-beats="160"></audio>
+            <audio id="frost" controls src="audio/music/Frost.mp3" data-bpm="130" data-intro-beats="0"
+                data-loop-beats="192"></audio>
+            <audio id="forest" controls src="audio/music/Forest.mp3" data-bpm="156" data-intro-beats="24"
+                data-loop-beats="48"></audio>
+            <audio id="waltz" controls src="audio/music/Waltz.mp3" data-bpm="158" data-intro-beats="12"
+                data-loop-beats="240"></audio>
+            <audio id="faire" controls src="audio/music/Faire.mp3" data-bpm="172" data-intro-beats="54"
+                data-loop-beats="144"></audio>
+            <audio id="choir" controls src="audio/music/Choir.mp3" data-bpm="164" data-intro-beats="16"
+                data-loop-beats="96"></audio>
+            <audio id="meditate" controls src="audio/music/Meditate.mp3" data-bpm="120" data-intro-beats="0"
+                data-loop-beats="120"></audio>
+            <audio id="slime" controls src="audio/music/Slime.mp3" data-bpm="110" data-intro-beats="16"
+                data-loop-beats="112"></audio>
+            <audio id="chipper" controls src="audio/music/Chipper.mp3" data-bpm="150" data-intro-beats="0"
+                data-loop-beats="96"></audio>
+            <audio id="jungle" controls src="audio/music/Jungle.mp3" data-bpm="120" data-intro-beats="8"
+                data-loop-beats="48"></audio>
+            <audio id="clocktower" controls src="audio/music/Clocktower.mp3" data-bpm="150" data-intro-beats="0"
+                data-loop-beats="232"></audio>
+            <audio id="overdue" controls src="audio/music/Overdue.mp3" data-bpm="170" data-intro-beats="8"
+                data-loop-beats="192"></audio>
+            <audio id="cherry" controls src="audio/music/Cherry.mp3" data-bpm="176" data-intro-beats="28"
+                data-loop-beats="168"></audio>
         </div>
         <div id="sfx">
             <audio src="audio/sfx/pick-up.mp3?v=0"></audio>

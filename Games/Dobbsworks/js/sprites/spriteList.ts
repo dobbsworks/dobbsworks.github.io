@@ -155,4 +155,15 @@ var spriteTypes: SpriteType[] = [
     BigWallopSlider,
     BigWallopPlatform,
     BigWallopPlatformSlider,
+
+    GunPickup,
+    Skitter,
+    Bomb,
+    SafetyBomb,
+    BubbleKey,
+    Escarghost,
+    RubySnail,
+    WaterBalloon,
+    SpicyJelly,
+    Angler,
 ];

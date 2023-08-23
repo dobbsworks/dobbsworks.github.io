@@ -26,6 +26,7 @@ var LittleJelly = /** @class */ (function (_super) {
         _this.animateTimer = 0;
         _this.wasOnGround = false;
         _this.rowNumber = 0;
+        _this.landingCoating = TileType.Slime;
         _this.numberOfGroundFrames = 20;
         return _this;
     }
@@ -85,7 +86,7 @@ var LittleJelly = /** @class */ (function (_super) {
     LittleJelly.prototype.WhileOnGround = function () { };
     LittleJelly.prototype.OnGroundLanding = function () {
         audioHandler.PlaySound("stuck-jump", true);
-        this.CreateSlimeGround(TileType.Slime);
+        this.CreateSlimeGround(this.landingCoating);
     };
     LittleJelly.prototype.CreateSlimeGround = function (slimeGround) {
         var _this = this;
@@ -93,27 +94,8 @@ var LittleJelly = /** @class */ (function (_super) {
         var y = Math.floor((this.yBottom + 1) / this.layer.tileHeight);
         xs.forEach(function (x) { return _this.AttemptToSlime(x, y, slimeGround); });
     };
-    LittleJelly.prototype.CanSlimeTile = function (tile) {
-        return !tile.tileType.isExemptFromSlime;
-    };
     LittleJelly.prototype.AttemptToSlime = function (xIndex, yIndex, slimeGround) {
-        var _a;
-        var tile = this.layer.GetTileByIndex(xIndex, yIndex);
-        var semisolid = tile.GetSemisolidNeighbor();
-        // TODO
-        // when it's possible to wash off slime we'll need to store the previous semisolid
-        if (tile.tileType == TileType.Air) {
-            if (semisolid && semisolid.tileType.solidity == Solidity.Top) {
-                if (this.CanSlimeTile(semisolid)) {
-                    semisolid.layer.SetTile(xIndex, yIndex, slimeGround);
-                }
-            }
-        }
-        else {
-            if (tile.tileType.solidity == Solidity.Block && this.CanSlimeTile(tile)) {
-                (_a = tile.layer.map) === null || _a === void 0 ? void 0 : _a.semisolidLayer.SetTile(xIndex, yIndex, slimeGround);
-            }
-        }
+        this.layer.AttemptToCoatTile(xIndex, yIndex, slimeGround);
     };
     LittleJelly.prototype.OnBounce = function () {
         this.canBeBouncedOn = false;
@@ -148,36 +130,30 @@ var ChillyJelly = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.numberOfGroundFrames = 150;
         _this.rowNumber = 1;
+        _this.effectType = FrostEffect;
+        _this.landingCoating = TileType.IceTop;
         return _this;
     }
-    // WhileOnGround(): void {
-    //     if (this.jumpPrepTimer == 1) {
-    //     }
-    // }
     ChillyJelly.prototype.OnJump = function () {
         var _this = this;
-        var frost = this.layer.sprites.filter(function (a) { return a instanceof FrostEffect && a.targetSprite == _this; });
+        var frost = this.layer.sprites.filter(function (a) { return a instanceof _this.effectType && a.targetSprite == _this; });
         if (frost.length == 0) {
-            var frostSprite = new FrostEffect(this.x, this.y, this.layer, []);
+            var frostSprite = new this.effectType(this.x, this.y, this.layer, []);
             frostSprite.targetSprite = this;
             this.layer.sprites.push(frostSprite);
         }
     };
     ChillyJelly.prototype.OnGroundLanding = function () {
         var _this = this;
-        audioHandler.PlaySound("stuck-jump", true);
-        this.CreateSlimeGround(TileType.IceTop);
-        // let frost = this.layer.sprites.filter(a => a instanceof FrostEffect && a.targetSprite == this);
-        // if (player) {
-        //     let frostSpeed = (player.xMid < this.xMid ? -1 : 1)
-        //     frost.forEach(a => a.dx = frostSpeed * 1);
-        //     frost.forEach(a => { if (a instanceof FrostEffect) a.targetSprite = null });
-        // }
-        var frost = this.layer.sprites.filter(function (a) { return a instanceof FrostEffect && a.targetSprite == _this; });
+        _super.prototype.OnGroundLanding.call(this);
+        var frost = this.layer.sprites.filter(function (a) { return a instanceof _this.effectType && a.targetSprite == _this; });
         for (var _i = 0, frost_1 = frost; _i < frost_1.length; _i++) {
             var f = frost_1[_i];
             f.isActive = false;
         }
+    };
+    ChillyJelly.prototype.OnStandInFire = function () {
+        this.OnBounce();
     };
     return ChillyJelly;
 }(LittleJelly));
@@ -189,6 +165,7 @@ var FrostEffect = /** @class */ (function (_super) {
         _this.width = 25;
         _this.killedByProjectiles = false;
         _this.respectsSolidTiles = false;
+        _this.imageSource = "frostEffect";
         _this.timer = 0;
         _this.targetSprite = null;
         return _this;
@@ -210,7 +187,7 @@ var FrostEffect = /** @class */ (function (_super) {
     };
     FrostEffect.prototype.GetFrameData = function (frameNum) {
         return {
-            imageTile: tiles["frostEffect"][Math.floor(frameNum / 5) % 8][0],
+            imageTile: tiles[this.imageSource][Math.floor(frameNum / 5) % 8][0],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
@@ -219,3 +196,32 @@ var FrostEffect = /** @class */ (function (_super) {
     };
     return FrostEffect;
 }(Enemy));
+var FlameEffect = /** @class */ (function (_super) {
+    __extends(FlameEffect, _super);
+    function FlameEffect() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.imageSource = "flameEffect";
+        _this.landingCoating = TileType.FireTop;
+        return _this;
+    }
+    return FlameEffect;
+}(FrostEffect));
+var SpicyJelly = /** @class */ (function (_super) {
+    __extends(SpicyJelly, _super);
+    function SpicyJelly() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.numberOfGroundFrames = 150;
+        _this.rowNumber = 2;
+        _this.landingCoating = TileType.FireTopDecay1;
+        _this.effectType = FlameEffect;
+        return _this;
+    }
+    SpicyJelly.prototype.Update = function () {
+        _super.prototype.Update.call(this);
+        if (this.isInWater) {
+            this.ReplaceWithSpriteType(LittleJelly);
+        }
+    };
+    SpicyJelly.prototype.OnStandInFire = function () { };
+    return SpicyJelly;
+}(ChillyJelly));

@@ -7,6 +7,7 @@ let playerIndex: number = 0;
 
 let currentMinigame: MinigameBase | null = null;
 let board: BoardMap | null = null;
+let cutsceneService = new CutsceneService();
 
 let minigames: (new() => MinigameBase)[] = [
     MinigameChip,
@@ -40,7 +41,7 @@ function Initialize() {
     UnloadHandler.RegisterUnloadHandler();
     KeyboardHandler.InitKeyHandlers();
     setInterval(MainLoop, 1000 / 60);
-
+    InitializeTwitchSpaceUI(); // TODO only if host
     board = new BoardMap();
     //currentMinigame = new MinigameChip();
     // let instructions = new Instructions(new MinigameChip());
@@ -64,6 +65,7 @@ function GetLoopTime() {
 function Update(): void {
     KeyboardHandler.Update();
 
+    cutsceneService.Update();
     if (currentMinigame) {
         currentMinigame.BaseUpdate();
     } else if (board) {

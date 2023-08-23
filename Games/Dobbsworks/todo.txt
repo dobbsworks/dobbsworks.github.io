@@ -23,7 +23,6 @@ MENU/UI CHANGES
 
 LATER CONTENT RELEASES
     link takes you directly to a level
-    escarghosts
     blueprints
     magnet
     fuse + candle + fused cannon
@@ -43,17 +42,17 @@ LATER CONTENT RELEASES
         https://discord.com/channels/690030990285865087/985265286225747988/1118935788323872818
     ratchet scroll
         https://discord.com/channels/690030990285865087/985265286225747988/1118677659476574289
-    ghost house?
-        https://discord.com/channels/690030990285865087/985265286225747988/1113623737607131246
         
     bouncing skull that also bounces off of backdrop tiles!
-    slidy thwomp, varieties for different directions
     candle that can burn things?
     breakable blocks
     
-    Wallop
-    Wallopeño
-        need to center the art for easier spin move
+
+
+    autochange - overwrite??
+    fire decays to original instead of branch
+    water bucket
+    water balloon?
 
         
 

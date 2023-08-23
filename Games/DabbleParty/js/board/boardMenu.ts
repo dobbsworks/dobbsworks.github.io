@@ -194,8 +194,9 @@ class BoardMenu {
                     if (!board || !board.currentPlayer) return;
                     board.currentPlayer.isInShop = false;
                     board.currentPlayer.landedOnShop = false;
-                    board.currentPlayer.coins -= actualPrice;
-                    board.currentPlayer.inventory.push(item.item);
+                    cutsceneService.AddScene(new BoardCutSceneAddCoins(-actualPrice, board.currentPlayer));
+                    board.currentPlayer.statNonGearSpending += actualPrice;
+                    cutsceneService.AddScene(new BoardCutSceneAddItem(item.item, board.currentPlayer));
                 },
                 actualPrice <= board.currentPlayer.coins
             ))
@@ -213,9 +214,13 @@ class BoardMenu {
         if (!board || !board.currentPlayer) return new BoardMenu([]);
 
         let availableGears = [new ShopItemGoldenGear()];
-        if (board.currentPlayer.landedOnShop) {
+        if (board.currentPlayer.landedOnShop || board.IsInLast5Turns()) {
             availableGears.push(new ShopItemGoldenGearX2());
         }
+        if (board.currentPlayer.landedOnShop && board.IsInLast5Turns()) {
+            availableGears.push(new ShopItemGoldenGearX3());
+        }
+
 
         let gearOptions = availableGears.map((item, index) => {
             let gearPrice = 10 * (index + 1);
@@ -229,9 +234,9 @@ class BoardMenu {
                     if (!board || !board.currentPlayer) return;
                     board.currentPlayer.isInShop = false;
                     board.currentPlayer.landedOnShop = false;
-                    board.currentPlayer.coins -= gearPrice;
-                    board.currentPlayer.gears += (index + 1);
-                    board.currentPlayer.DeductCoinsOverToken(gearPrice);
+                    cutsceneService.AddScene(new BoardCutSceneAddCoins(-gearPrice, board.currentPlayer));
+                    cutsceneService.AddScene(new BoardCutSceneAddItem(new ShopItemGoldenGear(), board.currentPlayer));
+                    cutsceneService.AddScene(new BoardCutSceneMoveGear());
                     board.PlaceGearSpace();
                 },
                 gearPrice < (board?.currentPlayer?.coins || 0)
@@ -314,7 +319,7 @@ class BoardMenu {
                 },
                 () => {
                     if (!board || !board.currentPlayer) return;
-                    board.currentPlayer.coins -= actualPrice;
+                    cutsceneService.AddScene(new BoardCutSceneAddCoins(-actualPrice, board.currentPlayer));
                     board.boardUI.currentMenu = item.menu;
                 },
                 actualPrice <= board.currentPlayer.coins
@@ -344,8 +349,8 @@ class BoardMenu {
 
                     let coinsToSteal = 7 + Math.floor(Math.random() * 8 + p.coins / 20);
                     coinsToSteal = Math.min(p.coins, coinsToSteal);
-                    user.coins += coinsToSteal;
-                    p.coins -= coinsToSteal;
+                    cutsceneService.AddScene(new BoardCutSceneAddCoins(-coinsToSteal, p));
+                    cutsceneService.AddScene(new BoardCutSceneAddCoins(coinsToSteal, board.currentPlayer));
                     user.isInShop = false;
                     user.landedOnShop = false;
                 }
@@ -366,8 +371,8 @@ class BoardMenu {
                 },
                 () => {
                     if (!board || !board.currentPlayer || !board.currentPlayer.token || !p.token) return;
-                    user.gears++;
                     p.gears--;
+                    cutsceneService.AddScene(new BoardCutSceneAddItem(new ShopItemGoldenGear(), user));
                     user.isInShop = false;
                     user.landedOnShop = false;
                 }
@@ -415,7 +420,8 @@ class BoardMenu {
                 },
                 () => {
                     if (!board || !board.currentPlayer) return;
-                    board.currentPlayer.coins -= item.price;
+                    cutsceneService.AddScene(new BoardCutSceneAddCoins(-item.price, board.currentPlayer));
+                    board.currentPlayer.statNonGearSpending += item.price;
                     item.action();
                     board.currentPlayer.isInShop = false;
                 },
@@ -456,7 +462,8 @@ class BoardMenu {
             },
             () => {
                 if (!board || !board.currentPlayer || !board.currentPlayer.token) return;
-                board.currentPlayer.coins -= warpPrice;
+                cutsceneService.AddScene(new BoardCutSceneAddCoins(-warpPrice, board.currentPlayer));
+                board.currentPlayer.statNonGearSpending += warpPrice;
                 board.currentPlayer.isInShop = false;
                 let targetSpace = board.boardSpaces.find(x => x.label == targetSpaceLabel) as BoardSpace;
                 board.currentPlayer.token.currentSpace = targetSpace;

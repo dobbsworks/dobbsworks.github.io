@@ -5,6 +5,7 @@ class Shrubbert extends Enemy {
     respectsSolidTiles = true;
     canBeBouncedOn = true;
     state: "normal" | "stunned" | "running" = "normal";
+    isBurning = false;
     stunTimer = 0;
     maxStun = 32;
 
@@ -23,11 +24,36 @@ class Shrubbert extends Enemy {
         } else {
             let speed = this.state == "normal" ? 0.3 : 0.6;
             if (this.stackedOn) speed = 0.3;
+            if (this.isBurning) speed = 0.8;
             this.GroundPatrol(speed, this.turnAtLedges);
         }
         this.ApplyGravity();
         this.ApplyInertia();
         this.ReactToWater();
+
+        if (this.isInWater || this.isInWaterfall) {
+            this.Extinguish();
+        }
+
+        this.canBeBouncedOn = !this.isBurning;
+    }
+
+    Extinguish(): void {
+        if (this.isBurning) {
+            this.isBurning = false;
+            this.state = "stunned";
+            this.stunTimer = 0;
+            this.height -= 4;
+            this.y += 4;
+        }
+    }
+
+    OnStandInFire(): void {
+        this.isBurning = true;
+        if (this.height == 8) {
+            this.height += 4;
+            this.y -= 4;
+        }
     }
     
     OnSpinBounce(): void { this.ReplaceWithSpriteType(Poof); }
@@ -55,6 +81,16 @@ class Shrubbert extends Enemy {
 
         if (this.state == "stunned") {
             frame = Math.floor(this.stunTimer / (this.maxStun / 8)) % 8;
+        }
+
+        if (this.isBurning) {
+            return {
+                imageTile: tiles["burningShrubbert"][frame % 4][0],
+                xFlip: this.direction == 1,
+                yFlip: false,
+                xOffset: 5,
+                yOffset: 4
+            };
         }
 
         return {

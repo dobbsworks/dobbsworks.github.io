@@ -129,6 +129,10 @@ class BoardUI {
             this.UpdateScoreboxes();
         }
 
+
+        if (cutsceneService.isCutsceneActive) return;
+
+
         if (this.roundStarttimer > 0) {
             this.roundStarttimer++;
             if (this.roundStarttimer > 100) {
@@ -159,10 +163,11 @@ class BoardUI {
             }
             this.combineTimer++;
 
-            if (this.combineTimer > 20) {
+            if (this.combineTimer == 20) {
                 this.combinedNumber = this.dice.map(a => a.chosenValue).reduce((a, b) => a + b, 0);
                 this.dice = [];
 
+                if (this.board.currentPlayer) this.board.currentPlayer.statDiceTotal += this.combinedNumber;
             }
         }
 
@@ -185,6 +190,7 @@ class BoardUI {
     }
 
     Draw(ctx: CanvasRenderingContext2D): void {
+        if (cutsceneService.isCutsceneActive) return;
         if (this.playerStartTimer > 0) {
             let turnStartName = tiles["turnStartText"][this.useAltStartText ? 1 : 0][this.board.currentPlayer?.avatarIndex || 0] as ImageTile;
             let x = (this.playerStartTimer - this.slideFrames) ** 2;
@@ -362,7 +368,7 @@ class DiceSprite {
     private framesSinceStop = 0;
     private isHiding = false;
     private dieScale = 1.5;
-    constructor(public x: number, public y: number, private faces: faceCount, private isFragile: boolean) { }
+    constructor(public x: number, public y: number, private faces: FaceCount, private isFragile: boolean) { }
 
     IsDoneAnimating(): boolean { return this._isStopped && this.framesSinceStop > 20; }
     IsStopped(): boolean { return this._isStopped; }

@@ -49,6 +49,7 @@ var Sprite = /** @class */ (function () {
         this.canBeBouncedOn = false;
         this.hurtsEnemies = false;
         this.isInTractorBeam = false;
+        this.isDestroyedByLight = false;
         this.onScreenTimer = 0;
         this.isDuplicate = false;
         this.trackPipeExit = null;
@@ -110,6 +111,9 @@ var Sprite = /** @class */ (function () {
     Sprite.prototype.OnEnterPipe = function () { };
     Sprite.prototype.OnExitPipe = function (exitDirection) { };
     Sprite.prototype.OnPickup = function () { return this; };
+    Sprite.prototype.OnMapLoad = function () {
+        // called after all sprites in place, before logic executes
+    };
     Sprite.prototype.GetTotalDx = function () {
         var ret = this.dx;
         ret += this.dxFromPlatform;
@@ -301,6 +305,7 @@ var Sprite = /** @class */ (function () {
     };
     Sprite.prototype.OnBounce = function () { };
     Sprite.prototype.OnSpinBounce = function () { this.OnBounce(); };
+    Sprite.prototype.OnStandInFire = function () { };
     Sprite.prototype.OnThrow = function (thrower, direction) {
         this.dx = direction * 1 + thrower.GetTotalDx();
         this.dy = -1;
@@ -546,6 +551,18 @@ var Sprite = /** @class */ (function () {
             return true;
         return ((_b = this.layer.map) === null || _b === void 0 ? void 0 : _b.waterLayer.GetTileByPixel(this.xMid, this.yBottom + this.floatingPointOffset).tileType.isSwimmable) || false;
     };
+    Sprite.prototype.IsInLava = function () {
+        var _a;
+        var isLavaAtMid = ((_a = this.layer.map) === null || _a === void 0 ? void 0 : _a.waterLayer.GetTileByPixel(this.xMid, this.yMid + this.floatingPointOffset).tileType) == TileType.Lava;
+        if (isLavaAtMid)
+            return true;
+        var map = this.layer.map;
+        if (map && map.lavaLevel.currentY !== -1) {
+            if (this.yBottom + this.floatingPointOffset > map.lavaLevel.currentY)
+                return true;
+        }
+        return false;
+    };
     Sprite.prototype.ReactToPlatformsAndSolids = function () {
         if (!this.parentSprite)
             this.isOnGround = false;
@@ -569,6 +586,8 @@ var Sprite = /** @class */ (function () {
                     // upcoming position is below ground line
                     this.isOnGround = true;
                     this.standingOn = grounds.tiles;
+                    if (this.standingOn.some(function (a) { return a.tileType.isFire; }))
+                        this.OnStandInFire();
                     if (this.parentSprite && this.parentSprite.GetTotalDy() > 0)
                         this.parentSprite = null;
                     var conveyorSpeeds = this.standingOn.map(function (a) { return a.tileType.conveyorSpeed; }).filter(function (a) { return a !== 0; });
@@ -1046,6 +1065,20 @@ var Sprite = /** @class */ (function () {
     };
     Sprite.prototype.OnBeforeDraw = function (camera) { };
     Sprite.prototype.OnAfterDraw = function (camera) { };
+    Sprite.prototype.Draw = function (camera, frameNum) {
+        this.OnBeforeDraw(camera);
+        var frameData = this.GetFrameData(frameNum);
+        if ('xFlip' in frameData) {
+            this.layer.DrawFrame(frameData, camera.scale, this);
+        }
+        else {
+            for (var _i = 0, _a = frameData; _i < _a.length; _i++) {
+                var fd = _a[_i];
+                this.layer.DrawFrame(fd, camera.scale, this);
+            }
+        }
+        this.OnAfterDraw(camera);
+    };
     Sprite.prototype.OnDead = function () {
         var hearts = this.layer.sprites.filter(function (a) { return a instanceof GoldHeart; });
         hearts.forEach(function (a) { return a.isBroken = true; });
@@ -1156,6 +1189,9 @@ var Sprite = /** @class */ (function () {
         if (dir == Direction.Right)
             return this.touchedRightWalls.length > 0;
         return false;
+    };
+    Sprite.prototype.GetMidToMidDistance = function (sprite) {
+        return Math.sqrt(Math.pow((this.xMid - sprite.xMid), 2) + Math.pow((this.yMid - sprite.yMid), 2));
     };
     return Sprite;
 }());

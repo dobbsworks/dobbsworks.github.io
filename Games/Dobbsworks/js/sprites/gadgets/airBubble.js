@@ -43,7 +43,7 @@ var AirBubble = /** @class */ (function (_super) {
         if (this.popTimer > 12)
             col = 3;
         return {
-            imageTile: tiles["water"][col][3],
+            imageTile: tiles["fluids"][col][3],
             xFlip: false,
             yFlip: false,
             xOffset: 1,

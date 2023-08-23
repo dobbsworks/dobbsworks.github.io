@@ -11,6 +11,7 @@ class LevelTile {
     public isSpritePowered: boolean = false;
     public powerValue: number = -1; // -1 no power, 0+ distance from powersource
     public powerDelay: number = 0;
+    public uncoatedType!: TileType;
 
     private isPoweredUp: boolean = false;
 
@@ -30,6 +31,10 @@ class LevelTile {
         return this.layer.map?.waterLayer.GetTileByIndex(this.tileX, this.tileY);
     }
 
+    GetBackdropNeighbor(): LevelTile | undefined {
+        return this.layer.map?.backdropLayer.GetTileByIndex(this.tileX, this.tileY);
+    }
+
     GetTopPixel(): number {
         return this.tileY * this.layer.tileHeight;
     }
@@ -40,6 +45,14 @@ class LevelTile {
         }
         if (this.tileType == TileType.CircuitOn || this.tileType == TileType.ConveyorRightOn) {
             this.powerValue = 1;
+        }
+        this.uncoatedType = this.tileType;
+        if (this.tileType == TileType.FireTop) {
+            this.uncoatedType = TileType.BranchTop;
+        } else if (this.tileType == TileType.Slime) {
+            this.uncoatedType = TileType.GrassyTop;
+        } else if (this.tileType == TileType.IceTop) {
+            this.uncoatedType = TileType.SnowTop;
         }
     }
 

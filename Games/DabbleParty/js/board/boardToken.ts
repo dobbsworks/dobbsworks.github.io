@@ -63,5 +63,4 @@ class BoardToken extends Sprite {
             yOffset: this.z
         };
     }
-
 }

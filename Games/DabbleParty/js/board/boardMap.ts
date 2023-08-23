@@ -50,7 +50,7 @@ class BoardMap {
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 87, 471, "10").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 25, 482).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -47, 468).ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -104, 440).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.TwitchSpace, -104, 440).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -166, 407).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.RedBoardSpace, -238, 561).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -309, 576, "16").ConnectFromPrevious(),
@@ -79,7 +79,7 @@ class BoardMap {
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 195, -186).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 250, -153, "37").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 326, -166, "38").ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, 390, -146).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.TwitchSpace, 390, -146).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 440, -120).ConnectFromPrevious(),
 
             new BoardSpace(BoardSpaceType.Warp2BoardSpace, 460, -75, "warp2").ConnectFromPrevious(),
@@ -115,7 +115,7 @@ class BoardMap {
 
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -111, -27, "65"),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -141, -96, "66").ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -116, -152, "67").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.TwitchSpace, -116, -152, "67").ConnectFromPrevious(),
 
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 193, 23, "68"),
             new BoardSpace(BoardSpaceType.DiceUpgradeSpace, 177, -40).ConnectFromPrevious(),
@@ -159,14 +159,22 @@ class BoardMap {
         this.PlaceGearSpace();
     }
 
+    IsInLast5Turns(): boolean {
+        return this.finalRound - this.currentRound + 1 <= 5;
+    }
 
     Update(): void {
         if (!this.initialized) this.Initialize();
         this.timer++;
         this.boardSprites.forEach(a => a.Update());
-        this.players.forEach(a => a.Update());
-        this.ManualCameraControl();
-        if (this.currentPlayer) this.CameraFollow(this.currentPlayer || this.players[0]);
+
+        if (cutsceneService.isCutsceneActive) {
+            //do nothing
+        } else {
+            this.players.forEach(a => a.Update());
+            this.ManualCameraControl();
+            if (this.currentPlayer) this.CameraFollow(this.currentPlayer || this.players[0]);
+        }
         if (this.scoreTimer > 0) {
             this.scoreTimer++;
             if (this.scoreTimer > 100 && KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
@@ -174,6 +182,12 @@ class BoardMap {
                 this.scoreTimer = 0;
                 this.currentRound++;
                 this.boardUI.roundStarttimer = 1;
+                if (this.finalRound - this.currentRound + 1 == 5) {
+                    cutsceneService.AddScene(new BoardCutSceneLast5Turns());
+                }
+                if (this.finalRound - this.currentRound + 1 == 0) {
+                    cutsceneService.AddScene(new BoardCutSceneGameEnd());
+                }
             }
         }
         this.CameraBounds();
@@ -203,6 +217,11 @@ class BoardMap {
         }
     }
 
+    CameraFocusSpace(boardSpace: BoardSpace): void {
+        camera.targetX = boardSpace.gameX;
+        camera.targetY = boardSpace.gameY;
+    }
+
 
     CameraFollow(player: Player): void {
         if (player.token) {
@@ -218,7 +237,7 @@ class BoardMap {
         }
     }
 
-    PlaceGearSpace(): void {
+    PlaceGearSpace(): BoardSpace {
         let existingSpace = this.boardSpaces.find(a => a.spaceType == BoardSpaceType.GearSpace);
         let spaces = this.boardSpaces.filter(a => a.isPotentialGearSpace);
         let target = spaces[6];
@@ -227,6 +246,7 @@ class BoardMap {
             existingSpace.spaceType = BoardSpaceType.BlueBoardSpace;
         }
         target.spaceType = BoardSpaceType.GearSpace;
+        return target;
     }
 
     ManualCameraControl(): void {
@@ -339,6 +359,8 @@ class BoardMap {
                     if (scores[playerIndex] == topScore) {
                         // minigame winner! (could be multiple players triggering this block)
                         this.players[playerIndex].coins += 10;
+                        this.players[playerIndex].statMinigameWinnings += 10;
+
                         // todo put into animated value instead
                     }
                 }
@@ -357,6 +379,7 @@ class BoardMap {
         this.players.forEach(a => a.DrawToken(camera));
         this.boardOverlaySprites.forEach(a => a.Draw(camera));
 
+        cutsceneService.Draw(camera);
         if (this.instructions) {
             this.instructions.Draw(camera);
         } else {

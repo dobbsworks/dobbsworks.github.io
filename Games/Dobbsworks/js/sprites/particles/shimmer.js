@@ -93,8 +93,19 @@ var ShimmerRipple = /** @class */ (function (_super) {
             var tile = toReveal_1[_i];
             this.layer.sprites.push(new Shimmer(tile.tileX * this.layer.tileWidth, tile.tileY * this.layer.tileHeight, this.layer, []));
         }
-        if (this.queuedShimmers.length == 0)
+        if (this.queuedShimmers.length == 0 && this.currentRevealRadius > this.maxRadiusPixels)
             this.isActive = false;
+        if (this.maxRadiusPixels > 50) {
+            // jump shimmers don't count, need lightbulb shimmer
+            var ghosts = this.layer.sprites.filter(function (a) { return a.isDestroyedByLight; });
+            for (var _a = 0, ghosts_1 = ghosts; _a < ghosts_1.length; _a++) {
+                var ghost = ghosts_1[_a];
+                var distance = Math.sqrt(Math.pow((this.x - ghost.x), 2) + Math.pow((this.y - ghost.y), 2));
+                if (Math.abs(distance - this.currentRevealRadius) < 5) {
+                    ghost.ReplaceWithSpriteType(Poof);
+                }
+            }
+        }
     };
     ShimmerRipple.prototype.GetFrameData = function (frameNum) {
         return {
@@ -104,6 +115,18 @@ var ShimmerRipple = /** @class */ (function (_super) {
             xOffset: 0,
             yOffset: 0
         };
+    };
+    ShimmerRipple.prototype.OnAfterDraw = function (camera) {
+        var ctx = camera.ctx;
+        if (this.currentRevealRadius > 3) {
+            var x = (this.x - camera.x) * camera.scale + camera.canvas.width / 2;
+            var y = (this.y - camera.y) * camera.scale + camera.canvas.height / 2;
+            ctx.strokeStyle = "#FFF3";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(x, y, this.currentRevealRadius * camera.scale, -Math.PI / 2, 2 * Math.PI - Math.PI / 2, false);
+            ctx.stroke();
+        }
     };
     return ShimmerRipple;
 }(Sprite));

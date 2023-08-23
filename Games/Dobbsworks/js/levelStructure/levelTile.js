@@ -27,6 +27,10 @@ var LevelTile = /** @class */ (function () {
         var _a;
         return (_a = this.layer.map) === null || _a === void 0 ? void 0 : _a.waterLayer.GetTileByIndex(this.tileX, this.tileY);
     };
+    LevelTile.prototype.GetBackdropNeighbor = function () {
+        var _a;
+        return (_a = this.layer.map) === null || _a === void 0 ? void 0 : _a.backdropLayer.GetTileByIndex(this.tileX, this.tileY);
+    };
     LevelTile.prototype.GetTopPixel = function () {
         return this.tileY * this.layer.tileHeight;
     };
@@ -36,6 +40,16 @@ var LevelTile = /** @class */ (function () {
         }
         if (this.tileType == TileType.CircuitOn || this.tileType == TileType.ConveyorRightOn) {
             this.powerValue = 1;
+        }
+        this.uncoatedType = this.tileType;
+        if (this.tileType == TileType.FireTop) {
+            this.uncoatedType = TileType.BranchTop;
+        }
+        else if (this.tileType == TileType.Slime) {
+            this.uncoatedType = TileType.GrassyTop;
+        }
+        else if (this.tileType == TileType.IceTop) {
+            this.uncoatedType = TileType.SnowTop;
         }
     };
     LevelTile.prototype.isPowered = function () {

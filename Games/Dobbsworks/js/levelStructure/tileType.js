@@ -30,6 +30,7 @@ var TileType = /** @class */ (function () {
         this.drainsAir = false;
         this.canWalkOn = true; //sticky honey blocks
         this.canJumpFrom = true; //sticky slime blocks
+        this.isFire = false;
         this.isStickyWall = false;
         this.isJumpWall = false;
         this.isWarpWall = false;
@@ -379,6 +380,8 @@ var TileType = /** @class */ (function () {
         TileType.DerelictSpikesDown;
         TileType.DerelictSpikesLeft;
         TileType.DerelictSpikesRight;
+        TileType.Cracks;
+        TileType.FireTop;
     };
     TileType.RegisterSlope = function (keyBase, tileRow) {
         var colIter = 8;
@@ -1252,7 +1255,7 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "PurpleWater", {
         get: function () {
-            return TileType.GetTileType("PurpleWater", "water", 0, 3, Solidity.None, TargetLayer.water, function (tileType) {
+            return TileType.GetTileType("PurpleWater", "purpleWater", 0, 0, Solidity.None, TargetLayer.water, function (tileType) {
                 tileType.isSwimmable = true;
                 tileType.drainsAir = true;
             });
@@ -1262,7 +1265,7 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "PurpleWaterSurface", {
         get: function () {
-            return TileType.GetAnimatedTileType("PurpleWaterSurface", "water", [{ x: 0, y: 4 }, { x: 1, y: 4 }, { x: 2, y: 4 }, { x: 3, y: 4 }], 10, Solidity.None, TargetLayer.water);
+            return TileType.GetAnimatedTileType("PurpleWaterSurface", "purpleWater", [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }, { x: 3, y: 1 }], 15, Solidity.None, TargetLayer.water);
         },
         enumerable: false,
         configurable: true
@@ -1270,7 +1273,7 @@ var TileType = /** @class */ (function () {
     Object.defineProperty(TileType, "PoisonGas", {
         get: function () {
             var frames = [0, 0, 0, 1, 1, 2, 3, 4, 4, 5, 5, 5, 4, 4, 3, 2, 1, 1].map(function (a) { return ({ x: a, y: 7 }); });
-            return TileType.GetAnimatedTileType("PoisonGas", "water", frames, 6, Solidity.None, TargetLayer.water, function (tileType) {
+            return TileType.GetAnimatedTileType("PoisonGas", "fluids", frames, 6, Solidity.None, TargetLayer.water, function (tileType) {
                 tileType.drainsAir = true;
             });
         },
@@ -1279,7 +1282,7 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "Honey", {
         get: function () {
-            return TileType.GetTileType("Honey", "water", 4, 2, Solidity.Top, TargetLayer.semisolid, function (tileType) {
+            return TileType.GetTileType("Honey", "fluids", 4, 2, Solidity.Top, TargetLayer.semisolid, function (tileType) {
                 tileType.imageTile.yOffset = -2;
                 tileType.canWalkOn = false;
             });
@@ -1289,7 +1292,7 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "Slime", {
         get: function () {
-            return TileType.GetTileType("Slime", "water", 7, 2, Solidity.Top, TargetLayer.semisolid, function (tileType) {
+            return TileType.GetTileType("Slime", "fluids", 7, 2, Solidity.Top, TargetLayer.semisolid, function (tileType) {
                 tileType.imageTile.yOffset = -2;
                 tileType.canJumpFrom = false;
                 tileType.isExemptFromSlime = true;
@@ -1298,9 +1301,73 @@ var TileType = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(TileType, "FireTop", {
+        get: function () {
+            var frames = [0, 1, 2, 3, 4, 5, 6, 7].map(function (a) { return ({ x: a, y: 0 }); });
+            return TileType.GetAnimatedTileType("FireTop", "fluids", frames, 4, Solidity.Top, TargetLayer.semisolid, function (tileType) {
+                tileType.isFire = true;
+                tileType.imageTiles.forEach(function (a) {
+                    a.yOffset = -4;
+                });
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "FireTopDecay1", {
+        get: function () {
+            var frames = [0, 1, 2, 3, 4, 5, 6, 7].map(function (a) { return ({ x: a, y: 0 }); });
+            return TileType.GetAnimatedTileType("FireTopDecay1", "fluids", frames, 4, Solidity.Top, TargetLayer.semisolid, function (tileType) {
+                tileType.isFire = true;
+                tileType.imageTiles.forEach(function (a) {
+                    a.yOffset = -4;
+                });
+                tileType.autoChange = {
+                    tileTypeName: "FireTopDecay2",
+                    delay: 90
+                };
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "FireTopDecay2", {
+        get: function () {
+            var frames = [0, 1, 2, 3, 4, 5, 6, 7].map(function (a) { return ({ x: a, y: 4 }); });
+            return TileType.GetAnimatedTileType("FireTopDecay2", "fluids", frames, 4, Solidity.Top, TargetLayer.semisolid, function (tileType) {
+                tileType.isFire = true;
+                tileType.imageTiles.forEach(function (a) {
+                    a.yOffset = -4;
+                });
+                tileType.autoChange = {
+                    tileTypeName: "FireTopDecay3",
+                    delay: 90
+                };
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "FireTopDecay3", {
+        get: function () {
+            var frames = [0, 1, 2, 3, 4, 5, 6, 7].map(function (a) { return ({ x: a, y: 5 }); });
+            return TileType.GetAnimatedTileType("FireTopDecay3", "fluids", frames, 4, Solidity.Top, TargetLayer.semisolid, function (tileType) {
+                tileType.isFire = true;
+                tileType.imageTiles.forEach(function (a) {
+                    a.yOffset = -3;
+                });
+                tileType.autoChange = {
+                    tileTypeName: "BranchTop",
+                    delay: 90
+                };
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(TileType, "HoneyLeft", {
         get: function () {
-            return TileType.GetTileType("HoneyLeft", "water", 5, 2, Solidity.LeftWall, TargetLayer.semisolid, function (tileType) {
+            return TileType.GetTileType("HoneyLeft", "fluids", 5, 2, Solidity.LeftWall, TargetLayer.semisolid, function (tileType) {
                 tileType.imageTile.xOffset = 8;
                 tileType.isStickyWall = true;
                 tileType.isExemptFromSlime = true;
@@ -1311,7 +1378,7 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "HoneyRight", {
         get: function () {
-            return TileType.GetTileType("HoneyRight", "water", 6, 2, Solidity.RightWall, TargetLayer.semisolid, function (tileType) {
+            return TileType.GetTileType("HoneyRight", "fluids", 6, 2, Solidity.RightWall, TargetLayer.semisolid, function (tileType) {
                 tileType.imageTile.xOffset = -8;
                 tileType.isStickyWall = true;
                 tileType.isExemptFromSlime = true;
@@ -1322,7 +1389,7 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "Lava", {
         get: function () {
-            return TileType.GetTileType("Lava", "water", 0, 5, Solidity.None, TargetLayer.water, function (tileType) {
+            return TileType.GetTileType("Lava", "lava", 0, 0, Solidity.None, TargetLayer.water, function (tileType) {
                 tileType.hurtOnOverlap = true;
             });
         },
@@ -1331,7 +1398,7 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "LavaSurface", {
         get: function () {
-            return TileType.GetAnimatedTileType("LavaSurface", "water", [{ x: 0, y: 6 }, { x: 1, y: 6 }, { x: 2, y: 6 }, { x: 3, y: 6 }], 20, Solidity.None, TargetLayer.water);
+            return TileType.GetAnimatedTileType("LavaSurface", "lava", [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }, { x: 3, y: 1 }], 40, Solidity.None, TargetLayer.water);
         },
         enumerable: false,
         configurable: true
@@ -1364,7 +1431,7 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "Quicksand", {
         get: function () {
-            return TileType.GetAnimatedTileType("Quicksand", "water", [{ x: 1, y: 2 }, { x: 2, y: 2 }, { x: 3, y: 2 }], 20, Solidity.None, TargetLayer.water, function (tileType) {
+            return TileType.GetAnimatedTileType("Quicksand", "fluids", [{ x: 1, y: 2 }, { x: 2, y: 2 }, { x: 3, y: 2 }], 20, Solidity.None, TargetLayer.water, function (tileType) {
                 tileType.isQuicksand = true;
             });
         },
@@ -2712,6 +2779,11 @@ var TileType = /** @class */ (function () {
             tileType.clockWiseRotationTileName = "UnpoweredWind" + direction.Clockwise().name;
         });
     };
+    Object.defineProperty(TileType, "Cracks", {
+        get: function () { return TileType.GetTileType("Cracks", "bomb", 0, 2, Solidity.None, TargetLayer.wire); },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(TileType, "WallWarpLeft", {
         get: function () {
             return TileType.GetAnimatedTileType("WallWarpLeft", "warpWall", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(function (y) { return ({ x: 0, y: y }); }), 6, Solidity.LeftWall, TargetLayer.semisolid, function (tileType) {

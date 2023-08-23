@@ -58,7 +58,7 @@ var BoardMap = /** @class */ (function () {
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 87, 471, "10").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 25, 482).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -47, 468).ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -104, 440).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.TwitchSpace, -104, 440).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -166, 407).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.RedBoardSpace, -238, 561).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -309, 576, "16").ConnectFromPrevious(),
@@ -85,7 +85,7 @@ var BoardMap = /** @class */ (function () {
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 195, -186).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 250, -153, "37").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 326, -166, "38").ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, 390, -146).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.TwitchSpace, 390, -146).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 440, -120).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.Warp2BoardSpace, 460, -75, "warp2").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 480, -30).ConnectFromPrevious(),
@@ -115,7 +115,7 @@ var BoardMap = /** @class */ (function () {
             new BoardSpace(BoardSpaceType.DiceUpgradeSpace, 418, 152, "64").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -111, -27, "65"),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -141, -96, "66").ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -116, -152, "67").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.TwitchSpace, -116, -152, "67").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 193, 23, "68"),
             new BoardSpace(BoardSpaceType.DiceUpgradeSpace, 177, -40).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 199, -97, "70").ConnectFromPrevious(),
@@ -153,15 +153,23 @@ var BoardMap = /** @class */ (function () {
         this.boardUI.roundStarttimer = 1;
         this.PlaceGearSpace();
     };
+    BoardMap.prototype.IsInLast5Turns = function () {
+        return this.finalRound - this.currentRound + 1 <= 5;
+    };
     BoardMap.prototype.Update = function () {
         if (!this.initialized)
             this.Initialize();
         this.timer++;
         this.boardSprites.forEach(function (a) { return a.Update(); });
-        this.players.forEach(function (a) { return a.Update(); });
-        this.ManualCameraControl();
-        if (this.currentPlayer)
-            this.CameraFollow(this.currentPlayer || this.players[0]);
+        if (cutsceneService.isCutsceneActive) {
+            cutsceneService.Update();
+        }
+        else {
+            this.players.forEach(function (a) { return a.Update(); });
+            this.ManualCameraControl();
+            if (this.currentPlayer)
+                this.CameraFollow(this.currentPlayer || this.players[0]);
+        }
         if (this.scoreTimer > 0) {
             this.scoreTimer++;
             if (this.scoreTimer > 100 && KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
@@ -169,6 +177,12 @@ var BoardMap = /** @class */ (function () {
                 this.scoreTimer = 0;
                 this.currentRound++;
                 this.boardUI.roundStarttimer = 1;
+                if (this.finalRound - this.currentRound + 1 == 5) {
+                    cutsceneService.AddScene(new BoardCutSceneLast5Turns());
+                }
+                if (this.finalRound - this.currentRound + 1 == 0) {
+                    cutsceneService.AddScene(new BoardCutSceneGameEnd());
+                }
             }
         }
         this.CameraBounds();
@@ -196,6 +210,10 @@ var BoardMap = /** @class */ (function () {
             this.boardUI.GenerateMinigameRouletteTexts(this.pendingMinigame);
         }
     };
+    BoardMap.prototype.CameraFocusSpace = function (boardSpace) {
+        camera.targetX = boardSpace.gameX;
+        camera.targetY = boardSpace.gameY;
+    };
     BoardMap.prototype.CameraFollow = function (player) {
         if (player.token) {
             camera.targetX = player.token.x;
@@ -217,6 +235,7 @@ var BoardMap = /** @class */ (function () {
             existingSpace.spaceType = BoardSpaceType.BlueBoardSpace;
         }
         target.spaceType = BoardSpaceType.GearSpace;
+        return target;
     };
     BoardMap.prototype.ManualCameraControl = function () {
         if (mouseHandler.mouseScroll !== 0) {
@@ -332,6 +351,7 @@ var BoardMap = /** @class */ (function () {
                     if (scores[playerIndex_1] == topScore) {
                         // minigame winner! (could be multiple players triggering this block)
                         this.players[playerIndex_1].coins += 10;
+                        this.players[playerIndex_1].statMinigameWinnings += 10;
                         // todo put into animated value instead
                     }
                 }
@@ -348,6 +368,7 @@ var BoardMap = /** @class */ (function () {
         this.boardSpaces.forEach(function (a) { return a.Draw(camera); });
         this.players.forEach(function (a) { return a.DrawToken(camera); });
         this.boardOverlaySprites.forEach(function (a) { return a.Draw(camera); });
+        cutsceneService.Draw(camera);
         if (this.instructions) {
             this.instructions.Draw(camera);
         }

@@ -3,7 +3,7 @@ class Player {
     coins: number = 50;
     gears: number = 1;
     diceBag = new DiceBag();
-    inventory: BoardItem[] = [new BoardItemDevExit(), new BoardItemFragileD10()];
+    inventory: BoardItem[] = [new BoardItemDevExit(), new BoardItemFragileD20()];
 
     turnOrder: number = 0;
     amountOfMovementLeft = 0;
@@ -11,13 +11,15 @@ class Player {
     choosingPath = false;
     selectedPathIndex = 0;
 
-    floatingText = "";
-    floatingTextTimer = 0;
-    floatingTextDirection = 1;
-    floatingTextColor = 0;
-
     isInShop = false;
     landedOnShop = false;
+
+    // track stats for final bonuses/graph
+    statDiceTotal = 0;
+    statNonGearSpending = 0;
+    statMinigameWinnings = 0;
+    statListOfLandings: BoardSpaceType[] = [];
+    statListOfPassings: BoardSpaceType[] = [];
 
     constructor(public avatarIndex: number) { }
 
@@ -27,56 +29,55 @@ class Player {
 
     Update(): void {
         if (this.token) {
-            if (!this.isInShop) this.token.Update();
-
-            if (this.choosingPath && this.token.currentSpace) {
-                let dirKeys = [KeyAction.Left, KeyAction.Right, KeyAction.Up, KeyAction.Down];
-                if (dirKeys.some(a => KeyboardHandler.IsKeyPressed(a, true))) {
-                    this.selectedPathIndex++;
-                    if (this.selectedPathIndex >= this.token.currentSpace.nextSpaces.length) {
-                        this.selectedPathIndex = 0;
-                    }
-                } else if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
-                    let nextSpace = this.token.currentSpace.nextSpaces[this.selectedPathIndex];
-                    this.token.MoveToSpace(nextSpace);
-                    this.choosingPath = false;
-                }
-            } else {
-                if (this.token.currentSpace && this.amountOfMovementLeft > 0) {
-                    if (this.token.currentSpace.spaceType.costsMovement && this.moving) {
-                        this.amountOfMovementLeft--;
-                    }
-                    let wasMoving = this.moving;
-                    this.moving = true;
-    
-                    if (this.amountOfMovementLeft > 0) {
-                        let options = this.token.currentSpace.nextSpaces;
-                        if (options.length == 1) {
-                            let nextSpace = options[0];
-                            if (wasMoving) this.token.currentSpace.spaceType.OnPass(this);
-                            this.token.MoveToSpace(nextSpace);
-                        } else {
-                            this.choosingPath = true;
+            if (!cutsceneService.isCutsceneActive) {
+                if (!this.isInShop) this.token.Update();
+                if (this.choosingPath && this.token.currentSpace) {
+                    let dirKeys = [KeyAction.Left, KeyAction.Right, KeyAction.Up, KeyAction.Down];
+                    if (dirKeys.some(a => KeyboardHandler.IsKeyPressed(a, true))) {
+                        this.selectedPathIndex++;
+                        if (this.selectedPathIndex >= this.token.currentSpace.nextSpaces.length) {
                             this.selectedPathIndex = 0;
                         }
+                    } else if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
+                        let nextSpace = this.token.currentSpace.nextSpaces[this.selectedPathIndex];
+                        this.token.MoveToSpace(nextSpace);
+                        this.choosingPath = false;
                     }
-                }
-    
-                if (this.token.currentSpace && this.amountOfMovementLeft == 0 && this.moving) {
-                    this.moving = false;
-                    this.token.currentSpace.spaceType.OnLand(this);
-                    setTimeout(() => {
-                        let me = this;
-                        me.TurnOver();
-                    }, 1000);
-                }
-            }
+                } else {
+                    if (this.token.currentSpace && this.amountOfMovementLeft > 0) {
+                        if (this.token.currentSpace.spaceType.costsMovement && this.moving) {
+                            this.amountOfMovementLeft--;
+                        }
+                        let wasMoving = this.moving;
+                        this.moving = true;
 
-            if (this.floatingText.length > 0) {
-                this.floatingTextTimer++;
-                if (this.floatingTextTimer > 50) {
-                    this.floatingTextTimer = 0;
-                    this.floatingText = "";
+                        if (this.amountOfMovementLeft > 0) {
+                            let options = this.token.currentSpace.nextSpaces;
+                            if (options.length == 1) {
+                                let nextSpace = options[0];
+                                if (wasMoving) {
+                                    this.token.currentSpace.spaceType.OnPass(this);
+                                    if (this.token.currentSpace.spaceType.OnPass != BoardSpaceType.DoNothing) {
+                                        this.statListOfPassings.push(this.token.currentSpace.spaceType);
+                                    }
+                                }
+                                this.token.MoveToSpace(nextSpace);
+                            } else {
+                                this.choosingPath = true;
+                                this.selectedPathIndex = 0;
+                            }
+                        }
+                    }
+
+                    if (this.token.currentSpace && this.amountOfMovementLeft == 0 && this.moving) {
+                        this.moving = false;
+                        this.token.currentSpace.spaceType.OnLand(this);
+                        this.statListOfLandings.push(this.token.currentSpace.spaceType);
+                        setTimeout(() => {
+                            let me = this;
+                            me.TurnOver();
+                        }, 1000);
+                    }
                 }
             }
         }
@@ -84,25 +85,11 @@ class Player {
 
     TurnOver(): void {
         let me = this;
-        if (this.isInShop) {
-            setTimeout( () => {me.TurnOver()}, 1000);
+        if (this.isInShop || cutsceneService.isCutsceneActive) {
+            setTimeout(() => { me.TurnOver() }, 1000);
         } else {
             board?.CurrentPlayerTurnEnd();
         }
-    }
-
-    AddCoinsOverToken(amount: number): void {
-        this.floatingText = "+" + amount.toString();
-        this.floatingTextColor = 3;
-        this.floatingTextTimer = 0;
-        this.floatingTextDirection = -1;
-    }
-
-    DeductCoinsOverToken(amount: number): void {
-        this.floatingText = "-" + (Math.abs(amount)).toString();
-        this.floatingTextColor = 4;
-        this.floatingTextTimer = 0;
-        this.floatingTextDirection = 1;
     }
 
     DrawToken(camera: Camera): void {
@@ -115,7 +102,7 @@ class Player {
                     let nextSquare = nextSquares[i];
                     let isSelected = this.selectedPathIndex == i;
                     let pulse = Math.sin((board?.timer || 0) / 10);
-                    let scale = isSelected ? 1 + pulse/8 : 1;
+                    let scale = isSelected ? 1 + pulse / 8 : 1;
                     let angle = Math.atan2((nextSquare.gameY - currentSpace.gameY) * 2, nextSquare.gameX - currentSpace.gameX);
                     let distance = 75 + (isSelected ? pulse * 5 : 0);
                     let arrowImage = tiles["boardArrow"][i][0] as ImageTile;
@@ -129,11 +116,6 @@ class Player {
             }
 
             this.token.Draw(camera);
-            if (this.floatingText.length > 0) {
-                let baseY = this.token.y - 100 + (this.floatingTextDirection == 1 ? 0 : 50)
-                let y = this.token.y - 100 + this.floatingTextDirection * this.floatingTextTimer * 0.5;
-                DrawText(this.token.x, y, this.floatingText, camera, 0.5, this.floatingTextColor);
-            }
         }
     }
 
@@ -161,8 +143,8 @@ class DiceBag {
     // represents how many/what face dice a player rolls 
     // which can be upgraded as the game progresses
 
-    dieFaces: faceCount[] = [20, 20, 20];
-    fragileFaces: faceCount[] = [];
+    dieFaces: FaceCount[] = [4, 6];
+    fragileFaces: FaceCount[] = [];
 
     GetDiceSprites(): DiceSprite[] {
         let ret: DiceSprite[] = [];
@@ -185,17 +167,17 @@ class DiceBag {
 
     Upgrade(): void {
         if (this.dieFaces.length > 0) {
-            let minVal = Math.min(...this.dieFaces) as faceCount;
+            let minVal = Math.min(...this.dieFaces) as FaceCount;
             let index = this.dieFaces.indexOf(minVal);
-            let newValue = (minVal >= 12 ? 20 : (minVal + 2)) as faceCount;
+            let newValue = (minVal >= 12 ? 20 : (minVal + 2)) as FaceCount;
             this.dieFaces[index] = newValue;
         }
     }
     Downgrade(): void {
         if (this.dieFaces.length > 0) {
-            let maxValue = Math.max(...this.dieFaces) as faceCount;
+            let maxValue = Math.max(...this.dieFaces) as FaceCount;
             let index = this.dieFaces.indexOf(maxValue);
-            let newValue = (maxValue == 20 ? 12 : (maxValue == 4 ? 4 : (maxValue - 2))) as faceCount;
+            let newValue = (maxValue == 20 ? 12 : (maxValue == 4 ? 4 : (maxValue - 2))) as FaceCount;
             this.dieFaces[index] = newValue;
         }
     }

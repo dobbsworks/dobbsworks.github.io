@@ -111,6 +111,13 @@ function CreateTitle() {
         `${char1} Taunts The Biters`,
         `${char1} Only, No Items, Final Destination`,
         `${char1} Meets a Lynel`,
+        `Stop Typing Six`,
+        `The Most Fun You Can Have Online`,
+        `${char1} Automates Everything`,
+        `${char1} Finds the Kaizo Block`,
+        `${char1} Closes the Queue`,
+        `${char1} ${Rand(["Finds", "Lost"])} Dracula`,
+        `hehe`,
     ]);
 }
 

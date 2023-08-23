@@ -24,6 +24,7 @@ class TileType {
     public drainsAir: boolean = false;
     public canWalkOn: boolean = true; //sticky honey blocks
     public canJumpFrom: boolean = true; //sticky slime blocks
+    public isFire: boolean = false; 
     public isStickyWall: boolean = false;
     public isJumpWall: boolean = false;
     public isWarpWall: boolean = false;
@@ -425,6 +426,9 @@ class TileType {
         TileType.DerelictSpikesDown;
         TileType.DerelictSpikesLeft;
         TileType.DerelictSpikesRight;
+
+        TileType.Cracks;
+        TileType.FireTop;
     }
 
 
@@ -733,40 +737,90 @@ class TileType {
 
 
     public static get PurpleWater(): TileType {
-        return TileType.GetTileType("PurpleWater", "water", 0, 3, Solidity.None, TargetLayer.water, tileType => {
+        return TileType.GetTileType("PurpleWater", "purpleWater", 0, 0, Solidity.None, TargetLayer.water, tileType => {
             tileType.isSwimmable = true;
             tileType.drainsAir = true;
         });
     }
 
     public static get PurpleWaterSurface(): AnimatedTileType {
-        return TileType.GetAnimatedTileType("PurpleWaterSurface", "water", [{ x: 0, y: 4 }, { x: 1, y: 4 }, { x: 2, y: 4 }, { x: 3, y: 4 }], 10, Solidity.None, TargetLayer.water);
+        return TileType.GetAnimatedTileType("PurpleWaterSurface", "purpleWater", [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }, { x: 3, y: 1 }], 15, Solidity.None, TargetLayer.water);
     }
 
     public static get PoisonGas(): TileType {
         let frames = [0,0,0,1,1,2,3,4,4,5,5,5,4,4,3,2,1,1].map(a => ({x: a, y: 7}));
-        return TileType.GetAnimatedTileType("PoisonGas", "water", frames, 6, Solidity.None, TargetLayer.water, tileType => {
+        return TileType.GetAnimatedTileType("PoisonGas", "fluids", frames, 6, Solidity.None, TargetLayer.water, tileType => {
             tileType.drainsAir = true;
         });
     }
 
     public static get Honey(): TileType {
-        return TileType.GetTileType("Honey", "water", 4, 2, Solidity.Top, TargetLayer.semisolid, (tileType: TileType) => {
+        return TileType.GetTileType("Honey", "fluids", 4, 2, Solidity.Top, TargetLayer.semisolid, (tileType: TileType) => {
             tileType.imageTile.yOffset = -2;
             tileType.canWalkOn = false;
         })
     }
 
     public static get Slime(): TileType {
-        return TileType.GetTileType("Slime", "water", 7, 2, Solidity.Top, TargetLayer.semisolid, (tileType: TileType) => {
+        return TileType.GetTileType("Slime", "fluids", 7, 2, Solidity.Top, TargetLayer.semisolid, (tileType: TileType) => {
             tileType.imageTile.yOffset = -2;
             tileType.canJumpFrom = false;
             tileType.isExemptFromSlime = true;
         })
     }
 
+    public static get FireTop(): TileType {
+        let frames = [0,1, 2, 3, 4, 5, 6, 7].map(a => ({x: a, y: 0}));
+        return TileType.GetAnimatedTileType("FireTop", "fluids", frames, 4, Solidity.Top, TargetLayer.semisolid, tileType => {
+            tileType.isFire = true;
+            (tileType as AnimatedTileType).imageTiles.forEach(a => {
+                a.yOffset = -4;
+            })
+        });
+    }
+
+    public static get FireTopDecay1(): TileType {
+        let frames = [0,1, 2, 3, 4, 5, 6, 7].map(a => ({x: a, y: 0}));
+        return TileType.GetAnimatedTileType("FireTopDecay1", "fluids", frames, 4, Solidity.Top, TargetLayer.semisolid, tileType => {
+            tileType.isFire = true;
+            (tileType as AnimatedTileType).imageTiles.forEach(a => {
+                a.yOffset = -4;
+            })
+            tileType.autoChange = {
+                tileTypeName: "FireTopDecay2",
+                delay: 90
+            }
+        });
+    }
+    public static get FireTopDecay2(): TileType {
+        let frames = [0,1, 2, 3, 4, 5, 6, 7].map(a => ({x: a, y: 4}));
+        return TileType.GetAnimatedTileType("FireTopDecay2", "fluids", frames, 4, Solidity.Top, TargetLayer.semisolid, tileType => {
+            tileType.isFire = true;
+            (tileType as AnimatedTileType).imageTiles.forEach(a => {
+                a.yOffset = -4;
+            })
+            tileType.autoChange = {
+                tileTypeName: "FireTopDecay3",
+                delay: 90
+            }
+        });
+    }
+    public static get FireTopDecay3(): TileType {
+        let frames = [0,1, 2, 3, 4, 5, 6, 7].map(a => ({x: a, y: 5}));
+        return TileType.GetAnimatedTileType("FireTopDecay3", "fluids", frames, 4, Solidity.Top, TargetLayer.semisolid, tileType => {
+            tileType.isFire = true;
+            (tileType as AnimatedTileType).imageTiles.forEach(a => {
+                a.yOffset = -3;
+            })
+            tileType.autoChange = {
+                tileTypeName: "BranchTop",
+                delay: 90
+            }
+        });
+    }
+
     public static get HoneyLeft(): TileType {
-        return TileType.GetTileType("HoneyLeft", "water", 5, 2, Solidity.LeftWall, TargetLayer.semisolid, (tileType: TileType) => {
+        return TileType.GetTileType("HoneyLeft", "fluids", 5, 2, Solidity.LeftWall, TargetLayer.semisolid, (tileType: TileType) => {
             tileType.imageTile.xOffset = 8;
             tileType.isStickyWall = true;
             tileType.isExemptFromSlime = true;
@@ -774,7 +828,7 @@ class TileType {
     }
 
     public static get HoneyRight(): TileType {
-        return TileType.GetTileType("HoneyRight", "water", 6, 2, Solidity.RightWall, TargetLayer.semisolid, (tileType: TileType) => {
+        return TileType.GetTileType("HoneyRight", "fluids", 6, 2, Solidity.RightWall, TargetLayer.semisolid, (tileType: TileType) => {
             tileType.imageTile.xOffset = -8;
             tileType.isStickyWall = true;
             tileType.isExemptFromSlime = true;
@@ -782,13 +836,13 @@ class TileType {
     }
 
     public static get Lava(): TileType {
-        return TileType.GetTileType("Lava", "water", 0, 5, Solidity.None, TargetLayer.water, tileType => {
+        return TileType.GetTileType("Lava", "lava", 0, 0, Solidity.None, TargetLayer.water, tileType => {
             tileType.hurtOnOverlap = true;
         });
     }
 
     public static get LavaSurface(): AnimatedTileType {
-        return TileType.GetAnimatedTileType("LavaSurface", "water", [{ x: 0, y: 6 }, { x: 1, y: 6 }, { x: 2, y: 6 }, { x: 3, y: 6 }], 20, Solidity.None, TargetLayer.water);
+        return TileType.GetAnimatedTileType("LavaSurface", "lava", [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }, { x: 3, y: 1 }], 40, Solidity.None, TargetLayer.water);
     }
 
     public static get Water(): TileType {
@@ -809,7 +863,7 @@ class TileType {
     }
 
     public static get Quicksand(): AnimatedTileType {
-        return TileType.GetAnimatedTileType("Quicksand", "water", [{ x: 1, y: 2 }, { x: 2, y: 2 }, { x: 3, y: 2 }], 20, Solidity.None, TargetLayer.water, tileType => {
+        return TileType.GetAnimatedTileType("Quicksand", "fluids", [{ x: 1, y: 2 }, { x: 2, y: 2 }, { x: 3, y: 2 }], 20, Solidity.None, TargetLayer.water, tileType => {
             tileType.isQuicksand = true;
         });
     }
@@ -1636,6 +1690,9 @@ class TileType {
             tileType.clockWiseRotationTileName = "UnpoweredWind" + direction.Clockwise().name;
         });
     }
+
+    
+    public static get Cracks(): TileType { return TileType.GetTileType("Cracks", "bomb", 0, 2, Solidity.None, TargetLayer.wire); }
 
 
 

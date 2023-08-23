@@ -1,1 +1,1 @@
-type faceCount = 4|6|8|10|12|20;
+type FaceCount = 4|6|8|10|12|20;

@@ -24,14 +24,19 @@ abstract class Enemy extends Sprite {
             // special case for Booly
             let boolyLaunched = false;
             for (let projectile of sprites) {
-                if ((this instanceof WoolyBooly && this.state !== BoolyState.Patrol) && ((projectile.x < this.x && this.direction == -1) || (projectile.xRight > this.xRight && this.direction == 1))) {
-                    this.LaunchSprite(projectile, this.xMid < projectile.xMid ? -1 : 1);
+                let isLaunchingBooly = (this instanceof WoolyBooly && this.state !== BoolyState.Patrol) && ((projectile.x < this.x && this.direction == -1) || (projectile.xRight > this.xRight && this.direction == 1));
+                let isLaunchingSkitter = (this instanceof Skitter && this.isHiding);
+                if (isLaunchingBooly || isLaunchingSkitter) {
+                    this.LaunchSprite(projectile, this.xMid > projectile.xMid ? -1 : 1);
                     boolyLaunched = true;
+                    if (projectile instanceof Bullet) {
+                        audioHandler.PlaySound("plink", true);
+                    }
                 }
             }
 
             if (!boolyLaunched) {
-                if (sprites.length) {
+                if (sprites.length > 0) {
                     this.isActive = false;
                     let deadSprite = new DeadEnemy(this);
                     this.layer.sprites.push(deadSprite);
@@ -41,6 +46,7 @@ abstract class Enemy extends Sprite {
                     if (!this.isExemptFromSpriteKillCheck) {
                         this.OnDead();
                     }
+                    audioHandler.PlaySound("bop", true);
                 }
             }
         }

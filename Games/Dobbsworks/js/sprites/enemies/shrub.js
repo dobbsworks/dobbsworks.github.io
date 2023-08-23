@@ -21,6 +21,7 @@ var Shrubbert = /** @class */ (function (_super) {
         _this.respectsSolidTiles = true;
         _this.canBeBouncedOn = true;
         _this.state = "normal";
+        _this.isBurning = false;
         _this.stunTimer = 0;
         _this.maxStun = 32;
         _this.stunFrameRow = 3;
@@ -42,11 +43,33 @@ var Shrubbert = /** @class */ (function (_super) {
             var speed = this.state == "normal" ? 0.3 : 0.6;
             if (this.stackedOn)
                 speed = 0.3;
+            if (this.isBurning)
+                speed = 0.8;
             this.GroundPatrol(speed, this.turnAtLedges);
         }
         this.ApplyGravity();
         this.ApplyInertia();
         this.ReactToWater();
+        if (this.isInWater || this.isInWaterfall) {
+            this.Extinguish();
+        }
+        this.canBeBouncedOn = !this.isBurning;
+    };
+    Shrubbert.prototype.Extinguish = function () {
+        if (this.isBurning) {
+            this.isBurning = false;
+            this.state = "stunned";
+            this.stunTimer = 0;
+            this.height -= 4;
+            this.y += 4;
+        }
+    };
+    Shrubbert.prototype.OnStandInFire = function () {
+        this.isBurning = true;
+        if (this.height == 8) {
+            this.height += 4;
+            this.y -= 4;
+        }
     };
     Shrubbert.prototype.OnSpinBounce = function () { this.ReplaceWithSpriteType(Poof); };
     Shrubbert.prototype.OnBounce = function () {
@@ -72,6 +95,15 @@ var Shrubbert = /** @class */ (function (_super) {
         var frame = Math.floor(frameNum / framesPerTile) % 4 + this.runFrameColStart;
         if (this.state == "stunned") {
             frame = Math.floor(this.stunTimer / (this.maxStun / 8)) % 8;
+        }
+        if (this.isBurning) {
+            return {
+                imageTile: tiles["burningShrubbert"][frame % 4][0],
+                xFlip: this.direction == 1,
+                yFlip: false,
+                xOffset: 5,
+                yOffset: 4
+            };
         }
         return {
             imageTile: tiles["shrub"][frame][frameRow],

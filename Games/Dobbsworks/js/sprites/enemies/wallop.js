@@ -37,6 +37,7 @@ var Wallop = /** @class */ (function (_super) {
         _this.peripheryLookDistance = 48;
         _this.peripheryActiveDistance = 24;
         _this.collideSound = "thump";
+        _this.doubleCheckSlam = false;
         _this.initialized = false;
         return _this;
     }
@@ -124,10 +125,19 @@ var Wallop = /** @class */ (function (_super) {
                     this.dy = 0;
                 if (this.moveDirection.y == 0)
                     this.dx = 0;
-                this.moveDirection = null;
-                this.watchDirections = this.watchDirections.map(function (a) { return a.Opposite(); });
-                this.waitTimer = 30;
+                if (this.doubleCheckSlam) {
+                    this.moveDirection = null;
+                    this.watchDirections = this.watchDirections.map(function (a) { return a.Opposite(); });
+                    this.waitTimer = 30;
+                    this.doubleCheckSlam = false;
+                }
+                else {
+                    this.doubleCheckSlam = true;
+                }
                 audioHandler.PlaySound(this.collideSound, false);
+            }
+            else {
+                this.doubleCheckSlam = false;
             }
         }
         if (this.moveDirection) {
@@ -248,9 +258,34 @@ var BigWallop = /** @class */ (function (_super) {
         configurable: true
     });
     BigWallop.prototype.OnSlam = function (dir) {
+        var _a, _b;
         if (this.IsOnScreen()) {
             camera.shakeTimerX = 50 * Math.abs(dir.x);
             camera.shakeTimerY = 50 * Math.abs(dir.y);
+        }
+        if (dir.x == 0) {
+            //vertical landing
+            var y = dir.y == -1 ? this.y - 6 : this.yBottom + 6;
+            for (var xIter = this.x; xIter < this.xRight; xIter += 12) {
+                var tile = this.layer.GetTileByPixel(xIter, y);
+                var wireTile = tile.GetWireNeighbor();
+                if (wireTile && wireTile.tileType == TileType.Cracks) {
+                    (_a = this.layer.map) === null || _a === void 0 ? void 0 : _a.wireLayer.SetTile(tile.tileX, tile.tileY, TileType.Air);
+                    this.layer.ExplodeTile(tile);
+                }
+            }
+        }
+        else {
+            // horizontal landing
+            var x = dir.x == -1 ? this.x - 6 : this.xRight + 6;
+            for (var yIter = this.y; yIter < this.yBottom; yIter += 12) {
+                var tile = this.layer.GetTileByPixel(x, yIter);
+                var wireTile = tile.GetWireNeighbor();
+                if (wireTile && wireTile.tileType == TileType.Cracks) {
+                    (_b = this.layer.map) === null || _b === void 0 ? void 0 : _b.wireLayer.SetTile(tile.tileX, tile.tileY, TileType.Air);
+                    this.layer.ExplodeTile(tile);
+                }
+            }
         }
     };
     BigWallop.prototype.GetFrameData = function (frameNum) {

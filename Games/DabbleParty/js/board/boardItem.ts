@@ -3,6 +3,8 @@ abstract class BoardItem {
     abstract name: string;
     abstract description: string;
     abstract OnUse(player: Player, board: BoardMap): void;
+    OnPurchase(player: Player): void {}
+    isPlaceholder = true;
 }
 
 
@@ -14,6 +16,7 @@ class ShopItemGoldenGear extends BoardItem {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     }
+    OnPurchase(player: Player): void { player.gears += 1}
 }
 class ShopItemGoldenGearX2 extends BoardItem {
     imageTile = tiles["itemIcons"][3][1];
@@ -23,6 +26,7 @@ class ShopItemGoldenGearX2 extends BoardItem {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     }
+    OnPurchase(player: Player): void { player.gears += 2}
 }
 class ShopItemGoldenGearX3 extends BoardItem {
     imageTile = tiles["itemIcons"][4][1];
@@ -32,6 +36,7 @@ class ShopItemGoldenGearX3 extends BoardItem {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     }
+    OnPurchase(player: Player): void { player.gears += 3}
 }
 class ShopItemStealCoins extends BoardItem {
     imageTile = tiles["itemIcons"][5][1];
@@ -94,6 +99,7 @@ class BoardItemDevExit extends BoardItem {
         }
         board.boardUI.StartRoll();
     }
+    isPlaceholder = false;
 }
 
 class BoardItemWarpPortal extends BoardItem {
@@ -103,6 +109,7 @@ class BoardItemWarpPortal extends BoardItem {
     OnUse(player: Player, board: BoardMap): void {
         board.boardUI.currentMenu = BoardMenu.CreateSwapPlacesMenu();
     }
+    isPlaceholder = false;
 }
 
 
@@ -114,9 +121,10 @@ abstract class BoardItemFragileDice extends BoardItem {
     get description(): string { return `Adds an extra ${this.numFaces}-sided die to this turn's roll` };
 
     OnUse(player: Player, board: BoardMap): void {
-        player.diceBag.fragileFaces.push(this.numFaces as faceCount);
+        player.diceBag.fragileFaces.push(this.numFaces as FaceCount);
         board.boardUI.StartRoll();
     }
+    isPlaceholder = false;
 }
 class BoardItemFragileD4 extends BoardItemFragileDice {
     imageTile = tiles["itemIcons"][0][0];

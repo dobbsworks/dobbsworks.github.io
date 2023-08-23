@@ -65,6 +65,7 @@ abstract class Sprite {
     public canBeBouncedOn: boolean = false;
     public hurtsEnemies: boolean = false;
     public isInTractorBeam: boolean = false;
+    isDestroyedByLight = false;
     onScreenTimer: number = 0;
     isDuplicate = false;
     trackPipeExit: LevelTile | null = null;
@@ -96,6 +97,10 @@ abstract class Sprite {
     public OnExitPipe(exitDirection: Direction): void { }
 
     public OnPickup(): Sprite { return this; }
+    
+    public OnMapLoad(): void {
+        // called after all sprites in place, before logic executes
+    }
 
     public GetTotalDx(): number {
         let ret = this.dx;
@@ -287,6 +292,7 @@ abstract class Sprite {
 
     OnBounce(): void { }
     OnSpinBounce(): void { this.OnBounce(); }
+    OnStandInFire(): void {}
 
     OnThrow(thrower: Sprite, direction: -1 | 1) {
         this.dx = direction * 1 + thrower.GetTotalDx();
@@ -529,6 +535,18 @@ abstract class Sprite {
         return this.layer.map?.waterLayer.GetTileByPixel(this.xMid, this.yBottom + this.floatingPointOffset).tileType.isSwimmable || false;
     }
 
+    IsInLava(): boolean {
+        let isLavaAtMid = this.layer.map?.waterLayer.GetTileByPixel(this.xMid, this.yMid + this.floatingPointOffset).tileType == TileType.Lava;
+        if (isLavaAtMid) return true;
+
+        let map = this.layer.map;
+        if (map && map.lavaLevel.currentY !== -1) {
+            if (this.yBottom + this.floatingPointOffset > map.lavaLevel.currentY) return true;
+        }
+
+        return false;
+    }
+
 
     ReactToPlatformsAndSolids(): void {
         if (!this.parentSprite) this.isOnGround = false;
@@ -552,6 +570,7 @@ abstract class Sprite {
                     // upcoming position is below ground line
                     this.isOnGround = true;
                     this.standingOn = grounds.tiles;
+                    if (this.standingOn.some(a => a.tileType.isFire)) this.OnStandInFire();
                     if (this.parentSprite && this.parentSprite.GetTotalDy() > 0) this.parentSprite = null;
 
                     let conveyorSpeeds = this.standingOn.map(a => a.tileType.conveyorSpeed).filter(a => a !== 0);
@@ -1024,6 +1043,18 @@ abstract class Sprite {
 
     OnBeforeDraw(camera: Camera): void { }
     OnAfterDraw(camera: Camera): void { }
+    Draw(camera: Camera, frameNum: number): void {
+        this.OnBeforeDraw(camera);
+        let frameData = this.GetFrameData(frameNum);
+        if ('xFlip' in frameData) {
+            this.layer.DrawFrame(frameData, camera.scale, this);
+        } else {
+            for (let fd of <FrameData[]>frameData) {
+                this.layer.DrawFrame(fd, camera.scale, this);
+            }
+        }
+        this.OnAfterDraw(camera);
+    }
 
     OnDead(): void {
         let hearts = <GoldHeart[]>this.layer.sprites.filter(a => a instanceof GoldHeart);
@@ -1129,5 +1160,9 @@ abstract class Sprite {
         if (dir == Direction.Left) return this.touchedLeftWalls.length > 0;
         if (dir == Direction.Right) return this.touchedRightWalls.length > 0;
         return false;
+    }
+
+    public GetMidToMidDistance(sprite: Sprite): number {
+        return Math.sqrt( (this.xMid - sprite.xMid)**2 + (this.yMid - sprite.yMid)**2 );
     }
 }

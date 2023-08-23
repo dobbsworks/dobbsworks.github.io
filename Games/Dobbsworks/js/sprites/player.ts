@@ -59,6 +59,9 @@ class Player extends Sprite {
     protected canPlayerFloatJump = false;
     protected sourceImageOffset = 0;
 
+    public hasGun = false;
+    private gunCooldown = 0;
+
     LogProps(): void {
         let obj: any = {}
         for (let propName of this.props) {
@@ -83,6 +86,7 @@ class Player extends Sprite {
         if (this.iFrames > 0) this.iFrames--;
         this.PlayerMovement(); // includes gravity
         this.PlayerItem();
+        this.HandleGun();
         this.HandleEnemies(); // includes gravity
         this.PlayerInertia();
         this.PushByAutoscroll();
@@ -752,22 +756,38 @@ class Player extends Sprite {
         }
     }
 
+    OnStandInFire(): void {
+        this.OnPlayerHurt();
+    }
+
     OnPlayerHurt(): void {
         if (this.heldItem && this.heldItem instanceof GoldHeart) return;
         if (this.iFrames == 0) {
             let nextHeart = this.layer.sprites.find(a => a instanceof ExtraHitHeartSmall && a.parent == this);
             if (nextHeart) {
-                this.iFrames += 130;
-                audioHandler.PlaySound("hurt", true);
+                this.ActivateIFrames();
                 // hurt heart animation
                 let childHeart = <ExtraHitHeartSmall>this.layer.sprites.find(a => a instanceof ExtraHitHeartSmall && a.parent == nextHeart);
                 if (childHeart) childHeart.parent = this;
                 nextHeart.isActive = false;
                 nextHeart.ReplaceWithSpriteType(ExtraHitHeartSmallLoss);
+            } else if (this.hasGun) {
+                this.hasGun = false;
+                audioHandler.PlaySound("gun-down", true);
+                let drop = new GunDropped(this.x,this.y, this.layer, []);
+                drop.dy = -1;
+                drop.dx = this.direction == 1 ? -1: 1;
+                this.layer.sprites.push(drop);
+                this.ActivateIFrames();
             } else {
                 this.OnPlayerDead(true);
             }
         }
+    }
+
+    ActivateIFrames(): void {
+        this.iFrames += 130;
+        audioHandler.PlaySound("hurt", true);
     }
 
     OnPlayerDead(canRespawn: boolean): DeadPlayer {
@@ -843,7 +863,8 @@ class Player extends Sprite {
             && !this.isClimbing
             && !this.isHanging
             && !isInCannon
-            && this.throwTimer > 20) {
+            && this.throwTimer > 20
+            && !this.hasGun) {
             // try to grab item?
 
             for (let sprite of this.layer.sprites.filter(a => a.canBeHeld)) {
@@ -982,6 +1003,23 @@ class Player extends Sprite {
         }
     }
 
+    HandleGun(): void {
+        if (!this.hasGun) return;
+
+        if (this.gunCooldown > 0) {
+            this.gunCooldown--;
+        } else if (KeyboardHandler.IsKeyPressed(KeyAction.Action2, true)) {
+            let bullet = new Bullet(this.x + this.direction * 5, this.yMid - 2, this.layer, []);
+            bullet.targetDx = this.direction * 2;
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false)) {
+                bullet.targetDy = -2;
+            }
+            this.layer.sprites.push(bullet);
+            this.gunCooldown = 20;
+            audioHandler.PlaySound("gun-pew", true);
+        }
+    }
+
     HandleDoors(): void {
         if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false) && this.isOnGround) {
             // find overlap door
@@ -1002,6 +1040,7 @@ class Player extends Sprite {
     GetFrameData(frameNum: number): FrameData {
         let sourceImage = "dobbs";
         let sourceImageOffset = this.sourceImageOffset;
+        if (this.hasGun) sourceImageOffset = 8;
         if (this.iFrames > 64) {
             if (Math.floor(this.iFrames / 8) % 2 == 0) sourceImage = "dobbsGhost";
         } else if (this.iFrames > 0) {

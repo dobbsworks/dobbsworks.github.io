@@ -9,6 +9,7 @@ class LittleJelly extends Enemy {
     animateTimer = 0;
     wasOnGround = false;
     rowNumber = 0;
+    landingCoating: TileType = TileType.Slime;
 
     numberOfGroundFrames = 20;
 
@@ -67,7 +68,7 @@ class LittleJelly extends Enemy {
     WhileOnGround(): void { }
     OnGroundLanding(): void {
         audioHandler.PlaySound("stuck-jump", true);
-        this.CreateSlimeGround(TileType.Slime);
+        this.CreateSlimeGround(this.landingCoating);
     }
 
     CreateSlimeGround(slimeGround: TileType): void {
@@ -76,28 +77,8 @@ class LittleJelly extends Enemy {
         xs.forEach(x => this.AttemptToSlime(x, y, slimeGround));
     }
 
-    CanSlimeTile(tile: LevelTile): boolean {
-        return !tile.tileType.isExemptFromSlime;
-    }
-
     AttemptToSlime(xIndex: number, yIndex: number, slimeGround: TileType) {
-        let tile = this.layer.GetTileByIndex(xIndex, yIndex);
-        let semisolid = tile.GetSemisolidNeighbor();
-
-        // TODO
-        // when it's possible to wash off slime we'll need to store the previous semisolid
-
-        if (tile.tileType == TileType.Air) {
-            if (semisolid && semisolid.tileType.solidity == Solidity.Top) {
-                if (this.CanSlimeTile(semisolid)) {
-                    semisolid.layer.SetTile(xIndex, yIndex, slimeGround);
-                }
-            }
-        } else {
-            if (tile.tileType.solidity == Solidity.Block && this.CanSlimeTile(tile)) {
-                tile.layer.map?.semisolidLayer.SetTile(xIndex, yIndex, slimeGround);
-            }
-        }
+        this.layer.AttemptToCoatTile(xIndex, yIndex, slimeGround);
     }
 
     OnBounce(): void {
@@ -131,29 +112,24 @@ class LittleJelly extends Enemy {
 class ChillyJelly extends LittleJelly {
     numberOfGroundFrames = 150;
     rowNumber = 1;
-    // WhileOnGround(): void {
-    //     if (this.jumpPrepTimer == 1) {
-    //     }
-    // }
+    effectType = FrostEffect;
+    landingCoating = TileType.IceTop;
+    
     OnJump(): void {
-        let frost = this.layer.sprites.filter(a => a instanceof FrostEffect && a.targetSprite == this);
+        let frost = this.layer.sprites.filter(a => a instanceof this.effectType && a.targetSprite == this);
         if (frost.length == 0) {
-            let frostSprite = new FrostEffect(this.x, this.y, this.layer, []);
+            let frostSprite = new this.effectType(this.x, this.y, this.layer, []);
             frostSprite.targetSprite = this;
             this.layer.sprites.push(frostSprite);
         }
     }
     OnGroundLanding(): void {
-        audioHandler.PlaySound("stuck-jump", true);
-        this.CreateSlimeGround(TileType.IceTop);
-        // let frost = this.layer.sprites.filter(a => a instanceof FrostEffect && a.targetSprite == this);
-        // if (player) {
-        //     let frostSpeed = (player.xMid < this.xMid ? -1 : 1)
-        //     frost.forEach(a => a.dx = frostSpeed * 1);
-        //     frost.forEach(a => { if (a instanceof FrostEffect) a.targetSprite = null });
-        // }
-        let frost = this.layer.sprites.filter(a => a instanceof FrostEffect && a.targetSprite == this);
+        super.OnGroundLanding();
+        let frost = this.layer.sprites.filter(a => a instanceof this.effectType && a.targetSprite == this);
         for (let f of frost) f.isActive = false;
+    }
+    OnStandInFire(): void {
+        this.OnBounce();
     }
 }
 
@@ -162,6 +138,7 @@ class FrostEffect extends Enemy {
     width = 25;
     killedByProjectiles = false;
     respectsSolidTiles = false;
+    imageSource = "frostEffect"
 
     timer = 0;
     targetSprite: Sprite | null = null;
@@ -182,11 +159,31 @@ class FrostEffect extends Enemy {
 
     GetFrameData(frameNum: number): FrameData {
         return {
-            imageTile: tiles["frostEffect"][Math.floor(frameNum / 5) % 8][0],
+            imageTile: tiles[this.imageSource][Math.floor(frameNum / 5) % 8][0],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
             yOffset: 3
         }
     }
+}
+class FlameEffect extends FrostEffect {
+    imageSource = "flameEffect"
+    landingCoating = TileType.FireTop;
+}
+
+
+
+class SpicyJelly extends ChillyJelly {
+    numberOfGroundFrames = 150;
+    rowNumber = 2;
+    landingCoating = TileType.FireTopDecay1;
+    effectType = FlameEffect;
+    Update(): void {
+        super.Update();
+        if (this.isInWater) {
+            this.ReplaceWithSpriteType(LittleJelly);
+        }
+    }
+    OnStandInFire(): void {}
 }

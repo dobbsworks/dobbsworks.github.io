@@ -162,6 +162,25 @@ function rgbStringToHSL(rgb: string) {
         parseInt(rgb.substring(4, 6), 16)
     )
 }
+function rgbaStringToHSLA(rgba: string): Hsla {
+    // strip the leading # if it's there
+    rgba = rgba.replace(/^\s*#|\s*$/g, '');
+
+    // convert 4 char codes --> 6, e.g. `E0Fa` --> `EE00FFaa`
+    if (rgba.length == 4) {
+        rgba = rgba.replace(/(.)/g, '$1$1');
+    }
+    let hsl = rgbToHSL(
+        parseInt(rgba.substring(0, 2), 16),
+        parseInt(rgba.substring(2, 4), 16),
+        parseInt(rgba.substring(4, 6), 16)
+    );
+    //console.log(rgba, rgba.substring(6, 8), parseInt(rgba.substring(6, 8), 16) / 255)
+    let hsla = {...hsl, 
+        a: parseInt(rgba.substring(6, 8), 16) / 255
+    };
+    return hsla;
+}
 
 // exepcts a string and returns an object
 function rgbToHSL(r: number, g: number, b: number) {
@@ -250,6 +269,18 @@ function hslToRGB(hsl: Hsl) {
     b = normalize_rgb_value(b, m);
 
     return rgbToHex(r, g, b);
+}
+
+function hslaToRGBA(hsla: Hsla): string {
+    let rgb = hslToRGB(hsla);
+    function alphaToString(a: number) {
+        // a is [0,255]
+        let str = a.toString(16);
+        if (str.length > 2) str = str.substring(0, 2);
+        if (str.length == 1) return "0" + str;
+        return str;
+    }
+    return rgb + alphaToString(hsla.a * 255);
 }
 
 function normalize_rgb_value(color: number, m: number) {

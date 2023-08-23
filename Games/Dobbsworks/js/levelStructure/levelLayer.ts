@@ -32,8 +32,8 @@ class LevelLayer {
         if (this.isDirty) {
             if (this.layerType == TargetLayer.water) this.UpdateWaterTiles();
             this.cachedCanvas = document.createElement("canvas");
-            if (this.tiles.length) this.DrawSectionToCanvas(this.cachedCanvas,
-                0, 0, this.tiles.length - 1, this.tiles[0].length );
+            if (this.tiles.length) this.DrawSectionToCanvasWithOverdraw(this.cachedCanvas,
+                0, 0, this.tiles.length - 1, this.tiles[0].length - 1 );
             this.spriteCanvas.width = camera.canvas.width;
             this.spriteCanvas.height = camera.canvas.height;
         }
@@ -62,24 +62,29 @@ class LevelLayer {
             }
         }
     }
+    
+    DrawSectionToCanvasWithOverdraw(canvas: HTMLCanvasElement, left: number, top: number, right: number, bottom: number): void {
+        this.DrawSectionToCanvas(canvas, left, top, right, bottom, true)
+    }
 
-    DrawSectionToCanvas(canvas: HTMLCanvasElement, left: number, top: number, right: number, bottom: number): void {
-        let targetWidth = this.tileWidth * (right - left + 1 + 2);
+    DrawSectionToCanvas(canvas: HTMLCanvasElement, left: number, top: number, right: number, bottom: number, overdraw: boolean = false): void {
+        let overdrawAmount = overdraw ? 1 : 0;
+
+        let targetWidth = this.tileWidth * (right - left + 1 + 2 * overdrawAmount);
         if (canvas.width != targetWidth) canvas.width = targetWidth
-        let targetHeight = this.tileHeight * (bottom - top + 1 + 2); // extra 2 for drawing for screen shake
+        let targetHeight = this.tileHeight * (bottom - top + 1 + 2 * overdrawAmount); // extra 2 for drawing for screen shake
         if (canvas.height != targetHeight) canvas.height = targetHeight;
         let ctx = <CanvasRenderingContext2D>canvas.getContext("2d");
 
-        let waterTiles = [TileType.Water, TileType.Waterfall, TileType.PurpleWater, TileType.Lava];
 
         let x = 0;
-        for (let colIndex = left - 1; colIndex <= right + 1; colIndex++, x++) {
+        for (let colIndex = left - overdrawAmount; colIndex <= right + overdrawAmount; colIndex++, x++) {
             let col = this.tiles[colIndex];
             if (colIndex < 0) col = this.tiles[0];
             if (colIndex >= this.tiles.length) col = this.tiles[this.tiles.length - 1];
             if (!col) continue;
             let y = 0;
-            for (let rowIndex = top - 1; rowIndex <= bottom + 1; rowIndex++, y++) {
+            for (let rowIndex = top - overdrawAmount; rowIndex <= bottom + overdrawAmount; rowIndex++, y++) {
                 let tile = col[rowIndex];
                 if (rowIndex < 0) tile = col[0];
                 if (rowIndex >= col.length) tile = col[col.length-1];
@@ -88,19 +93,20 @@ class LevelLayer {
                 if (!imageTile) continue;
 
                 for (let waterType of [TileType.Water, TileType.PurpleWater, TileType.Lava]) {
-                    let baseRow = (waterType == TileType.Water ? 0 : 3);
-                    if (waterType == TileType.Lava) baseRow = 5;
+                    let img = waterType == TileType.Water ? "water" : (waterType == TileType.PurpleWater ? "purpleWater" : "lava");
                     if (this.layerType == TargetLayer.water && tile.tileType == waterType) {
-                        let isWaterLeft = waterTiles.indexOf(this.GetTileByIndex(x - 1, y).tileType) > -1;
-                        let isWaterRight = waterTiles.indexOf(this.GetTileByIndex(x + 1, y).tileType) > -1;
-                        let isWaterDown = waterTiles.indexOf(this.GetTileByIndex(x, y + 1).tileType) > -1;
-                        if (isWaterDown && isWaterLeft && !isWaterRight) imageTile = tiles["water"][7][baseRow];
-                        if (isWaterDown && !isWaterLeft && isWaterRight) imageTile = tiles["water"][5][baseRow];
-                        if (isWaterDown && !isWaterLeft && !isWaterRight) imageTile = tiles["water"][6][baseRow];
-                        if (!isWaterDown && isWaterLeft && isWaterRight) imageTile = tiles["water"][6][1 + baseRow];
-                        if (!isWaterDown && isWaterLeft && !isWaterRight) imageTile = tiles["water"][7][1 + baseRow];
-                        if (!isWaterDown && !isWaterLeft && isWaterRight) imageTile = tiles["water"][5][1 + baseRow];
-                        if (!isWaterDown && !isWaterLeft && !isWaterRight) imageTile = tiles["water"][4][1 + baseRow];
+                        let waterTiles = [waterType];
+                        if (waterType == TileType.Water) waterTiles.push(TileType.Waterfall);
+                        let isWaterLeft = waterTiles.indexOf(this.GetTileByIndex(colIndex - 1, rowIndex).tileType) > -1;
+                        let isWaterRight = waterTiles.indexOf(this.GetTileByIndex(colIndex + 1, rowIndex).tileType) > -1;
+                        let isWaterDown = waterTiles.indexOf(this.GetTileByIndex(colIndex, rowIndex + 1).tileType) > -1;
+                        if (isWaterDown && isWaterLeft && !isWaterRight) imageTile = tiles[img][7][0];
+                        if (isWaterDown && !isWaterLeft && isWaterRight) imageTile = tiles[img][5][0];
+                        if (isWaterDown && !isWaterLeft && !isWaterRight) imageTile = tiles[img][6][0];
+                        if (!isWaterDown && isWaterLeft && isWaterRight) imageTile = tiles[img][6][1];
+                        if (!isWaterDown && isWaterLeft && !isWaterRight) imageTile = tiles[img][7][1];
+                        if (!isWaterDown && !isWaterLeft && isWaterRight) imageTile = tiles[img][5][1];
+                        if (!isWaterDown && !isWaterLeft && !isWaterRight) imageTile = tiles[img][4][1];
                     }
                 }
 
@@ -144,6 +150,7 @@ class LevelLayer {
             if (!tileType) console.error("Invalid tiletype!");
             this.RedrawTile(xIndex, yIndex, tileType.imageTile);
             if (tileType.autoChange) {
+                currentMap.autoChangeTiles = currentMap.autoChangeTiles.filter(a => a.tile != existingTile);
                 currentMap.autoChangeTiles.push({ tile: existingTile, standDuration: 0 });
             }
 
@@ -155,6 +162,23 @@ class LevelLayer {
             return true;
         }
         return false;
+    }
+
+    ExplodeTile(tile: LevelTile): void {
+        let oldTileType = tile.tileType;
+        this.SetTile(tile.tileX, tile.tileY, TileType.Air);
+        if (oldTileType != TileType.Air) {
+            // create shards
+            for (let x of [-1, 1]) for (let y of [-1, 1]) {
+                let shard = new BlockShard(tile.tileX * 12 + 6, tile.tileY * 12 + 6, this, []);
+                shard.dx = x * 1;
+                shard.dy = y * 0.5 - 1;
+                shard.tilePortionX = x == -1 ? 0 : 1;
+                shard.tilePortionY = y == -1 ? 0 : 1;
+                shard.sourceTileType = oldTileType;
+                this.sprites.push(shard);
+            }
+        }
     }
 
     UpdateWaterTiles(): void {
@@ -190,12 +214,12 @@ class LevelLayer {
             this.isDirty = true;
         }
 
-        if (this.map && this.map.silhoutteColor) {
-            cachedCtx.globalCompositeOperation = "source-atop";
-            cachedCtx.fillStyle = this.map.silhoutteColor;
-            cachedCtx.fillRect(x, y, this.tileWidth, this.tileHeight);
-            cachedCtx.globalCompositeOperation = "source-over";
-        }
+        // if (this.map && this.map.silhoutteColor) {
+        //     cachedCtx.globalCompositeOperation = "source-atop";
+        //     cachedCtx.fillStyle = this.map.silhoutteColor;
+        //     cachedCtx.fillRect(x, y, this.tileWidth, this.tileHeight);
+        //     cachedCtx.globalCompositeOperation = "source-over";
+        // }
     }
 
     Update(): void {
@@ -276,6 +300,47 @@ class LevelLayer {
         return this.GetTileByPixel(xTile * this.tileWidth, yTile * this.tileHeight);
     }
 
+    AttemptToCoatTile(xIndex: number, yIndex: number, coatType: TileType) {
+        let tile = this.GetTileByIndex(xIndex, yIndex);
+        let semisolid = tile.GetSemisolidNeighbor();
+
+        if (tile.tileType == TileType.Air) {
+            if (semisolid && semisolid.tileType.solidity == Solidity.Top) {
+                if (this.CanSlimeTile(semisolid)) {
+                    semisolid.layer.SetTile(xIndex, yIndex, coatType);
+                }
+            }
+        } else {
+            if (tile.tileType.solidity == Solidity.Block && this.CanSlimeTile(tile)) {
+                semisolid = tile.layer.map?.semisolidLayer.GetTileByIndex(xIndex, yIndex);
+            }
+        }
+
+        if (semisolid) {
+
+            if (coatType == TileType.FireTop && semisolid.uncoatedType == TileType.IceTop) {
+                // fire melts away ice
+                semisolid.layer.SetTile(xIndex, yIndex, semisolid.uncoatedType);
+            } else if (false) {
+                // TODO, more combos
+            } else {
+                semisolid.layer.SetTile(xIndex, yIndex, coatType);
+            }
+        }
+    }
+
+    ClearTile(xIndex: number, yIndex: number): void {
+        let tile = this.GetTileByIndex(xIndex, yIndex);
+        let semisolid = tile.GetSemisolidNeighbor();
+        if (semisolid) {
+            semisolid.tileType = semisolid.uncoatedType;
+        }
+    }
+
+    CanSlimeTile(tile: LevelTile): boolean {
+        return !tile.tileType.isExemptFromSlime;
+    }
+
     DrawTiles(camera: Camera, frameNum: number): void {
         this.DrawToCache(frameNum);
         let scale = camera.scale;
@@ -290,22 +355,8 @@ class LevelLayer {
         let orderedSprites = [...this.sprites];
         orderedSprites.sort((a, b) => a.zIndex - b.zIndex);
         for (let sprite of orderedSprites) {
-            this.DrawSprite(sprite, camera, frameNum);
+            sprite.Draw(camera, frameNum);
         }
-    }
-
-    DrawSprite(sprite: Sprite, camera: Camera, frameNum: number): void {
-        sprite.OnBeforeDraw(camera);
-        let frameData = sprite.GetFrameData(frameNum);
-        if ('xFlip' in frameData) {
-            this.DrawFrame(frameData, camera.scale, sprite);
-        } else {
-            for (let fd of <FrameData[]>frameData) {
-                this.DrawFrame(fd, camera.scale, sprite);
-            }
-        }
-        sprite.OnAfterDraw(camera);
-
     }
     
     public DrawFrame(frameData: FrameData, scale: number, sprite: Sprite) {

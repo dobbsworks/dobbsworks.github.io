@@ -36,7 +36,6 @@ class Orbbit extends Enemy {
                     this.connectedSprite = targetSprite;
                     this.connectionDistance = Math.sqrt((this.connectedSprite.yMid - this.yMid) ** 2 + (this.connectedSprite.xMid - this.xMid) ** 2);
                     this.theta = Math.atan2(this.connectedSprite.yMid - this.yMid, this.connectedSprite.xMid - this.xMid);
-                    console.log(this.theta)
                 }
 
             }

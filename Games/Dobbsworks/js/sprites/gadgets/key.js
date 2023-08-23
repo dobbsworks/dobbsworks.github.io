@@ -29,8 +29,15 @@ var Key = /** @class */ (function (_super) {
         _this.canBeHeld = true;
         _this.poofTimer = -1;
         _this.frameRow = 0;
+        _this.frameCol = 0;
         return _this;
     }
+    Key.prototype.KeyPhysics = function () {
+        this.ApplyGravity();
+        this.ApplyInertia();
+        this.ReactToWater();
+        this.ReactToPlatformsAndSolids();
+    };
     Key.prototype.Update = function () {
         if (this.poofTimer >= 0) {
             this.poofTimer++;
@@ -38,10 +45,7 @@ var Key = /** @class */ (function (_super) {
                 this.isActive = false;
         }
         else {
-            this.ApplyGravity();
-            this.ApplyInertia();
-            this.ReactToWater();
-            this.ReactToPlatformsAndSolids();
+            this.KeyPhysics();
             this.MoveByVelocity();
             // check if touching any locks
             // 8 points
@@ -94,17 +98,21 @@ var Key = /** @class */ (function (_super) {
         return tiles;
     };
     Key.prototype.GetFrameData = function (frameNum) {
-        var frame = 0;
+        var frame = this.frameCol;
         if (this.poofTimer >= 0) {
             frame = Math.floor(this.poofTimer / 20 * 4);
+            this.frameRow = 0;
         }
         return {
             imageTile: tiles["key"][frame][this.frameRow],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
-            yOffset: 1
+            yOffset: 1 + this.GetYOffset(frameNum)
         };
+    };
+    Key.prototype.GetYOffset = function (frameNum) {
+        return 0;
     };
     return Key;
 }(Sprite));
@@ -117,4 +125,39 @@ var FlatKey = /** @class */ (function (_super) {
         return _this;
     }
     return FlatKey;
+}(Key));
+var BubbleKey = /** @class */ (function (_super) {
+    __extends(BubbleKey, _super);
+    function BubbleKey() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.frameRow = 1;
+        _this.frameCol = 1;
+        _this.canBeHeld = false;
+        _this.target = null;
+        _this.theta = 0;
+        return _this;
+    }
+    BubbleKey.prototype.KeyPhysics = function () {
+        // look for overlap
+        if (!this.target) {
+            for (var _i = 0, _a = this.layer.sprites.filter(function (a) { return a instanceof Player && !a.isDuplicate; }); _i < _a.length; _i++) {
+                var player_1 = _a[_i];
+                if (player_1.Overlaps(this)) {
+                    this.target = player_1;
+                }
+            }
+        }
+        if (this.target) {
+            this.theta += 0.06;
+            var radius = 16;
+            var targetX = radius * Math.cos(this.theta) + this.target.xMid - this.width / 2;
+            var targetY = radius * Math.sin(this.theta) + this.target.yMid - this.height / 2;
+            this.dx = (targetX - this.x) * 0.8;
+            this.dy = (targetY - this.y) * 0.8;
+        }
+    };
+    BubbleKey.prototype.GetYOffset = function (frameNum) {
+        return Math.sin(frameNum / 30);
+    };
+    return BubbleKey;
 }(Key));

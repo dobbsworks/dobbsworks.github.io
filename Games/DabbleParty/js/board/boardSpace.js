@@ -101,20 +101,24 @@ var BoardSpaceType = /** @class */ (function () {
         this.OnLand = OnLand;
         this.OnPass = OnPass;
     }
+    BoardSpaceType.DoNothing = function () { };
     BoardSpaceType.BlueBoardSpace = new BoardSpaceType(function () { return tiles["partySquares"][0][0]; }, true, function (player) {
-        player.coins += 3; // todo add to some sort of animated tick up pool
-        player.AddCoinsOverToken(3);
-    }, function () { });
+        var coinValue = (board === null || board === void 0 ? void 0 : board.IsInLast5Turns()) ? 6 : 3;
+        if (board)
+            cutsceneService.AddScene(new BoardCutSceneAddCoins(coinValue, player));
+    }, BoardSpaceType.DoNothing);
     BoardSpaceType.RedBoardSpace = new BoardSpaceType(function () { return tiles["partySquares"][0][1]; }, true, function (player) {
-        player.coins -= 3;
         if (player.coins < 0)
             player.coins = 0;
-        player.DeductCoinsOverToken(3);
-    }, function () { });
+        var coinValue = (board === null || board === void 0 ? void 0 : board.IsInLast5Turns()) ? 6 : 3;
+        if (board)
+            cutsceneService.AddScene(new BoardCutSceneAddCoins(-coinValue, player));
+    }, BoardSpaceType.DoNothing);
     BoardSpaceType.DiceUpgradeSpace = new BoardSpaceType(function () { return tiles["partySquares"][0][4]; }, true, function (player) {
-        player.diceBag.Upgrade();
-    }, function () { });
-    BoardSpaceType.GrayBoardSpace = new BoardSpaceType(function () { return tiles["partySquares"][0][2]; }, false, function () { }, function () { });
+        if (board)
+            cutsceneService.AddScene(new BoardCutSceneChangeDice("up", player, 2));
+    }, BoardSpaceType.DoNothing);
+    BoardSpaceType.GrayBoardSpace = new BoardSpaceType(function () { return tiles["partySquares"][0][2]; }, false, BoardSpaceType.DoNothing, BoardSpaceType.DoNothing);
     BoardSpaceType.ShopSpace = new BoardSpaceType(function () { return tiles["partySquares"][1][2]; }, true, function (player) {
         // TODO - full inventory?
         // TODO - special bonus for landing on space?
@@ -131,6 +135,10 @@ var BoardSpaceType = /** @class */ (function () {
                 board.boardUI.currentMenu = BoardMenu.CreateShopMenu();
         }
     });
+    BoardSpaceType.TwitchSpace = new BoardSpaceType(function () { return tiles["partySquares"][0][3]; }, true, function (player) {
+        if (board)
+            cutsceneService.AddScene(new BoardCutSceneTwitchSpace(player));
+    }, BoardSpaceType.DoNothing);
     BoardSpaceType.GearSpace = new BoardSpaceType(function () { return tiles["partySquares"][1][3]; }, true, function (player) {
         player.landedOnShop = true;
         BoardSpaceType.GearSpace.OnPass(player);
@@ -147,17 +155,17 @@ var BoardSpaceType = /** @class */ (function () {
         if (board)
             board.boardUI.currentMenu = BoardMenu.CreateWallopMenu();
     });
-    BoardSpaceType.BiodomeEntryBoardSpace = new BoardSpaceType(function () { return tiles["partySquares"][0][2]; }, false, function () { }, function (player) {
+    BoardSpaceType.BiodomeEntryBoardSpace = new BoardSpaceType(function () { return tiles["partySquares"][0][2]; }, false, BoardSpaceType.DoNothing, function (player) {
         player.isInShop = true;
         if (board)
             board.boardUI.currentMenu = BoardMenu.CreateBiodomeMenu();
     });
-    BoardSpaceType.Warp1BoardSpace = new BoardSpaceType(function () { return tiles["partySquares"][0][2]; }, false, function () { }, function (player) {
+    BoardSpaceType.Warp1BoardSpace = new BoardSpaceType(function () { return tiles["partySquares"][0][2]; }, false, BoardSpaceType.DoNothing, function (player) {
         player.isInShop = true;
         if (board)
             board.boardUI.currentMenu = BoardMenu.CreateWarpPointMenu("warp2");
     });
-    BoardSpaceType.Warp2BoardSpace = new BoardSpaceType(function () { return tiles["partySquares"][0][2]; }, false, function () { }, function (player) {
+    BoardSpaceType.Warp2BoardSpace = new BoardSpaceType(function () { return tiles["partySquares"][0][2]; }, false, BoardSpaceType.DoNothing, function (player) {
         player.isInShop = true;
         if (board)
             board.boardUI.currentMenu = BoardMenu.CreateWarpPointMenu("warp1");

@@ -6,16 +6,21 @@ class Key extends Sprite {
     canBeHeld = true;
     poofTimer = -1;
     frameRow = 0;
+    frameCol = 0;
+
+    KeyPhysics(): void {
+        this.ApplyGravity();
+        this.ApplyInertia();
+        this.ReactToWater();
+        this.ReactToPlatformsAndSolids();
+    }
 
     Update(): void {
         if (this.poofTimer >= 0) {
             this.poofTimer++;
             if (this.poofTimer >= 20) this.isActive = false;
         } else {
-            this.ApplyGravity();
-            this.ApplyInertia();
-            this.ReactToWater();
-            this.ReactToPlatformsAndSolids();
+            this.KeyPhysics();
             this.MoveByVelocity();
 
             // check if touching any locks
@@ -48,7 +53,6 @@ class Key extends Sprite {
                 }
             }
 
-
             if (lockTiles.length > 0) {
                 for (let lockTile of lockTiles) {
                     this.layer.SetTile(lockTile.tileX, lockTile.tileY, TileType.Air);
@@ -75,21 +79,60 @@ class Key extends Sprite {
     }
 
     GetFrameData(frameNum: number): FrameData {
-        let frame = 0;
+        let frame = this.frameCol;
         if (this.poofTimer >= 0) {
             frame = Math.floor(this.poofTimer / 20 * 4);
+            this.frameRow = 0;
         }
         return {
             imageTile: tiles["key"][frame][this.frameRow],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
-            yOffset: 1
+            yOffset: 1 + this.GetYOffset(frameNum)
         };
+    }
+
+    GetYOffset(frameNum: number): number {
+        return 0;
     }
 }
 
 class FlatKey extends Key {
     public isPlatform: boolean = true;
-    frameRow   = 1;
+    frameRow = 1;
+}
+
+class BubbleKey extends Key {
+    frameRow = 1;
+    frameCol = 1;
+    canBeHeld = false;
+    target: Player | null = null;
+    theta = 0;
+
+    KeyPhysics(): void {
+        // look for overlap
+        if (!this.target) {
+            for (let player of this.layer.sprites.filter(a => a instanceof Player && !a.isDuplicate)) {
+                if (player.Overlaps(this)) {
+                    this.target = player as Player;
+                }
+            }
+        }
+
+        if (this.target) {
+            this.theta += 0.06;
+
+            let radius = 16;
+            let targetX = radius * Math.cos(this.theta) + this.target.xMid - this.width / 2;
+            let targetY = radius * Math.sin(this.theta) + this.target.yMid - this.height / 2;
+
+            this.dx = (targetX - this.x) * 0.8;
+            this.dy = (targetY - this.y) * 0.8;
+        }
+    }
+
+    GetYOffset(frameNum: number): number {
+        return Math.sin(frameNum / 30);
+    }
 }

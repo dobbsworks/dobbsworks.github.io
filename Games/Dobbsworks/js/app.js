@@ -33,6 +33,7 @@ function Initialize() {
     UnloadHandler.RegisterUnloadHandler();
     KeyboardHandler.InitKeyHandlers();
     CreateTestMap();
+    new WaterRecolor().ApplyRecolors();
     DeathLogService.LogDeathCounts();
     setInterval(MainLoop, 1000 / 60);
     camera.canvas.style.opacity = "0";

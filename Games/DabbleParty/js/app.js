@@ -7,6 +7,7 @@ var audioHandler;
 var playerIndex = 0;
 var currentMinigame = null;
 var board = null;
+var cutsceneService = new CutsceneService();
 var minigames = [
     MinigameChip,
     MinigameConveyor,
@@ -36,6 +37,7 @@ function Initialize() {
     UnloadHandler.RegisterUnloadHandler();
     KeyboardHandler.InitKeyHandlers();
     setInterval(MainLoop, 1000 / 60);
+    InitializeTwitchSpaceUI(); // TODO only if host
     board = new BoardMap();
     //currentMinigame = new MinigameChip();
     // let instructions = new Instructions(new MinigameChip());

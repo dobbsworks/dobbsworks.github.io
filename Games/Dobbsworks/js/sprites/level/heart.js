@@ -32,7 +32,6 @@ var ExtraHitHeart = /** @class */ (function (_super) {
         this.MoveByVelocity();
         if (player && player.Overlaps(this)) {
             audioHandler.PlaySound("heart", false);
-            player.heldItem = null;
             this.isActive = false;
             this.layer.sprites.push(new ExtraHitHeartAnimation(this.x, this.y, this.layer, []));
             var floatingHeart = new ExtraHitHeartSmall(this.x, this.y, this.layer, []);

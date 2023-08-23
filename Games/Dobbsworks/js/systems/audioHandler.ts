@@ -185,6 +185,8 @@ class AudioHandler {
         "cherry",
         "shake",
         "stairs",
+        // "dread",
+        // "tenacious",
     ]
 }
 

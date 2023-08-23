@@ -14,7 +14,9 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var BoardItem = /** @class */ (function () {
     function BoardItem() {
+        this.isPlaceholder = true;
     }
+    BoardItem.prototype.OnPurchase = function (player) { };
     return BoardItem;
 }());
 var ShopItemGoldenGear = /** @class */ (function (_super) {
@@ -30,6 +32,7 @@ var ShopItemGoldenGear = /** @class */ (function (_super) {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     };
+    ShopItemGoldenGear.prototype.OnPurchase = function (player) { player.gears += 1; };
     return ShopItemGoldenGear;
 }(BoardItem));
 var ShopItemGoldenGearX2 = /** @class */ (function (_super) {
@@ -45,6 +48,7 @@ var ShopItemGoldenGearX2 = /** @class */ (function (_super) {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     };
+    ShopItemGoldenGearX2.prototype.OnPurchase = function (player) { player.gears += 2; };
     return ShopItemGoldenGearX2;
 }(BoardItem));
 var ShopItemGoldenGearX3 = /** @class */ (function (_super) {
@@ -60,6 +64,7 @@ var ShopItemGoldenGearX3 = /** @class */ (function (_super) {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     };
+    ShopItemGoldenGearX3.prototype.OnPurchase = function (player) { player.gears += 3; };
     return ShopItemGoldenGearX3;
 }(BoardItem));
 var ShopItemStealCoins = /** @class */ (function (_super) {
@@ -144,6 +149,7 @@ var BoardItemDevExit = /** @class */ (function (_super) {
         _this.imageTile = tiles["itemIcons"][0][1];
         _this.name = "Dev Exit";
         _this.description = "Warps you close to the Golden Gear";
+        _this.isPlaceholder = false;
         return _this;
     }
     BoardItemDevExit.prototype.OnUse = function (player, board) {
@@ -165,6 +171,7 @@ var BoardItemWarpPortal = /** @class */ (function (_super) {
         _this.imageTile = tiles["itemIcons"][1][1];
         _this.name = "Warp Portal";
         _this.description = "Swaps your position with any chosen player's";
+        _this.isPlaceholder = false;
         return _this;
     }
     BoardItemWarpPortal.prototype.OnUse = function (player, board) {
@@ -175,7 +182,9 @@ var BoardItemWarpPortal = /** @class */ (function (_super) {
 var BoardItemFragileDice = /** @class */ (function (_super) {
     __extends(BoardItemFragileDice, _super);
     function BoardItemFragileDice() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.isPlaceholder = false;
+        return _this;
     }
     Object.defineProperty(BoardItemFragileDice.prototype, "name", {
         get: function () { return "Fragile D" + this.numFaces; },
