@@ -1177,14 +1177,14 @@ class TileType {
 
 
     public static get WaterTapOff(): TileType {
-        return TileType.GetTileType("WaterTapOff", "pipes", 0, 0, Solidity.Block, TargetLayer.main, tileType => {
+        return TileType.GetTileType("WaterTapOff", "water", 6, 2, Solidity.Block, TargetLayer.main, tileType => {
             tileType.canBePowered = true;
             tileType.poweredTileName = "WaterTapOn"
             tileType.onPowered = (tile: LevelTile) => { tile.layer.map?.waterLevel.AddFlowSource(tile); }
         });
     }
     public static get WaterTapOn(): TileType {
-        return TileType.GetTileType("WaterTapOn", "pipes", 1, 0, Solidity.Block, TargetLayer.main, tileType => {
+        return TileType.GetTileType("WaterTapOn", "water", 7, 2, Solidity.Block, TargetLayer.main, tileType => {
             tileType.canBePowered = true;
             tileType.unpoweredTileName = "WaterTapOff"
             tileType.onUnpowered = (tile: LevelTile) => { tile.layer.map?.waterLevel.RemoveFlowSource(tile); }
@@ -1192,14 +1192,14 @@ class TileType {
     }
 
     public static get PurpleWaterTapOff(): TileType {
-        return TileType.GetTileType("PurpleWaterTapOff", "pipes", 2, 0, Solidity.Block, TargetLayer.main, tileType => {
+        return TileType.GetTileType("PurpleWaterTapOff", "purpleWater", 6, 2, Solidity.Block, TargetLayer.main, tileType => {
             tileType.canBePowered = true;
             tileType.poweredTileName = "PurpleWaterTapOn"
             tileType.onPowered = (tile: LevelTile) => { tile.layer.map?.purpleWaterLevel.AddFlowSource(tile); }
         });
     }
     public static get PurpleWaterTapOn(): TileType {
-        return TileType.GetTileType("PurpleWaterTapOn", "pipes", 3, 0, Solidity.Block, TargetLayer.main, tileType => {
+        return TileType.GetTileType("PurpleWaterTapOn", "purpleWater", 7, 2, Solidity.Block, TargetLayer.main, tileType => {
             tileType.canBePowered = true;
             tileType.unpoweredTileName = "PurpleWaterTapOff"
             tileType.onUnpowered = (tile: LevelTile) => { tile.layer.map?.purpleWaterLevel.RemoveFlowSource(tile); }
@@ -1207,32 +1207,32 @@ class TileType {
     }
 
     public static get LavaTapOff(): TileType {
-        return TileType.GetTileType("LavaTapOff", "pipes", 4, 0, Solidity.Block, TargetLayer.main, tileType => {
+        return TileType.GetTileType("LavaTapOff", "lava", 6, 2, Solidity.Block, TargetLayer.main, tileType => {
             tileType.canBePowered = true;
             tileType.poweredTileName = "LavaTapOn"
             tileType.onPowered = (tile: LevelTile) => { tile.layer.map?.lavaLevel.AddFlowSource(tile); }
         });
     }
     public static get LavaTapOn(): TileType {
-        return TileType.GetTileType("LavaTapOn", "pipes", 5, 0, Solidity.Block, TargetLayer.main, tileType => {
+        return TileType.GetTileType("LavaTapOn", "lava", 7, 2, Solidity.Block, TargetLayer.main, tileType => {
             tileType.canBePowered = true;
             tileType.unpoweredTileName = "LavaTapOff"
             tileType.onUnpowered = (tile: LevelTile) => { tile.layer.map?.lavaLevel.RemoveFlowSource(tile); }
         });
     }
     public static get Drain(): TileType {
-        return TileType.GetTileType("Drain", "pipes", 0, 2, Solidity.None, TargetLayer.main, tileType => {
+        return TileType.GetTileType("Drain", "water", 6, 4, Solidity.None, TargetLayer.main, tileType => {
         });
     }
 
     public static get InitialWaterLevel(): TileType {
-        return TileType.GetTileType("InitialWaterLevel", "waterChanger", 0, 0, Solidity.None, TargetLayer.main, tileType => { });
+        return TileType.GetTileType("InitialWaterLevel", "water", 6, 5, Solidity.None, TargetLayer.main, tileType => { });
     }
     public static get InitialPurpleWaterLevel(): TileType {
-        return TileType.GetTileType("InitialPurpleWaterLevel", "waterChanger", 0, 1, Solidity.None, TargetLayer.main, tileType => { });
+        return TileType.GetTileType("InitialPurpleWaterLevel", "purpleWater", 6, 5, Solidity.None, TargetLayer.main, tileType => { });
     }
     public static get InitialLavaLevel(): TileType {
-        return TileType.GetTileType("InitialLavaLevel", "waterChanger", 0, 2, Solidity.None, TargetLayer.main, tileType => { });
+        return TileType.GetTileType("InitialLavaLevel", "lava", 6, 5, Solidity.None, TargetLayer.main, tileType => { });
     }
 
 

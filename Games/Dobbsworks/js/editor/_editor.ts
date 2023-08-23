@@ -156,7 +156,7 @@ class EditorHandler {
 
 
         /* ENEMY PANEL */
-        let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Wooly, WoolyBooly, Snail, SapphireSnail, RubySnail, Escarghost, Prickle, PrickleEgg, PrickleShell, PrickleRock, /*Skitter,*/ DrSnips, AFish, Angler, Lurchin, Clammy, Pufferfish,
+        let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Wooly, WoolyBooly, Snail, SapphireSnail, RubySnail, Escarghost, Prickle, PrickleEgg, PrickleShell, PrickleRock, /*Skitter,*/ DrSnips, AFish, /*Angler,*/ Lurchin, Clammy, Pufferfish,
             Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, SpicyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, BaddleTrigger, /*, BigYufo */];
         let enemyButtons = enemyTypes.map(a => new EditorButtonSprite(a));
 

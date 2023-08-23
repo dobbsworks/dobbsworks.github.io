@@ -61,7 +61,7 @@ class LevelMap {
     windAnimationDx = 0;
     windAnimationDy = 0;
     windOpacity = 0;
-    windParticles: {x:number,y:number,offset:number}[] = [];
+    windParticles: { x: number, y: number, offset: number }[] = [];
 
     hasHorizontalWrap = false;
 
@@ -316,15 +316,15 @@ class LevelMap {
         let maxX = camera.canvas.width;
         let maxY = camera.canvas.height;
         if (this.windParticles.length == 0) {
-            for (let i=0; i<100; i++) {
-                this.windParticles.push({x: maxX * Math.random(), y: maxY * Math.random(), offset: Math.random() * Math.PI});
+            for (let i = 0; i < 100; i++) {
+                this.windParticles.push({ x: maxX * Math.random(), y: maxY * Math.random(), offset: Math.random() * Math.PI });
             }
         } else {
             for (let particle of this.windParticles) {
-                particle.x += this.windAnimationDx * 4 + 
+                particle.x += this.windAnimationDx * 4 +
                     Math.cos(particle.offset + this.frameNum / 20) / 4 +
                     (camera.prevX - camera.x) * 1; //4 for no depth
-                particle.y += this.windAnimationDy * 4 + 
+                particle.y += this.windAnimationDy * 4 +
                     Math.cos(particle.offset + this.frameNum / 20) / 4 +
                     (camera.prevY - camera.y) * 1; //4 for no depth
                 if (particle.x > maxX) particle.x = particle.x % maxX - 5;
@@ -475,7 +475,7 @@ class LevelMap {
             this.bgColorBottomPositionRatio.toFixed(2),
             this.overlayOpacity.toFixed(2)
         ].join(",");
-        return skyString + ";" + this.backgroundLayers.map(a => a.ExportToString()).join(";") 
+        return skyString + ";" + this.backgroundLayers.map(a => a.ExportToString()).join(";")
             + ";" + this.waterColor + ";" + this.purpleWaterColor + ";" + this.lavaColor;
     }
 
@@ -707,25 +707,42 @@ class FluidLevel {
 
     Draw(camera: Camera): void {
         if (this.currentY == -1) return;
+        let sourceImage = ["water", "purpleWater", "lava"][this.fluidTypeIndex];
 
         let imageTileMain = this.mainTile.imageTile;
-        let imageTileSurface = this.surfaceTile.imageTiles[Math.floor(this.animationCounter / this.surfaceTile.framesPerTile) % this.surfaceTile.imageTiles.length];
+        let imageTileSurface = tiles[sourceImage][Math.floor(this.animationCounter / this.surfaceTile.framesPerTile) % 4][1]
 
-
+        // draw fill
         let destY = (this.currentY - camera.y) * camera.scale + camera.canvas.height / 2;
-        camera.ctx.drawImage(imageTileMain.src, imageTileMain.xSrc + 0.1, imageTileMain.ySrc + 0.1, imageTileMain.width - 0.2, imageTileMain.height - 0.2,
-            0, destY, camera.canvas.width, camera.canvas.height - destY + 10);
+        if (sourceImage != "lava") {
+            // solid fill
+            camera.ctx.drawImage(imageTileMain.src, imageTileMain.xSrc + 0.1, imageTileMain.ySrc + 0.1, imageTileMain.width - 0.2, imageTileMain.height - 0.2,
+                0, destY, camera.canvas.width, camera.canvas.height - destY + 10);
+        } else {
+            // tile the wavy pattern
+            for (let x = -(camera.GetLeftCameraEdge() % 12) * camera.scale; x <= 960; x += 12 * camera.scale) {
+                for (let y = destY; y < 576; y += 12 * camera.scale) {
+                    camera.ctx.drawImage(imageTileMain.src, imageTileMain.xSrc + 0.1, imageTileMain.ySrc + 0.1, imageTileMain.width - 0.2, imageTileMain.height - 0.2,
+                        x, y, 12 * camera.scale, 12 * camera.scale);
+                }
+            }
+        }
 
+
+
+        // draw surface
         for (let x = -(camera.x % 12) * camera.scale; x < camera.canvas.width; x += 12 * camera.scale) {
             camera.ctx.drawImage(imageTileSurface.src, imageTileSurface.xSrc + 0.1, imageTileSurface.ySrc + 0.1, imageTileSurface.width - 0.2, imageTileSurface.height - 0.2,
                 x, destY - (12 * camera.scale), imageTileSurface.width * camera.scale, imageTileSurface.height * camera.scale);
         }
 
-        let imageTileFall = tiles["pipes"][this.fluidTypeIndex * 2][1];
+        // draw waterfalls
+        let imageTileFall = tiles[sourceImage][6][3];
         for (let sourceTile of this.flowSourceTiles) {
             let flowX = (sourceTile.tileX * sourceTile.layer.tileWidth - camera.x) * camera.scale + camera.canvas.width / 2;
             let flowY = (sourceTile.tileY * sourceTile.layer.tileHeight - camera.y) * camera.scale + camera.canvas.height / 2;
             let flowBottom = Math.min(camera.canvas.height, destY - 14 * camera.scale);
+
             camera.ctx.drawImage(imageTileFall.src, imageTileFall.xSrc + 0.1, imageTileFall.ySrc + 0.1, imageTileFall.width - 0.2, imageTileFall.height - 0.2,
                 flowX, flowY + (12 * camera.scale), imageTileFall.width * camera.scale, flowBottom - flowY);
         }

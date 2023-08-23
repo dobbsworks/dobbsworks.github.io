@@ -672,8 +672,19 @@ var FluidLevel = /** @class */ (function () {
     FluidLevel.prototype.RemoveFlowSource = function (levelTile) {
         this.flowSourceTiles = this.flowSourceTiles.filter(function (a) { return !(a.tileX === levelTile.tileX && a.tileY === levelTile.tileY); });
     };
+    FluidLevel.prototype.UpdatePattern = function () {
+        var sourceImage = ["water", "purpleWater", "lava"][this.fluidTypeIndex];
+        var patternCanvas = document.createElement("canvas");
+        var patternContext = patternCanvas.getContext("2d");
+        patternCanvas.width = 12 * camera.scale;
+        patternCanvas.height = 12 * camera.scale;
+        patternContext.drawImage(tiles[sourceImage][0][0].src, 0, 0, 12, 12, 0, 0, 12 * camera.scale, 12 * camera.scale);
+        patternContext.imageSmoothingEnabled = false;
+        this.fillPattern = patternContext.createPattern(patternCanvas, "repeat");
+    };
     FluidLevel.prototype.Initialize = function () {
         if (currentMap) {
+            this.UpdatePattern();
             for (var _i = 0, _a = currentMap.mainLayer.tiles; _i < _a.length; _i++) {
                 var col = _a[_i];
                 for (var _b = 0, col_1 = col; _b < col_1.length; _b++) {
@@ -713,14 +724,29 @@ var FluidLevel = /** @class */ (function () {
     FluidLevel.prototype.Draw = function (camera) {
         if (this.currentY == -1)
             return;
+        var sourceImage = ["water", "purpleWater", "lava"][this.fluidTypeIndex];
         var imageTileMain = this.mainTile.imageTile;
-        var imageTileSurface = this.surfaceTile.imageTiles[Math.floor(this.animationCounter / this.surfaceTile.framesPerTile) % this.surfaceTile.imageTiles.length];
+        var imageTileSurface = tiles[sourceImage][Math.floor(this.animationCounter / this.surfaceTile.framesPerTile) % 4][1];
+        // draw fill
         var destY = (this.currentY - camera.y) * camera.scale + camera.canvas.height / 2;
-        camera.ctx.drawImage(imageTileMain.src, imageTileMain.xSrc + 0.1, imageTileMain.ySrc + 0.1, imageTileMain.width - 0.2, imageTileMain.height - 0.2, 0, destY, camera.canvas.width, camera.canvas.height - destY + 10);
+        if (sourceImage != "lava") {
+            // solid fill
+            camera.ctx.drawImage(imageTileMain.src, imageTileMain.xSrc + 0.1, imageTileMain.ySrc + 0.1, imageTileMain.width - 0.2, imageTileMain.height - 0.2, 0, destY, camera.canvas.width, camera.canvas.height - destY + 10);
+        }
+        else {
+            // tile the wavy pattern
+            for (var x = -(camera.GetLeftCameraEdge() % 12) * camera.scale; x <= 960; x += 12 * camera.scale) {
+                for (var y = destY; y < 576; y += 12 * camera.scale) {
+                    camera.ctx.drawImage(imageTileMain.src, imageTileMain.xSrc + 0.1, imageTileMain.ySrc + 0.1, imageTileMain.width - 0.2, imageTileMain.height - 0.2, x, y, 12 * camera.scale, 12 * camera.scale);
+                }
+            }
+        }
+        // draw surface
         for (var x = -(camera.x % 12) * camera.scale; x < camera.canvas.width; x += 12 * camera.scale) {
             camera.ctx.drawImage(imageTileSurface.src, imageTileSurface.xSrc + 0.1, imageTileSurface.ySrc + 0.1, imageTileSurface.width - 0.2, imageTileSurface.height - 0.2, x, destY - (12 * camera.scale), imageTileSurface.width * camera.scale, imageTileSurface.height * camera.scale);
         }
-        var imageTileFall = tiles["pipes"][this.fluidTypeIndex * 2][1];
+        // draw waterfalls
+        var imageTileFall = tiles[sourceImage][6][3];
         for (var _i = 0, _a = this.flowSourceTiles; _i < _a.length; _i++) {
             var sourceTile = _a[_i];
             var flowX = (sourceTile.tileX * sourceTile.layer.tileWidth - camera.x) * camera.scale + camera.canvas.width / 2;

@@ -23,14 +23,14 @@ class WaterRecolor {
         let lime = (256) * 255;
         let black = 0;
 
-        if (stripeOffset != 0) {
-            color.a = 1;
-        }
-        
         let mainColor = hslaToRGBA(color);
 
         let stripe = {...color};
         stripe.h += stripeOffset;
+        if (stripeOffset != 0) {
+            stripe.a = 1;
+        }
+
         let stripeColor = hslaToRGBA(stripe);
         let waterfallMainColor = mainColor;
         let waterfallStripe = {...color};
@@ -43,6 +43,9 @@ class WaterRecolor {
         if (stripeOffset != 0) {
             let lavaSurface = {...color};
             lavaSurface.h += stripeOffset * 2;
+            if (stripeOffset != 0) {
+                lavaSurface.a = 1;
+            }
             surfaceColor = hslaToRGBA(lavaSurface);
         }
         

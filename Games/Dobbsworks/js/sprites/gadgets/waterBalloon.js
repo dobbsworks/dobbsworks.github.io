@@ -90,7 +90,6 @@ var WaterBalloonSplash = /** @class */ (function (_super) {
     }
     WaterBalloonSplash.prototype.Update = function () {
         var _this = this;
-        _super.prototype.Update.call(this);
         this.MoveByVelocity();
         this.ApplyGravity();
         var velocityDampen = 0.96;
@@ -136,8 +135,5 @@ var WaterBalloonSplash = /** @class */ (function (_super) {
             yOffset: 0
         };
     };
-    WaterBalloonSplash.prototype.IsHazardActive = function () {
-        return true;
-    };
     return WaterBalloonSplash;
-}(Hazard));
+}(Sprite));

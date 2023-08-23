@@ -143,6 +143,7 @@ var PreferencesMenu = /** @class */ (function (_super) {
         container.AddChild(this.CreateToggle(Preference.PauseOnLoseFocus));
         container.AddChild(this.CreateToggle(Preference.MuteOnLoseFocus));
         container.AddChild(this.CreateToggle(Preference.OnScreenInputs));
+        container.AddChild(this.CreateToggle(Preference.AnimateTiles));
         var backButton = this.CreateButton("Back");
         container.AddChild(backButton);
         backButton.onClickEvents.push(function () {

@@ -1942,7 +1942,7 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "WaterTapOff", {
         get: function () {
-            return TileType.GetTileType("WaterTapOff", "pipes", 0, 0, Solidity.Block, TargetLayer.main, function (tileType) {
+            return TileType.GetTileType("WaterTapOff", "water", 6, 2, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.canBePowered = true;
                 tileType.poweredTileName = "WaterTapOn";
                 tileType.onPowered = function (tile) { var _a; (_a = tile.layer.map) === null || _a === void 0 ? void 0 : _a.waterLevel.AddFlowSource(tile); };
@@ -1953,7 +1953,7 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "WaterTapOn", {
         get: function () {
-            return TileType.GetTileType("WaterTapOn", "pipes", 1, 0, Solidity.Block, TargetLayer.main, function (tileType) {
+            return TileType.GetTileType("WaterTapOn", "water", 7, 2, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.canBePowered = true;
                 tileType.unpoweredTileName = "WaterTapOff";
                 tileType.onUnpowered = function (tile) { var _a; (_a = tile.layer.map) === null || _a === void 0 ? void 0 : _a.waterLevel.RemoveFlowSource(tile); };
@@ -1964,7 +1964,7 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "PurpleWaterTapOff", {
         get: function () {
-            return TileType.GetTileType("PurpleWaterTapOff", "pipes", 2, 0, Solidity.Block, TargetLayer.main, function (tileType) {
+            return TileType.GetTileType("PurpleWaterTapOff", "purpleWater", 6, 2, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.canBePowered = true;
                 tileType.poweredTileName = "PurpleWaterTapOn";
                 tileType.onPowered = function (tile) { var _a; (_a = tile.layer.map) === null || _a === void 0 ? void 0 : _a.purpleWaterLevel.AddFlowSource(tile); };
@@ -1975,7 +1975,7 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "PurpleWaterTapOn", {
         get: function () {
-            return TileType.GetTileType("PurpleWaterTapOn", "pipes", 3, 0, Solidity.Block, TargetLayer.main, function (tileType) {
+            return TileType.GetTileType("PurpleWaterTapOn", "purpleWater", 7, 2, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.canBePowered = true;
                 tileType.unpoweredTileName = "PurpleWaterTapOff";
                 tileType.onUnpowered = function (tile) { var _a; (_a = tile.layer.map) === null || _a === void 0 ? void 0 : _a.purpleWaterLevel.RemoveFlowSource(tile); };
@@ -1986,7 +1986,7 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "LavaTapOff", {
         get: function () {
-            return TileType.GetTileType("LavaTapOff", "pipes", 4, 0, Solidity.Block, TargetLayer.main, function (tileType) {
+            return TileType.GetTileType("LavaTapOff", "lava", 6, 2, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.canBePowered = true;
                 tileType.poweredTileName = "LavaTapOn";
                 tileType.onPowered = function (tile) { var _a; (_a = tile.layer.map) === null || _a === void 0 ? void 0 : _a.lavaLevel.AddFlowSource(tile); };
@@ -1997,7 +1997,7 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "LavaTapOn", {
         get: function () {
-            return TileType.GetTileType("LavaTapOn", "pipes", 5, 0, Solidity.Block, TargetLayer.main, function (tileType) {
+            return TileType.GetTileType("LavaTapOn", "lava", 7, 2, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.canBePowered = true;
                 tileType.unpoweredTileName = "LavaTapOff";
                 tileType.onUnpowered = function (tile) { var _a; (_a = tile.layer.map) === null || _a === void 0 ? void 0 : _a.lavaLevel.RemoveFlowSource(tile); };
@@ -2008,7 +2008,7 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "Drain", {
         get: function () {
-            return TileType.GetTileType("Drain", "pipes", 0, 2, Solidity.None, TargetLayer.main, function (tileType) {
+            return TileType.GetTileType("Drain", "water", 6, 4, Solidity.None, TargetLayer.main, function (tileType) {
             });
         },
         enumerable: false,
@@ -2016,21 +2016,21 @@ var TileType = /** @class */ (function () {
     });
     Object.defineProperty(TileType, "InitialWaterLevel", {
         get: function () {
-            return TileType.GetTileType("InitialWaterLevel", "waterChanger", 0, 0, Solidity.None, TargetLayer.main, function (tileType) { });
+            return TileType.GetTileType("InitialWaterLevel", "water", 6, 5, Solidity.None, TargetLayer.main, function (tileType) { });
         },
         enumerable: false,
         configurable: true
     });
     Object.defineProperty(TileType, "InitialPurpleWaterLevel", {
         get: function () {
-            return TileType.GetTileType("InitialPurpleWaterLevel", "waterChanger", 0, 1, Solidity.None, TargetLayer.main, function (tileType) { });
+            return TileType.GetTileType("InitialPurpleWaterLevel", "purpleWater", 6, 5, Solidity.None, TargetLayer.main, function (tileType) { });
         },
         enumerable: false,
         configurable: true
     });
     Object.defineProperty(TileType, "InitialLavaLevel", {
         get: function () {
-            return TileType.GetTileType("InitialLavaLevel", "waterChanger", 0, 2, Solidity.None, TargetLayer.main, function (tileType) { });
+            return TileType.GetTileType("InitialLavaLevel", "lava", 6, 5, Solidity.None, TargetLayer.main, function (tileType) { });
         },
         enumerable: false,
         configurable: true

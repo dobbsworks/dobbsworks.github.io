@@ -139,6 +139,7 @@ class PreferencesMenu extends Menu {
         container.AddChild(this.CreateToggle(Preference.PauseOnLoseFocus));
         container.AddChild(this.CreateToggle(Preference.MuteOnLoseFocus));
         container.AddChild(this.CreateToggle(Preference.OnScreenInputs));
+        container.AddChild(this.CreateToggle(Preference.AnimateTiles));
 
         let backButton = this.CreateButton("Back");
         container.AddChild(backButton);

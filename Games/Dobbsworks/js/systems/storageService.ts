@@ -116,4 +116,5 @@ class Preference {
     static PauseOnLoseFocus: Preference = new Preference("Pause when game is minimized", "pause-on-lose-focus", true);
     static MuteOnLoseFocus: Preference = new Preference("Mute when game is minimized", "mute-on-lose-focus", false);
     static OnScreenInputs: Preference = new Preference("Display inputs on-screen", "on-screen-input", false);
+    static AnimateTiles: Preference = new Preference("Animate Tiles (possibly lower fps)", "animate-tiles", true);
 }

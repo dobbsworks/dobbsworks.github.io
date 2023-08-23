@@ -156,7 +156,11 @@ class LevelLayer {
 
             let existingAnimatedEntry = this.animatedTileList.find(a => a.tileX == xIndex && a.tileY == yIndex);
             if (existingAnimatedEntry) this.animatedTileList = this.animatedTileList.filter(a => a != existingAnimatedEntry);
-            if (tileType instanceof AnimatedTileType) this.animatedTileList.push(existingTile);
+            if (tileType instanceof AnimatedTileType) {
+                if (StorageService.GetPreferenceBool(Preference.AnimateTiles)) {
+                    this.animatedTileList.push(existingTile);
+                }
+            }
             if (!isInitialMapSetup && this.layerType == TargetLayer.wire) this.wireFlatMap.push(existingTile);
 
             return true;
@@ -332,8 +336,9 @@ class LevelLayer {
     ClearTile(xIndex: number, yIndex: number): void {
         let tile = this.GetTileByIndex(xIndex, yIndex);
         let semisolid = tile.GetSemisolidNeighbor();
-        if (semisolid) {
-            semisolid.tileType = semisolid.uncoatedType;
+        if (semisolid && this.map) {
+            this.map.semisolidLayer.SetTile(semisolid.tileX, semisolid.tileY, semisolid.uncoatedType);
+            this.map.semisolidLayer.isDirty = true;
         }
     }
 

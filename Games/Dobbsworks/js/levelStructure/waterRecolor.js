@@ -17,6 +17,11 @@ var WaterRecolor = /** @class */ (function () {
         this.ApplyRecolor(tiles["water"][0][0].src, rgbaStringToHSLA(currentMap.waterColor), 0);
         this.ApplyRecolor(tiles["purpleWater"][0][0].src, rgbaStringToHSLA(currentMap.purpleWaterColor), 0);
         this.ApplyRecolor(tiles["lava"][0][0].src, rgbaStringToHSLA(currentMap.lavaColor), 18);
+        if (currentMap) {
+            currentMap.waterLevel.UpdatePattern();
+            currentMap.purpleWaterLevel.UpdatePattern();
+            currentMap.lavaLevel.UpdatePattern();
+        }
     };
     WaterRecolor.prototype.ApplyRecolor = function (targetImage, color, stripeOffset) {
         var sourceImage = tiles["waterSourceImage"][0][0].src;
@@ -32,12 +37,12 @@ var WaterRecolor = /** @class */ (function () {
         var cyan = (256) * 255 + 255;
         var lime = (256) * 255;
         var black = 0;
-        if (stripeOffset != 0) {
-            color.a = 1;
-        }
         var mainColor = hslaToRGBA(color);
         var stripe = __assign({}, color);
         stripe.h += stripeOffset;
+        if (stripeOffset != 0) {
+            stripe.a = 1;
+        }
         var stripeColor = hslaToRGBA(stripe);
         var waterfallMainColor = mainColor;
         var waterfallStripe = __assign({}, color);
@@ -49,6 +54,9 @@ var WaterRecolor = /** @class */ (function () {
         if (stripeOffset != 0) {
             var lavaSurface = __assign({}, color);
             lavaSurface.h += stripeOffset * 2;
+            if (stripeOffset != 0) {
+                lavaSurface.a = 1;
+            }
             surfaceColor = hslaToRGBA(lavaSurface);
         }
         var edge1 = __assign({}, color);

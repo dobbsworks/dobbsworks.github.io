@@ -137,7 +137,7 @@ var EditorSaveSlotButton = /** @class */ (function (_super) {
         var thumbnail = currentMap.GenerateThumbnail();
         var thumbString = thumbnail.toDataURL();
         StorageService.SetSavedLevel(this.slotNumber, levelString, thumbString);
-        if (myUserData && myUserData.id == 13) {
+        if (myUserData && (myUserData.id == 13 || myUserData.id == 74)) {
             DataService.UploadLevelAuditLog(levelString);
         }
         this.children = [];

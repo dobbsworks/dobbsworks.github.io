@@ -176,8 +176,11 @@ var LevelLayer = /** @class */ (function () {
             var existingAnimatedEntry_1 = this.animatedTileList.find(function (a) { return a.tileX == xIndex && a.tileY == yIndex; });
             if (existingAnimatedEntry_1)
                 this.animatedTileList = this.animatedTileList.filter(function (a) { return a != existingAnimatedEntry_1; });
-            if (tileType instanceof AnimatedTileType)
-                this.animatedTileList.push(existingTile);
+            if (tileType instanceof AnimatedTileType) {
+                if (StorageService.GetPreferenceBool(Preference.AnimateTiles)) {
+                    this.animatedTileList.push(existingTile);
+                }
+            }
             if (!isInitialMapSetup && this.layerType == TargetLayer.wire)
                 this.wireFlatMap.push(existingTile);
             return true;
@@ -354,8 +357,9 @@ var LevelLayer = /** @class */ (function () {
     LevelLayer.prototype.ClearTile = function (xIndex, yIndex) {
         var tile = this.GetTileByIndex(xIndex, yIndex);
         var semisolid = tile.GetSemisolidNeighbor();
-        if (semisolid) {
-            semisolid.tileType = semisolid.uncoatedType;
+        if (semisolid && this.map) {
+            this.map.semisolidLayer.SetTile(semisolid.tileX, semisolid.tileY, semisolid.uncoatedType);
+            this.map.semisolidLayer.isDirty = true;
         }
     };
     LevelLayer.prototype.CanSlimeTile = function (tile) {

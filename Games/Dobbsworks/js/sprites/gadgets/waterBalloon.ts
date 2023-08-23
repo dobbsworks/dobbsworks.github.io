@@ -71,14 +71,13 @@ class WaterBalloon extends Sprite {
 
 
 
-class WaterBalloonSplash extends Hazard {
+class WaterBalloonSplash extends Sprite {
     public height: number = 12;
     public width: number  = 12;
     public respectsSolidTiles: boolean = false;
     isExemptFromSilhoutte = true;
 
     Update(): void {
-        super.Update();
         this.MoveByVelocity();
         this.ApplyGravity();
         let velocityDampen = 0.96;
@@ -126,8 +125,4 @@ class WaterBalloonSplash extends Hazard {
             yOffset: 0
         };
     }
-    IsHazardActive(): boolean {
-        return true;
-    }
-
 }

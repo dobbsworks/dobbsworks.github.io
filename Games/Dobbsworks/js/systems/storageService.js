@@ -122,5 +122,6 @@ var Preference = /** @class */ (function () {
     Preference.PauseOnLoseFocus = new Preference("Pause when game is minimized", "pause-on-lose-focus", true);
     Preference.MuteOnLoseFocus = new Preference("Mute when game is minimized", "mute-on-lose-focus", false);
     Preference.OnScreenInputs = new Preference("Display inputs on-screen", "on-screen-input", false);
+    Preference.AnimateTiles = new Preference("Animate Tiles (possibly lower fps)", "animate-tiles", true);
     return Preference;
 }());
