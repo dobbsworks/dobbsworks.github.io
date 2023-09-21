@@ -157,7 +157,7 @@ class EditorHandler {
 
         /* ENEMY PANEL */
         let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Wooly, WoolyBooly, Snail, SapphireSnail, RubySnail, Escarghost, Prickle, PrickleEgg, PrickleShell, PrickleRock, /*Skitter,*/ DrSnips, AFish, /*Angler,*/ Lurchin, Clammy, Pufferfish,
-            Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, SpicyJelly, Shrubbert, OrangeShrubbert, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, BaddleTrigger, /*, BigYufo */];
+            Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, SpicyJelly, Shrubbert, OrangeShrubbert, /*Vinedicator, GrayGrowth,*/ SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, BaddleTrigger, /*, BigYufo */];
         let enemyButtons = enemyTypes.map(a => new EditorButtonSprite(a));
 
         enemyButtons.filter(a => a.spriteType == Piggle || a.spriteType == Snail).forEach(a => hotbarDefaults.push(a));
@@ -193,6 +193,7 @@ class EditorHandler {
         gizmoButtons.push(new EditorButtonSprite(Bomb));
         gizmoButtons.push(new EditorButtonSprite(SafetyBomb));
         gizmoButtons.push(new EditorButtonTile(TileType.Cracks, "Bombable Cracks"));
+        gizmoButtons.push(new EditorButtonTile(TileType.BulletBlock, "Shootable Block"));
         gizmoButtons.push(new EditorButtonTile(TileType.WindRight, "Wind").AppendImage(tiles["uiButtonAdd"][0][0]));
         gizmoButtons.push(new EditorButtonTile(TileType.FastWindRight, "Fast Wind").AppendImage(tiles["uiButtonAdd"][0][0]));
         gizmoButtons.push(new EditorButtonSprite(WindTriggerRight));

@@ -61,6 +61,8 @@ class Player extends Sprite {
 
     public hasGun = false;
     private gunCooldown = 0;
+    public gunHpMax = 40;
+    public gunHpCurrent = 40;
 
     LogProps(): void {
         let obj: any = {}
@@ -178,7 +180,7 @@ class Player extends Sprite {
             }
             if (map.lavaLevel.currentY !== -1) {
                 if (this.yBottom + this.floatingPointOffset > map.lavaLevel.currentY) {
-                    this.dy -= 3;
+                    this.dy = -3;
                     this.OnPlayerHurt();
                 }
             }
@@ -438,7 +440,7 @@ class Player extends Sprite {
         }
     }
 
-    public OnEnterPipe(): void { 
+    public OnEnterPipe(): void {
         this.heldItem = null;
     }
 
@@ -624,7 +626,7 @@ class Player extends Sprite {
                 if (this.isTouchingLeftWall && camera.autoscrollX < 0) this.OnPlayerDead(false);
                 else this.x = rightEdge - this.width;
             }
-        } 
+        }
         if (camera.isAutoscrollingVertically) {
             if (camera.autoscrollY > 0) {
                 // scrolling down
@@ -749,7 +751,12 @@ class Player extends Sprite {
             tiles = tiles.filter(Utility.OnlyUnique);
             if (tiles.some(a => a.tileType.hurtOnOverlap)) isHurt = true;
             else if (tiles.some(a => a.GetWireNeighbor()?.tileType.hurtOnOverlap)) isHurt = true;
-            else if (tiles.some(a => a.GetWaterNeighbor()?.tileType.hurtOnOverlap)) isHurt = true;
+            else if (tiles.some(a => a.GetWaterNeighbor()?.tileType.hurtOnOverlap)) {
+                isHurt = true;
+                if (tiles.some(a => a.GetWaterNeighbor()?.tileType.isLava) && !Version.DoesCurrentLevelUseOldLava()) {
+                    this.dy = -3;
+                }
+            }
         }
         if (isHurt) {
             this.OnPlayerHurt();
@@ -772,12 +779,18 @@ class Player extends Sprite {
                 nextHeart.isActive = false;
                 nextHeart.ReplaceWithSpriteType(ExtraHitHeartSmallLoss);
             } else if (this.hasGun) {
-                this.hasGun = false;
-                audioHandler.PlaySound("gun-down", true);
-                let drop = new GunDropped(this.x,this.y, this.layer, []);
-                drop.dy = -1;
-                drop.dx = this.direction == 1 ? -1: 1;
-                this.layer.sprites.push(drop);
+                this.gunHpCurrent -= 10;
+                if (this.gunHpCurrent <= 0) {
+                    this.OnPlayerDead(true);
+                } else {
+                    audioHandler.PlaySound("gun-down", true);
+                }
+                //this.hasGun = false;
+                // audioHandler.PlaySound("gun-down", true);
+                // let drop = new GunDropped(this.x, this.y, this.layer, []);
+                // drop.dy = -1;
+                // drop.dx = this.direction == 1 ? -1 : 1;
+                // this.layer.sprites.push(drop);
                 this.ActivateIFrames();
             } else {
                 this.OnPlayerDead(true);
@@ -1139,7 +1152,21 @@ class Player extends Sprite {
             ctx.arc(x, y, 6, -Math.PI / 2, 2 * Math.PI * fillRatio - Math.PI / 2, false);
             ctx.fill();
             ctx.stroke();
+        }
 
+        if (this.hasGun) {
+            let powerBarX = 10;
+            let powerBarY = 576 - 127 - 10;
+            ctx.strokeStyle = "#379";
+            ctx.lineWidth = 4;
+            ctx.fillStyle = "black";
+            ctx.fillRect(powerBarX, powerBarY, 28, 127);
+            ctx.strokeRect(powerBarX, powerBarY, 28, 127);
+            for (let i = 0; i < this.gunHpMax; i++) {
+                let hasThisBar = this.gunHpCurrent + i >= this.gunHpMax;
+                ctx.fillStyle = hasThisBar ? "white" : "#FFF2";
+                ctx.fillRect(powerBarX + 4, powerBarY + i * 3 + 4, 20, 2);
+            }
         }
     }
 }

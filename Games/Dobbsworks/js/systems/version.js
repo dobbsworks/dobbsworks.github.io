@@ -30,6 +30,11 @@ var Version = /** @class */ (function () {
             return false;
         return Version.Compare("1.6.0", currentMap.mapVersion) == 1;
     };
-    Version.Current = "1.10.1";
+    Version.DoesCurrentLevelUseOldLava = function () {
+        if (!currentMap)
+            return false;
+        return Version.Compare("1.11.0", currentMap.mapVersion) == 1;
+    };
+    Version.Current = "1.11.0";
     return Version;
 }());

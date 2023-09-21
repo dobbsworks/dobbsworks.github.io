@@ -8,11 +8,9 @@ FEATURES
         winged pig
         thunder cloud - activates wires with strikes
         Mimic - angry eyebrows attach to sprite below (not to enemies/platforms)
-    New wires - Pulse extender
-    bonk particle for landing on enemy
+        
+        
 
-
-    Warn user when leveldata gets too big
     List level status in MyLevels
     
 
@@ -49,55 +47,4 @@ LATER CONTENT RELEASES
     
 
 
-    autochange - overwrite??
-    fire decays to original instead of branch
-    water bucket
-    water balloon?
-
-        
-
-
-teaser vid https://youtu.be/DfL6jg2ONuE?t=1527
-
-
-
-
-some rando's ideas for SMM3 - https://docs.google.com/document/d/1qrOyKu2M8TzLXnHSlUbwElX4xyQ-l7smob6r2AqosI8/edit
-
-
-
-
-
-
-##########################################
-v0.12.0 - Some Light Camera Action
-##########################################
-* Camera Lock
-    + Use Camera Horizontal Locks to keep
-    the camera from freely scrolling
-    + Can be used to make a series of 
-    one-screen rooms, for instance
-    + If there's no physical wall where 
-    the camera lock is, the player can 
-    Megaman their way into the next screen 
-* Autoscroll Triggers
-    + When an autoscroll trigger is on 
-    screen, the camera stops following 
-    the player and starts moving on its 
-    own 
-    + Stack multiples to increase the 
-    scroll speed (base 0.8 tiles/second)
-    + Player can be killed by getting 
-    stuck against the moving camera edge 
-* Zoom Triggers 
-    + When a zoom trigger is on screen, 
-    the camera will zoom in or out up to 
-    a predefined limit
-    + Use this to make areas feel more 
-    open or claustrophobic! 
-* New enemy - Yufo
-    + Bounces back and forth, occasionally
-    pausing to fire a laser downward
-    + Jump on it to flip it over, 
-    exposing a very bouncy underside!
-##########################################
+Enemy that becomes a platform when struck

@@ -44,6 +44,13 @@ var Coin = /** @class */ (function (_super) {
                     audioHandler.PlaySound(this.sound, false);
                     if (this instanceof Dabbloon) {
                         this.layer.sprites.push(new Points(this.xMid - 15 / 2, this.y, this.layer, []));
+                        player_1.gunHpCurrent += 10;
+                    }
+                    else {
+                        player_1.gunHpCurrent += 1;
+                    }
+                    if (player_1.gunHpCurrent > player_1.gunHpMax) {
+                        player_1.gunHpCurrent = player_1.gunHpMax;
                     }
                 }
             }

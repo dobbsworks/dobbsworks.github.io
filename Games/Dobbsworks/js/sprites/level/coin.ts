@@ -17,13 +17,19 @@ class Coin extends Sprite {
             this.y -= 0.25;
             if (this.touchTimer > 60) this.isActive = false;
         } else {
-            let players = this.layer.sprites.filter(a => a instanceof Player);
+            let players = this.layer.sprites.filter(a => a instanceof Player) as Player[];
             for (let player of players) {
                 if (player.Overlaps(this)) {
                     this.isTouched = true;
                     audioHandler.PlaySound(this.sound, false);
                     if (this instanceof Dabbloon) {
-                        this.layer.sprites.push(new Points(this.xMid - 15 / 2, this.y, this.layer, []))
+                        this.layer.sprites.push(new Points(this.xMid - 15 / 2, this.y, this.layer, []));
+                        player.gunHpCurrent += 10;
+                    } else {
+                        player.gunHpCurrent += 1;
+                    }
+                    if (player.gunHpCurrent > player.gunHpMax) {
+                        player.gunHpCurrent = player.gunHpMax;
                     }
                 }
             }

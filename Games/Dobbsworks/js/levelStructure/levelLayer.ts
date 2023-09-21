@@ -33,7 +33,7 @@ class LevelLayer {
             if (this.layerType == TargetLayer.water) this.UpdateWaterTiles();
             this.cachedCanvas = document.createElement("canvas");
             if (this.tiles.length) this.DrawSectionToCanvasWithOverdraw(this.cachedCanvas,
-                0, 0, this.tiles.length - 1, this.tiles[0].length - 1 );
+                0, 0, this.tiles.length - 1, this.tiles[0].length - 1);
             this.spriteCanvas.width = camera.canvas.width;
             this.spriteCanvas.height = camera.canvas.height;
         }
@@ -62,7 +62,7 @@ class LevelLayer {
             }
         }
     }
-    
+
     DrawSectionToCanvasWithOverdraw(canvas: HTMLCanvasElement, left: number, top: number, right: number, bottom: number): void {
         this.DrawSectionToCanvas(canvas, left, top, right, bottom, true)
     }
@@ -87,7 +87,7 @@ class LevelLayer {
             for (let rowIndex = top - overdrawAmount; rowIndex <= bottom + overdrawAmount; rowIndex++, y++) {
                 let tile = col[rowIndex];
                 if (rowIndex < 0) tile = col[0];
-                if (rowIndex >= col.length) tile = col[col.length-1];
+                if (rowIndex >= col.length) tile = col[col.length - 1];
                 if (!tile) continue;
                 let imageTile = tile.tileType.imageTile;
                 if (!imageTile) continue;
@@ -209,7 +209,7 @@ class LevelLayer {
 
     RedrawTile(xIndex: number, yIndex: number, imageTile: ImageTile) {
         let cachedCtx = <CanvasRenderingContext2D>this.cachedCanvas.getContext("2d");
-        let x = (xIndex + 1) * this.tileWidth ;
+        let x = (xIndex + 1) * this.tileWidth;
         let y = (yIndex + 1) * this.tileHeight;
         cachedCtx.clearRect(x, y, this.tileWidth, this.tileHeight);
         imageTile.Draw(cachedCtx, x, y, 1);
@@ -281,7 +281,7 @@ class LevelLayer {
         if (!this.tiles[xTile]) {
             if (this.map?.hasHorizontalWrap && allowRedirect) {
                 let offset = this.tiles.length * 12;
-                let tile = (xPixel < 0) ? 
+                let tile = (xPixel < 0) ?
                     this.GetTileByPixel(xPixel + offset, yPixel, false) :
                     this.GetTileByPixel(xPixel - offset, yPixel, false);
                 return new LevelTile(xTile, yTile, tile.tileType, this);
@@ -363,7 +363,7 @@ class LevelLayer {
             sprite.Draw(camera, frameNum);
         }
     }
-    
+
     public DrawFrame(frameData: FrameData, scale: number, sprite: Sprite) {
         let ctx = camera.ctx;
         if (this.map && this.map.silhoutteColor) {
@@ -417,7 +417,7 @@ class LevelLayer {
 
         let tileIndeces = this.tiles.flatMap(a => a).map(a => availableTileTypes.indexOf(a.tileType));
         if (numColumns > 0) {
-            tileIndeces = this.tiles.filter((a,i) => i < numColumns).flatMap(a => a).map(a => availableTileTypes.indexOf(a.tileType));
+            tileIndeces = this.tiles.filter((a, i) => i < numColumns).flatMap(a => a).map(a => availableTileTypes.indexOf(a.tileType));
         }
         if (tileIndeces.some(a => a == -1)) {
             console.error("Layer includes invalid tile");
@@ -459,6 +459,7 @@ class LevelLayer {
 
         let x = xStart;
         let y = yStart;
+        let errorCount = 0;
 
         for (let i = 0; i < importStr.length; i += 3) {
             let tileChars = importStr[i] + importStr[i + 1];
@@ -466,13 +467,22 @@ class LevelLayer {
             let tileCount = Utility.IntFromB64(importStr[i + 2]) + 1;
             let tileType = availableTileTypes[tileIndex];
             for (let j = 0; j < tileCount; j++) {
-                layer.SetTile(x, y, tileType, true);
+                if (!tileType) {
+                    console.error(`Import error at (${x}, ${y}): "${tileChars}" (tile ${tileIndex} of ${availableTileTypes.length}), layer ${TargetLayer[layerType]}`);
+                    layer.SetTile(x, y, TileType.Air, true);
+                    errorCount++;
+                } else {
+                    layer.SetTile(x, y, tileType, true);
+                }
                 y++;
                 if (y >= mapHeight) {
                     x++;
                     y = 0;
                 }
             }
+        }
+        if (errorCount) {
+            UIDialog.Alert(`Heads up, there were some unexpected blocks in your level code (${errorCount} of them). We've done our best to work around it, but some level pieces might be missing.`, "Got it");
         }
 
         return layer;

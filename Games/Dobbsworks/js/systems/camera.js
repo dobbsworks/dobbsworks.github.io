@@ -186,11 +186,6 @@ var Camera = /** @class */ (function () {
                 else {
                     this.scale += (this.targetScale - this.scale) * 0.01;
                 }
-                if (currentMap) {
-                    currentMap.waterLevel.UpdatePattern();
-                    currentMap.purpleWaterLevel.UpdatePattern();
-                    currentMap.lavaLevel.UpdatePattern();
-                }
             }
         }
         if (currentMap) {

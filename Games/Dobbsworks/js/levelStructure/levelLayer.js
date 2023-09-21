@@ -468,19 +468,30 @@ var LevelLayer = /** @class */ (function () {
             availableTileTypes.unshift(TileType.Air);
         var x = xStart;
         var y = yStart;
+        var errorCount = 0;
         for (var i = 0; i < importStr.length; i += 3) {
             var tileChars = importStr[i] + importStr[i + 1];
             var tileIndex = Utility.IntFromB64(tileChars);
             var tileCount = Utility.IntFromB64(importStr[i + 2]) + 1;
             var tileType = availableTileTypes[tileIndex];
             for (var j = 0; j < tileCount; j++) {
-                layer.SetTile(x, y, tileType, true);
+                if (!tileType) {
+                    console.error("Import error at (" + x + ", " + y + "): \"" + tileChars + "\" (tile " + tileIndex + " of " + availableTileTypes.length + "), layer " + TargetLayer[layerType]);
+                    layer.SetTile(x, y, TileType.Air, true);
+                    errorCount++;
+                }
+                else {
+                    layer.SetTile(x, y, tileType, true);
+                }
                 y++;
                 if (y >= mapHeight) {
                     x++;
                     y = 0;
                 }
             }
+        }
+        if (errorCount) {
+            UIDialog.Alert("Heads up, there were some unexpected blocks in your level code (" + errorCount + " of them). We've done our best to work around it, but some level pieces might be missing.", "Got it");
         }
         return layer;
     };

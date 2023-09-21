@@ -26,7 +26,7 @@ var Angler = /** @class */ (function (_super) {
     Angler.prototype.OnMapLoad = function () {
         var _this = this;
         // check for disguise
-        var sprite = this.layer.sprites.find(function (a) { return a.x < _this.xMid && a.xRight > _this.xMid && a.y < _this.yBottom + 6 && a.yBottom > _this.yBottom + 6; });
+        var sprite = this.layer.sprites.find(function (a) { return a.x < _this.xMid && a.xRight > _this.xMid && a.y < _this.yBottom + 6 && a.yBottom > _this.yBottom + 6 && a.canMotorHold; });
         if (sprite) {
             sprite.isActive = false;
             var fd = sprite.GetFrameData(0);

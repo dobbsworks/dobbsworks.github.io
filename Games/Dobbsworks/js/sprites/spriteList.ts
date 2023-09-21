@@ -166,4 +166,6 @@ var spriteTypes: SpriteType[] = [
     WaterBalloon,
     SpicyJelly,
     Angler,
+    Vinedicator,
+    GrayGrowth,
 ];

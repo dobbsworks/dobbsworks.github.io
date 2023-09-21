@@ -1,0 +1,6 @@
+To add new player characters:
+    boardTokens.png 
+    playerIcons.png 
+    turnStartText.png
+    
+    get avatarName()

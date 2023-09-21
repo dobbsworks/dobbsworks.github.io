@@ -28,6 +28,7 @@ var Enemy = /** @class */ (function (_super) {
         _this.damagesPlayer = true;
         _this.canSpinBounceOn = false;
         _this.bounceSoundId = "bop";
+        _this.OnHitByProjectile = Enemy.defaultProjectileHandler;
         return _this;
     }
     Enemy.prototype.EnemyUpdate = function () {
@@ -35,13 +36,20 @@ var Enemy = /** @class */ (function (_super) {
         if (this.respectsSolidTiles)
             this.ReactToPlatformsAndSolids();
         this.MoveByVelocity();
+        if (this.OnHitByProjectile != Enemy.defaultProjectileHandler) {
+            var sprites = this.layer.sprites.filter(function (a) { return a.hurtsEnemies && a.IsGoingToOverlapSprite(_this); });
+            for (var _i = 0, sprites_1 = sprites; _i < sprites_1.length; _i++) {
+                var projectile = sprites_1[_i];
+                this.OnHitByProjectile(this, projectile);
+            }
+        }
         if (this.killedByProjectiles) {
             // check for taking damage
             var sprites = this.layer.sprites.filter(function (a) { return a.hurtsEnemies && a.IsGoingToOverlapSprite(_this); });
             // special case for Booly
             var boolyLaunched = false;
-            for (var _i = 0, sprites_1 = sprites; _i < sprites_1.length; _i++) {
-                var projectile = sprites_1[_i];
+            for (var _a = 0, sprites_2 = sprites; _a < sprites_2.length; _a++) {
+                var projectile = sprites_2[_a];
                 var isLaunchingBooly = (this instanceof WoolyBooly && this.state !== BoolyState.Patrol) && ((projectile.x < this.x && this.direction == -1) || (projectile.xRight > this.xRight && this.direction == 1));
                 var isLaunchingSkitter = (this instanceof Skitter && this.isHiding);
                 if (isLaunchingBooly || isLaunchingSkitter) {
@@ -57,8 +65,8 @@ var Enemy = /** @class */ (function (_super) {
                     this.isActive = false;
                     var deadSprite = new DeadEnemy(this);
                     this.layer.sprites.push(deadSprite);
-                    for (var _a = 0, sprites_2 = sprites; _a < sprites_2.length; _a++) {
-                        var sprite = sprites_2[_a];
+                    for (var _b = 0, sprites_3 = sprites; _b < sprites_3.length; _b++) {
+                        var sprite = sprites_3[_b];
                         sprite.OnStrikeEnemy(this);
                     }
                     if (!this.isExemptFromSpriteKillCheck) {
@@ -144,7 +152,7 @@ var Enemy = /** @class */ (function (_super) {
             if (this.stackStun.frames <= 0)
                 this.stackStun = null;
         }
-        if (this.y < 12 * -4) {
+        if (this.y < 12 * -8) {
             // went too far, delete
             this.isActive = false;
         }

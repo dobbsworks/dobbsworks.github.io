@@ -39,6 +39,7 @@ class TileType {
     public hurtOnTop: boolean = false;
     public hurtOnBottom: boolean = false;
     public hurtOnOverlap: boolean = false; // other hurtOn props only activate on solid interaction
+    public isLava: boolean = false;
     public instaKill: boolean = false; //hurtOn causes full death instead of damage
 
     public pickUpSprite: SpriteType | null = null;
@@ -429,6 +430,7 @@ class TileType {
 
         TileType.Cracks;
         TileType.FireTop;
+        TileType.BulletBlock;
     }
 
 
@@ -838,6 +840,7 @@ class TileType {
     public static get Lava(): TileType {
         return TileType.GetTileType("Lava", "lava", 0, 0, Solidity.None, TargetLayer.water, tileType => {
             tileType.hurtOnOverlap = true;
+            tileType.isLava = true;
         });
     }
 
@@ -1281,6 +1284,21 @@ class TileType {
             tileType.isExemptFromSlime = true;
         });
     }
+
+
+    public static get BulletBlock(): TileType {
+        return TileType.GetTileType("BulletBlock", "bulletBlock", 1, 0, Solidity.Block, TargetLayer.main, tileType => { });
+    }
+    public static get BulletBlockEmpty(): TileType {
+        return TileType.GetTileType("BulletBlockEmpty", "bulletBlock", 2, 0, Solidity.None, TargetLayer.main, tileType => { 
+            tileType.autoChange = {
+                tileTypeName: "BulletBlock",
+                delay: 120
+            }
+        });
+    }
+
+
 
 
     // tiles can have a "auto-change" tile type and time

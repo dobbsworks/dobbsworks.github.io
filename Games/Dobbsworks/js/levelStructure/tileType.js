@@ -43,6 +43,7 @@ var TileType = /** @class */ (function () {
         this.hurtOnTop = false;
         this.hurtOnBottom = false;
         this.hurtOnOverlap = false; // other hurtOn props only activate on solid interaction
+        this.isLava = false;
         this.instaKill = false; //hurtOn causes full death instead of damage
         this.pickUpSprite = null;
         this.autoChange = null;
@@ -382,6 +383,7 @@ var TileType = /** @class */ (function () {
         TileType.DerelictSpikesRight;
         TileType.Cracks;
         TileType.FireTop;
+        TileType.BulletBlock;
     };
     TileType.RegisterSlope = function (keyBase, tileRow) {
         var colIter = 8;
@@ -1391,6 +1393,7 @@ var TileType = /** @class */ (function () {
         get: function () {
             return TileType.GetTileType("Lava", "lava", 0, 0, Solidity.None, TargetLayer.water, function (tileType) {
                 tileType.hurtOnOverlap = true;
+                tileType.isLava = true;
             });
         },
         enumerable: false,
@@ -2084,6 +2087,25 @@ var TileType = /** @class */ (function () {
             return TileType.GetAnimatedTileType("Pumpkin", "pumpkin", frames, 1, Solidity.Block, TargetLayer.main, function (tileType) {
                 tileType.pickUpSprite = Pumpkin;
                 tileType.isExemptFromSlime = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "BulletBlock", {
+        get: function () {
+            return TileType.GetTileType("BulletBlock", "bulletBlock", 1, 0, Solidity.Block, TargetLayer.main, function (tileType) { });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "BulletBlockEmpty", {
+        get: function () {
+            return TileType.GetTileType("BulletBlockEmpty", "bulletBlock", 2, 0, Solidity.None, TargetLayer.main, function (tileType) {
+                tileType.autoChange = {
+                    tileTypeName: "BulletBlock",
+                    delay: 120
+                };
             });
         },
         enumerable: false,

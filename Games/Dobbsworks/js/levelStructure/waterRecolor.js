@@ -17,11 +17,6 @@ var WaterRecolor = /** @class */ (function () {
         this.ApplyRecolor(tiles["water"][0][0].src, rgbaStringToHSLA(currentMap.waterColor), 0);
         this.ApplyRecolor(tiles["purpleWater"][0][0].src, rgbaStringToHSLA(currentMap.purpleWaterColor), 0);
         this.ApplyRecolor(tiles["lava"][0][0].src, rgbaStringToHSLA(currentMap.lavaColor), 18);
-        if (currentMap) {
-            currentMap.waterLevel.UpdatePattern();
-            currentMap.purpleWaterLevel.UpdatePattern();
-            currentMap.lavaLevel.UpdatePattern();
-        }
     };
     WaterRecolor.prototype.ApplyRecolor = function (targetImage, color, stripeOffset) {
         var sourceImage = tiles["waterSourceImage"][0][0].src;

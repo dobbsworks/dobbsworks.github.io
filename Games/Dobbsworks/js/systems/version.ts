@@ -28,4 +28,9 @@ class Version {
         if (!currentMap) return false;
         return Version.Compare("1.6.0", currentMap.mapVersion) == 1;
     }
+
+    static DoesCurrentLevelUseOldLava() {
+        if (!currentMap) return false;
+        return Version.Compare("1.11.0", currentMap.mapVersion) == 1;
+    }
 }

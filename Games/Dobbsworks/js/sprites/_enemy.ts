@@ -13,9 +13,19 @@ abstract class Enemy extends Sprite {
 
     bounceSoundId: string = "bop";
 
+    protected OnHitByProjectile = Enemy.defaultProjectileHandler;
+    static defaultProjectileHandler: (enemy: Enemy, projectile: Sprite) => void;
+
     public EnemyUpdate() {
         if (this.respectsSolidTiles) this.ReactToPlatformsAndSolids();
         this.MoveByVelocity();
+
+        if (this.OnHitByProjectile != Enemy.defaultProjectileHandler) {
+            let sprites = this.layer.sprites.filter(a => a.hurtsEnemies && a.IsGoingToOverlapSprite(this));
+            for (let projectile of sprites) {
+                this.OnHitByProjectile(this, projectile);
+            }
+        }
 
         if (this.killedByProjectiles) {
             // check for taking damage
@@ -115,7 +125,7 @@ abstract class Enemy extends Sprite {
             if (this.stackStun.frames <= 0) this.stackStun = null;
         }
 
-        if (this.y < 12 * -4) {
+        if (this.y < 12 * -8) {
             // went too far, delete
             this.isActive = false;
         }

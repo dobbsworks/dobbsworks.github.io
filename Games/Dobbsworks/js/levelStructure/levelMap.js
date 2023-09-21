@@ -672,19 +672,8 @@ var FluidLevel = /** @class */ (function () {
     FluidLevel.prototype.RemoveFlowSource = function (levelTile) {
         this.flowSourceTiles = this.flowSourceTiles.filter(function (a) { return !(a.tileX === levelTile.tileX && a.tileY === levelTile.tileY); });
     };
-    FluidLevel.prototype.UpdatePattern = function () {
-        var sourceImage = ["water", "purpleWater", "lava"][this.fluidTypeIndex];
-        var patternCanvas = document.createElement("canvas");
-        var patternContext = patternCanvas.getContext("2d");
-        patternCanvas.width = 12 * camera.scale;
-        patternCanvas.height = 12 * camera.scale;
-        patternContext.drawImage(tiles[sourceImage][0][0].src, 0, 0, 12, 12, 0, 0, 12 * camera.scale, 12 * camera.scale);
-        patternContext.imageSmoothingEnabled = false;
-        this.fillPattern = patternContext.createPattern(patternCanvas, "repeat");
-    };
     FluidLevel.prototype.Initialize = function () {
         if (currentMap) {
-            this.UpdatePattern();
             for (var _i = 0, _a = currentMap.mainLayer.tiles; _i < _a.length; _i++) {
                 var col = _a[_i];
                 for (var _b = 0, col_1 = col; _b < col_1.length; _b++) {

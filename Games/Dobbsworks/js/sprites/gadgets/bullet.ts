@@ -14,8 +14,13 @@ class Bullet extends Sprite {
     }
 
     Update(): void {
-        if (this.isTouchingLeftWall || this.isTouchingRightWall || this.isOnGround || this.isOnCeiling) {
+        let touched = [...this.touchedLeftWalls, ...this.touchedRightWalls, ...this.standingOn, ...this.touchedCeilings];
+        if (touched.length > 0) {
             this.isActive = false;
+            touched.filter(a => a instanceof LevelTile && a.tileType == TileType.BulletBlock).forEach(a => {
+                let lt = (a as LevelTile);
+                lt.layer.SetTile(lt.tileX, lt.tileY, TileType.BulletBlockEmpty);
+            })
         }
         if (this.parentSprite) {
             this.isActive = false;

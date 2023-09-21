@@ -12,6 +12,13 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 var Bullet = /** @class */ (function (_super) {
     __extends(Bullet, _super);
     function Bullet() {
@@ -30,8 +37,13 @@ var Bullet = /** @class */ (function (_super) {
         this.isActive = false;
     };
     Bullet.prototype.Update = function () {
-        if (this.isTouchingLeftWall || this.isTouchingRightWall || this.isOnGround || this.isOnCeiling) {
+        var touched = __spreadArrays(this.touchedLeftWalls, this.touchedRightWalls, this.standingOn, this.touchedCeilings);
+        if (touched.length > 0) {
             this.isActive = false;
+            touched.filter(function (a) { return a instanceof LevelTile && a.tileType == TileType.BulletBlock; }).forEach(function (a) {
+                var lt = a;
+                lt.layer.SetTile(lt.tileX, lt.tileY, TileType.BulletBlockEmpty);
+            });
         }
         if (this.parentSprite) {
             this.isActive = false;

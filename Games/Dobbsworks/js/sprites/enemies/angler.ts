@@ -8,7 +8,7 @@ class Angler extends Enemy {
 
     OnMapLoad(): void {
         // check for disguise
-        let sprite = this.layer.sprites.find(a => a.x < this.xMid && a.xRight > this.xMid && a.y < this.yBottom + 6 && a.yBottom > this.yBottom + 6);
+        let sprite = this.layer.sprites.find(a => a.x < this.xMid && a.xRight > this.xMid && a.y < this.yBottom + 6 && a.yBottom > this.yBottom + 6 && a.canMotorHold);
         if (sprite) {
             sprite.isActive = false;
             let fd = sprite.GetFrameData(0);
