@@ -123,10 +123,12 @@ var MinigameHoopstersForever = /** @class */ (function (_super) {
                 this.didBallGoAboveGoal = false;
             }
         }
-        var isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
+    };
+    MinigameHoopstersForever.prototype.GetRemainingTicks = function () {
+        return 60 * 60 - this.timer;
     };
     MinigameHoopstersForever.prototype.SetHoopPosition = function () {
         this.hoop.x = Random.GetRandInt(-120, 380);

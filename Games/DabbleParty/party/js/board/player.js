@@ -11,7 +11,8 @@ var Player = /** @class */ (function () {
         this.avatarIndex = avatarIndex;
         this.userId = -1;
         this.userName = "";
-        this.coins = 50;
+        this.coins = 10;
+        this.displayedCoins = 10;
         this.gears = 1;
         this.diceBag = new DiceBag();
         this.inventory = [itemList[0]];
@@ -31,7 +32,7 @@ var Player = /** @class */ (function () {
     }
     Object.defineProperty(Player.prototype, "avatarName", {
         get: function () {
-            return ["GameQueued", "germdove", "Al", "Turtle", "Dobbs", "Hover Cat", "Daesnek", "Panda", "Sunberry", "Ally", "Duffy", "Teddy"][this.avatarIndex];
+            return ["GameQueued", "germdove", "Al", "Turtle", "Dobbs", "Hover Cat", "Daesnek", "Panda", "Sunberry", "Ally", "Duffy", "Teddy", "Doopu"][this.avatarIndex];
         },
         enumerable: false,
         configurable: true
@@ -84,6 +85,7 @@ var Player = /** @class */ (function () {
                     if (this.token.currentSpace && this.amountOfMovementLeft == 0 && this.moving) {
                         this.moving = false;
                         this.token.currentSpace.spaceType.OnLand(this);
+                        audioHandler.PlaySound("bwump", true);
                         this.statListOfLandings.push(this.token.currentSpace.spaceType);
                         setTimeout(function () {
                             var me = _this;
@@ -129,11 +131,11 @@ var Player = /** @class */ (function () {
     Player.prototype.CurrentPlace = function () {
         if (board) {
             var playersToSort = __spreadArrays(board.players);
-            playersToSort.sort(function (a, b) { return (b.gears - a.gears) * 10000 + (b.coins - a.coins); });
+            playersToSort.sort(function (a, b) { return (b.gears - a.gears) * 10000 + (b.displayedCoins - a.coins); });
             for (var rank = 1; rank <= 4; rank++) {
                 var p = playersToSort[rank - 1];
                 // weird compare below to handle ties
-                if (this.gears == p.gears && this.coins == p.coins)
+                if (this.gears == p.gears && this.displayedCoins == p.displayedCoins)
                     return rank;
             }
         }

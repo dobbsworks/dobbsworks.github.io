@@ -39,7 +39,7 @@ function GetBonusGearTypes() {
     var allBonusGears = Object.values(EndOfGameBonusGear);
     var ret = [];
     var _loop_1 = function (i) {
-        var gearType = Random.RandFrom(allBonusGears);
+        var gearType = allBonusGears[Math.floor(Math.random() * allBonusGears.length)];
         allBonusGears = allBonusGears.filter(function (a) { return a != gearType; });
         ret.push(gearType);
     };
@@ -108,6 +108,9 @@ var BoardCutSceneShowGearOrCoinCounts = /** @class */ (function (_super) {
     }
     BoardCutSceneShowGearOrCoinCounts.prototype.Update = function () {
         this.timer++;
+        if (this.timer == 20 && !this.isDismissed) {
+            audioHandler.PlaySound("dobbloon", true);
+        }
         if (this.timer <= 30 && !this.isDismissed) {
             this.y = -(Math.sin(this.timer / 30 * Math.PI / 2) * 150);
         }
@@ -154,6 +157,9 @@ var BoardCutSceneAwardBonusGear = /** @class */ (function (_super) {
         if (!board)
             return;
         this.timer++;
+        if (this.timer == 2) {
+            audioHandler.PlaySound("drumroll", true);
+        }
         var xs = GetEndOfGameTokenLocations();
         if (this.timer < 350) {
             this.y += 2;
@@ -169,6 +175,8 @@ var BoardCutSceneAwardBonusGear = /** @class */ (function (_super) {
         }
         if (this.timer == 350) {
             this.xs = this.winnerIndeces.map(function (a) { return 0; });
+            audioHandler.StopSound("drumroll");
+            audioHandler.PlaySound("drumrollend", true);
         }
         if (this.timer > 350) {
             this.winnerIndeces.forEach(function (winnerIndex, i) {
@@ -217,6 +225,8 @@ var BoardCutSceneFinalResults = /** @class */ (function (_super) {
     }
     BoardCutSceneFinalResults.prototype.Initialize = function () {
         var _a;
+        audioHandler.SetBackgroundMusic("silence");
+        audioHandler.PlaySound("drumroll", true);
         if (!board)
             return;
         var targetPlace = Math.max.apply(Math, board.players.map(function (a) { return a.CurrentPlace(); })); // last place
@@ -248,6 +258,7 @@ var BoardCutSceneFinalResults = /** @class */ (function (_super) {
                 this.removeTimer++;
                 if (this.removeTimer >= 100) {
                     this.removeTimer = 0;
+                    audioHandler.PlaySound("hurt", true);
                     var playerIndex_1 = (_a = this.removeIndeces.shift()) !== null && _a !== void 0 ? _a : -1;
                     var sprite = this.sprites[playerIndex_1];
                     this.fallingSprites.push(sprite);
@@ -256,6 +267,9 @@ var BoardCutSceneFinalResults = /** @class */ (function (_super) {
                     }
                     if (this.removeIndeces.length == 0) {
                         this.timer = 2900;
+                        audioHandler.StopSound("drumroll");
+                        audioHandler.PlaySound("drumrollend", true);
+                        audioHandler.SetBackgroundMusic("jazzy");
                     }
                 }
             }
@@ -316,6 +330,9 @@ var BoardCutSceneStats = /** @class */ (function (_super) {
             this.baseY = 0;
         if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
             this.isDone = true;
+            cutsceneService.AddScene(new BoardCutSceneFadeOut(), new BoardCutSceneSingleAction(function () {
+                board = null;
+            }), new CutsceneMainMenu());
         }
     };
     BoardCutSceneStats.prototype.Draw = function (camera) {

@@ -93,7 +93,8 @@ var MenuButtonCreateGame = /** @class */ (function (_super) {
             finalRound: turns,
             currentPlayerIndex: -1,
             currentMinigameIndex: -1,
-            players: []
+            players: [],
+            gearSpaceId: -1,
         };
         var dt = { id: -1, data: JSON.stringify(myGameData), lastUpdate: new Date(), currentRound: -1, hostId: -1, playerIds: "", hostName: "" };
         DataService.CreateParty(dt).then(function (gameId) {
@@ -126,6 +127,14 @@ var MenuButtonStartGame = /** @class */ (function (_super) {
             board.FromData(lobbyDisplay.lobbyState);
             //board.CameraFocusSpace(board.boardSpaces[0]);
             handler.cutscene.isDone = true;
+            audioHandler.SetBackgroundMusic("silence");
+            audioHandler.PlaySound("spaceFanfare", false);
+            var hostControls = document.getElementById("inputSection");
+            if (hostControls)
+                hostControls.style.display = "block";
+            setTimeout(function () {
+                audioHandler.SetBackgroundMusic("level1");
+            }, 7000);
             cutsceneService.AddScene(new BoardCutSceneIntro());
         }
     };
@@ -231,6 +240,7 @@ var MenuSelectGame = /** @class */ (function (_super) {
             handler.OpenPage(-1);
             var avatarSelect = handler.FindById("avatarSelect");
             var selectedAvatar = avatarSelect.selectionIndex;
+            playerIndex = avatarSelect.selectionIndex % 4;
             DataService.JoinParty(lobby.id, selectedAvatar).then(function (code) {
                 if (code == -1) {
                     // can't join party!
@@ -260,6 +270,7 @@ var MenuTab = /** @class */ (function (_super) {
         _this.text = text;
         _this.isActive = false;
         _this.cursorAnchorOffsetX = -70;
+        _this.tabList = ["tab-1", "tab-2", "tab-6"];
         return _this;
     }
     MenuTab.prototype.Draw = function (camera) {
@@ -270,16 +281,21 @@ var MenuTab = /** @class */ (function (_super) {
         camera.ctx.fillStyle = this.isActive ? "#513ea3" : "#a79560";
         camera.ctx.fillText(this.text, this.centerX + 480, this.centerY + 270 + 13);
     };
-    MenuTab.prototype.OnLeft = function (handler) { this.TabToggle(handler); };
-    MenuTab.prototype.OnRight = function (handler) { this.TabToggle(handler); };
-    MenuTab.prototype.TabToggle = function (handler) {
-        audioHandler.PlaySound("swim", true);
-        var targetId = (this.id == "tab-1" ? "tab-2" : "tab-1");
+    MenuTab.prototype.OnLeft = function (handler) { this.TabShift(handler, -1); };
+    MenuTab.prototype.OnRight = function (handler) { this.TabShift(handler, 1); };
+    MenuTab.prototype.TabShift = function (handler, dir) {
+        var currentIndex = this.tabList.indexOf(this.id);
+        var targetIndex = currentIndex + dir;
+        if (targetIndex < 0)
+            targetIndex = this.tabList.length - 1;
+        if (targetIndex >= this.tabList.length)
+            targetIndex = 0;
+        var targetId = this.tabList[targetIndex];
         handler.JumpTo(targetId);
     };
     MenuTab.prototype.OnAction = function (handler) {
         audioHandler.PlaySound("swim", true);
-        var pageId = (this.id == "tab-1" ? 0 : 1);
+        var pageId = (+(this.id.replace("tab-", ""))) - 1;
         handler.OpenPage(pageId);
     };
     MenuTab.prototype.OnDown = function (handler) {
@@ -313,7 +329,7 @@ var MenuBoardSelect = /** @class */ (function (_super) {
         audioHandler.PlaySound("swim", true);
         this.selectionIndex--;
         if (this.selectionIndex < 0)
-            this.selectionIndex = this.selectionTexts.length - 1;
+            this.selectionIndex = this.selectionCount - 1;
     };
     MenuBoardSelect.prototype.OnRight = function (handler) {
         audioHandler.PlaySound("swim", true);
@@ -380,6 +396,52 @@ var MenuTurnSelect = /** @class */ (function (_super) {
     MenuTurnSelect.prototype.OnDown = function (handler) { handler.JumpTo("createGame"); };
     return MenuTurnSelect;
 }(MenuBoardSelect));
+var MenuMinigameSelect = /** @class */ (function (_super) {
+    __extends(MenuMinigameSelect, _super);
+    function MenuMinigameSelect() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.selectionCount = minigames.length;
+        _this.embedImage = "menuMediumEmbed";
+        return _this;
+    }
+    MenuMinigameSelect.prototype.Draw = function (camera) {
+        this.DrawArrows(camera);
+        this.DrawSelectionContents(camera);
+        var embedImage = tiles[this.embedImage][0][0];
+        embedImage.Draw(camera, this.centerX, this.centerY, 1, 1, false, false, 0);
+        camera.ctx.font = "800 " + 30 + "px " + "arial";
+        camera.ctx.textAlign = "center";
+        camera.ctx.fillStyle = "#333";
+        var textLine = new minigames[this.selectionIndex]().title;
+        camera.ctx.fillText(textLine, 480, 320);
+    };
+    MenuMinigameSelect.prototype.DrawSelectionContents = function (camera) {
+        var thumb = tiles["thumbnails"][this.selectionIndex % 4][Math.floor(this.selectionIndex / 4)];
+        thumb.Draw(camera, this.centerX, this.centerY, 0.5, 0.5, false, false, 0);
+    };
+    MenuMinigameSelect.prototype.OnUp = function (handler) { handler.JumpTo("tab-6"); };
+    MenuMinigameSelect.prototype.OnDown = function (handler) { handler.JumpTo("minigameOk"); };
+    return MenuMinigameSelect;
+}(MenuBoardSelect));
+var MenuButtonMinigameOk = /** @class */ (function (_super) {
+    __extends(MenuButtonMinigameOk, _super);
+    function MenuButtonMinigameOk() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.text = "Play";
+        _this.cursorAnchorOffsetX = -110;
+        return _this;
+    }
+    MenuButtonMinigameOk.prototype.OnUp = function (handler) { handler.JumpTo("minigameSelect"); };
+    MenuButtonMinigameOk.prototype.OnDown = function (handler) { handler.JumpTo("minigameOk"); };
+    MenuButtonMinigameOk.prototype.OnAction = function (handler) {
+        var minigameSelect = handler.FindById("minigameSelect");
+        var minigame = new minigames[minigameSelect.selectionIndex]();
+        currentMinigame = minigame;
+        currentMinigame.isFreePlay = true;
+        handler.cutscene.isDone = true;
+    };
+    return MenuButtonMinigameOk;
+}(MenuButtonBase));
 var MenuAvatarSelect = /** @class */ (function (_super) {
     __extends(MenuAvatarSelect, _super);
     function MenuAvatarSelect() {
@@ -487,7 +549,7 @@ var MenuLobbyStateDisplayHost = /** @class */ (function (_super) {
                 var _a, _b;
                 _this.lobbyState = JSON.parse(dt.data);
                 _this.OnReceiveGameData(dt);
-                if (((_a = _this.lobbyState) === null || _a === void 0 ? void 0 : _a.players.length) == 2) {
+                if (((_a = _this.lobbyState) === null || _a === void 0 ? void 0 : _a.players.length) == 1) {
                     _this.OnLobbyMinPlayers(handler);
                 }
                 else if (((_b = _this.lobbyState) === null || _b === void 0 ? void 0 : _b.players.length) == 4) {
@@ -523,7 +585,7 @@ var MenuLobbyStateDisplayHost = /** @class */ (function (_super) {
                     coins: 10,
                     turnOrder: -1,
                     avatarIndex: avatarIndex,
-                    spaceIndex: -1,
+                    spaceIndex: 0,
                     items: [],
                     userId: playerId,
                     userName: playerName,
@@ -542,10 +604,12 @@ var MenuLobbyStateDisplayHost = /** @class */ (function (_super) {
     };
     MenuLobbyStateDisplayHost.prototype.OnLobbyFull = function (handler) { };
     MenuLobbyStateDisplayHost.prototype.OnLobbyMinPlayers = function (handler) {
+        var _this = this;
         handler.FindById("waitingForPlayersTextHost").isVisible = false;
         var button = handler.FindById("startGame");
         button.isVisible = true;
         handler.cursorTarget = button;
+        setTimeout(function () { _this.FetchUpdate(handler); }, 5000);
     };
     MenuLobbyStateDisplayHost.prototype.Draw = function (camera) {
         if (this.lobbyState) {
@@ -572,11 +636,11 @@ var MenuLobbyStateDisplayPlayer = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     MenuLobbyStateDisplayPlayer.prototype.OnLobbyFull = function (handler) {
+    };
+    MenuLobbyStateDisplayPlayer.prototype.OnLobbyMinPlayers = function (handler) {
         handler.FindById("waitingForPlayersTextPlayer").isVisible = false;
         handler.FindById("waitingTextHost").isVisible = true;
         this.WaitForBoardData(handler);
-    };
-    MenuLobbyStateDisplayPlayer.prototype.OnLobbyMinPlayers = function (handler) {
     };
     MenuLobbyStateDisplayPlayer.prototype.OnReceiveGameData = function (dt) { };
     MenuLobbyStateDisplayPlayer.prototype.WaitForBoardData = function (handler) {
@@ -606,7 +670,7 @@ function MoveToBoardView(gameId, handler, boardData) {
     board.isSpectateMode = true;
     board.FromData(boardData);
     board.CameraFocusSpace(board.boardSpaces[0]);
-    board.SpectateUpdateLoop();
+    board.SpectateUpdateLoop(false);
 }
 var MenuHandler = /** @class */ (function () {
     function MenuHandler(cutscene) {
@@ -616,6 +680,7 @@ var MenuHandler = /** @class */ (function () {
             new MenuBase("menuBase", 0, 0),
             new MenuTab("tab-1", -300, -205, "Join Game"),
             new MenuTab("tab-2", -50, -205, "Host Game"),
+            //new MenuTab("tab-6", 200, -205, "Free Play"),
             new MenuSelectGame("selectGame", 0, -20),
             new MenuButtonChangeAvatar("avatarChange", -200, 170),
             new MenuAvatarDisplay(this, "avatarDisplay", -100, 165),
@@ -627,10 +692,12 @@ var MenuHandler = /** @class */ (function () {
             new MenuLobbyStateDisplayPlayer("lobbyDisplayPlayer", 0, 0),
             new MenuText("waitingForPlayersTextHost", 0, 170, "Waiting for players to join..."),
             new MenuText("waitingForPlayersTextPlayer", 0, 170, "Waiting for players to join..."),
-            new MenuText("waitingTextHost", 0, 170, "Waiting for host to start game..."),
-            new MenuButtonAvatarOk("startGame", 0, 170),
+            new MenuText("waitingTextHost", 0, 170, "Waiting for game to start..."),
+            new MenuButtonStartGame("startGame", 0, 170),
             new MenuAvatarSelect("avatarSelect", 0, -70),
             new MenuButtonAvatarOk("avatarOk", 0, 170),
+            new MenuMinigameSelect("minigameSelect", 0, -70),
+            new MenuButtonMinigameOk("minigameOk", 0, 170),
         ];
         this.currentPageIndex = 0;
         this.pages = [
@@ -639,6 +706,7 @@ var MenuHandler = /** @class */ (function () {
             ["lobbyDisplayHost", "waitingForPlayersTextHost", "startGame"],
             ["lobbyDisplayPlayer", "waitingForPlayersTextPlayer", "waitingTextHost"],
             ["avatarSelect", "avatarOk"],
+            ["minigameSelect", "minigameOk"],
         ];
         this.isInitialized = false;
         this.cursorTarget = null;
@@ -730,6 +798,9 @@ var CutsceneMainMenu = /** @class */ (function (_super) {
         return _this;
     }
     CutsceneMainMenu.prototype.Update = function () {
+        if (this.timer == 1) {
+            audioHandler.SetBackgroundMusic("lobby");
+        }
         this.timer++;
         this.menuHandler.Update();
     };

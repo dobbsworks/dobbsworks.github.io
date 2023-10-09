@@ -76,6 +76,11 @@ class DataService {
             DataService.BaseGet("Party/GetCurrentGames", resolve, reject);
         })
     }
+    static GetScores(gameId: number, roundNumber: number): Promise<PartyScoreDT[]> {
+        return new Promise<PartyScoreDT[]>((resolve, reject) => {
+            DataService.BaseGet(`Party/GetScores?gameId=${gameId}&roundNumber=${roundNumber}`, resolve, reject);
+        })
+    }
     static SubmitScore(gameId: number, score: number, roundNumber: number): Promise<number> {
         return new Promise<number>((resolve, reject) => {
             DataService.BasePost(`Party/SubmitScore?gameId=${gameId}&score=${score}&roundNumber=${roundNumber}`, {}, resolve, reject);

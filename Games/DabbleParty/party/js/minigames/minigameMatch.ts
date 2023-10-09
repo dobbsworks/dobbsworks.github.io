@@ -141,10 +141,6 @@ class MinigameMatch extends MinigameBase {
         this.sprites = [...this.cards, this.cursor];
     }
 
-    FlipCard(xIndex: number, yIndex: number): void {
-
-    }
-
     Update(): void {
         this.cursor.xScale = this.cardScale + (Math.sin(this.timer / 20) + 1) / 30 + 0.1;
         this.cursor.yScale = this.cursor.xScale;
@@ -203,11 +199,12 @@ class MinigameMatch extends MinigameBase {
             this.DealCards();
         }
 
-
-
-        let isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
+    }
+
+    GetRemainingTicks(): number {
+        return 60 * 60 - this.timer;
     }
 }

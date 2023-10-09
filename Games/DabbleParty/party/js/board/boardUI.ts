@@ -66,6 +66,7 @@ class BoardUI {
 
     StartRoll(): void {
         if (this.board.currentPlayer) {
+            audioHandler.PlaySound("diceRoll", true);
             this.dice = this.board.currentPlayer.diceBag.GetDiceSprites();
         }
     }
@@ -113,9 +114,16 @@ class BoardUI {
             this.currentMenu = BoardMenu.CreateItemMenu();
         }
         if (this.isChoosingMinigame) {
+            if (this.minigameTextTime == 140) {
+                audioHandler.PlaySound("diceRoll", true);
+            }
+            if (this.minigameTextTime == 320) {
+                audioHandler.StopSound("diceRoll");
+                audioHandler.PlaySound("hit2", true);
+            }
             this.minigameTextTime++;
             this.rouletteTheta += 0.1;
-            if (this.minigameTextTime == 540) {
+            if (this.minigameTextTime == 540 && this.board.pendingMinigame) {
                 this.isChoosingMinigame = false;
                 cutsceneService.AddScene(new Instructions(this.board.pendingMinigame));
                 this.board.CreateButtonToToggleToUserViewInOBS();
@@ -134,6 +142,10 @@ class BoardUI {
 
 
         if (this.roundStarttimer > 0) {
+            if (this.roundStarttimer == 1) {
+                audioHandler.PlaySound("roundStart", false);
+                audioHandler.SetBackgroundMusic("level1");
+            }
             this.roundStarttimer++;
             if (this.roundStarttimer > 100) {
                 this.roundStarttimer = 0;
@@ -148,6 +160,9 @@ class BoardUI {
                 let d = this.dice.find(a => !a.IsStopped());
                 if (d) {
                     d.Stop();
+                    if (this.dice.every(a => a.IsStopped())) {
+                        audioHandler.StopSound("diceRoll");
+                    }
                 }
             }
         }
@@ -164,6 +179,7 @@ class BoardUI {
             this.combineTimer++;
 
             if (this.combineTimer == 20) {
+                audioHandler.PlaySound("hit2", true);
                 this.combinedNumber = this.dice.map(a => a.chosenValue).reduce((a, b) => a + b, 0);
                 this.dice = [];
 
@@ -266,7 +282,7 @@ class BoardUI {
                 ctx.textAlign = "right";
                 ctx.font = `600 ${14}px ${"arial"}`;
                 ctx.fillText(player.gears.toString(), x + 75, 20);
-                ctx.fillText(player.coins.toString(), x + 75, 37);
+                ctx.fillText(player.displayedCoins.toString(), x + 75, 37);
                 ctx.fillRect(x - 20, 45, 100, 1);
                 ctx.textAlign = "left";
                 ctx.font = `800 ${14}px ${"arial"}`;
@@ -317,7 +333,7 @@ class BoardUI {
             ctx.fillStyle = "#FFF";
             ctx.fillText(scorebox.player.CurrentPlaceText(), x + 200, y + 50 + 14);
             ctx.fillText(scorebox.player.gears.toString(), x + 400, y + 50 + 14);
-            ctx.fillText(scorebox.player.coins.toString(), x + 570, y + 50 + 14);
+            ctx.fillText(scorebox.player.displayedCoins.toString(), x + 570, y + 50 + 14);
         }
     }
 
@@ -400,6 +416,7 @@ class DiceSprite extends Sprite {
         }
     }
     Stop(): void {
+        audioHandler.PlaySound("hit1", true);
         this._isStopped = true;
         this.frame = 0;
         this.chosenValue = Math.ceil(Math.random() * this.faces);

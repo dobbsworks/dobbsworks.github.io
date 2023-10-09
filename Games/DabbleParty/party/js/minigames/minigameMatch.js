@@ -156,8 +156,6 @@ var MinigameMatch = /** @class */ (function (_super) {
         this.targetYIndex = Math.floor(rows / 2);
         this.sprites = __spreadArrays(this.cards, [this.cursor]);
     };
-    MinigameMatch.prototype.FlipCard = function (xIndex, yIndex) {
-    };
     MinigameMatch.prototype.Update = function () {
         var _this = this;
         this.cursor.xScale = this.cardScale + (Math.sin(this.timer / 20) + 1) / 30 + 0.1;
@@ -215,10 +213,12 @@ var MinigameMatch = /** @class */ (function (_super) {
                 this.pairCount++;
             this.DealCards();
         }
-        var isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
+    };
+    MinigameMatch.prototype.GetRemainingTicks = function () {
+        return 60 * 60 - this.timer;
     };
     return MinigameMatch;
 }(MinigameBase));

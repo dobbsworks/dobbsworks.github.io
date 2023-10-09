@@ -34,7 +34,7 @@ var MinigamePointAndQuick = /** @class */ (function (_super) {
         _this.controls = [
             new InstructionControl(Control.Move, "Point"),
         ];
-        _this.songId = "cherry";
+        _this.songId = "jungle";
         _this.boxStacks = [];
         _this.targetIndex = 0;
         _this.wrongTimer = 0;
@@ -176,10 +176,12 @@ var MinigamePointAndQuick = /** @class */ (function (_super) {
             var targetY = 103 - this.targetIndex * 95;
             this.targeter.y += (targetY - this.targeter.y) * 0.2;
         }
-        var isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
+    };
+    MinigamePointAndQuick.prototype.GetRemainingTicks = function () {
+        return 60 * 60 - this.timer;
     };
     return MinigamePointAndQuick;
 }(MinigameBase));

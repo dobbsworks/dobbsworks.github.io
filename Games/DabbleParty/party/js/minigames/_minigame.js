@@ -10,6 +10,7 @@ var MinigameBase = /** @class */ (function () {
     function MinigameBase() {
         this.sprites = [];
         this.initialized = false;
+        this.isFreePlay = false;
         this.timer = -360;
         this.score = 0;
         this.isEnded = false;
@@ -18,6 +19,7 @@ var MinigameBase = /** @class */ (function () {
     }
     MinigameBase.prototype.BaseUpdate = function () {
         if (!this.initialized) {
+            audioHandler.SetBackgroundMusic(this.songId);
             camera.targetX = 0;
             camera.targetY = 0;
             camera.scale = 1;
@@ -59,7 +61,17 @@ var MinigameBase = /** @class */ (function () {
             this.endTimer++;
             if (this.endTimer > 30 + 120 + 60) {
                 currentMinigame = null;
-                cutsceneService.AddScene(new BoardCutSceneFadeIn());
+                audioHandler.SetBackgroundMusic("lobby");
+                if (this.isFreePlay) {
+                    var mainMenu = new CutsceneMainMenu();
+                    mainMenu.menuHandler.Initialize();
+                    mainMenu.menuHandler.OpenPage(5);
+                    mainMenu.menuHandler.cursorTarget = mainMenu.menuHandler.FindById("minigameSelect");
+                    cutsceneService.AddScene(mainMenu);
+                }
+                else {
+                    cutsceneService.AddScene(new BoardCutSceneFadeIn());
+                }
             }
         }
     };
@@ -73,11 +85,29 @@ var MinigameBase = /** @class */ (function () {
             spr.Draw(camera);
         }
         this.OnAfterDraw(camera);
-        this.DrawScore(camera);
+        // this.DrawScore(camera);
         if (this.endTimer > 0) {
             var overlayOpacity = Math.max(0, Math.min(1, (this.endTimer - 120) / 30));
             camera.ctx.fillStyle = "rgba(0, 0, 0, " + overlayOpacity.toFixed(2) + ")";
             camera.ctx.fillRect(0, 0, 960, 540);
+        }
+        if (this.timer > 0) {
+            var ticksLeft_1 = this.GetRemainingTicks();
+            var secondsLeft = Math.ceil(ticksLeft_1 / 60);
+            var bounce = 0;
+            if (secondsLeft == 30 || secondsLeft <= 3) {
+                if (ticksLeft_1 % 60 > 40)
+                    bounce = Math.sin(ticksLeft_1 / 5) / 5;
+            }
+            if (ticksLeft_1 == 30 * 60 || ticksLeft_1 == 0) {
+                audioHandler.PlaySound("roundStart", true);
+            }
+            if ([3, 2, 1].some(function (a) { return ticksLeft_1 == a * 60; })) {
+                audioHandler.PlaySound("swim", true);
+            }
+            if (secondsLeft > 0) {
+                DrawNumber(-440, -235, secondsLeft, new Camera(camera.canvas), 0.5 + bounce);
+            }
         }
     };
     MinigameBase.prototype.SubmitScore = function (score) {
@@ -85,7 +115,8 @@ var MinigameBase = /** @class */ (function () {
             return;
         if (board) {
             DataService.SubmitScore(board.gameId, score, board.currentRound).then(function () {
-                // no callback
+                if (board)
+                    board.SpectateUpdateLoop(true);
             });
         }
         this.isEnded = true;
@@ -99,8 +130,7 @@ var MinigameBase = /** @class */ (function () {
         if (this.score <= 0)
             return;
         var fontSize = 24;
-        if (this.isEnded)
-            fontSize = 96;
+        //if (this.isEnded) fontSize = 96;
         camera.ctx.font = fontSize + "px " + "arial";
         camera.ctx.textAlign = "right";
         camera.ctx.strokeStyle = "#FFF";
@@ -108,9 +138,9 @@ var MinigameBase = /** @class */ (function () {
         var textWidth = camera.ctx.measureText(Math.floor(this.score).toString()).width;
         var width = Math.max(100, textWidth + 20);
         camera.ctx.fillRect(camera.canvas.width, camera.canvas.height, -width, -(fontSize + fontSize / 4));
-        if (this.isEnded) {
-            camera.ctx.strokeRect(camera.canvas.width, camera.canvas.height, -width, -(fontSize + fontSize / 4));
-        }
+        // if (this.isEnded) {
+        //     camera.ctx.strokeRect(camera.canvas.width, camera.canvas.height, -width, -(fontSize + fontSize/4));
+        // }
         camera.ctx.fillStyle = "#FFF9";
         camera.ctx.fillText(Math.floor(this.score).toString(), camera.canvas.width - 5, camera.canvas.height - fontSize / 4);
     };
@@ -120,10 +150,15 @@ var MinigameGenerator = /** @class */ (function () {
     function MinigameGenerator() {
     }
     MinigameGenerator.RandomGame = function () {
-        var games = __spreadArrays(minigames);
+        if (MinigameGenerator.CurrentPool.length == 0) {
+            MinigameGenerator.CurrentPool = __spreadArrays(minigames);
+        }
+        var games = MinigameGenerator.CurrentPool;
         var i = Math.floor(Math.random() * games.length);
         var game = games[i];
+        MinigameGenerator.CurrentPool = MinigameGenerator.CurrentPool.filter(function (a) { return a !== game; });
         return new game();
     };
+    MinigameGenerator.CurrentPool = [];
     return MinigameGenerator;
 }());

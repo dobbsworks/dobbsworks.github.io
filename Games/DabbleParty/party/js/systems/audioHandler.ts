@@ -42,10 +42,13 @@ class AudioHandler {
                     audioObject.src.loop = true;
                     audioObject.node.connect(this.gainNodeMusic).connect(this.lowPassNode).connect(this.audioCtxMusic.destination);
                 } else if (audioObject.isSfx) {
+                    if (audioObject.src.dataset.loop) audioObject.src.loop = true;
                     audioObject.node.connect(this.gainNodeSfx).connect(this.audioCtxSfx.destination);
                 }
             }
             audioHandler.SetBackgroundMusic("silence");
+            AdjustVolumeMusic();
+            AdjustVolumeSfx();
         } else {
             setTimeout(() => {audioHandler.Initialize.apply(audioHandler)}, 100);
         }
@@ -126,18 +129,24 @@ class AudioHandler {
         }
         return false;
     }
-
-    PlaySegment(id: string, segmentIndex: number): boolean {
+    StopSound(id: string): void {
         let audioObject = this.audioObjects.find(a => a.id === id);
         if (audioObject) {
-            let src = audioObject.Play(false);
-            let bpm = +(src.dataset.bpm || "88");
-            let secondsPerSegment = 60 / bpm / 2;
-            src.currentTime = secondsPerSegment * segmentIndex;
-            this.segments.push({src: src, endTime: +(new Date()) + secondsPerSegment*1000});
+            audioObject.src.pause();
         }
-        return false;
     }
+
+    // PlaySegment(id: string, segmentIndex: number): boolean {
+    //     let audioObject = this.audioObjects.find(a => a.id === id);
+    //     if (audioObject) {
+    //         let src = audioObject.Play(false);
+    //         let bpm = +(src.dataset.bpm || "88");
+    //         let secondsPerSegment = 60 / bpm / 2;
+    //         src.currentTime = secondsPerSegment * segmentIndex;
+    //         this.segments.push({src: src, endTime: +(new Date()) + secondsPerSegment*1000});
+    //     }
+    //     return false;
+    // }
 
     GetMusicVolume(): number {
         return StorageService.GetMusicVolume();
@@ -158,32 +167,6 @@ class AudioHandler {
     ConvertVolumeToGain(val: number): number {
         return val / 100;
     }
-
-    levelSongList: string[] = [
-        "silence",
-        "intro",
-        "desert",
-        "grassland",
-        "adventure",
-        "carnival",
-        "haunt",
-        "sky",
-        "computer",
-        "chill",
-        "crunch",
-        "frost",
-        "forest",
-        "waltz",
-        "faire",
-        "choir",
-        "meditate",
-        "slime",
-        "chipper",
-        "jungle",
-        "clocktower",
-        "overdue",
-        "cherry",
-    ]
 }
 
 
@@ -252,4 +235,17 @@ class AudioObject {
             }
         }
     }
+}
+
+function AdjustVolumeMusic() {
+    let volControl = document.getElementById("volumeControlMusic") as HTMLInputElement;
+    let volume = +(volControl.value);
+    volume = ((volume/100)**2) * 100
+    audioHandler.SetMusicVolume(volume);
+}
+function AdjustVolumeSfx() {
+    let volControl = document.getElementById("volumeControlSfx") as HTMLInputElement;
+    let volume = +(volControl.value);
+    volume = ((volume/100)**2) * 100
+    audioHandler.SetSfxVolume(volume);
 }

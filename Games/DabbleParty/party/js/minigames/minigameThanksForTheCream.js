@@ -126,10 +126,12 @@ var MinigameThanksForTheCream = /** @class */ (function (_super) {
             scoop.x += move;
             scoop.y = this.cone.y - 85 - i * 75;
         }
-        var isGameOver = this.timer == 60 * 64 - 1;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
+    };
+    MinigameThanksForTheCream.prototype.GetRemainingTicks = function () {
+        return (60 * 64 - 1) - this.timer;
     };
     return MinigameThanksForTheCream;
 }(MinigameBase));

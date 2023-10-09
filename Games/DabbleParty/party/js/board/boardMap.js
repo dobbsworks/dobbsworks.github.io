@@ -27,7 +27,7 @@ var BoardMap = /** @class */ (function () {
         this.scoreTimer = 0;
         this.biodomePrice = 5;
         this.currentPlayer = null;
-        this.pendingMinigame = new MinigameLift();
+        this.pendingMinigame = null;
         this.initialized = false;
     }
     BoardMap.prototype.Initialize = function () {
@@ -156,6 +156,7 @@ var BoardMap = /** @class */ (function () {
             this.Initialize();
         this.timer++;
         this.boardSprites.forEach(function (a) { return a.Update(); });
+        this.UpdateCoinDisplays();
         if (cutsceneService.isCutsceneActive) {
             //do nothing
         }
@@ -179,6 +180,7 @@ var BoardMap = /** @class */ (function () {
                     cutsceneService.AddScene(new BoardCutSceneLast5Turns());
                 }
                 if (this.finalRound - this.currentRound + 1 == 0) {
+                    audioHandler.SetBackgroundMusic("level1");
                     cutsceneService.AddScene(new BoardCutSceneGameEnd());
                 }
             }
@@ -187,16 +189,37 @@ var BoardMap = /** @class */ (function () {
         if (!this.isSpectateMode)
             this.boardUI.Update();
     };
-    BoardMap.prototype.SpectateUpdateLoop = function () {
+    BoardMap.prototype.UpdateCoinDisplays = function () {
+        var shouldPlaySoundUp = false;
+        var shouldPlaySoundDown = false;
+        for (var _i = 0, _a = this.players; _i < _a.length; _i++) {
+            var player = _a[_i];
+            var coinDiff = player.coins - player.displayedCoins;
+            if ((coinDiff > 10 && this.timer % 2 == 0) || (coinDiff > 0 && this.timer % 8 == 0)) {
+                player.displayedCoins++;
+                shouldPlaySoundUp = true;
+            }
+            if ((coinDiff < -10 && this.timer % 2 == 0) || (coinDiff < 0 && this.timer % 8 == 0)) {
+                player.displayedCoins--;
+                shouldPlaySoundDown = true;
+            }
+        }
+        if (shouldPlaySoundUp)
+            audioHandler.PlaySound("coin", true);
+        if (shouldPlaySoundDown)
+            audioHandler.PlaySound("hurt", true);
+    };
+    BoardMap.prototype.SpectateUpdateLoop = function (exitingMinigame) {
         var _this = this;
         // request board state, wait X seconds, repeat.
         // if a minigame is active, switch to the instructions
         DataService.GetGameData(this.gameId).then(function (gameData) {
             var parsedData = JSON.parse(gameData.data);
-            _this.FromData(parsedData);
-            if (parsedData.currentMinigameIndex == -1) {
+            if (!exitingMinigame || parsedData.currentMinigameIndex == -1)
+                _this.FromData(parsedData);
+            if (parsedData.currentMinigameIndex == -1 || exitingMinigame) {
                 setTimeout(function () {
-                    _this.SpectateUpdateLoop();
+                    _this.SpectateUpdateLoop(parsedData.currentMinigameIndex != -1);
                 }, 5000);
             }
         });
@@ -220,7 +243,7 @@ var BoardMap = /** @class */ (function () {
             camera.targetScale = 0.421875;
             this.boardUI.isChoosingMinigame = true;
             this.pendingMinigame = MinigameGenerator.RandomGame();
-            // this is when I need to set the pending minigame and send it to the database for clients to poll
+            this.SaveGameStateToDB();
             this.boardUI.GenerateMinigameRouletteTexts(this.pendingMinigame);
         }
     };
@@ -250,6 +273,16 @@ var BoardMap = /** @class */ (function () {
         }
         target.spaceType = BoardSpaceType.GearSpace;
         return target;
+    };
+    BoardMap.prototype.SetGearSpace = function (id) {
+        var existingSpace = this.boardSpaces.find(function (a) { return a.spaceType == BoardSpaceType.GearSpace; });
+        var spaces = this.boardSpaces.filter(function (a) { return a.isPotentialGearSpace; });
+        var target = spaces[6];
+        if (existingSpace) {
+            target = this.boardSpaces.find(function (a) { return a.id === id; }) || target;
+            existingSpace.spaceType = BoardSpaceType.BlueBoardSpace;
+        }
+        target.spaceType = BoardSpaceType.GearSpace;
     };
     BoardMap.prototype.ManualCameraControl = function () {
         if (mouseHandler.mouseScroll !== 0) {
@@ -303,6 +336,11 @@ var BoardMap = /** @class */ (function () {
             button.textContent = "I HAVE SWITCHED OBS SCENE";
             button.onclick = function () {
                 //todo - mute audio here
+                var instructions = cutsceneService.cutscenes[0];
+                if (instructions && instructions.minigame && instructions.minigame.songId) {
+                    audioHandler.SetBackgroundMusic(instructions.minigame.songId);
+                    instructions.isDone = true;
+                }
                 _this.CreateScoreInputDOM.bind(_this)();
             };
             container.appendChild(button);
@@ -326,15 +364,39 @@ var BoardMap = /** @class */ (function () {
                 image.Draw(new Camera(canvas), 0, 0, 0.1, 0.1, false, false, 0);
                 var input = document.createElement("input");
                 input.type = "number";
+                input.dataset.playerId = player.userId.toString();
                 input.className = "scoreInput";
                 row.appendChild(canvas);
                 row.appendChild(input);
                 container.appendChild(row);
             }
+            var pullScoresButton = document.createElement("button");
+            pullScoresButton.textContent = "PULL SCORES";
+            pullScoresButton.onclick = function () {
+                DataService.GetScores(_this.gameId, _this.currentRound).then(function (scores) {
+                    for (var _i = 0, scores_1 = scores; _i < scores_1.length; _i++) {
+                        var score = scores_1[_i];
+                        var inputBox = document.querySelector("input[data-player-id=\"" + score.playerId + "\"]");
+                        if (inputBox) {
+                            inputBox.value = score.score.toString();
+                            inputBox.style.backgroundColor = "#AAA";
+                        }
+                    }
+                });
+                if (board) {
+                    board.pendingMinigame = null;
+                    board.SaveGameStateToDB();
+                }
+            };
+            container.appendChild(pullScoresButton);
             var submitButton = document.createElement("button");
             submitButton.textContent = "SUBMIT SCORES";
             submitButton.onclick = function () { _this.OnSubmitScores.bind(_this)(); };
             container.appendChild(submitButton);
+            var musicButton = document.createElement("button");
+            musicButton.textContent = "SWAP TO LOBBY MUSIC";
+            musicButton.onclick = function () { audioHandler.SetBackgroundMusic("lobby"); };
+            container.appendChild(musicButton);
         }
         this.boardUI.isShowingScores = true;
     };
@@ -381,10 +443,12 @@ var BoardMap = /** @class */ (function () {
             hostName: "",
             playerIds: ""
         };
-        DataService.SaveGameData(dt).then(function (a) { console.log("Game saved to DB"); });
+        DataService.SaveGameData(dt).then(function (a) { });
     };
     BoardMap.prototype.Stringify = function () {
         var _this = this;
+        var gearSpace = this.boardSpaces.find(function (a) { return a.spaceType == BoardSpaceType.GearSpace; });
+        var gearSpaceId = (gearSpace === null || gearSpace === void 0 ? void 0 : gearSpace.id) || -1;
         var data = {
             boardId: 0,
             currentRound: this.currentRound,
@@ -401,7 +465,8 @@ var BoardMap = /** @class */ (function () {
                 userName: p.userName,
                 diceBag: p.diceBag.dieFaces,
             }); }),
-            currentMinigameIndex: currentMinigame ? minigames.map(function (a) { return new a().title; }).indexOf(currentMinigame.title) : -1,
+            currentMinigameIndex: this.pendingMinigame ? minigames.map(function (a) { return new a().title; }).indexOf(this.pendingMinigame.title) : -1,
+            gearSpaceId: gearSpaceId
         };
         return JSON.stringify(data);
     };
@@ -422,17 +487,22 @@ var BoardMap = /** @class */ (function () {
             player.token.currentSpace = this.boardSpaces[p.spaceIndex];
             player.gears = p.gears;
             player.coins = p.coins;
+            player.displayedCoins = p.coins;
             player.turnOrder = p.turnOrder;
             player.inventory = p.items.map(function (a) { return itemList[a]; }).filter(function (a) { return a; });
             player.diceBag = new DiceBag(p.diceBag);
         }
         this.currentPlayer = this.players[data.currentPlayerIndex] || null;
+        this.SetGearSpace(data.gearSpaceId);
         if (data.currentMinigameIndex > -1) {
             var minigame = new minigames[data.currentMinigameIndex]();
             if (currentMinigame == null && !cutsceneService.isCutsceneActive) {
                 // bring player into instructions
                 cutsceneService.AddScene(new Instructions(minigame));
             }
+        }
+        else {
+            audioHandler.SetBackgroundMusic("level1");
         }
     };
     BoardMap.prototype.Draw = function (camera) {

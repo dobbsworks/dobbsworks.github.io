@@ -69,6 +69,12 @@
 <body>
     <canvas id="canvas" width="960" height="540"></canvas>
 
+    <div id="audioControls">
+        <label><input id="volumeControlMusic" type="range" min="0" max="100" value="100" onchange="AdjustVolumeMusic()" />Music Volume</label>
+        <br/>
+        <label><input id="volumeControlSfx" type="range" min="0" max="100" value="100" onchange="AdjustVolumeSfx()" />SFX Volume</label>
+    </div>
+
     <div id="inputSection">
         <div id="scoreInput"></div>
         <div>
@@ -225,6 +231,10 @@
                 data-loop-beats="80"></audio>
             <audio id="menuJazz" controls src="party/audio/music/MenuJazz.mp3" data-bpm="151" data-intro-beats="16"
                 data-loop-beats="96"></audio>
+            <audio id="lobby" controls src="party/audio/music/Lobby.mp3" data-bpm="120" data-intro-beats="0"
+                data-loop-beats="96"></audio>
+            <audio id="level1" controls src="party/audio/music/level-1.mp3" data-bpm="128" data-intro-beats="0"
+                data-loop-beats="200"></audio>
 
             <audio id="intro" controls src="party/audio/music/Intro.mp3" data-bpm="160" data-intro-beats="8"
                 data-loop-beats="128"></audio>
@@ -318,6 +328,15 @@
             <audio src="party/audio/sfx/soccer.mp3"></audio>
             <audio src="party/audio/sfx/step.mp3"></audio>
             <audio src="party/audio/sfx/diceFall.mp3"></audio>
+            <audio src="party/audio/sfx/spaceFanfare.mp3"></audio>
+            <audio src="party/audio/sfx/roundStart.mp3"></audio>
+            <audio src="party/audio/sfx/diceRoll.mp3" data-loop="true"></audio>
+            <audio src="party/audio/sfx/hit1.mp3"></audio>
+            <audio src="party/audio/sfx/hit2.mp3"></audio>
+            <audio src="party/audio/sfx/tap.mp3"></audio>
+            <audio src="party/audio/sfx/gearGet.mp3"></audio>
+            <audio src="party/audio/sfx/drumroll.mp3" data-loop="true"></audio>
+            <audio src="party/audio/sfx/drumrollend.mp3"></audio>
         </div>
     </div>
 </body>

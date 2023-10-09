@@ -28,7 +28,6 @@ class BoardCutSceneAddCoins extends BoardCutScene {
     }
     Draw(camera: Camera): void {
         if (!this.player.token) return;
-        //let baseY = this.player.token.y - 100 + (this.floatingTextDirection == 1 ? 0 : 50)
         let y = this.player.token.y - 100 + this.floatingTextDirection * this.timer * 0.5;
         DrawText(this.player.token.x, y, this.floatingText, camera, 0.5, this.floatingTextColor);
     }
@@ -68,8 +67,10 @@ class BoardCutSceneChangeDice extends BoardCutScene {
         if (this.timer == 150) {
             this.scale = 1.5;
             if (this.direction == "up") {
+                audioHandler.PlaySound("hit2", true);
                 this.PerformUpgrade();
             } else {
+                audioHandler.PlaySound("erase", true);
                 this.PerformDowngrade();
             }
         }
@@ -183,6 +184,8 @@ class BoardCutSceneAddItem extends BoardCutScene {
             if (!this.item.isPlaceholder) {
                 this.player.inventory.push(this.item);
             }
+            this.item.OnPurchase(this.player);
+            audioHandler.PlaySound("dobbloon", true);
             this.isDone = true;
         }
     }
@@ -284,6 +287,7 @@ class BoardCutSceneTwitchSpace extends BoardCutScene {
 
         if (!this.isLocked && Math.random() < 0.1) {
             this.chatOffset += 20;
+            audioHandler.PlaySound("swim", true);
         }
 
         if (this.isLocked) {
@@ -623,3 +627,89 @@ class BoardCutSceneSetBackdrop extends BoardCutSceneSingleAction {
     }); }
 }
 
+class BoardCutScenePortalSwap extends BoardCutScene {
+    constructor(private triggerPlayer: Player, private targetPlayer: Player) {
+        super();
+        this.baseX = triggerPlayer.token.x;
+        this.baseY = triggerPlayer.token.y;
+    }
+    baseX = 0;
+    baseY = 0;
+    timer = 0;
+    Update(): void {
+        this.timer++;
+        if (this.timer == 1) {
+            audioHandler.PlaySound("warp", false);
+        }
+        if (this.timer == 60) {
+            let targetSquare = this.targetPlayer.token?.currentSpace;
+            this.targetPlayer.token.currentSpace = this.triggerPlayer.token.currentSpace;
+            this.triggerPlayer.token.currentSpace = targetSquare;
+            this.targetPlayer.token?.Update();
+            this.triggerPlayer.token?.Update();
+        }
+        if (this.timer == 150) {
+            this.isDone = true;
+            // and then start the player's roll (NOT THE ITEM MENU)
+            if (board) board.boardUI.StartRoll();
+        }
+    }
+
+    Draw(camera: Camera): void {
+        if (this.timer < 120) {
+            let tile = tiles["itemIcons"][1][1] as ImageTile;
+            let size = (60 - Math.abs(60 - this.timer)) / 10;
+            tile.Draw(camera, this.baseX, this.baseY, size, size, false, false, this.timer / 10);
+        }
+    }
+}
+
+class BoardCutSceneDevExit extends BoardCutScene {
+    constructor(private triggerPlayer: Player) {
+        super();
+        this.baseX = triggerPlayer.token.x;
+        this.baseY = triggerPlayer.token.y;
+    }
+    baseX = 0;
+    baseY = 0;
+    timer = 0;
+    Update(): void {
+        this.timer++;
+        if (this.timer == 1) {
+            audioHandler.PlaySound("boing", false);
+        }
+        if (this.timer == 60 && board) {
+            let targetSpace = board.boardSpaces.find(a => a.spaceType == BoardSpaceType.GearSpace);
+            if (targetSpace) {
+                targetSpace = board.boardSpaces.find(a => a.nextSpaces.indexOf(targetSpace as BoardSpace) > -1)
+            }
+            if (this.triggerPlayer.token && targetSpace) {
+                this.triggerPlayer.token.currentSpace = targetSpace;
+            }
+            this.triggerPlayer.token?.Update();
+        }
+        if (this.timer < 150 && this.timer > 90 && board) {
+            board.CameraFollow(this.triggerPlayer);
+        }
+        if (this.timer == 150) {
+            this.isDone = true;
+            // and then start the player's roll (NOT THE ITEM MENU)
+            if (board) board.boardUI.StartRoll();
+        }
+    }
+
+    Draw(camera: Camera): void {
+        if (this.timer < 120) {
+            let tile = tiles["itemIcons"][0][1] as ImageTile;
+            let sizeWiggle = this.timer > 30 ? 0 : ((this.timer - 30) / 30);
+            let size = Math.cos(this.timer / 4) * sizeWiggle + 1;
+
+            if (this.timer > 60) {
+                size = (80 - this.timer) / 20;
+                if (size < 0) size = 0;
+            }
+
+            tile.Draw(camera, this.baseX, this.baseY, size, size, false, false, 0);
+        }
+    }
+}

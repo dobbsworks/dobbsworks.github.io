@@ -173,9 +173,12 @@ class MinigameLift extends MinigameBase {
         this.backdropBuildings.y = (this.currentDisplayFloor - 1) * 20 + 50;
         this.skyscraper.y = (this.currentDisplayFloor - 1) * 40 - 160;
 
-        let isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
+    }
+
+    GetRemainingTicks(): number {
+        return 60 * 60 - this.timer;
     }
 }

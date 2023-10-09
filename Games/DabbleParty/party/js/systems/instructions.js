@@ -42,12 +42,18 @@ var Instructions = /** @class */ (function (_super) {
         return _this;
     }
     Instructions.prototype.Update = function () {
+        if (this.timer == 1) {
+            audioHandler.SetBackgroundMusic("lobby");
+            camera.targetScale = 1;
+        }
         this.timer++;
         if (this.timer < 20) {
             this.overlayOpacity = Math.max(0, Math.min(1, (20 - this.timer) / 20));
         }
         if (this.timer > 120 && this.doneTimer == 0 && KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
-            this.doneTimer = 1;
+            if (board && board.isSpectateMode) {
+                this.doneTimer = 1;
+            }
         }
         if (this.doneTimer > 0) {
             this.doneTimer++;
@@ -55,6 +61,7 @@ var Instructions = /** @class */ (function (_super) {
         }
         if (this.doneTimer > 25) {
             this.isDone = true;
+            audioHandler.SetBackgroundMusic("silence");
             // set minigame
             currentMinigame = this.minigame;
         }
@@ -94,12 +101,14 @@ var Instructions = /** @class */ (function (_super) {
             camera.ctx.fillText(instruction, 420, y);
             y += 27;
         }
-        camera.ctx.fillStyle = "#000";
-        camera.ctx.textAlign = "left";
-        camera.ctx.font = "800 " + 18 + "px " + "arial";
-        camera.ctx.fillText("Wait for the host's", 700, 470);
-        camera.ctx.fillText("countdown, then press", 700, 490);
-        camera.ctx.fillText("A to start the game!", 700, 510);
+        if (board && board.isSpectateMode) {
+            camera.ctx.fillStyle = "#000";
+            camera.ctx.textAlign = "left";
+            camera.ctx.font = "800 " + 18 + "px " + "arial";
+            camera.ctx.fillText("Wait for the host's", 700, 470);
+            camera.ctx.fillText("countdown, then press", 700, 490);
+            camera.ctx.fillText("A to start the game!", 700, 510);
+        }
         if (this.overlayOpacity > 0) {
             camera.ctx.fillStyle = "rgba(0, 0, 0, " + this.overlayOpacity.toFixed(2) + ")";
             camera.ctx.fillRect(0, 0, 960, 540);

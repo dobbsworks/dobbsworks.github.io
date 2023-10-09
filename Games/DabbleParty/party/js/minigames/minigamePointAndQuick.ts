@@ -10,7 +10,7 @@ class MinigamePointAndQuick extends MinigameBase {
     controls: InstructionControl[] = [
         new InstructionControl(Control.Move, "Point"),
     ];
-    songId = "cherry";
+    songId = "jungle";
 
     boxStacks: SimpleSprite[][] = [];
     targetIndex = 0;
@@ -157,10 +157,12 @@ class MinigamePointAndQuick extends MinigameBase {
         }
 
 
-        let isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
+    }
 
+    GetRemainingTicks(): number {
+        return 60 * 60 - this.timer;
     }
 }

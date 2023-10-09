@@ -113,11 +113,13 @@ var MinigameSpaceRace = /** @class */ (function (_super) {
         this.movingItems.forEach(function (a) {
             a.x -= _this.rocketSpeed;
         });
-        var isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.movingItems.forEach(function (a) { return a.isActive = false; });
             this.SubmitScore(Math.floor(this.totalDistance));
         }
+    };
+    MinigameSpaceRace.prototype.GetRemainingTicks = function () {
+        return 60 * 60 - this.timer;
     };
     return MinigameSpaceRace;
 }(MinigameBase));

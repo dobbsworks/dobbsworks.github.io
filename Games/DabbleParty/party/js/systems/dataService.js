@@ -67,6 +67,11 @@ var DataService = /** @class */ (function () {
             DataService.BaseGet("Party/GetCurrentGames", resolve, reject);
         });
     };
+    DataService.GetScores = function (gameId, roundNumber) {
+        return new Promise(function (resolve, reject) {
+            DataService.BaseGet("Party/GetScores?gameId=" + gameId + "&roundNumber=" + roundNumber, resolve, reject);
+        });
+    };
     DataService.SubmitScore = function (gameId, score, roundNumber) {
         return new Promise(function (resolve, reject) {
             DataService.BasePost("Party/SubmitScore?gameId=" + gameId + "&score=" + score + "&roundNumber=" + roundNumber, {}, resolve, reject);

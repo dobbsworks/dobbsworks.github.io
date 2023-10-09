@@ -83,6 +83,7 @@ var BoardUI = /** @class */ (function () {
     };
     BoardUI.prototype.StartRoll = function () {
         if (this.board.currentPlayer) {
+            audioHandler.PlaySound("diceRoll", true);
             this.dice = this.board.currentPlayer.diceBag.GetDiceSprites();
         }
     };
@@ -133,9 +134,16 @@ var BoardUI = /** @class */ (function () {
             this.currentMenu = BoardMenu.CreateItemMenu();
         }
         if (this.isChoosingMinigame) {
+            if (this.minigameTextTime == 140) {
+                audioHandler.PlaySound("diceRoll", true);
+            }
+            if (this.minigameTextTime == 320) {
+                audioHandler.StopSound("diceRoll");
+                audioHandler.PlaySound("hit2", true);
+            }
             this.minigameTextTime++;
             this.rouletteTheta += 0.1;
-            if (this.minigameTextTime == 540) {
+            if (this.minigameTextTime == 540 && this.board.pendingMinigame) {
                 this.isChoosingMinigame = false;
                 cutsceneService.AddScene(new Instructions(this.board.pendingMinigame));
                 this.board.CreateButtonToToggleToUserViewInOBS();
@@ -151,6 +159,10 @@ var BoardUI = /** @class */ (function () {
         if (cutsceneService.isCutsceneActive)
             return;
         if (this.roundStarttimer > 0) {
+            if (this.roundStarttimer == 1) {
+                audioHandler.PlaySound("roundStart", false);
+                audioHandler.SetBackgroundMusic("level1");
+            }
             this.roundStarttimer++;
             if (this.roundStarttimer > 100) {
                 this.roundStarttimer = 0;
@@ -163,6 +175,9 @@ var BoardUI = /** @class */ (function () {
                 var d = this.dice.find(function (a) { return !a.IsStopped(); });
                 if (d) {
                     d.Stop();
+                    if (this.dice.every(function (a) { return a.IsStopped(); })) {
+                        audioHandler.StopSound("diceRoll");
+                    }
                 }
             }
         }
@@ -178,6 +193,7 @@ var BoardUI = /** @class */ (function () {
             }
             this.combineTimer++;
             if (this.combineTimer == 20) {
+                audioHandler.PlaySound("hit2", true);
                 this.combinedNumber = this.dice.map(function (a) { return a.chosenValue; }).reduce(function (a, b) { return a + b; }, 0);
                 this.dice = [];
                 if (this.board.currentPlayer)
@@ -279,7 +295,7 @@ var BoardUI = /** @class */ (function () {
                 ctx.textAlign = "right";
                 ctx.font = "600 " + 14 + "px " + "arial";
                 ctx.fillText(player.gears.toString(), x + 75, 20);
-                ctx.fillText(player.coins.toString(), x + 75, 37);
+                ctx.fillText(player.displayedCoins.toString(), x + 75, 37);
                 ctx.fillRect(x - 20, 45, 100, 1);
                 ctx.textAlign = "left";
                 ctx.font = "800 " + 14 + "px " + "arial";
@@ -332,7 +348,7 @@ var BoardUI = /** @class */ (function () {
             ctx.fillStyle = "#FFF";
             ctx.fillText(scorebox.player.CurrentPlaceText(), x + 200, y + 50 + 14);
             ctx.fillText(scorebox.player.gears.toString(), x + 400, y + 50 + 14);
-            ctx.fillText(scorebox.player.coins.toString(), x + 570, y + 50 + 14);
+            ctx.fillText(scorebox.player.displayedCoins.toString(), x + 570, y + 50 + 14);
         }
     };
     BoardUI.prototype.DrawMinigameChoose = function (ctx) {
@@ -417,6 +433,7 @@ var DiceSprite = /** @class */ (function (_super) {
         }
     };
     DiceSprite.prototype.Stop = function () {
+        audioHandler.PlaySound("hit1", true);
         this._isStopped = true;
         this.frame = 0;
         this.chosenValue = Math.ceil(Math.random() * this.faces);

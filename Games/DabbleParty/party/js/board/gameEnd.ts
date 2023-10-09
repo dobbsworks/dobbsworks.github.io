@@ -33,7 +33,7 @@ function GetBonusGearTypes(): EndOfGameBonusGear[] {
     let allBonusGears = Object.values(EndOfGameBonusGear) as EndOfGameBonusGear[];
     let ret: EndOfGameBonusGear[] = [];
     for (let i = 0; i < 3; i++) {
-        let gearType = Random.RandFrom(allBonusGears);
+        let gearType = allBonusGears[Math.floor(Math.random() * allBonusGears.length)];
         allBonusGears = allBonusGears.filter(a => a != gearType);
         ret.push(gearType);
     }
@@ -117,6 +117,10 @@ class BoardCutSceneShowGearOrCoinCounts extends BoardCutScene {
     Update(): void {
         this.timer++;
 
+        if (this.timer == 20 && !this.isDismissed) {
+            audioHandler.PlaySound("dobbloon", true);
+        }
+
         if (this.timer <= 30 && !this.isDismissed) {
             this.y = -(Math.sin(this.timer / 30 * Math.PI / 2) * 150);
         }
@@ -155,6 +159,10 @@ class BoardCutSceneAwardBonusGear extends BoardCutScene {
         if (!board) return;
         this.timer++;
 
+        if (this.timer == 2) {
+            audioHandler.PlaySound("drumroll", true);
+        }
+
         let xs = GetEndOfGameTokenLocations();
 
         if (this.timer < 350) {
@@ -169,6 +177,8 @@ class BoardCutSceneAwardBonusGear extends BoardCutScene {
         }
         if (this.timer == 350) {
             this.xs = this.winnerIndeces.map(a => 0);
+            audioHandler.StopSound("drumroll");
+            audioHandler.PlaySound("drumrollend", true);
         }
         if (this.timer > 350) {
             this.winnerIndeces.forEach((winnerIndex, i) => {
@@ -213,6 +223,8 @@ class BoardCutSceneFinalResults extends BoardCutScene {
     private winnerIndeces: number[] = [];
 
     Initialize(): void {
+        audioHandler.SetBackgroundMusic("silence");
+        audioHandler.PlaySound("drumroll", true);
         if (!board) return;
         let targetPlace = Math.max(...board.players.map(a => a.CurrentPlace())); // last place
         while (targetPlace > 1) {
@@ -246,6 +258,7 @@ class BoardCutSceneFinalResults extends BoardCutScene {
                 this.removeTimer++;
                 if (this.removeTimer >= 100) {
                     this.removeTimer = 0;
+                    audioHandler.PlaySound("hurt", true);
                     let playerIndex = this.removeIndeces.shift() ?? -1;
                     let sprite = this.sprites[playerIndex];
                     this.fallingSprites.push(sprite);
@@ -254,6 +267,9 @@ class BoardCutSceneFinalResults extends BoardCutScene {
                     }
                     if (this.removeIndeces.length == 0) {
                         this.timer = 2900;
+                        audioHandler.StopSound("drumroll");
+                        audioHandler.PlaySound("drumrollend", true);
+                        audioHandler.SetBackgroundMusic("jazzy");
                     }
                 }
             }
@@ -307,6 +323,12 @@ class BoardCutSceneStats extends BoardCutScene {
         if (this.baseY < 1) this.baseY = 0;
         if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
             this.isDone = true;
+            cutsceneService.AddScene(
+                new BoardCutSceneFadeOut(), 
+                new BoardCutSceneSingleAction(() => {
+                    board = null;
+                }), 
+                new CutsceneMainMenu());
         }
     }
     Draw(camera: Camera): void {

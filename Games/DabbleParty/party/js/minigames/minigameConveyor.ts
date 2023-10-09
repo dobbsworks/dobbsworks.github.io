@@ -143,8 +143,7 @@ class MinigameConveyor extends MinigameBase {
             audioHandler.PlaySound("erase", false);
         }
 
-        let isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
 
@@ -152,6 +151,10 @@ class MinigameConveyor extends MinigameBase {
         if (timerSeconds % 1 == 0 && timerSeconds > 0 && timerSeconds < 60) {
             this.CreateNewBox();
         }
+    }
+
+    GetRemainingTicks(): number {
+        return 60 * 60 - this.timer;
     }
 
     OnBeforeDrawSprites(camera: Camera): void {

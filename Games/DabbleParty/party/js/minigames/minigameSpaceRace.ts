@@ -106,10 +106,13 @@ class MinigameSpaceRace extends MinigameBase {
             a.x -= this.rocketSpeed;
         })
 
-        let isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.movingItems.forEach(a => a.isActive = false);
             this.SubmitScore(Math.floor(this.totalDistance));
         }
+    }
+
+    GetRemainingTicks(): number {
+        return 60 * 60 - this.timer;
     }
 }

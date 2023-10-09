@@ -112,11 +112,13 @@ var MinigameFightOrFlightless = /** @class */ (function (_super) {
                 audioHandler.PlaySound("throw", false);
             }
         }
-        var isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
         this.sprites = this.sprites.sort(function (a, b) { return a.y - b.y; });
+    };
+    MinigameFightOrFlightless.prototype.GetRemainingTicks = function () {
+        return 60 * 60 - this.timer;
     };
     MinigameFightOrFlightless.prototype.OnBeforeDrawSprites = function (camera) {
         camera.ctx.save();

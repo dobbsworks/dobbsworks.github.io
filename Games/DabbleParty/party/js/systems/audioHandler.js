@@ -6,31 +6,6 @@ var AudioHandler = /** @class */ (function () {
         this.currentBgm = "";
         this.audioObjects = [];
         this.segments = [];
-        this.levelSongList = [
-            "silence",
-            "intro",
-            "desert",
-            "grassland",
-            "adventure",
-            "carnival",
-            "haunt",
-            "sky",
-            "computer",
-            "chill",
-            "crunch",
-            "frost",
-            "forest",
-            "waltz",
-            "faire",
-            "choir",
-            "meditate",
-            "slime",
-            "chipper",
-            "jungle",
-            "clocktower",
-            "overdue",
-            "cherry",
-        ];
     }
     AudioHandler.prototype.Initialize = function () {
         if (this.initialized)
@@ -59,10 +34,14 @@ var AudioHandler = /** @class */ (function () {
                     audioObject.node.connect(this.gainNodeMusic).connect(this.lowPassNode).connect(this.audioCtxMusic.destination);
                 }
                 else if (audioObject.isSfx) {
+                    if (audioObject.src.dataset.loop)
+                        audioObject.src.loop = true;
                     audioObject.node.connect(this.gainNodeSfx).connect(this.audioCtxSfx.destination);
                 }
             }
             audioHandler.SetBackgroundMusic("silence");
+            AdjustVolumeMusic();
+            AdjustVolumeSfx();
         }
         else {
             setTimeout(function () { audioHandler.Initialize.apply(audioHandler); }, 100);
@@ -141,17 +120,23 @@ var AudioHandler = /** @class */ (function () {
         }
         return false;
     };
-    AudioHandler.prototype.PlaySegment = function (id, segmentIndex) {
+    AudioHandler.prototype.StopSound = function (id) {
         var audioObject = this.audioObjects.find(function (a) { return a.id === id; });
         if (audioObject) {
-            var src = audioObject.Play(false);
-            var bpm = +(src.dataset.bpm || "88");
-            var secondsPerSegment = 60 / bpm / 2;
-            src.currentTime = secondsPerSegment * segmentIndex;
-            this.segments.push({ src: src, endTime: +(new Date()) + secondsPerSegment * 1000 });
+            audioObject.src.pause();
         }
-        return false;
     };
+    // PlaySegment(id: string, segmentIndex: number): boolean {
+    //     let audioObject = this.audioObjects.find(a => a.id === id);
+    //     if (audioObject) {
+    //         let src = audioObject.Play(false);
+    //         let bpm = +(src.dataset.bpm || "88");
+    //         let secondsPerSegment = 60 / bpm / 2;
+    //         src.currentTime = secondsPerSegment * segmentIndex;
+    //         this.segments.push({src: src, endTime: +(new Date()) + secondsPerSegment*1000});
+    //     }
+    //     return false;
+    // }
     AudioHandler.prototype.GetMusicVolume = function () {
         return StorageService.GetMusicVolume();
     };
@@ -234,3 +219,15 @@ var AudioObject = /** @class */ (function () {
     };
     return AudioObject;
 }());
+function AdjustVolumeMusic() {
+    var volControl = document.getElementById("volumeControlMusic");
+    var volume = +(volControl.value);
+    volume = (Math.pow((volume / 100), 2)) * 100;
+    audioHandler.SetMusicVolume(volume);
+}
+function AdjustVolumeSfx() {
+    var volControl = document.getElementById("volumeControlSfx");
+    var volume = +(volControl.value);
+    volume = (Math.pow((volume / 100), 2)) * 100;
+    audioHandler.SetSfxVolume(volume);
+}

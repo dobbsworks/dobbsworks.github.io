@@ -197,17 +197,18 @@ class MinigameWhenPigsFly extends MinigameBase {
             }
         }
 
-
         this.confirmDigit1.imageTile = tiles["digits"][Math.floor(this.displayedCount / 10)][1];
         this.confirmDigit2.imageTile = tiles["digits"][this.displayedCount % 10][1];
         this.guessDigit1.imageTile = tiles["digits"][Math.floor(this.playerCount / 10)][1];
         this.guessDigit2.imageTile = tiles["digits"][this.playerCount % 10][1];
 
-
-        let isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
     }
 
+
+    GetRemainingTicks(): number {
+        return (60 * 60) - this.timer;
+    }
 }

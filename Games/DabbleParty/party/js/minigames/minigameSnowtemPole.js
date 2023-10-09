@@ -158,10 +158,12 @@ var MinigameSnowtemPole = /** @class */ (function (_super) {
                 }
             }
         }
-        var isGameOver = this.timer == 60 * 64;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
+    };
+    MinigameSnowtemPole.prototype.GetRemainingTicks = function () {
+        return 60 * 64 - this.timer;
     };
     return MinigameSnowtemPole;
 }(MinigameBase));

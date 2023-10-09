@@ -215,10 +215,12 @@ var MinigameMushroomBounce = /** @class */ (function (_super) {
             this.sprites.push(egg);
             audioHandler.PlaySound("bwump", false);
         }
-        var gameOverTime = (Math.max.apply(Math, this.eggList.map(function (a) { return a.t; })) + 5) * 60;
-        if (gameOverTime == this.timer) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(this.score);
         }
+    };
+    MinigameMushroomBounce.prototype.GetRemainingTicks = function () {
+        return ((Math.max.apply(Math, this.eggList.map(function (a) { return a.t; })) + 8) * 60) - this.timer;
     };
     return MinigameMushroomBounce;
 }(MinigameBase));

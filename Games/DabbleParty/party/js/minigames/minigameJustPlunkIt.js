@@ -102,10 +102,12 @@ var MinigameJustPlunkIt = /** @class */ (function (_super) {
             var digitValue = Math.floor((plunkCurrent / Math.pow(10, this.digits.length - i - 1)) % 10);
             digitSprite.imageTile = tiles["plunkDisplay"][digitValue][0];
         }
-        var isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
+    };
+    MinigameJustPlunkIt.prototype.GetRemainingTicks = function () {
+        return 60 * 60 - this.timer;
     };
     return MinigameJustPlunkIt;
 }(MinigameBase));

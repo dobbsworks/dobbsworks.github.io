@@ -34,3 +34,7 @@ canvas {
     width: 960px;
     justify-content: space-between;
 }
+
+input[type=range] {
+    filter: hue-rotate(150deg);
+}

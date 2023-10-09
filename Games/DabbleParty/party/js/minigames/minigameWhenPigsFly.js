@@ -205,10 +205,12 @@ var MinigameWhenPigsFly = /** @class */ (function (_super) {
         this.confirmDigit2.imageTile = tiles["digits"][this.displayedCount % 10][1];
         this.guessDigit1.imageTile = tiles["digits"][Math.floor(this.playerCount / 10)][1];
         this.guessDigit2.imageTile = tiles["digits"][this.playerCount % 10][1];
-        var isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
+    };
+    MinigameWhenPigsFly.prototype.GetRemainingTicks = function () {
+        return (60 * 60) - this.timer;
     };
     return MinigameWhenPigsFly;
 }(MinigameBase));

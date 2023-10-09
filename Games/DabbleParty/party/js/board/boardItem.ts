@@ -90,14 +90,7 @@ class BoardItemDevExit extends BoardItem {
     name = "Dev Exit";
     description = "Warps you close to the Golden Gear";
     OnUse(player: Player, board: BoardMap): void {
-        let targetSpace = board.boardSpaces.find(a => a.spaceType == BoardSpaceType.GearSpace);
-        if (targetSpace) {
-            targetSpace = board.boardSpaces.find(a => a.nextSpaces.indexOf(targetSpace as BoardSpace) > -1)
-        }
-        if (player.token && targetSpace) {
-            player.token.currentSpace = targetSpace;
-        }
-        board.boardUI.StartRoll();
+        cutsceneService.AddScene(new BoardCutSceneDevExit(player));
     }
     isPlaceholder = false;
 }
@@ -118,7 +111,7 @@ class BoardItemWarpPortal extends BoardItem {
 abstract class BoardItemFragileDice extends BoardItem {
     abstract numFaces: number;
     get name(): string { return `Fragile D${this.numFaces}` }
-    get description(): string { return `Adds an extra ${this.numFaces}-sided die to this turn's roll` };
+    get description(): string { return `Adds an extra ${this.numFaces}-sided die for one roll` };
 
     OnUse(player: Player, board: BoardMap): void {
         player.diceBag.fragileFaces.push(this.numFaces as FaceCount);

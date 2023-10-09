@@ -131,13 +131,13 @@ class MinigameSnowtemPole extends MinigameBase {
             }
         }
 
-
-
-
-        let isGameOver = this.timer == 60 * 64;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
 
+    }
+
+    GetRemainingTicks(): number {
+        return 60 * 64 - this.timer;
     }
 }

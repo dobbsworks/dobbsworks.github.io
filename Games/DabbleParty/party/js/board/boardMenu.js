@@ -13,6 +13,17 @@ var BoardMenuOption = /** @class */ (function () {
         this.OnSelect = OnSelect;
         this.isEnabled = isEnabled;
     }
+    BoardMenuOption.DrawCancel = function (ctx, x, y, isHighlighted) {
+        BoardMenuOption.PlainText("No thanks!")(ctx, x, y, isHighlighted);
+    };
+    BoardMenuOption.PlainText = function (text) {
+        return function (ctx, x, y, isHighlighted) {
+            ctx.font = "800 " + 36 + "px " + "arial";
+            ctx.textAlign = "left";
+            ctx.fillStyle = "#FFF";
+            ctx.fillText(text, x + 40, y + 65);
+        };
+    };
     return BoardMenuOption;
 }());
 var BoardMenu = /** @class */ (function () {
@@ -166,18 +177,19 @@ var BoardMenu = /** @class */ (function () {
     BoardMenu.CreateShopMenu = function () {
         if (!board || !board.currentPlayer)
             return new BoardMenu([]);
-        var itemsForSale = [
-            { price: 5, item: itemList[6] },
+        var itemPool = [
+            { price: 25, item: itemList[0] },
+            { price: 10, item: itemList[1] },
+            { price: 2, item: itemList[2] },
+            { price: 4, item: itemList[3] },
+            { price: 6, item: itemList[4] },
+            { price: 8, item: itemList[5] },
+            { price: 10, item: itemList[6] },
             { price: 12, item: itemList[7] }
         ];
-        var ret = new BoardMenu([new BoardMenuOption(function (ctx, x, y, isHighlighted) {
-                if (!board || !board.currentPlayer)
-                    return;
-                ctx.font = "800 " + 36 + "px " + "arial";
-                ctx.textAlign = "left";
-                ctx.fillStyle = "#FFF";
-                ctx.fillText("No thanks!", x + 40, y + 65);
-            }, function () {
+        var itemsForSale = Random.GetShuffledCopy(itemPool).slice(0, 3);
+        itemsForSale.sort(function (a, b) { return a.price - b.price; });
+        var ret = new BoardMenu([new BoardMenuOption(BoardMenuOption.DrawCancel, function () {
                 if (!board || !board.currentPlayer)
                     return;
                 board.currentPlayer.isInShop = false;
@@ -233,19 +245,17 @@ var BoardMenu = /** @class */ (function () {
                 board.currentPlayer.isInShop = false;
                 board.currentPlayer.landedOnShop = false;
                 cutsceneService.AddScene(new BoardCutSceneAddCoins(-gearPrice, board.currentPlayer));
+                cutsceneService.AddScene(new BoardCutSceneSingleAction(function () {
+                    audioHandler.SetBackgroundMusic("silence");
+                    audioHandler.PlaySound("gearGet", true);
+                    setTimeout(function () { audioHandler.SetBackgroundMusic("level1"); }, 6000);
+                }));
                 cutsceneService.AddScene(new BoardCutSceneAddItem(new ShopItemGoldenGear(), board.currentPlayer));
                 cutsceneService.AddScene(new BoardCutSceneMoveGear());
                 board.PlaceGearSpace();
-            }, gearPrice < (((_a = board === null || board === void 0 ? void 0 : board.currentPlayer) === null || _a === void 0 ? void 0 : _a.coins) || 0));
+            }, gearPrice <= (((_a = board === null || board === void 0 ? void 0 : board.currentPlayer) === null || _a === void 0 ? void 0 : _a.coins) || 0));
         });
-        return new BoardMenu(__spreadArrays(gearOptions, [new BoardMenuOption(function (ctx, x, y, isHighlighted) {
-                if (!board || !board.currentPlayer)
-                    return;
-                ctx.font = "800 " + 36 + "px " + "arial";
-                ctx.textAlign = "left";
-                ctx.fillStyle = "#FFF";
-                ctx.fillText("No thanks!", x + 40, y + 65);
-            }, function () {
+        return new BoardMenu(__spreadArrays(gearOptions, [new BoardMenuOption(BoardMenuOption.DrawCancel, function () {
                 if (!board || !board.currentPlayer)
                     return;
                 board.currentPlayer.isInShop = false;
@@ -257,18 +267,18 @@ var BoardMenu = /** @class */ (function () {
             return new BoardMenu([]);
         var user = board.currentPlayer;
         var targetablePlayers = board.players.filter(function (a) { var _a, _b; return ((_a = a.token) === null || _a === void 0 ? void 0 : _a.currentSpace) != ((_b = user.token) === null || _b === void 0 ? void 0 : _b.currentSpace); });
-        var ret = new BoardMenu(targetablePlayers.map(function (p) { return (new BoardMenuOption(function (ctx, x, y, isHighlighted) {
+        var ret = new BoardMenu(__spreadArrays(targetablePlayers.map(function (p) { return (new BoardMenuOption(function (ctx, x, y, isHighlighted) {
             BoardMenu.DrawPlayerPanel(ctx, x, y, isHighlighted, p.avatarIndex, p.avatarName, "Swap places with " + p.avatarName);
         }, function () {
-            var _a;
             if (!board || !board.currentPlayer || !board.currentPlayer.token || !p.token)
                 return;
-            var targetSquare = (_a = p.token) === null || _a === void 0 ? void 0 : _a.currentSpace;
-            p.token.currentSpace = board.currentPlayer.token.currentSpace;
-            board.currentPlayer.token.currentSpace = targetSquare;
-            // and then start the player's roll (NOT THE ITEM MENU)
-            board.boardUI.StartRoll();
-        })); }));
+            cutsceneService.AddScene(new BoardCutScenePortalSwap(board.currentPlayer, p));
+        })); }), [
+            new BoardMenuOption(BoardMenuOption.PlainText("Nevermind"), function () {
+                if (board)
+                    board.boardUI.StartRoll();
+            })
+        ]));
         return ret;
     };
     BoardMenu.CreateWallopMenu = function () {
@@ -281,14 +291,7 @@ var BoardMenu = /** @class */ (function () {
         if (board.players.some(function (a) { return a.gears > 0 && a != (board === null || board === void 0 ? void 0 : board.currentPlayer); })) {
             itemsForSale.push({ price: 50, item: new ShopItemStealGears(), menu: BoardMenu.CreateWallopGearMenu() });
         }
-        var ret = new BoardMenu([new BoardMenuOption(function (ctx, x, y, isHighlighted) {
-                if (!board || !board.currentPlayer)
-                    return;
-                ctx.font = "800 " + 36 + "px " + "arial";
-                ctx.textAlign = "left";
-                ctx.fillStyle = "#FFF";
-                ctx.fillText("No thanks!", x + 40, y + 65);
-            }, function () {
+        var ret = new BoardMenu([new BoardMenuOption(BoardMenuOption.DrawCancel, function () {
                 if (!board || !board.currentPlayer)
                     return;
                 board.currentPlayer.isInShop = false;
@@ -358,19 +361,15 @@ var BoardMenu = /** @class */ (function () {
             return new BoardMenu([]);
         var itemsForSale = [
             { price: board.biodomePrice, item: new ShopItemEnterBiodome(), action: function () { } },
-            { price: board.biodomePrice + 10, item: new ShopItemEnterAndRaise(), action: function () {
+            {
+                price: board.biodomePrice + 10, item: new ShopItemEnterAndRaise(),
+                action: function () {
                     if (board)
                         board.biodomePrice += 5;
-                } }
+                }
+            }
         ];
-        var ret = new BoardMenu([new BoardMenuOption(function (ctx, x, y, isHighlighted) {
-                if (!board || !board.currentPlayer)
-                    return;
-                ctx.font = "800 " + 36 + "px " + "arial";
-                ctx.textAlign = "left";
-                ctx.fillStyle = "#FFF";
-                ctx.fillText("No thanks!", x + 40, y + 65);
-            }, function () {
+        var ret = new BoardMenu([new BoardMenuOption(BoardMenuOption.DrawCancel, function () {
                 if (!board || !board.currentPlayer || !board.currentPlayer.token)
                     return;
                 board.currentPlayer.isInShop = false;
@@ -406,14 +405,7 @@ var BoardMenu = /** @class */ (function () {
         if (!board || !board.currentPlayer)
             return new BoardMenu([]);
         var warpPrice = 5;
-        var ret = new BoardMenu([new BoardMenuOption(function (ctx, x, y, isHighlighted) {
-                if (!board || !board.currentPlayer)
-                    return;
-                ctx.font = "800 " + 36 + "px " + "arial";
-                ctx.textAlign = "left";
-                ctx.fillStyle = "#FFF";
-                ctx.fillText("No thanks!", x + 40, y + 65);
-            }, function () {
+        var ret = new BoardMenu([new BoardMenuOption(BoardMenuOption.DrawCancel, function () {
                 if (!board || !board.currentPlayer || !board.currentPlayer.token)
                     return;
                 board.currentPlayer.isInShop = false;

@@ -35,18 +35,40 @@ function Initialize() {
     mouseHandler = new MouseHandler(canvas);
     audioHandler = new AudioHandler();
     audioHandler.Initialize();
-    //setTimeout(() => {audioHandler.SetBackgroundMusic("menuJazz");}, 199);
     new FocusHandler().Initialize();
 
     UnloadHandler.RegisterUnloadHandler();
     KeyboardHandler.InitKeyHandlers();
     setInterval(MainLoop, 1000 / 60);
-    InitializeTwitchSpaceUI(); // TODO only if host
+    InitializeTwitchSpaceUI(); 
     InitializeItemList();
-    //board = new BoardMap();
 
-    //cutsceneService.AddScene(new CutscenePreTitle());
-    cutsceneService.AddScene(new CutsceneMainMenu());
+    cutsceneService.AddScene(new CutscenePreTitle());
+    
+    // cutsceneService.AddScene(new CutsceneMainMenu());
+    
+    // setTimeout(() => {
+    //     board = new BoardMap(-2);
+    //     board.Initialize();
+    //     board.FromData({
+    //         "boardId":0,
+    //         "currentRound":1,
+    //         "finalRound":1,
+    //         "currentPlayerIndex":-1,
+    //         "currentMinigameIndex":-1,
+    //         "players":[
+    //             {"gears":0,"coins":10,"turnOrder":1,"avatarIndex":0,"spaceIndex":54,"items":[0,1],"userId":1,"userName":"Dobbs","diceBag":[6,6]},
+    //             {"gears":0,"coins":10,"turnOrder":2,"avatarIndex":1,"spaceIndex":54,"items":[0,1],"userId":1,"userName":"Dobbs","diceBag":[6,6]}
+    //         ]});
+        
+    //     let hostControls = document.getElementById("inputSection");
+    //     if (hostControls) hostControls.style.display = "block";
+    //     setTimeout(() => {
+    //         audioHandler.SetBackgroundMusic("level1")
+    //     }, 7000);
+    //     //cutsceneService.AddScene(new BoardCutSceneIntro());
+        
+    // }, 500)
 }
 
 var times: number[] = [];
@@ -65,6 +87,7 @@ function GetLoopTime() {
 
 function Update(): void {
     KeyboardHandler.Update();
+    if (KeyboardHandler.IsKeyPressed(KeyAction.Fullscreen, true)) document.getElementById("canvas")?.requestFullscreen();
 
     cutsceneService.Update();
     if (currentMinigame) {

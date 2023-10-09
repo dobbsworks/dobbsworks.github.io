@@ -119,10 +119,12 @@ var MinigameDodgePodge = /** @class */ (function (_super) {
                 audioHandler.PlaySound("hurt", false);
             }
         }
-        var isGameOver = this.timer == 60 * 64;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
+    };
+    MinigameDodgePodge.prototype.GetRemainingTicks = function () {
+        return 60 * 64 - this.timer;
     };
     return MinigameDodgePodge;
 }(MinigameBase));

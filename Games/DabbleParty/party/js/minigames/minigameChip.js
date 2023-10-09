@@ -119,10 +119,12 @@ var MinigameChip = /** @class */ (function (_super) {
                 this.ResetChip();
             }
         }
-        var isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
+    };
+    MinigameChip.prototype.GetRemainingTicks = function () {
+        return 60 * 60 - this.timer;
     };
     MinigameChip.prototype.ResetChip = function () {
         this.chip.y = this.chipStartingY;

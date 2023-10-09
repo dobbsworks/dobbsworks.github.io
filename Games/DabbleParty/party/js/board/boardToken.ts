@@ -19,6 +19,7 @@ class BoardToken extends Sprite {
     }
 
     Update(): void {
+        if (this.movementTargetSpace) this.latestSpace = this.movementTargetSpace;
         if (this.currentSpace) this.latestSpace = this.currentSpace;
         if (this.movementStartingSpace && this.movementTargetSpace) {
             let ratio = this.movementTimer / this.movementDuration;
@@ -32,6 +33,7 @@ class BoardToken extends Sprite {
             if (this.movementTimer == this.movementDuration) {
                 this.movementStartingSpace = null;
                 this.currentSpace = this.movementTargetSpace;
+                audioHandler.PlaySound("tap", true);
             }
         } else if (this.currentSpace) {
             this.x = this.currentSpace.gameX;

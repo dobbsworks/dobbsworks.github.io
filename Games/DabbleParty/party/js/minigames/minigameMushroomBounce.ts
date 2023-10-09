@@ -170,10 +170,13 @@ class MinigameMushroomBounce extends MinigameBase {
             audioHandler.PlaySound("bwump", false);
         }
 
-        let gameOverTime = (Math.max(...this.eggList.map(a => a.t)) + 5) * 60;
-        if (gameOverTime == this.timer) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(this.score);
         }
+    }
+
+    GetRemainingTicks(): number {
+        return ((Math.max(...this.eggList.map(a => a.t)) + 8) * 60) - this.timer;
     }
 
     eggList = [

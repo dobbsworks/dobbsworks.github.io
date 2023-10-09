@@ -66,7 +66,8 @@ class MenuButtonCreateGame extends MenuButtonBase {
             finalRound: turns,
             currentPlayerIndex: -1,
             currentMinigameIndex: -1,
-            players: []
+            players: [],
+            gearSpaceId: -1,
         }
 
         let dt: PartyGameDT = { id: -1, data: JSON.stringify(myGameData), lastUpdate: new Date(), currentRound: -1, hostId: -1, playerIds: "", hostName: "" };
@@ -95,6 +96,13 @@ class MenuButtonStartGame extends MenuButtonBase {
             board.FromData(lobbyDisplay.lobbyState);
             //board.CameraFocusSpace(board.boardSpaces[0]);
             handler.cutscene.isDone = true;
+            audioHandler.SetBackgroundMusic("silence");
+            audioHandler.PlaySound("spaceFanfare", false);
+            let hostControls = document.getElementById("inputSection");
+            if (hostControls) hostControls.style.display = "block";
+            setTimeout(() => {
+                audioHandler.SetBackgroundMusic("level1")
+            }, 7000);
             cutsceneService.AddScene(new BoardCutSceneIntro());
         }
     }
@@ -192,6 +200,7 @@ class MenuSelectGame extends MenuElement {
 
             let avatarSelect = (handler.FindById("avatarSelect") as MenuAvatarSelect);
             let selectedAvatar = avatarSelect.selectionIndex;
+            playerIndex = avatarSelect.selectionIndex % 4;
 
             DataService.JoinParty(lobby.id, selectedAvatar).then(code => {
                 if (code == -1) {
@@ -217,6 +226,9 @@ class MenuSelectGame extends MenuElement {
 class MenuTab extends MenuElement {
     isActive = false;
     cursorAnchorOffsetX = -70;
+
+    private tabList = ["tab-1", "tab-2", "tab-6"];
+
     constructor(id: string, centerX: number, centerY: number, private text: string) {
         super(id, centerX, centerY);
     }
@@ -228,16 +240,22 @@ class MenuTab extends MenuElement {
         camera.ctx.fillStyle = this.isActive ? "#513ea3" : "#a79560";
         camera.ctx.fillText(this.text, this.centerX + 480, this.centerY + 270 + 13);
     }
-    OnLeft(handler: MenuHandler): void { this.TabToggle(handler); }
-    OnRight(handler: MenuHandler): void { this.TabToggle(handler); }
-    TabToggle(handler: MenuHandler): void {
-        audioHandler.PlaySound("swim", true);
-        let targetId = (this.id == "tab-1" ? "tab-2" : "tab-1");
+    OnLeft(handler: MenuHandler): void { this.TabShift(handler, -1); }
+    OnRight(handler: MenuHandler): void { this.TabShift(handler, 1); }
+
+    TabShift(handler: MenuHandler, dir: -1|1) {
+        let currentIndex = this.tabList.indexOf(this.id);
+        let targetIndex = currentIndex + dir;
+        if (targetIndex < 0) targetIndex = this.tabList.length - 1;
+        if (targetIndex >= this.tabList.length) targetIndex = 0;
+
+        let targetId = this.tabList[targetIndex];
         handler.JumpTo(targetId);
     }
+
     OnAction(handler: MenuHandler): void {
         audioHandler.PlaySound("swim", true);
-        let pageId = (this.id == "tab-1" ? 0 : 1);
+        let pageId = (+(this.id.replace("tab-",""))) - 1;
         handler.OpenPage(pageId);
     }
     OnDown(handler: MenuHandler): void {
@@ -263,7 +281,7 @@ class MenuBoardSelect extends MenuElement {
     OnLeft(handler: MenuHandler): void {
         audioHandler.PlaySound("swim", true);
         this.selectionIndex--;
-        if (this.selectionIndex < 0) this.selectionIndex = this.selectionTexts.length - 1;
+        if (this.selectionIndex < 0) this.selectionIndex = this.selectionCount - 1;
     }
     OnRight(handler: MenuHandler): void {
         audioHandler.PlaySound("swim", true);
@@ -326,6 +344,44 @@ class MenuTurnSelect extends MenuBoardSelect {
     OnUp(handler: MenuHandler): void { handler.JumpTo("boardSelect"); }
     OnDown(handler: MenuHandler): void { handler.JumpTo("createGame"); }
 }
+
+
+class MenuMinigameSelect extends MenuBoardSelect {
+    selectionCount = minigames.length;
+    protected embedImage = "menuMediumEmbed";
+    Draw(camera: Camera): void {
+        this.DrawArrows(camera);
+        this.DrawSelectionContents(camera);
+        let embedImage = tiles[this.embedImage][0][0] as ImageTile;
+        embedImage.Draw(camera, this.centerX, this.centerY, 1, 1, false, false, 0);
+        camera.ctx.font = `800 ${30}px ${"arial"}`;
+        camera.ctx.textAlign = "center";
+        camera.ctx.fillStyle = "#333";
+        let textLine = new minigames[this.selectionIndex]().title;
+        camera.ctx.fillText(textLine, 480, 320);
+    }
+    DrawSelectionContents(camera: Camera): void {
+        let thumb = tiles["thumbnails"][this.selectionIndex % 4][Math.floor(this.selectionIndex / 4)] as ImageTile;
+        thumb.Draw(camera, this.centerX, this.centerY, 0.5, 0.5, false, false, 0);
+    }
+    OnUp(handler: MenuHandler): void { handler.JumpTo("tab-6"); }
+    OnDown(handler: MenuHandler): void { handler.JumpTo("minigameOk"); }
+}
+
+class MenuButtonMinigameOk extends MenuButtonBase {
+    text = "Play";
+    cursorAnchorOffsetX = -110;
+    OnUp(handler: MenuHandler): void { handler.JumpTo("minigameSelect"); }
+    OnDown(handler: MenuHandler): void { handler.JumpTo("minigameOk"); }
+    OnAction(handler: MenuHandler): void {
+        let minigameSelect = (handler.FindById("minigameSelect") as MenuMinigameSelect);
+        let minigame = new minigames[minigameSelect.selectionIndex]();
+        currentMinigame = minigame;
+        currentMinigame.isFreePlay = true;
+        handler.cutscene.isDone = true;
+    }
+}
+
 
 class MenuAvatarSelect extends MenuBoardSelect {
     selectionCount = 13;
@@ -411,7 +467,7 @@ class MenuLobbyStateDisplayHost extends MenuElement {
             DataService.GetGameData(this.gameId).then(dt => {
                 this.lobbyState = JSON.parse(dt.data);
                 this.OnReceiveGameData(dt);
-                if (this.lobbyState?.players.length == 2) {
+                if (this.lobbyState?.players.length == 1) {
                     this.OnLobbyMinPlayers(handler);
                 } else if (this.lobbyState?.players.length == 4) {
                     this.OnLobbyFull(handler);
@@ -443,7 +499,7 @@ class MenuLobbyStateDisplayHost extends MenuElement {
                     coins: 10,
                     turnOrder: -1,
                     avatarIndex: avatarIndex,
-                    spaceIndex: -1,
+                    spaceIndex: 0,
                     items: [],
                     userId: playerId,
                     userName: playerName,
@@ -463,6 +519,7 @@ class MenuLobbyStateDisplayHost extends MenuElement {
         let button = (handler.FindById("startGame") as MenuButtonStartGame);
         button.isVisible = true;
         handler.cursorTarget = button;
+        setTimeout(() => { this.FetchUpdate(handler); }, 5000);
     }
 
     Draw(camera: Camera): void {
@@ -487,12 +544,12 @@ class MenuLobbyStateDisplayHost extends MenuElement {
 
 class MenuLobbyStateDisplayPlayer extends MenuLobbyStateDisplayHost {
     OnLobbyFull(handler: MenuHandler): void {
-        (handler.FindById("waitingForPlayersTextPlayer") as MenuElement).isVisible = false;
-        (handler.FindById("waitingTextHost") as MenuElement).isVisible = true;
-        this.WaitForBoardData(handler);
     }
 
     OnLobbyMinPlayers(handler: MenuHandler): void {
+        (handler.FindById("waitingForPlayersTextPlayer") as MenuElement).isVisible = false;
+        (handler.FindById("waitingTextHost") as MenuElement).isVisible = true;
+        this.WaitForBoardData(handler);
     }
 
     OnReceiveGameData(dt: PartyGameDT): void {}
@@ -522,7 +579,7 @@ function MoveToBoardView(gameId: number, handler: MenuHandler, boardData: GameEx
     board.isSpectateMode = true;
     board.FromData(boardData);
     board.CameraFocusSpace(board.boardSpaces[0]);
-    board.SpectateUpdateLoop();
+    board.SpectateUpdateLoop(false);
 }
 
 class MenuHandler {
@@ -532,6 +589,7 @@ class MenuHandler {
         new MenuBase("menuBase", 0, 0),
         new MenuTab("tab-1", -300, -205, "Join Game"),
         new MenuTab("tab-2", -50, -205, "Host Game"),
+        //new MenuTab("tab-6", 200, -205, "Free Play"),
         new MenuSelectGame("selectGame", 0, -20),
         new MenuButtonChangeAvatar("avatarChange", -200, 170),
         new MenuAvatarDisplay(this, "avatarDisplay", -100, 165),
@@ -543,10 +601,12 @@ class MenuHandler {
         new MenuLobbyStateDisplayPlayer("lobbyDisplayPlayer", 0, 0),
         new MenuText("waitingForPlayersTextHost", 0, 170, "Waiting for players to join..."),
         new MenuText("waitingForPlayersTextPlayer", 0, 170, "Waiting for players to join..."),
-        new MenuText("waitingTextHost", 0, 170, "Waiting for host to start game..."),
-        new MenuButtonAvatarOk("startGame", 0, 170),
+        new MenuText("waitingTextHost", 0, 170, "Waiting for game to start..."),
+        new MenuButtonStartGame("startGame", 0, 170),
         new MenuAvatarSelect("avatarSelect", 0, -70),
         new MenuButtonAvatarOk("avatarOk", 0, 170),
+        new MenuMinigameSelect("minigameSelect", 0, -70),
+        new MenuButtonMinigameOk("minigameOk", 0, 170),
     ];
     currentPageIndex = 0;
     pages = [
@@ -555,6 +615,7 @@ class MenuHandler {
         ["lobbyDisplayHost", "waitingForPlayersTextHost", "startGame"],
         ["lobbyDisplayPlayer", "waitingForPlayersTextPlayer", "waitingTextHost"], // join a game
         ["avatarSelect", "avatarOk"], 
+        ["minigameSelect", "minigameOk"], 
     ];
 
     OpenPage(pageIndex: number): void {
@@ -636,8 +697,11 @@ class MenuHandler {
 
 class CutsceneMainMenu extends BoardCutScene {
     private timer = 0;
-    private menuHandler = new MenuHandler(this);
+    public menuHandler = new MenuHandler(this);
     Update(): void {
+        if (this.timer == 1) {
+            audioHandler.SetBackgroundMusic("lobby");
+        }
         this.timer++;
         this.menuHandler.Update();
     }

@@ -191,10 +191,12 @@ var MinigameLift = /** @class */ (function (_super) {
         }
         this.backdropBuildings.y = (this.currentDisplayFloor - 1) * 20 + 50;
         this.skyscraper.y = (this.currentDisplayFloor - 1) * 40 - 160;
-        var isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
+    };
+    MinigameLift.prototype.GetRemainingTicks = function () {
+        return 60 * 60 - this.timer;
     };
     return MinigameLift;
 }(MinigameBase));

@@ -2,7 +2,9 @@ class Player {
     userId: number = -1;
     userName: string = "";
     token!: BoardToken;
-    coins: number = 50;
+    coins: number = 10;
+    displayedCoins = 10;
+
     gears: number = 1;
     diceBag = new DiceBag();
     inventory: BoardItem[] = [itemList[0]];
@@ -26,7 +28,7 @@ class Player {
     constructor(public avatarIndex: number) { }
 
     get avatarName(): string {
-        return ["GameQueued", "germdove", "Al", "Turtle", "Dobbs", "Hover Cat", "Daesnek", "Panda", "Sunberry", "Ally", "Duffy", "Teddy"][this.avatarIndex];
+        return ["GameQueued", "germdove", "Al", "Turtle", "Dobbs", "Hover Cat", "Daesnek", "Panda", "Sunberry", "Ally", "Duffy", "Teddy", "Doopu"][this.avatarIndex];
     }
 
     Update(): void {
@@ -74,6 +76,7 @@ class Player {
                     if (this.token.currentSpace && this.amountOfMovementLeft == 0 && this.moving) {
                         this.moving = false;
                         this.token.currentSpace.spaceType.OnLand(this);
+                        audioHandler.PlaySound("bwump", true);
                         this.statListOfLandings.push(this.token.currentSpace.spaceType);
                         setTimeout(() => {
                             let me = this;
@@ -124,11 +127,11 @@ class Player {
     CurrentPlace(): number {
         if (board) {
             let playersToSort = [...board.players];
-            playersToSort.sort((a, b) => (b.gears - a.gears) * 10000 + (b.coins - a.coins));
+            playersToSort.sort((a, b) => (b.gears - a.gears) * 10000 + (b.displayedCoins - a.coins));
             for (let rank = 1; rank <= 4; rank++) {
                 let p = playersToSort[rank - 1];
                 // weird compare below to handle ties
-                if (this.gears == p.gears && this.coins == p.coins) return rank;
+                if (this.gears == p.gears && this.displayedCoins == p.displayedCoins) return rank;
             }
         }
         return -1;

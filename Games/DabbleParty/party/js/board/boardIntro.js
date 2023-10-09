@@ -33,9 +33,7 @@ var BoardCutSceneIntro = /** @class */ (function (_super) {
             cutsceneService.AddScene(new BoardCutSceneSetBackdrop(tiles["spaceBoardBlur"][0][0]), new BoardCutSceneSingleAction(function () {
                 var _a;
                 (_a = BoardCutScene.sprites).push.apply(_a, __spreadArrays(tokenSprites, diceSprites));
-            }), new BoardCutSceneFadeIn(), new BoardCutSceneBoardLogo(), 
-            // TODO title drop, music cue?
-            new BoardCutSceneDialog("Welcome to Rover's Space Base! This lunar level is full of treasures to win amidst the technological wonders up here on the moon. First, let's decide who goes first."), new BoardCutSceneDecideOrder(), new BoardCutSceneFadeOut(), new BoardCutSceneSetBackdrop(null));
+            }), new BoardCutSceneFadeIn(), new BoardCutSceneBoardLogo(), new BoardCutSceneDialog("Welcome to Rover's Space Base! This lunar level is full of treasures to win amidst the technological wonders up here on the moon. First, let's decide who goes first."), new BoardCutSceneDecideOrder(), new BoardCutSceneFadeOut(), new BoardCutSceneSetBackdrop(null));
         }) || this;
     }
     return BoardCutSceneIntro;
@@ -50,19 +48,19 @@ var BoardCutSceneBoardLogo = /** @class */ (function (_super) {
     }
     BoardCutSceneBoardLogo.prototype.Update = function () {
         this.timer++;
-        if (this.timer < 200) {
+        if (this.timer < 300) {
             this.y *= 0.98;
         }
         else {
             this.y -= 1;
             this.y *= 1.05;
         }
-        if (this.timer > 200) {
+        if (this.timer > 300) {
             BoardCutScene.sprites.filter(function (a) { return !(a instanceof DiceSprite); }).forEach(function (a) {
                 a.y -= (a.y - 80) * 0.05;
             });
         }
-        if (this.timer > 300)
+        if (this.timer > 400)
             this.isDone = true;
     };
     BoardCutSceneBoardLogo.prototype.Draw = function (camera) {
@@ -82,7 +80,8 @@ var BoardCutSceneDecideOrder = /** @class */ (function (_super) {
         return _this;
     }
     BoardCutSceneDecideOrder.prototype.Update = function () {
-        if (this.timer == 0) {
+        var _a, _b, _c, _d;
+        if (this.timer == 0 && board) {
             var possibleRolls = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
             var _loop_1 = function (i) {
                 var roll = Random.RandFrom(possibleRolls);
@@ -90,7 +89,7 @@ var BoardCutSceneDecideOrder = /** @class */ (function (_super) {
                 this_1.rolls.push(roll);
             };
             var this_1 = this;
-            for (var i = 0; i < 4; i++) {
+            for (var i = 0; i < board.players.length; i++) {
                 _loop_1(i);
             }
         }
@@ -102,7 +101,7 @@ var BoardCutSceneDecideOrder = /** @class */ (function (_super) {
         for (var idx = 0; idx < this.jumpTimes.length; idx++) {
             var time = this.jumpTimes[idx];
             var diceSprite = dice[idx];
-            if (this.timer == time) {
+            if (diceSprite && this.timer == time) {
                 diceSprite.Stop();
                 diceSprite.chosenValue = this.rolls[idx];
             }
@@ -123,8 +122,9 @@ var BoardCutSceneDecideOrder = /** @class */ (function (_super) {
                         turn++;
                     }
                 }
-                var text = "First is " + board.players[0].avatarName + ", second is " + board.players[1].avatarName + ", " +
-                    ("third is " + board.players[2].avatarName + ", and " + board.players[3].avatarName + " will go last. ") +
+                var filler = "nobody";
+                var text = "First is " + (((_a = board.players[0]) === null || _a === void 0 ? void 0 : _a.avatarName) || filler) + ", second is " + (((_b = board.players[1]) === null || _b === void 0 ? void 0 : _b.avatarName) || filler) + ", " +
+                    ("third is " + (((_c = board.players[2]) === null || _c === void 0 ? void 0 : _c.avatarName) || filler) + ", and " + (((_d = board.players[3]) === null || _d === void 0 ? void 0 : _d.avatarName) || filler) + " will go last. ") +
                     "And to get things going, you'll each start with 10 coins. Good luck!";
                 this.followUp = new BoardCutSceneDialog(text);
             }

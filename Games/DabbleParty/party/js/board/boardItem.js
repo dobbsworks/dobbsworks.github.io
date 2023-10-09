@@ -153,14 +153,7 @@ var BoardItemDevExit = /** @class */ (function (_super) {
         return _this;
     }
     BoardItemDevExit.prototype.OnUse = function (player, board) {
-        var targetSpace = board.boardSpaces.find(function (a) { return a.spaceType == BoardSpaceType.GearSpace; });
-        if (targetSpace) {
-            targetSpace = board.boardSpaces.find(function (a) { return a.nextSpaces.indexOf(targetSpace) > -1; });
-        }
-        if (player.token && targetSpace) {
-            player.token.currentSpace = targetSpace;
-        }
-        board.boardUI.StartRoll();
+        cutsceneService.AddScene(new BoardCutSceneDevExit(player));
     };
     return BoardItemDevExit;
 }(BoardItem));
@@ -192,7 +185,7 @@ var BoardItemFragileDice = /** @class */ (function (_super) {
         configurable: true
     });
     Object.defineProperty(BoardItemFragileDice.prototype, "description", {
-        get: function () { return "Adds an extra " + this.numFaces + "-sided die to this turn's roll"; },
+        get: function () { return "Adds an extra " + this.numFaces + "-sided die for one roll"; },
         enumerable: false,
         configurable: true
     });

@@ -63,7 +63,6 @@ var BoardCutSceneAddCoins = /** @class */ (function (_super) {
     BoardCutSceneAddCoins.prototype.Draw = function (camera) {
         if (!this.player.token)
             return;
-        //let baseY = this.player.token.y - 100 + (this.floatingTextDirection == 1 ? 0 : 50)
         var y = this.player.token.y - 100 + this.floatingTextDirection * this.timer * 0.5;
         DrawText(this.player.token.x, y, this.floatingText, camera, 0.5, this.floatingTextColor);
     };
@@ -111,9 +110,11 @@ var BoardCutSceneChangeDice = /** @class */ (function (_super) {
         if (this.timer == 150) {
             this.scale = 1.5;
             if (this.direction == "up") {
+                audioHandler.PlaySound("hit2", true);
                 this.PerformUpgrade();
             }
             else {
+                audioHandler.PlaySound("erase", true);
                 this.PerformDowngrade();
             }
         }
@@ -231,6 +232,8 @@ var BoardCutSceneAddItem = /** @class */ (function (_super) {
             if (!this.item.isPlaceholder) {
                 this.player.inventory.push(this.item);
             }
+            this.item.OnPurchase(this.player);
+            audioHandler.PlaySound("dobbloon", true);
             this.isDone = true;
         }
     };
@@ -343,6 +346,7 @@ var BoardCutSceneTwitchSpace = /** @class */ (function (_super) {
         }
         if (!this.isLocked && Math.random() < 0.1) {
             this.chatOffset += 20;
+            audioHandler.PlaySound("swim", true);
         }
         if (this.isLocked) {
             this.lockTimer++;
@@ -693,3 +697,98 @@ var BoardCutSceneSetBackdrop = /** @class */ (function (_super) {
     }
     return BoardCutSceneSetBackdrop;
 }(BoardCutSceneSingleAction));
+var BoardCutScenePortalSwap = /** @class */ (function (_super) {
+    __extends(BoardCutScenePortalSwap, _super);
+    function BoardCutScenePortalSwap(triggerPlayer, targetPlayer) {
+        var _this = _super.call(this) || this;
+        _this.triggerPlayer = triggerPlayer;
+        _this.targetPlayer = targetPlayer;
+        _this.baseX = 0;
+        _this.baseY = 0;
+        _this.timer = 0;
+        _this.baseX = triggerPlayer.token.x;
+        _this.baseY = triggerPlayer.token.y;
+        return _this;
+    }
+    BoardCutScenePortalSwap.prototype.Update = function () {
+        var _a, _b, _c;
+        this.timer++;
+        if (this.timer == 1) {
+            audioHandler.PlaySound("warp", false);
+        }
+        if (this.timer == 60) {
+            var targetSquare = (_a = this.targetPlayer.token) === null || _a === void 0 ? void 0 : _a.currentSpace;
+            this.targetPlayer.token.currentSpace = this.triggerPlayer.token.currentSpace;
+            this.triggerPlayer.token.currentSpace = targetSquare;
+            (_b = this.targetPlayer.token) === null || _b === void 0 ? void 0 : _b.Update();
+            (_c = this.triggerPlayer.token) === null || _c === void 0 ? void 0 : _c.Update();
+        }
+        if (this.timer == 150) {
+            this.isDone = true;
+            // and then start the player's roll (NOT THE ITEM MENU)
+            if (board)
+                board.boardUI.StartRoll();
+        }
+    };
+    BoardCutScenePortalSwap.prototype.Draw = function (camera) {
+        if (this.timer < 120) {
+            var tile = tiles["itemIcons"][1][1];
+            var size = (60 - Math.abs(60 - this.timer)) / 10;
+            tile.Draw(camera, this.baseX, this.baseY, size, size, false, false, this.timer / 10);
+        }
+    };
+    return BoardCutScenePortalSwap;
+}(BoardCutScene));
+var BoardCutSceneDevExit = /** @class */ (function (_super) {
+    __extends(BoardCutSceneDevExit, _super);
+    function BoardCutSceneDevExit(triggerPlayer) {
+        var _this = _super.call(this) || this;
+        _this.triggerPlayer = triggerPlayer;
+        _this.baseX = 0;
+        _this.baseY = 0;
+        _this.timer = 0;
+        _this.baseX = triggerPlayer.token.x;
+        _this.baseY = triggerPlayer.token.y;
+        return _this;
+    }
+    BoardCutSceneDevExit.prototype.Update = function () {
+        var _a;
+        this.timer++;
+        if (this.timer == 1) {
+            audioHandler.PlaySound("boing", false);
+        }
+        if (this.timer == 60 && board) {
+            var targetSpace_1 = board.boardSpaces.find(function (a) { return a.spaceType == BoardSpaceType.GearSpace; });
+            if (targetSpace_1) {
+                targetSpace_1 = board.boardSpaces.find(function (a) { return a.nextSpaces.indexOf(targetSpace_1) > -1; });
+            }
+            if (this.triggerPlayer.token && targetSpace_1) {
+                this.triggerPlayer.token.currentSpace = targetSpace_1;
+            }
+            (_a = this.triggerPlayer.token) === null || _a === void 0 ? void 0 : _a.Update();
+        }
+        if (this.timer < 150 && this.timer > 90 && board) {
+            board.CameraFollow(this.triggerPlayer);
+        }
+        if (this.timer == 150) {
+            this.isDone = true;
+            // and then start the player's roll (NOT THE ITEM MENU)
+            if (board)
+                board.boardUI.StartRoll();
+        }
+    };
+    BoardCutSceneDevExit.prototype.Draw = function (camera) {
+        if (this.timer < 120) {
+            var tile = tiles["itemIcons"][0][1];
+            var sizeWiggle = this.timer > 30 ? 0 : ((this.timer - 30) / 30);
+            var size = Math.cos(this.timer / 4) * sizeWiggle + 1;
+            if (this.timer > 60) {
+                size = (80 - this.timer) / 20;
+                if (size < 0)
+                    size = 0;
+            }
+            tile.Draw(camera, this.baseX, this.baseY, size, size, false, false, 0);
+        }
+    };
+    return BoardCutSceneDevExit;
+}(BoardCutScene));

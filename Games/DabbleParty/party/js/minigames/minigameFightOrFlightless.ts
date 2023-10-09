@@ -97,17 +97,17 @@ class MinigameFightOrFlightless extends MinigameBase {
                 this.ThrowSnowball();
                 audioHandler.PlaySound("throw", false);
             }
-            
         }
 
-
-
-        let isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
 
         this.sprites = this.sprites.sort((a,b) => a.y - b.y);
+    }
+
+    GetRemainingTicks(): number {
+        return 60 * 60 - this.timer;
     }
 
     OnBeforeDrawSprites(camera: Camera): void {

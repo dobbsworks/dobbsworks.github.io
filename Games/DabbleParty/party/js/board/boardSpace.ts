@@ -44,7 +44,7 @@ class BoardSpace {
     static ConnectLabels(from: string, to: string): void {
         let space1 = BoardSpace.allConstructedSpaces.filter(a => a.label === from);
         if (space1.length > 1) {
-            console.error("Too many spaces to connect from");
+            console.error("Too many spaces to connect from", from, to);
         } else if (space1.length == 0) {
             console.error("Can't connect space", from);
         }
@@ -126,7 +126,7 @@ class BoardSpaceType {
         () => tiles["partySquares"][0][4],
         true,
         (player: Player) => {
-            if (board) cutsceneService.AddScene(new BoardCutSceneChangeDice("up", player, 2));
+            if (board) cutsceneService.AddScene(new BoardCutSceneChangeDice("up", player, 1));
         },
         BoardSpaceType.DoNothing);
     static GrayBoardSpace = new BoardSpaceType(

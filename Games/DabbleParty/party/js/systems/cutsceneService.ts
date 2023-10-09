@@ -1,6 +1,6 @@
 class CutsceneService {
 
-    private cutscenes: BoardCutScene[] = [];
+    public cutscenes: BoardCutScene[] = [];
 
     public get isCutsceneActive(): boolean {
         return this.cutscenes.length > 0;

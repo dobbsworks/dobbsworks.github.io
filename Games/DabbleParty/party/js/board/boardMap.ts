@@ -21,7 +21,7 @@ class BoardMap {
     biodomePrice = 5;
 
     currentPlayer: Player | null = null;
-    pendingMinigame: MinigameBase = new MinigameLift();
+    pendingMinigame: MinigameBase | null = null;
 
     initialized = false;
     Initialize(): void {
@@ -164,6 +164,7 @@ class BoardMap {
         if (!this.initialized) this.Initialize();
         this.timer++;
         this.boardSprites.forEach(a => a.Update());
+        this.UpdateCoinDisplays();
 
         if (cutsceneService.isCutsceneActive) {
             //do nothing
@@ -186,6 +187,7 @@ class BoardMap {
                     cutsceneService.AddScene(new BoardCutSceneLast5Turns());
                 }
                 if (this.finalRound - this.currentRound + 1 == 0) {
+                    audioHandler.SetBackgroundMusic("level1");
                     cutsceneService.AddScene(new BoardCutSceneGameEnd());
                 }
             }
@@ -193,16 +195,34 @@ class BoardMap {
         this.CameraBounds();
         if (!this.isSpectateMode) this.boardUI.Update();
     }
+    
+    UpdateCoinDisplays(): void {
+        let shouldPlaySoundUp = false;
+        let shouldPlaySoundDown = false;
+        for (let player of this.players) {
+            let coinDiff = player.coins - player.displayedCoins;
+            if ((coinDiff > 10 && this.timer % 2 == 0) || (coinDiff > 0 && this.timer % 8 == 0)) {
+                player.displayedCoins++;
+                shouldPlaySoundUp = true;
+            }
+            if ((coinDiff < -10 && this.timer % 2 == 0) || (coinDiff < 0 && this.timer % 8 == 0)) {
+                player.displayedCoins--;
+                shouldPlaySoundDown = true;
+            }
+        }
+        if (shouldPlaySoundUp) audioHandler.PlaySound("coin", true);
+        if (shouldPlaySoundDown) audioHandler.PlaySound("hurt", true);
+    }
 
-    SpectateUpdateLoop(): void {
+    SpectateUpdateLoop(exitingMinigame: boolean): void {
         // request board state, wait X seconds, repeat.
         // if a minigame is active, switch to the instructions
         DataService.GetGameData(this.gameId).then(gameData => {
             let parsedData = JSON.parse(gameData.data);
-            this.FromData(parsedData);
-            if (parsedData.currentMinigameIndex == -1) {
+            if (!exitingMinigame || parsedData.currentMinigameIndex == -1) this.FromData(parsedData);
+            if (parsedData.currentMinigameIndex == -1 || exitingMinigame) {
                 setTimeout( () => {
-                    this.SpectateUpdateLoop();
+                    this.SpectateUpdateLoop(parsedData.currentMinigameIndex != -1);
                 }, 5000);
             }
         });
@@ -227,7 +247,8 @@ class BoardMap {
             this.boardUI.isChoosingMinigame = true;
 
             this.pendingMinigame = MinigameGenerator.RandomGame();
-            // this is when I need to set the pending minigame and send it to the database for clients to poll
+            
+            this.SaveGameStateToDB();
             this.boardUI.GenerateMinigameRouletteTexts(this.pendingMinigame);
         }
     }
@@ -263,6 +284,18 @@ class BoardMap {
         target.spaceType = BoardSpaceType.GearSpace;
         return target;
     }
+
+    SetGearSpace(id: number): void {
+        let existingSpace = this.boardSpaces.find(a => a.spaceType == BoardSpaceType.GearSpace);
+        let spaces = this.boardSpaces.filter(a => a.isPotentialGearSpace);
+        let target = spaces[6];
+        if (existingSpace) {
+            target = this.boardSpaces.find(a => a.id === id) || target;
+            existingSpace.spaceType = BoardSpaceType.BlueBoardSpace;
+        }
+        target.spaceType = BoardSpaceType.GearSpace;
+    }
+
 
     ManualCameraControl(): void {
         if (mouseHandler.mouseScroll !== 0) {
@@ -311,6 +344,11 @@ class BoardMap {
             button.textContent = "I HAVE SWITCHED OBS SCENE";
             button.onclick = () => {
                 //todo - mute audio here
+                let instructions = cutsceneService.cutscenes[0] as Instructions;
+                if (instructions && instructions.minigame && instructions.minigame.songId) {
+                    audioHandler.SetBackgroundMusic(instructions.minigame.songId);
+                    instructions.isDone = true;
+                }
                 this.CreateScoreInputDOM.bind(this)();
             }
             container.appendChild(button);
@@ -333,15 +371,40 @@ class BoardMap {
                 image.Draw(new Camera(canvas), 0, 0, 0.1, 0.1, false, false, 0);
                 let input = document.createElement("input");
                 input.type = "number";
+                input.dataset.playerId = player.userId.toString();
                 input.className = "scoreInput";
                 row.appendChild(canvas);
                 row.appendChild(input);
                 container.appendChild(row);
             }
+            let pullScoresButton = document.createElement("button");
+            pullScoresButton.textContent = "PULL SCORES";
+            pullScoresButton.onclick = () => { 
+                DataService.GetScores(this.gameId, this.currentRound).then(scores => {
+                    for (let score of scores) {
+                        let inputBox = document.querySelector(`input[data-player-id="${score.playerId}"]`) as HTMLInputElement;
+                        if (inputBox) {
+                            inputBox.value = score.score.toString();
+                            inputBox.style.backgroundColor = "#AAA";
+                        }
+                    }
+                });
+                if (board) {
+                    board.pendingMinigame = null;
+                    board.SaveGameStateToDB();
+                }
+            }
+            container.appendChild(pullScoresButton);
+
             let submitButton = document.createElement("button");
             submitButton.textContent = "SUBMIT SCORES";
             submitButton.onclick = () => { this.OnSubmitScores.bind(this)(); }
             container.appendChild(submitButton);
+
+            let musicButton = document.createElement("button");
+            musicButton.textContent = "SWAP TO LOBBY MUSIC";
+            musicButton.onclick = () => { audioHandler.SetBackgroundMusic("lobby") }
+            container.appendChild(musicButton);
         }
         this.boardUI.isShowingScores = true;
     }
@@ -394,11 +457,13 @@ class BoardMap {
             hostName: "",
             playerIds: ""
         }
-        DataService.SaveGameData(dt).then(a => { console.log("Game saved to DB")});
+        DataService.SaveGameData(dt).then(a => { });
     }
 
 
     Stringify(): string {
+        let gearSpace = this.boardSpaces.find(a => a.spaceType == BoardSpaceType.GearSpace);
+        let gearSpaceId = gearSpace?.id || -1;
         let data: GameExport = {
             boardId: 0,
             currentRound: this.currentRound,
@@ -415,7 +480,8 @@ class BoardMap {
                 userName: p.userName,
                 diceBag: p.diceBag.dieFaces,
             })),
-            currentMinigameIndex: currentMinigame ? minigames.map(a => new a().title).indexOf(currentMinigame.title) : -1,
+            currentMinigameIndex: this.pendingMinigame ? minigames.map(a => new a().title).indexOf(this.pendingMinigame.title) : -1,
+            gearSpaceId: gearSpaceId
         };
         return JSON.stringify(data);
     }
@@ -438,6 +504,7 @@ class BoardMap {
             player.token.currentSpace = this.boardSpaces[p.spaceIndex];
             player.gears = p.gears;
             player.coins = p.coins;
+            player.displayedCoins = p.coins;
             player.turnOrder = p.turnOrder;
             player.inventory = p.items.map(a => itemList[a]).filter(a => a);
             player.diceBag = new DiceBag(p.diceBag as FaceCount[])
@@ -445,12 +512,16 @@ class BoardMap {
 
         this.currentPlayer = this.players[data.currentPlayerIndex] || null;
 
+        this.SetGearSpace(data.gearSpaceId);
+
         if (data.currentMinigameIndex > -1) {
             let minigame = new minigames[data.currentMinigameIndex]();
             if (currentMinigame == null && !cutsceneService.isCutsceneActive) {
                 // bring player into instructions
                 cutsceneService.AddScene(new Instructions(minigame));
             }
+        } else {
+            audioHandler.SetBackgroundMusic("level1");
         }
     }
 
@@ -480,6 +551,7 @@ type GameExport = {
     finalRound: number;
     currentPlayerIndex: number;
     currentMinigameIndex: number;
+    gearSpaceId: number;
     players: {
         gears: number;
         coins: number;
@@ -501,4 +573,11 @@ type PartyGameDT = {
     hostId: number;
     hostName: string;
     playerIds: string;
+}
+type PartyScoreDT = {
+    id: number;
+    gameId: number;
+    playerId: number;
+    score: number;
+    roundNumber: number;
 }

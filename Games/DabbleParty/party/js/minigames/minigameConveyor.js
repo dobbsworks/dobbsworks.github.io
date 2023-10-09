@@ -151,14 +151,16 @@ var MinigameConveyor = /** @class */ (function (_super) {
             }
             audioHandler.PlaySound("erase", false);
         }
-        var isGameOver = this.timer == 60 * 60;
-        if (isGameOver) {
+        if (this.GetRemainingTicks() == 0) {
             this.SubmitScore(Math.floor(this.score));
         }
         var timerSeconds = this.timer / 60;
         if (timerSeconds % 1 == 0 && timerSeconds > 0 && timerSeconds < 60) {
             this.CreateNewBox();
         }
+    };
+    MinigameConveyor.prototype.GetRemainingTicks = function () {
+        return 60 * 60 - this.timer;
     };
     MinigameConveyor.prototype.OnBeforeDrawSprites = function (camera) {
         for (var _i = 0, _a = this.conveyorSpots; _i < _a.length; _i++) {

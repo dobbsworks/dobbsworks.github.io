@@ -44,7 +44,7 @@ var BoardSpace = /** @class */ (function () {
     BoardSpace.ConnectLabels = function (from, to) {
         var space1 = BoardSpace.allConstructedSpaces.filter(function (a) { return a.label === from; });
         if (space1.length > 1) {
-            console.error("Too many spaces to connect from");
+            console.error("Too many spaces to connect from", from, to);
         }
         else if (space1.length == 0) {
             console.error("Can't connect space", from);
@@ -116,7 +116,7 @@ var BoardSpaceType = /** @class */ (function () {
     }, BoardSpaceType.DoNothing);
     BoardSpaceType.DiceUpgradeSpace = new BoardSpaceType(function () { return tiles["partySquares"][0][4]; }, true, function (player) {
         if (board)
-            cutsceneService.AddScene(new BoardCutSceneChangeDice("up", player, 2));
+            cutsceneService.AddScene(new BoardCutSceneChangeDice("up", player, 1));
     }, BoardSpaceType.DoNothing);
     BoardSpaceType.GrayBoardSpace = new BoardSpaceType(function () { return tiles["partySquares"][0][2]; }, false, BoardSpaceType.DoNothing, BoardSpaceType.DoNothing);
     BoardSpaceType.ShopSpace = new BoardSpaceType(function () { return tiles["partySquares"][1][2]; }, true, function (player) {
