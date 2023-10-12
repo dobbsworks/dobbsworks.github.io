@@ -112,7 +112,7 @@ class EditorHandler {
             new SlopeFill("Candy", TileType.CandyGround),
             new SlopeFill("Mountain", TileType.MountainGround),
             new SlopeFill("Haunt", TileType.HauntGround),
-      //      new SlopeFill("Derelict", TileType.DerelictGround),
+            new SlopeFill("Derelict", TileType.DerelictGround),
         ];
         let tileRowBlocks: TileType[] = [
             TileType.Dirt,
@@ -128,7 +128,7 @@ class EditorHandler {
             TileType.CandyGround,
             TileType.MountainGround,
             TileType.HauntGround,
-      //      TileType.DerelictGround,
+            TileType.DerelictGround,
         ]
         let tilePanelButtons: EditorButton[] = [];
         let tooltips = ["Solid ground", "Solid ground", "Solid ground", "Semisolid", "Backdrop", "Ladder", "Deadly block", "Decor"];
@@ -156,8 +156,8 @@ class EditorHandler {
 
 
         /* ENEMY PANEL */
-        let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Wooly, WoolyBooly, Snail, SapphireSnail, RubySnail, Escarghost, Prickle, PrickleEgg, PrickleShell, PrickleRock, /*Skitter,*/ DrSnips, AFish, /*Angler,*/ Lurchin, Clammy, Pufferfish,
-            Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, SpicyJelly, Shrubbert, OrangeShrubbert, /*Vinedicator, GrayGrowth,*/ SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, BaddleTrigger, /*, BigYufo */];
+        let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Wooly, WoolyBooly, Snail, SapphireSnail, RubySnail, Escarghost, Prickle, PrickleEgg, PrickleShell, PrickleRock, Skitter, DrSnips, AFish, Angler, Lurchin, Clammy, Pufferfish,
+            Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, SpicyJelly, Shrubbert, OrangeShrubbert, Vinedicator, GrayGrowth, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, BaddleTrigger];
         let enemyButtons = enemyTypes.map(a => new EditorButtonSprite(a));
 
         enemyButtons.filter(a => a.spriteType == Piggle || a.spriteType == Snail).forEach(a => hotbarDefaults.push(a));
@@ -333,7 +333,7 @@ class EditorHandler {
         let levelFlowPanel = this.CreateFloatingButtonPanel([
             this.playerButton,
             this.hoverPlayerButton,
-            //new EditorButtonSprite(GunPickup),
+            new EditorButtonSprite(GunPickup),
             new EditorButtonSprite(GoldGear),
             new EditorButtonSprite(Coin),
             new EditorButtonSprite(Dabbloon),
