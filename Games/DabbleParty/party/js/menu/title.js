@@ -33,6 +33,31 @@ var CutscenePreTitle = /** @class */ (function (_super) {
     ;
     return CutscenePreTitle;
 }(BoardCutScene));
+var CutscenePreTitleAltForTest = /** @class */ (function (_super) {
+    __extends(CutscenePreTitleAltForTest, _super);
+    function CutscenePreTitleAltForTest() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CutscenePreTitleAltForTest.prototype.Update = function () {
+        if (mouseHandler.isMouseClicked())
+            this.isDone = true;
+    };
+    CutscenePreTitleAltForTest.prototype.Draw = function (camera) {
+        camera.ctx.fillStyle = "#000";
+        camera.ctx.fillRect(0, 0, 960, 540);
+        camera.ctx.fillStyle = "#CCC";
+        camera.ctx.textAlign = "center";
+        camera.ctx.font = "700 " + 20 + "px " + "arial";
+        camera.ctx.fillText("Click here to start", 960 / 2, 540 / 2);
+    };
+    CutscenePreTitleAltForTest.prototype.GetFollowUpCutscenes = function () {
+        return [new BoardCutSceneSingleAction(function () {
+                currentMinigame = new MinigameTest();
+            })];
+    };
+    ;
+    return CutscenePreTitleAltForTest;
+}(BoardCutScene));
 var CutsceneTitle = /** @class */ (function (_super) {
     __extends(CutsceneTitle, _super);
     function CutsceneTitle() {

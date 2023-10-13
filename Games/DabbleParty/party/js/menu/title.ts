@@ -13,6 +13,22 @@ class CutscenePreTitle extends BoardCutScene {
     }
     GetFollowUpCutscenes(): BoardCutScene[] { return [new CutsceneTitle()] };
 }
+class CutscenePreTitleAltForTest extends BoardCutScene {
+    Update(): void {
+        if (mouseHandler.isMouseClicked()) this.isDone = true;
+    }
+    Draw(camera: Camera): void {
+        camera.ctx.fillStyle = "#000";
+        camera.ctx.fillRect(0, 0, 960, 540);
+        camera.ctx.fillStyle = "#CCC";
+        camera.ctx.textAlign = "center";
+        camera.ctx.font = `700 ${20}px ${"arial"}`;
+        camera.ctx.fillText("Click here to start", 960 / 2, 540 / 2);
+    }
+    GetFollowUpCutscenes(): BoardCutScene[] { return [new BoardCutSceneSingleAction(() => {
+        currentMinigame = new MinigameTest();
+    })] };
+}
 
 class CutsceneTitle extends BoardCutScene {
     private timer = 0;

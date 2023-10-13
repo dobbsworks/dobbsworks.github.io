@@ -38,28 +38,13 @@ function Initialize() {
     setInterval(MainLoop, 1000 / 60);
     InitializeTwitchSpaceUI();
     InitializeItemList();
-    cutsceneService.AddScene(new CutscenePreTitle());
-    // cutsceneService.AddScene(new CutsceneMainMenu());
-    // setTimeout(() => {
-    //     board = new BoardMap(-2);
-    //     board.Initialize();
-    //     board.FromData({
-    //         "boardId":0,
-    //         "currentRound":1,
-    //         "finalRound":1,
-    //         "currentPlayerIndex":-1,
-    //         "currentMinigameIndex":-1,
-    //         "players":[
-    //             {"gears":0,"coins":10,"turnOrder":1,"avatarIndex":0,"spaceIndex":54,"items":[0,1],"userId":1,"userName":"Dobbs","diceBag":[6,6]},
-    //             {"gears":0,"coins":10,"turnOrder":2,"avatarIndex":1,"spaceIndex":54,"items":[0,1],"userId":1,"userName":"Dobbs","diceBag":[6,6]}
-    //         ]});
-    //     let hostControls = document.getElementById("inputSection");
-    //     if (hostControls) hostControls.style.display = "block";
-    //     setTimeout(() => {
-    //         audioHandler.SetBackgroundMusic("level1")
-    //     }, 7000);
-    //     //cutsceneService.AddScene(new BoardCutSceneIntro());
-    // }, 500)
+    if (window.location.href.startsWith('https://dabbleworlds1.azurewebsites.net/DabbleParty')) {
+        // live site, let's go!
+        cutsceneService.AddScene(new CutscenePreTitle());
+    }
+    else {
+        cutsceneService.AddScene(new CutscenePreTitleAltForTest());
+    }
 }
 var times = [];
 function MainLoop() {
