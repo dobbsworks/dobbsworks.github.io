@@ -9,22 +9,32 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
 var StorageService = /** @class */ (function () {
     function StorageService() {
     }
-    StorageService.GetSavedLevel = function (slot) {
-        return {
-            level: localStorage.getItem("save_" + slot) || "",
-            thumb: localStorage.getItem("thumb_" + slot) || ""
-        };
+    StorageService.GetPB = function (minigameIndex) {
+        var json = localStorage.getItem("pbs") || "[]";
+        var pbs = JSON.parse(json);
+        return pbs[minigameIndex] || 0;
     };
-    StorageService.SetSavedLevel = function (slot, level, thumb) {
-        try {
-            localStorage.setItem("save_" + slot, level);
-            localStorage.setItem("thumb_" + slot, thumb);
-            return true;
+    StorageService.GetAllPBs = function () {
+        var json = localStorage.getItem("pbs") || "[]";
+        var pbs = JSON.parse(json);
+        for (var i = 0; i < minigames.length; i++) {
+            if (pbs.length <= i)
+                pbs.push(0);
         }
-        catch (e) {
-            console.error(e);
-            return false;
+        return pbs;
+    };
+    StorageService.SetPbIfBetter = function (minigameIndex, score) {
+        if (minigameIndex < 0)
+            return;
+        var json = localStorage.getItem("pbs") || "[]";
+        var pbs = JSON.parse(json);
+        while (pbs.length <= minigameIndex) {
+            pbs.push(0);
         }
+        var oldPb = pbs[minigameIndex];
+        if (oldPb < score)
+            pbs[minigameIndex] = score;
+        localStorage.setItem("pbs", JSON.stringify(pbs));
     };
     StorageService.GetMusicVolume = function () {
         return +(localStorage.getItem("musicVol") || "75");

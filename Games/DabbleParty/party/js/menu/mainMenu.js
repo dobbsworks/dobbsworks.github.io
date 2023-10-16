@@ -294,6 +294,10 @@ var MenuTab = /** @class */ (function (_super) {
         handler.JumpTo(targetId);
     };
     MenuTab.prototype.OnAction = function (handler) {
+        if (!isLoggedIn) {
+            audioHandler.PlaySound("error", true);
+            return;
+        }
         audioHandler.PlaySound("swim", true);
         var pageId = (+(this.id.replace("tab-", ""))) - 1;
         handler.OpenPage(pageId);
@@ -418,6 +422,14 @@ var MenuMinigameSelect = /** @class */ (function (_super) {
     MenuMinigameSelect.prototype.DrawSelectionContents = function (camera) {
         var thumb = tiles["thumbnails"][this.selectionIndex % 4][Math.floor(this.selectionIndex / 4)];
         thumb.Draw(camera, this.centerX, this.centerY, 0.5, 0.5, false, false, 0);
+        var pb = MenuHandler.pbs[this.selectionIndex];
+        if (pb) {
+            var text = "High score: " + pb;
+            camera.ctx.font = "800 " + 30 + "px " + "arial";
+            camera.ctx.textAlign = "center";
+            camera.ctx.fillStyle = "#333";
+            camera.ctx.fillText(text, 480, 360);
+        }
     };
     MenuMinigameSelect.prototype.OnUp = function (handler) { handler.JumpTo("tab-6"); };
     MenuMinigameSelect.prototype.OnDown = function (handler) { handler.JumpTo("minigameOk"); };
@@ -432,7 +444,7 @@ var MenuButtonMinigameOk = /** @class */ (function (_super) {
         return _this;
     }
     MenuButtonMinigameOk.prototype.OnUp = function (handler) { handler.JumpTo("minigameSelect"); };
-    MenuButtonMinigameOk.prototype.OnDown = function (handler) { handler.JumpTo("minigameOk"); };
+    MenuButtonMinigameOk.prototype.OnDown = function (handler) { handler.JumpTo("tab-6"); };
     MenuButtonMinigameOk.prototype.OnAction = function (handler) {
         var minigameSelect = handler.FindById("minigameSelect");
         var minigame = new minigames[minigameSelect.selectionIndex]();
@@ -680,7 +692,7 @@ var MenuHandler = /** @class */ (function () {
             new MenuBase("menuBase", 0, 0),
             new MenuTab("tab-1", -300, -205, "Join Game"),
             new MenuTab("tab-2", -50, -205, "Host Game"),
-            //new MenuTab("tab-6", 200, -205, "Free Play"),
+            new MenuTab("tab-6", 200, -205, "Free Play"),
             new MenuSelectGame("selectGame", 0, -20),
             new MenuButtonChangeAvatar("avatarChange", -200, 170),
             new MenuAvatarDisplay(this, "avatarDisplay", -100, 165),
@@ -738,6 +750,11 @@ var MenuHandler = /** @class */ (function () {
         avatarSelect.selectionIndex = Math.floor(Math.random() * avatarSelect.selectionCount);
         this.cursorTarget = this.FindById("avatarChange");
         this.OpenPage(0);
+        if (!isLoggedIn) {
+            this.OpenPage(5);
+            this.cursorTarget = this.FindById("minigameSelect");
+        }
+        MenuHandler.pbs = StorageService.GetAllPBs();
     };
     MenuHandler.prototype.Update = function () {
         if (!this.isInitialized)
@@ -787,6 +804,7 @@ var MenuHandler = /** @class */ (function () {
             }
         }
     };
+    MenuHandler.pbs = [];
     return MenuHandler;
 }());
 var CutsceneMainMenu = /** @class */ (function (_super) {

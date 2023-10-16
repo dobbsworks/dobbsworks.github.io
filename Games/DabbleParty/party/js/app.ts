@@ -8,6 +8,7 @@ let playerIndex: number = 0;
 let currentMinigame: MinigameBase | null = null;
 let board: BoardMap | null = null;
 let cutsceneService = new CutsceneService();
+let isLoggedIn = false;
 
 let minigames: (new() => MinigameBase)[] = [
     MinigameChip,
@@ -43,13 +44,11 @@ function Initialize() {
     InitializeTwitchSpaceUI(); 
     InitializeItemList();
 
-    if (window.location.href.startsWith('https://dabbleworlds1.azurewebsites.net/DabbleParty')) {
+    if (window.location.href.startsWith('https://dabbleworlds1.azurewebsites.net/DabbleParty') || window.location.href.startsWith("http://127.0.0.1:")) {
         // live site, let's go!
-        cutsceneService.AddScene(new CutscenePreTitle());
-    } else {
-        cutsceneService.AddScene(new CutscenePreTitleAltForTest());
+        isLoggedIn = true;
     }
-
+    cutsceneService.AddScene(new CutscenePreTitle());
 }
 
 var times: number[] = [];

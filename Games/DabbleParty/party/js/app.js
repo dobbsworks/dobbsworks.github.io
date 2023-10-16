@@ -8,6 +8,7 @@ var playerIndex = 0;
 var currentMinigame = null;
 var board = null;
 var cutsceneService = new CutsceneService();
+var isLoggedIn = false;
 var minigames = [
     MinigameChip,
     MinigameConveyor,
@@ -38,13 +39,11 @@ function Initialize() {
     setInterval(MainLoop, 1000 / 60);
     InitializeTwitchSpaceUI();
     InitializeItemList();
-    if (window.location.href.startsWith('https://dabbleworlds1.azurewebsites.net/DabbleParty')) {
+    if (window.location.href.startsWith('https://dabbleworlds1.azurewebsites.net/DabbleParty') || window.location.href.startsWith("http://127.0.0.1:")) {
         // live site, let's go!
-        cutsceneService.AddScene(new CutscenePreTitle());
+        isLoggedIn = true;
     }
-    else {
-        cutsceneService.AddScene(new CutscenePreTitleAltForTest());
-    }
+    cutsceneService.AddScene(new CutscenePreTitle());
 }
 var times = [];
 function MainLoop() {

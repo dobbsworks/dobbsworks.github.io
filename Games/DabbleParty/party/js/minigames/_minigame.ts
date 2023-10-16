@@ -115,10 +115,22 @@ abstract class MinigameBase {
     SubmitScore(score: number): void {
         if (this.isEnded) return;
         
-        if (board) {
-            DataService.SubmitScore(board.gameId, score, board.currentRound).then(() => {
-                if (board) board.SpectateUpdateLoop(true)
-            });
+        let minigameIndex = minigames.map(a => new a().title).indexOf(this.title) || -1;
+        StorageService.SetPbIfBetter(minigameIndex, score);
+        
+        if (this.isFreePlay) {
+            let scoreContainerDiv = document.getElementById("scoreDisplay");
+            let newRow = document.createElement("div");
+            newRow.innerHTML = `${this.title} - ${score}`;
+            if (scoreContainerDiv) {
+                scoreContainerDiv.appendChild(newRow);
+            }
+        } else {
+            if (board) {
+                DataService.SubmitScore(board.gameId, score, board.currentRound).then(() => {
+                    if (board) board.SpectateUpdateLoop(true)
+                });
+            }
         }
 
         this.isEnded = true;

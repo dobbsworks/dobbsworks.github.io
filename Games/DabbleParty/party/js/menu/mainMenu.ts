@@ -254,6 +254,11 @@ class MenuTab extends MenuElement {
     }
 
     OnAction(handler: MenuHandler): void {
+        if (!isLoggedIn) {
+            audioHandler.PlaySound("error", true);
+            return;
+        }
+
         audioHandler.PlaySound("swim", true);
         let pageId = (+(this.id.replace("tab-",""))) - 1;
         handler.OpenPage(pageId);
@@ -363,6 +368,15 @@ class MenuMinigameSelect extends MenuBoardSelect {
     DrawSelectionContents(camera: Camera): void {
         let thumb = tiles["thumbnails"][this.selectionIndex % 4][Math.floor(this.selectionIndex / 4)] as ImageTile;
         thumb.Draw(camera, this.centerX, this.centerY, 0.5, 0.5, false, false, 0);
+        let pb = MenuHandler.pbs[this.selectionIndex];
+        if (pb) {
+            let text = `High score: ${pb}`;
+            camera.ctx.font = `800 ${30}px ${"arial"}`;
+            camera.ctx.textAlign = "center";
+            camera.ctx.fillStyle = "#333";
+            camera.ctx.fillText(text, 480, 360);
+
+        }
     }
     OnUp(handler: MenuHandler): void { handler.JumpTo("tab-6"); }
     OnDown(handler: MenuHandler): void { handler.JumpTo("minigameOk"); }
@@ -372,7 +386,7 @@ class MenuButtonMinigameOk extends MenuButtonBase {
     text = "Play";
     cursorAnchorOffsetX = -110;
     OnUp(handler: MenuHandler): void { handler.JumpTo("minigameSelect"); }
-    OnDown(handler: MenuHandler): void { handler.JumpTo("minigameOk"); }
+    OnDown(handler: MenuHandler): void { handler.JumpTo("tab-6"); }
     OnAction(handler: MenuHandler): void {
         let minigameSelect = (handler.FindById("minigameSelect") as MenuMinigameSelect);
         let minigame = new minigames[minigameSelect.selectionIndex]();
@@ -589,7 +603,7 @@ class MenuHandler {
         new MenuBase("menuBase", 0, 0),
         new MenuTab("tab-1", -300, -205, "Join Game"),
         new MenuTab("tab-2", -50, -205, "Host Game"),
-        //new MenuTab("tab-6", 200, -205, "Free Play"),
+        new MenuTab("tab-6", 200, -205, "Free Play"),
         new MenuSelectGame("selectGame", 0, -20),
         new MenuButtonChangeAvatar("avatarChange", -200, 170),
         new MenuAvatarDisplay(this, "avatarDisplay", -100, 165),
@@ -637,6 +651,7 @@ class MenuHandler {
 
     isInitialized = false;
     cursorTarget: MenuElement | null = null;
+    static pbs: number[] = [];
     Initialize(): void {
         this.isInitialized = true;
         (this.FindById("tab-1") as MenuTab).isActive = true;
@@ -644,6 +659,12 @@ class MenuHandler {
         avatarSelect.selectionIndex = Math.floor(Math.random() * avatarSelect.selectionCount);
         this.cursorTarget = (this.FindById("avatarChange") as MenuElement);
         this.OpenPage(0);
+
+        if (!isLoggedIn) {
+            this.OpenPage(5);
+            this.cursorTarget = (this.FindById("minigameSelect") as MenuElement);
+        }
+        MenuHandler.pbs = StorageService.GetAllPBs();
     }
 
     Update(): void {

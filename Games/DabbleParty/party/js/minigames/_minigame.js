@@ -113,11 +113,23 @@ var MinigameBase = /** @class */ (function () {
     MinigameBase.prototype.SubmitScore = function (score) {
         if (this.isEnded)
             return;
-        if (board) {
-            DataService.SubmitScore(board.gameId, score, board.currentRound).then(function () {
-                if (board)
-                    board.SpectateUpdateLoop(true);
-            });
+        var minigameIndex = minigames.map(function (a) { return new a().title; }).indexOf(this.title) || -1;
+        StorageService.SetPbIfBetter(minigameIndex, score);
+        if (this.isFreePlay) {
+            var scoreContainerDiv = document.getElementById("scoreDisplay");
+            var newRow = document.createElement("div");
+            newRow.innerHTML = this.title + " - " + score;
+            if (scoreContainerDiv) {
+                scoreContainerDiv.appendChild(newRow);
+            }
+        }
+        else {
+            if (board) {
+                DataService.SubmitScore(board.gameId, score, board.currentRound).then(function () {
+                    if (board)
+                        board.SpectateUpdateLoop(true);
+                });
+            }
         }
         this.isEnded = true;
         this.overlayTextSprite = new SimpleSprite(camera.x, camera.y, tiles["text"][0][2], function (s) {

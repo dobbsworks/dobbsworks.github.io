@@ -1,21 +1,35 @@
 class StorageService {
 
-    public static GetSavedLevel(slot: number): { level: string, thumb: string } {
-        return {
-            level: localStorage.getItem("save_" + slot) || "",
-            thumb: localStorage.getItem("thumb_" + slot) || ""
-        };
+    public static GetPB(minigameIndex: number): number {
+        let json = localStorage.getItem("pbs") || "[]";
+        let pbs = JSON.parse(json) as number[];
+        return pbs[minigameIndex] || 0;
     }
-    public static SetSavedLevel(slot: number, level: string, thumb: string): boolean {
-        try {
-            localStorage.setItem("save_" + slot, level);
-            localStorage.setItem("thumb_" + slot, thumb);
-            return true;
-        } catch (e) {
-            console.error(e);
-            return false;
+    
+    public static GetAllPBs(): number[] {
+        let json = localStorage.getItem("pbs") || "[]";
+        let pbs = JSON.parse(json) as number[];
+        for (let i = 0; i < minigames.length; i++) {
+            if (pbs.length <= i) pbs.push(0);
         }
+        return pbs;
     }
+
+    public static SetPbIfBetter(minigameIndex: number, score: number): void {
+        if (minigameIndex < 0) return;
+        let json = localStorage.getItem("pbs") || "[]";
+        let pbs = JSON.parse(json) as number[];
+        while (pbs.length <= minigameIndex) {
+            pbs.push(0);
+        }
+
+        let oldPb = pbs[minigameIndex];
+        if (oldPb < score) pbs[minigameIndex] = score;
+        
+        localStorage.setItem("pbs", JSON.stringify(pbs));
+    }
+    
+
 
 
     public static GetMusicVolume(): number {

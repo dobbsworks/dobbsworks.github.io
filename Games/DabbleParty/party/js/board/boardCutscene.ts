@@ -21,6 +21,7 @@ class BoardCutSceneAddCoins extends BoardCutScene {
 
     Update(): void {
         if (this.timer == 0) this.player.coins += this.numCoins;
+        if (this.player.coins < 0) this.player.coins = 0;
         this.timer++;
         if (this.timer > 50) {
             this.isDone = true;
