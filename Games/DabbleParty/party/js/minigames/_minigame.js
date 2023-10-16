@@ -111,9 +111,10 @@ var MinigameBase = /** @class */ (function () {
         }
     };
     MinigameBase.prototype.SubmitScore = function (score) {
+        var _a;
         if (this.isEnded)
             return;
-        var minigameIndex = minigames.map(function (a) { return new a().title; }).indexOf(this.title) || -1;
+        var minigameIndex = (_a = minigames.map(function (a) { return new a().title; }).indexOf(this.title)) !== null && _a !== void 0 ? _a : -1;
         StorageService.SetPbIfBetter(minigameIndex, score);
         if (this.isFreePlay) {
             var scoreContainerDiv = document.getElementById("scoreDisplay");

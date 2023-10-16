@@ -115,7 +115,7 @@ abstract class MinigameBase {
     SubmitScore(score: number): void {
         if (this.isEnded) return;
         
-        let minigameIndex = minigames.map(a => new a().title).indexOf(this.title) || -1;
+        let minigameIndex = minigames.map(a => new a().title).indexOf(this.title) ?? -1;
         StorageService.SetPbIfBetter(minigameIndex, score);
         
         if (this.isFreePlay) {
