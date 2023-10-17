@@ -431,6 +431,7 @@ class TileType {
         TileType.Cracks;
         TileType.FireTop;
         TileType.BulletBlock;
+        TileType.RedGirder2;
     }
 
 

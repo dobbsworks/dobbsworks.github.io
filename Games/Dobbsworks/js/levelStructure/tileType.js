@@ -384,6 +384,7 @@ var TileType = /** @class */ (function () {
         TileType.Cracks;
         TileType.FireTop;
         TileType.BulletBlock;
+        TileType.RedGirder2;
     };
     TileType.RegisterSlope = function (keyBase, tileRow) {
         var colIter = 8;

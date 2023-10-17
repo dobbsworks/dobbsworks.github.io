@@ -337,8 +337,13 @@ class LevelLayer {
         let tile = this.GetTileByIndex(xIndex, yIndex);
         let semisolid = tile.GetSemisolidNeighbor();
         if (semisolid && this.map) {
-            this.map.semisolidLayer.SetTile(semisolid.tileX, semisolid.tileY, semisolid.uncoatedType);
-            this.map.semisolidLayer.isDirty = true;
+            let oldTileType = this.map.semisolidLayer.GetTileByIndex(semisolid.tileX, semisolid.tileY).tileType;
+            if (oldTileType != TileType.Air) {
+                if ( oldTileType != semisolid.uncoatedType) {
+                    this.map.semisolidLayer.SetTile(semisolid.tileX, semisolid.tileY, semisolid.uncoatedType);
+                    this.map.semisolidLayer.isDirty = true;
+                }
+            }
         }
     }
 

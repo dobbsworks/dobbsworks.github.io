@@ -358,8 +358,13 @@ var LevelLayer = /** @class */ (function () {
         var tile = this.GetTileByIndex(xIndex, yIndex);
         var semisolid = tile.GetSemisolidNeighbor();
         if (semisolid && this.map) {
-            this.map.semisolidLayer.SetTile(semisolid.tileX, semisolid.tileY, semisolid.uncoatedType);
-            this.map.semisolidLayer.isDirty = true;
+            var oldTileType = this.map.semisolidLayer.GetTileByIndex(semisolid.tileX, semisolid.tileY).tileType;
+            if (oldTileType != TileType.Air) {
+                if (oldTileType != semisolid.uncoatedType) {
+                    this.map.semisolidLayer.SetTile(semisolid.tileX, semisolid.tileY, semisolid.uncoatedType);
+                    this.map.semisolidLayer.isDirty = true;
+                }
+            }
         }
     };
     LevelLayer.prototype.CanSlimeTile = function (tile) {
