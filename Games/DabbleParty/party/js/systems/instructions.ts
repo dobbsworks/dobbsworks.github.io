@@ -23,7 +23,7 @@ class Instructions extends BoardCutScene {
             this.overlayOpacity = Math.max(0, Math.min(1, (20 - this.timer) / 20));
         }
         if (this.timer > 120 && this.doneTimer == 0 && KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
-            if (board && board.isSpectateMode) {
+            if (board) {
                 this.doneTimer = 1;
             }
         }
@@ -35,8 +35,10 @@ class Instructions extends BoardCutScene {
         if (this.doneTimer > 25) {
             this.isDone = true;
             audioHandler.SetBackgroundMusic("silence");
-            // set minigame
-            currentMinigame = this.minigame;
+            if (board!.isSpectateMode) {
+                // set minigame
+                currentMinigame = this.minigame;
+            }
         }
     }
     constructor(public minigame: MinigameBase) {

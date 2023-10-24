@@ -51,7 +51,7 @@ var Instructions = /** @class */ (function (_super) {
             this.overlayOpacity = Math.max(0, Math.min(1, (20 - this.timer) / 20));
         }
         if (this.timer > 120 && this.doneTimer == 0 && KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
-            if (board && board.isSpectateMode) {
+            if (board) {
                 this.doneTimer = 1;
             }
         }
@@ -62,8 +62,10 @@ var Instructions = /** @class */ (function (_super) {
         if (this.doneTimer > 25) {
             this.isDone = true;
             audioHandler.SetBackgroundMusic("silence");
-            // set minigame
-            currentMinigame = this.minigame;
+            if (board.isSpectateMode) {
+                // set minigame
+                currentMinigame = this.minigame;
+            }
         }
     };
     Instructions.prototype.Draw = function (camera) {

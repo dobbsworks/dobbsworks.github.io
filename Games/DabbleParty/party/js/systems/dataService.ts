@@ -48,7 +48,7 @@ class DataService {
             }
             onSuccess(response);
         }).catch(error => {
-            console.error(error);
+            //console.error(error);
             (<any>document.getElementById("errorLog")).innerText += error + " \n" + endpoint + " \n" + error.stack;
 
             onError(error);
@@ -86,8 +86,13 @@ class DataService {
             DataService.BasePost(`Party/SubmitScore?gameId=${gameId}&score=${score}&roundNumber=${roundNumber}`, {}, resolve, reject);
         })
     }
-    static GetGameData(gameId: number): Promise<PartyGameDT> {
-        return new Promise<PartyGameDT>((resolve, reject) => {
+    static SubmitMenuSelection(gameId: number, menuId: number, selectedIndex: number): Promise<number> {
+        return new Promise<number>((resolve, reject) => {
+            DataService.BasePost(`Party/SubmitMenuSelection?gameId=${gameId}&menuId=${menuId}&selectedIndex=${selectedIndex}`, {}, resolve, reject);
+        })
+    }
+    static GetGameData(gameId: number): Promise<PartyGameDTWithMenu> {
+        return new Promise<PartyGameDTWithMenu>((resolve, reject) => {
             DataService.BaseGet("Party/GetGameData?gameId=" + gameId, resolve, reject);
         })
     }

@@ -131,14 +131,13 @@ class BoardCutSceneChangeDice extends BoardCutScene {
 }
 
 class BoardCutScenePadding extends BoardCutScene {
-    constructor() {
+    constructor(private paddingTicks = 20) {
         super();
     }
     private timer = 0;
-    private paddingTime = 20;
     Update(): void {
         this.timer++;
-        if (this.timer == this.paddingTime) {
+        if (this.timer == this.paddingTicks) {
             this.isDone = true;
         }
     }
@@ -185,7 +184,7 @@ class BoardCutSceneAddItem extends BoardCutScene {
             if (!this.item.isPlaceholder) {
                 this.player.inventory.push(this.item);
             }
-            this.item.OnPurchase(this.player);
+            this.item.OnCollectItem(this.player);
             audioHandler.PlaySound("dobbloon", true);
             this.isDone = true;
         }
@@ -314,7 +313,7 @@ class BoardCutSceneTwitchSpace extends BoardCutScene {
             for (let i = 0; i < weight; i++) {
                 this.spams.push({
                     name: "test",
-                    text: Random.RandFrom(action.spams),
+                    text: Random.SeededRandFrom(action.spams),
                     action: action,
                     y: 0,
                     color: "#FFF",
@@ -333,11 +332,11 @@ class BoardCutSceneTwitchSpace extends BoardCutScene {
         this.spams = Random.GetShuffledCopy(this.spams);
         this.spams.forEach((el, i) => {
             el.y = i * heightPerRow;
-            el.color = Random.RandFrom(["Blue", " Coral", " DodgerBlue", " SpringGreen", " YellowGreen", " Green", " OrangeRed", " Red", " GoldenRod", " HotPink", " CadetBlue", " SeaGreen", " Chocolate", " BlueViolet", " Firebrick"]);
+            el.color = Random.SeededRandFrom(["Blue", " Coral", " DodgerBlue", " SpringGreen", " YellowGreen", " Green", " OrangeRed", " Red", " GoldenRod", " HotPink", " CadetBlue", " SeaGreen", " Chocolate", " BlueViolet", " Firebrick"]);
             camera.ctx.font = `700 ${15}px ${"arial"}`;
             el.name = GetRandomUserName();
             el.nameWidth = camera.ctx.measureText(el.name + ":").width;
-            el.text = Random.RandFrom(el.action.spams);
+            el.text = Random.SeededRandFrom(el.action.spams);
         });
     }
 
@@ -500,7 +499,7 @@ function JoinPlayers(players: Player[]): string {
     } else if (players.length == 1) {
         return players[0].avatarName;
     } else {
-        return "";
+        return players.map(a => a.avatarName).join(" & ");
     }
 }
 class BoardCutSceneLast5Turns extends BoardCutScene {
@@ -515,63 +514,83 @@ class BoardCutSceneLast5Turns extends BoardCutScene {
             "Additionally, passing a golden gear space will now let you buy a pair of gears. And if you land on the space, you'll have the option to buy three!",
             "It's not over until it's over! Best of luck to all the players!"
         ];
-        
-        cutsceneService.AddScene( 
-            new BoardCutSceneFadeOut(), 
+
+        cutsceneService.AddScene(
+            new BoardCutSceneFadeOut(),
             new BoardCutSceneSetBackdrop(tiles["spaceBoardBlur"][0][0]),
-            new BoardCutSceneFadeIn(), 
+            new BoardCutSceneFadeIn(),
             new BoardCutSceneDialog(texts.join("\\")),
             new BoardCutSceneFadeOut(),
             new BoardCutSceneSetBackdrop(null),
-            new BoardCutSceneFadeIn() );
+            new BoardCutSceneFadeIn());
 
         this.isDone = true;
     }
 
     GetPlacementText(): string {
-        let playerPlacements = [1, 2, 3, 4].map(p => (board as BoardMap).players.filter(a => a.CurrentPlace() == p));
+        let totalPlayerCount = (board as BoardMap).players.length;
+        if (totalPlayerCount <= 4) {
+            let playerPlacements = [1, 2, 3, 4].map(p => (board as BoardMap).players.filter(a => a.CurrentPlace() == p));
+            let placementText = "";
 
-        let placementText = "";
-
-        if (playerPlacements[0].length == 4) {
-            // 4-way tie for first
-            placementText = `Amazingly, we have a 4-way tie for 1st place! ${JoinPlayers(playerPlacements[0])} are all tied for the lead.`;
-        } else if (playerPlacements[0].length == 3) {
-            // 3-way tie for first, 1 person in last
-            placementText = `It looks like we have a 3-way tie for 1st place! ${JoinPlayers(playerPlacements[0])} are tied for the lead, while ${JoinPlayers(playerPlacements[3])} is in dead last.`;
-        } else if (playerPlacements[0].length == 2) {
-            // 2-way tie for first
-            placementText = `We have a 2-way tie for 1st place! ${JoinPlayers(playerPlacements[0])} are vying for the win, `;
-            if (playerPlacements[2].length == 2) {
-                // 2-way tie for third
-                placementText += `and ${JoinPlayers(playerPlacements[2])} are tied for 3rd.`;
-            } else {
-                //3rd place, 4th place
-                placementText += `${JoinPlayers(playerPlacements[2])} is sitting in 3rd, and ${JoinPlayers(playerPlacements[3])} is in last place.`;
-            }
-        } else {
-            // 1st place
-            placementText = `${JoinPlayers(playerPlacements[0])} is in a commanding first place, `;
-
-            if (playerPlacements[1].length == 3) {
-                // 3-way tie for 2nd
-                placementText += `while ${JoinPlayers(playerPlacements[1])} are all fighting for 2nd.`;
-            } else if (playerPlacements[1].length == 2) {
-                // 2-way tie for 2nd, 4th place
-                placementText += `${JoinPlayers(playerPlacements[1])} are fighting for 2nd, and ${JoinPlayers(playerPlacements[3])} is in last place.`;
-            } else {
-                // 2nd place
-                placementText += `${JoinPlayers(playerPlacements[1])} is in a close 2nd, `;
+            if (playerPlacements[0].length == 4) {
+                // 4-way tie for first
+                placementText = `Amazingly, we have a 4-way tie for 1st place! ${JoinPlayers(playerPlacements[0])} are all tied for the lead.`;
+            } else if (playerPlacements[0].length == 3) {
+                // 3-way tie for first, 1 person in last
+                placementText = `It looks like we have a 3-way tie for 1st place! ${JoinPlayers(playerPlacements[0])} are tied for the lead, while ${JoinPlayers(playerPlacements[3])} is in dead last.`;
+            } else if (playerPlacements[0].length == 2) {
+                // 2-way tie for first
+                placementText = `We have a 2-way tie for 1st place! ${JoinPlayers(playerPlacements[0])} are vying for the win, `;
                 if (playerPlacements[2].length == 2) {
-                    // 2-way tie for 3rd
-                    placementText += `and ${JoinPlayers(playerPlacements[2])} are tied for last.`;
+                    // 2-way tie for third
+                    placementText += `and ${JoinPlayers(playerPlacements[2])} are tied for 3rd.`;
                 } else {
-                    // all 4 places
-                    placementText += `${JoinPlayers(playerPlacements[2])} is in 3rd, and ${JoinPlayers(playerPlacements[3])} is in last place.`;
+                    //3rd place, 4th place
+                    placementText += `${JoinPlayers(playerPlacements[2])} is sitting in 3rd, and ${JoinPlayers(playerPlacements[3])} is in last place.`;
+                }
+            } else {
+                // 1st place
+                placementText = `${JoinPlayers(playerPlacements[0])} is in a commanding first place, `;
+
+                if (playerPlacements[1].length == 3) {
+                    // 3-way tie for 2nd
+                    placementText += `while ${JoinPlayers(playerPlacements[1])} are all fighting for 2nd.`;
+                } else if (playerPlacements[1].length == 2) {
+                    // 2-way tie for 2nd, 4th place
+                    placementText += `${JoinPlayers(playerPlacements[1])} are fighting for 2nd, and ${JoinPlayers(playerPlacements[3])} is in last place.`;
+                } else {
+                    // 2nd place
+                    placementText += `${JoinPlayers(playerPlacements[1])} is in a close 2nd, `;
+                    if (playerPlacements[2].length == 2) {
+                        // 2-way tie for 3rd
+                        placementText += `and ${JoinPlayers(playerPlacements[2])} are tied for last.`;
+                    } else {
+                        // all 4 places
+                        placementText += `${JoinPlayers(playerPlacements[2])} is in 3rd, and ${JoinPlayers(playerPlacements[3])} is in last place.`;
+                    }
                 }
             }
+            return placementText;
+        } else {
+            // Alt less-pretty for more players
+            let lines: string[] = [];
+            let possiblePlaces: number[] = [];
+            for (let i = 0; i < totalPlayerCount; i++) possiblePlaces.push(i + 1); // [1,2,3,4,5...]
+            let playerPlacements = possiblePlaces.map(p => (board as BoardMap).players.filter(a => a.CurrentPlace() == p));
+            for (let placeIndex = 0; placeIndex < playerPlacements.length; placeIndex++) {
+                let playersInPlace = playerPlacements[placeIndex];
+                if (playersInPlace.length == 0) continue;
+                let ordinal = NumberToOrdinal(placeIndex + 1);
+
+                let joinedPlayerNames = JoinPlayers(playersInPlace);
+
+                let text = `${joinedPlayerNames} ${playersInPlace.length == 1 ? "is" : "are"} in ${ordinal} place`;
+                lines.push(text);
+            }
+
+            return lines.join(", ") + ".";
         }
-        return placementText;
     }
     Draw(camera: Camera): void { }
 
@@ -588,7 +607,7 @@ class BoardCutSceneFadeOut extends BoardCutScene {
         let opacity = this.timer / this.targetTime;
         if (opacity < 0) opacity = 0;
         if (opacity > 1) opacity = 1;
-        let hexOpacity = (opacity * 255).toString(16).split(".")[0].padStart(2, "00").substring(0,2);
+        let hexOpacity = (opacity * 255).toString(16).split(".")[0].padStart(2, "00").substring(0, 2);
         camera.ctx.fillStyle = "#000000" + hexOpacity;
         camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
     }
@@ -605,7 +624,7 @@ class BoardCutSceneFadeIn extends BoardCutScene {
         let opacity = (this.targetTime - this.timer) / this.targetTime;
         if (opacity < 0) opacity = 0;
         if (opacity > 1) opacity = 1;
-        let hexOpacity = (opacity * 255).toString(16).split(".")[0].padStart(2, "00").substring(0,2);
+        let hexOpacity = (opacity * 255).toString(16).split(".")[0].padStart(2, "00").substring(0, 2);
         camera.ctx.fillStyle = "#000000" + hexOpacity;
         camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
     }
@@ -615,17 +634,19 @@ class BoardCutSceneFadeIn extends BoardCutScene {
 
 
 class BoardCutSceneSingleAction extends BoardCutScene {
-    constructor(private action: ()=>void) { super(); }
+    constructor(private action: () => void) { super(); }
     Update(): void {
         this.isDone = true;
         this.action();
     }
-    Draw(camera: Camera): void {}
+    Draw(camera: Camera): void { }
 }
 class BoardCutSceneSetBackdrop extends BoardCutSceneSingleAction {
-    constructor(backdrop: ImageTile | null) { super(() => {
-        BoardCutScene.backdrop = backdrop;
-    }); }
+    constructor(backdrop: ImageTile | null) {
+        super(() => {
+            BoardCutScene.backdrop = backdrop;
+        });
+    }
 }
 
 class BoardCutScenePortalSwap extends BoardCutScene {
@@ -712,5 +733,255 @@ class BoardCutSceneDevExit extends BoardCutScene {
 
             tile.Draw(camera, this.baseX, this.baseY, size, size, false, false, 0);
         }
+    }
+}
+
+
+
+abstract class BoardCutScenePlayerList extends BoardCutScene {
+    x = 180;
+    scoreBoxes: { player: Player, y: number, targetY: number }[] = []; // indexes into board.players
+    localPlayerList: Player[] = [];
+    headingRow = 1;
+    headingTimer = 0;
+    opacity = 180;
+
+    abstract PlayerSorter(a: Player, b: Player): number;
+    abstract AdditionalUpdateLogic(): void;
+    abstract Complete(): void;
+    abstract AdditionalDraw(playerIndex: number, y: number): void;
+
+    GetImageY(boxY: number) { return boxY - 270 + 50}
+
+    Update(): void {
+        this.headingTimer++;
+        this.localPlayerList.sort(this.PlayerSorter.bind(this));
+        if (this.scoreBoxes.length == 0) {
+            //init
+            this.localPlayerList = [...board!.players];
+            this.scoreBoxes = this.localPlayerList.map(a => ({ player: a, y: 600, targetY: 600 }));
+        } else {
+            // sort by placement
+            this.scoreBoxes.sort((a,b) => this.localPlayerList.indexOf(a.player) - this.localPlayerList.indexOf(b.player))
+        }
+
+        for (let i = 0; i < this.scoreBoxes.length; i++) {
+            this.scoreBoxes[i].targetY = i * 110 + 95;
+        }
+        this.AdditionalUpdateLogic();
+        this.UpdateBoxPositions();
+    }
+
+    UpdateBoxPositions(): void {
+        let boxSpeed = 4;
+        for (let scorebox of this.scoreBoxes) {
+            if (Math.abs(scorebox.y - scorebox.targetY) < boxSpeed) scorebox.y = scorebox.targetY;
+            if (scorebox.y < scorebox.targetY) scorebox.y += boxSpeed;
+            if (scorebox.y > scorebox.targetY) scorebox.y -= boxSpeed;
+        }
+    }
+
+    Draw(camera: Camera): void {
+        if (this.opacity <= 0) return;
+        var ctx = camera.ctx;
+        ctx.fillStyle = "#000000" + Math.floor(this.opacity).toString(16).padStart(2, "00");
+        ctx.strokeStyle = "#FFF";
+        ctx.lineWidth = 4;
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.font = `800 ${36}px ${"arial"}`;
+        ctx.textAlign = "right";
+
+        let title = tiles["minigameText"][0][this.headingRow] as ImageTile;
+        title.Draw(camera, this.x - 180, Math.min(-220, this.headingTimer - 350), 1, 1, false, false, 0);
+
+        for (let playerIndex = 0; playerIndex < board!.players.length; playerIndex++) {
+            let scorebox = this.scoreBoxes[playerIndex];
+            this.DrawBasePlayerBox(playerIndex, scorebox.y);
+            this.AdditionalDraw(playerIndex, scorebox.y);
+        }
+    }
+
+    DrawBasePlayerBox(playerIndex: number, y: number): void {
+        let player = this.scoreBoxes[playerIndex].player;
+        let cam = board!.boardUI.uiCamera;
+        let image = tiles["playerIcons"][player.avatarIndex][0] as ImageTile;
+        cam.ctx.fillStyle = "#000D";
+        cam.ctx.fillRect(this.x, y, 600, 100);
+        cam.ctx.strokeRect(this.x, y, 600, 100);
+        image.Draw(cam, this.x - 480 + 50, this.GetImageY(y), 0.4, 0.4, false, false, 0);
+    }
+
+}
+
+class BoardCutSceneStandings extends BoardCutScenePlayerList {
+    constructor(private awards: {player: Player, coins: number}[]) {
+        super();
+    }
+
+    timer = 0;
+    PlayerSorter(a: Player, b: Player): number {
+        return (a.CurrentPlace() + a.turnOrder / 10) - (b.CurrentPlace() + b.turnOrder / 10);
+    }
+
+    AdditionalUpdateLogic(): void {
+        this.timer++;
+
+        if (this.timer > 150) {
+            if (this.timer % 8 == 0) {
+                let playSound = false;
+                for (let award of this.awards) {
+                    if (award.coins > 0) {
+                        award.coins--;
+                        award.player.coins++;
+                        award.player.displayedCoins++;
+                        playSound = true;
+                    }
+                }
+                if (playSound) audioHandler.PlaySound("coin", true);
+            }
+        }
+
+        let endTime = 400;
+
+        if (this.timer >= endTime) {
+            this.x += (this.timer - endTime)/2;
+            if (this.x > 1100) {
+                this.opacity -= 3;
+            }
+            if (this.opacity <= 0) this.Complete();
+        }
+
+
+    }
+
+    Complete(): void {
+        if (!board) return;
+        this.isDone = true;
+        board.currentRound++;
+        board.SaveGameStateToDB();
+        board.boardUI.roundStarttimer = 1;
+        if (board.finalRound - board.currentRound + 1 == 5) {
+            cutsceneService.AddScene(new BoardCutSceneLast5Turns());
+        }
+        if (board.finalRound - board.currentRound + 1 == 0) {
+            audioHandler.SetBackgroundMusic("level1");
+            cutsceneService.AddScene(new BoardCutSceneGameEnd());
+        }
+    }
+
+    AdditionalDraw(playerIndex: number, y: number): void {
+        // Draw placement, gears, coins
+        let player = this.scoreBoxes[playerIndex].player;
+        let cam = board!.boardUI.uiCamera;
+        let gearIcon = tiles["uiLargeIcons"][0][0] as ImageTile;
+        let coinIcon = tiles["uiLargeIcons"][0][1] as ImageTile;
+        gearIcon.Draw(cam, this.x - 480 + 300, this.GetImageY(y), 1, 1, false, false, 0);
+        coinIcon.Draw(cam, this.x - 480 + 470, this.GetImageY(y), 1, 1, false, false, 0);
+        cam.ctx.fillStyle = "#FFF";
+        cam.ctx.textAlign = "right";
+        cam.ctx.font = `800 ${36}px ${"arial"}`;
+        cam.ctx.fillText(player.CurrentPlaceText(), this.x + 200, y + 50 + 14);
+        cam.ctx.fillText(player.gears.toString(),this.x + 400, y + 50 + 14);
+        cam.ctx.fillText(player.displayedCoins.toString(), this.x + 570, y + 50 + 14);
+        
+        for (let scorebox of this.scoreBoxes) {
+            let award = this.awards.find(a => a.player == scorebox.player);
+            if (award && award.coins > 0) {
+                DrawText(this.x + 160, this.GetImageY(scorebox.y), "+" + award.coins, cam, 0.3, 3);
+            }
+        }
+    }
+}
+
+
+class BoardCutSceneMinigameResults  extends BoardCutScenePlayerList {
+    headingRow = 2;
+    fetchedScores: {playerUserId: number, score: number}[] = [];
+    countDown = 120;
+    isFetching = false;
+    fetchTimer = 0;
+
+    Complete(): void {
+        this.isDone = true;
+        
+        if (board) board.pendingMinigame = null;
+
+        // coins are distributed based on minigame placement
+        // 10 for 1st, 3 for 2nd, 2 for 3rd
+        // If tie for 1st, we get [10, 10, 2, 0]
+        // If 3-way tie for 2nd, we get [10, 3, 3, 3]
+        let coinDistribution = [10, 3, 2];
+        
+        let sortedScores = this.fetchedScores.map(a => a.score); 
+        sortedScores.sort((a, b) => b - a);
+        let topScore = sortedScores[0];
+        let awards: {player: Player, coins: number}[] = [];
+
+        for (let fetchedScore of this.fetchedScores) {
+            let scorePlacement = sortedScores.indexOf(fetchedScore.score);
+            // 0 for 1st (or if tying for 1st!)
+            let winnings = coinDistribution[scorePlacement] || 0;
+            let player = board!.players.find(a => a.userId == fetchedScore.playerUserId);
+            if (player) {
+                awards.push({player: player, coins: winnings});
+                player.statMinigameWinnings += winnings;
+            }
+        }
+        
+        cutsceneService.AddScene(new BoardCutSceneStandings(awards));
+    }
+
+    AdditionalDraw(playerIndex: number, y: number): void {
+        // draw scores
+        let player = this.scoreBoxes[playerIndex].player;
+        let score = this.fetchedScores.find(x => x.playerUserId == player.userId);
+        if (score) {
+            let cam = board!.boardUI.uiCamera;
+            cam.ctx.fillStyle = "#FFF";
+            cam.ctx.textAlign = "right";
+            cam.ctx.font = `800 ${36}px ${"arial"}`;
+            cam.ctx.fillText(score.score.toString(), this.x + 570, y + 50 + 14);
+        }
+    }
+
+    AdditionalUpdateLogic(): void {
+        audioHandler.SetBackgroundMusic("lobby")
+        for (let scorebox of this.scoreBoxes) {
+            let matchingScore = this.fetchedScores.find(a => a.playerUserId == scorebox.player.userId);
+            if (!matchingScore) scorebox.targetY = 600;
+        }
+        if (this.fetchedScores.length == this.scoreBoxes.length && this.scoreBoxes.every(a => a.targetY == a.y)) {
+            // all scores fetched, all locations right
+            this.countDown--;
+            if (this.countDown <= 0) {
+                this.x += this.countDown/2;
+                if (this.x < -1000) {
+                    this.Complete();
+                }
+                // auto proceed
+            }
+        }
+
+        if (this.fetchedScores.length < this.scoreBoxes.length && !this.isFetching) {
+            this.fetchTimer++;
+            if (this.fetchTimer > 120) {
+                this.fetchTimer = 0;
+                this.isFetching = true;
+                DataService.GetScores(board!.gameId, board!.currentRound).then(scores => {
+                    this.fetchedScores = scores.map(a => ({playerUserId: a.playerId, score: a.score}));
+                });
+            }
+        }
+    }
+
+    PlayerSorter(a: Player, b: Player): number {
+        let scoreA = this.fetchedScores.find(x => x.playerUserId == a.userId);
+        let scoreB = this.fetchedScores.find(x => x.playerUserId == b.userId);
+
+        if (!scoreA && !scoreB) return 0;
+        if (scoreA && !scoreB) return -1;
+        if (!scoreA && scoreB) return 1;
+        if (scoreA && scoreB) return scoreB.score - scoreA.score;
+        return 0;
     }
 }

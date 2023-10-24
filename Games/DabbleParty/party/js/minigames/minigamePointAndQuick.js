@@ -74,12 +74,12 @@ var MinigamePointAndQuick = /** @class */ (function (_super) {
             minSize = 3;
         if (this.score > 80)
             minSize = 4;
-        var size = Random.GetRandInt(minSize, maxSize);
+        var size = Random.GetSeededRandInt(minSize, maxSize);
         var targetX = -180 + this.boxStacks.length * 250;
         var targetY = 103;
         for (var i = 0; i < size; i++) {
             var spr = new SimpleSprite(targetX, targetY, tiles["directionBox"][0][4]);
-            spr.name = Random.RandFrom(["up", "down", "left", "right"]);
+            spr.name = Random.SeededRandFrom(["up", "down", "left", "right"]);
             ret.push(spr);
             targetY -= 95;
         }

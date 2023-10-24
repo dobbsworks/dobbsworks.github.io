@@ -39,7 +39,7 @@ class MinigameDodgePodge extends MinigameBase {
             let val = Random.GetRand();
             let threshold = Math.max(0.1, i / 6000 * 1.1);
             if (val < threshold) {
-                let cannonIndex = Random.GetRandInt(0, this.cannons.length-1);
+                let cannonIndex = Random.GetSeededRandInt(0, this.cannons.length-1);
                 let isCoin = Random.GetRand() < 0.2;
                 ret.push({frame: i, cannonIndex: cannonIndex, isCoin: isCoin});
             }

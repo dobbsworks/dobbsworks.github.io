@@ -2,6 +2,7 @@ class BoardMap {
 
     constructor(public gameId: number) {}
 
+    latestCompletedMenuId = -1;
     isSpectateMode = false;
     backdropTile: ImageTile = tiles["bgBoard"][0][0];
     currentRound = 1;
@@ -17,7 +18,6 @@ class BoardMap {
     topEdge = -640;
     bottomEdge = 640;
     isManualCamera = false;
-    scoreTimer = 0;
     biodomePrice = 5;
 
     currentPlayer: Player | null = null;
@@ -142,7 +142,7 @@ class BoardMap {
         BoardSpace.ConnectLabels("70", "37");
 
         for (let i = 1; i <= this.players.length; i++) {
-            let p = Random.RandFrom(this.players.filter(a => a.turnOrder == 0));
+            let p = Random.SeededRandFrom(this.players.filter(a => a.turnOrder == 0));
             p.turnOrder = i;
         }
 
@@ -154,6 +154,11 @@ class BoardMap {
         this.players.forEach(a => a.Update());
         this.boardUI.roundStarttimer = 1;
         this.PlaceGearSpace();
+    }
+
+    GetStartingSpace(): BoardSpace {
+        let ret = this.boardSpaces.find(x => x.label == "starting position") ?? this.boardSpaces[0];
+        return ret;
     }
 
     IsInLast5Turns(): boolean {
@@ -175,25 +180,14 @@ class BoardMap {
                 if (this.currentPlayer) this.CameraFollow(this.currentPlayer || this.players[0]);
             }
         }
-        if (this.scoreTimer > 0) {
-            this.scoreTimer++;
-            if (this.scoreTimer > 100 && KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
-                this.boardUI.isShowingScores = false;
-                this.scoreTimer = 0;
-                this.currentRound++;
-                this.SaveGameStateToDB();
-                this.boardUI.roundStarttimer = 1;
-                if (this.finalRound - this.currentRound + 1 == 5) {
-                    cutsceneService.AddScene(new BoardCutSceneLast5Turns());
-                }
-                if (this.finalRound - this.currentRound + 1 == 0) {
-                    audioHandler.SetBackgroundMusic("level1");
-                    cutsceneService.AddScene(new BoardCutSceneGameEnd());
-                }
-            }
-        }
         this.CameraBounds();
         if (!this.isSpectateMode) this.boardUI.Update();
+        else {
+            // item menu handling
+            if (this.boardUI.currentMenu) {
+                this.boardUI.currentMenu.Update();
+            }
+        }
     }
     
     UpdateCoinDisplays(): void {
@@ -282,6 +276,7 @@ class BoardMap {
             existingSpace.spaceType = BoardSpaceType.BlueBoardSpace;
         }
         target.spaceType = BoardSpaceType.GearSpace;
+        board!.SaveGameStateToDB();
         return target;
     }
 
@@ -336,117 +331,6 @@ class BoardMap {
         if (camera.scale < 0.75) camera.targetX = 0;
     }
 
-    CreateButtonToToggleToUserViewInOBS(): void {
-        let container = document.getElementById("scoreInput");
-        if (container) {
-            container.innerHTML = "";
-            let button = document.createElement("button");
-            button.textContent = "I HAVE SWITCHED OBS SCENE";
-            button.onclick = () => {
-                //todo - mute audio here
-                let instructions = cutsceneService.cutscenes[0] as Instructions;
-                if (instructions && instructions.minigame && instructions.minigame.songId) {
-                    audioHandler.SetBackgroundMusic(instructions.minigame.songId);
-                    instructions.isDone = true;
-                }
-                this.CreateScoreInputDOM.bind(this)();
-            }
-            container.appendChild(button);
-        }
-    }
-
-    CreateScoreInputDOM(): void {
-        let container = document.getElementById("scoreInput");
-        if (container) {
-            container.innerHTML = "";
-            for (let player of this.players) {
-                let row = document.createElement("div");
-                row.className = "scoreRow";
-                let canvas = document.createElement("canvas");
-                canvas.width = 20;
-                canvas.height = 20;
-                canvas.style.margin = "-6px";
-                canvas.style.backgroundColor = "#0000";
-                let image = tiles["playerIcons"][player.avatarIndex][0] as ImageTile;
-                image.Draw(new Camera(canvas), 0, 0, 0.1, 0.1, false, false, 0);
-                let input = document.createElement("input");
-                input.type = "number";
-                input.dataset.playerId = player.userId.toString();
-                input.className = "scoreInput";
-                row.appendChild(canvas);
-                row.appendChild(input);
-                container.appendChild(row);
-            }
-            let pullScoresButton = document.createElement("button");
-            pullScoresButton.textContent = "PULL SCORES";
-            pullScoresButton.onclick = () => { 
-                DataService.GetScores(this.gameId, this.currentRound).then(scores => {
-                    for (let score of scores) {
-                        let inputBox = document.querySelector(`input[data-player-id="${score.playerId}"]`) as HTMLInputElement;
-                        if (inputBox) {
-                            inputBox.value = score.score.toString();
-                            inputBox.style.backgroundColor = "#AAA";
-                        }
-                    }
-                });
-                if (board) {
-                    board.pendingMinigame = null;
-                    board.SaveGameStateToDB();
-                }
-            }
-            container.appendChild(pullScoresButton);
-
-            let submitButton = document.createElement("button");
-            submitButton.textContent = "SUBMIT SCORES";
-            submitButton.onclick = () => { this.OnSubmitScores.bind(this)(); }
-            container.appendChild(submitButton);
-
-            let musicButton = document.createElement("button");
-            musicButton.textContent = "SWAP TO LOBBY MUSIC";
-            musicButton.onclick = () => { audioHandler.SetBackgroundMusic("lobby") }
-            container.appendChild(musicButton);
-        }
-        this.boardUI.isShowingScores = true;
-    }
-
-    OnSubmitScores(): void {
-        this.scoreTimer = 1;
-        let container = document.getElementById("scoreInput");
-        if (container) {
-
-            let inputs = Array.from(document.getElementsByClassName("scoreInput")) as HTMLInputElement[];
-            let scores = inputs.map(input => +(input.value));
-            if (scores.length != this.players.length) {
-                console.error("WRONG INPUT COUNT");
-            } else if (scores.some(a => isNaN(a))) {
-                console.error("INVALID SCORE");
-            } else if (inputs.some(a => a.value.length == 0)) {
-                console.error("MISSING SCORE");
-            } else {
-                // all good 
-
-                container.innerHTML = "";
-
-                //award coins
-
-                let sortedScores = [...scores]; sortedScores.sort((a, b) => b - a);
-                let topScore = sortedScores[0];
-
-                for (let playerIndex = 0; playerIndex < this.players.length; playerIndex++) {
-                    if (scores[playerIndex] == topScore) {
-                        // minigame winner! (could be multiple players triggering this block)
-                        this.players[playerIndex].coins += 10;
-                        this.players[playerIndex].statMinigameWinnings += 10;
-
-                        // todo put into animated value instead
-                    }
-                }
-
-            }
-        }
-    }
-
-
     SaveGameStateToDB(): void {
         let dt = {
             id: this.gameId,
@@ -464,6 +348,11 @@ class BoardMap {
     Stringify(): string {
         let gearSpace = this.boardSpaces.find(a => a.spaceType == BoardSpaceType.GearSpace);
         let gearSpaceId = gearSpace?.id || -1;
+        let menu = {id: this.boardUI.menuId, options: [] as string[]};
+        if (this.boardUI.currentMenu) {
+            menu.options = this.boardUI.currentMenu.options.map(a => a.plainText);
+        }
+
         let data: GameExport = {
             boardId: 0,
             currentRound: this.currentRound,
@@ -481,7 +370,8 @@ class BoardMap {
                 diceBag: p.diceBag.dieFaces,
             })),
             currentMinigameIndex: this.pendingMinigame ? minigames.map(a => new a().title).indexOf(this.pendingMinigame.title) : -1,
-            gearSpaceId: gearSpaceId
+            gearSpaceId: gearSpaceId,
+            menu: menu
         };
         return JSON.stringify(data);
     }
@@ -501,7 +391,7 @@ class BoardMap {
             this.players.push(player);
             player.userId = p.userId;
             player.token = new BoardToken(player);
-            player.token.currentSpace = this.boardSpaces[p.spaceIndex];
+            player.token.currentSpace = this.boardSpaces[p.spaceIndex] || this.GetStartingSpace();
             player.gears = p.gears;
             player.coins = p.coins;
             player.displayedCoins = p.coins;
@@ -522,6 +412,15 @@ class BoardMap {
             }
         } else {
             audioHandler.SetBackgroundMusic("level1");
+        }
+
+        if (data.menu && 
+            clientPlayerIndex == data.currentPlayerIndex && 
+            this.boardUI.currentMenu == null && 
+            data.menu.options.length > 0) {
+            if (data.menu.id > this.latestCompletedMenuId) {
+                this.boardUI.currentMenu = BoardMenu.CreateClientMenu(data.menu.id, data.menu.options);
+            }
         }
     }
 
@@ -562,7 +461,11 @@ type GameExport = {
         userId: number;
         userName: string;
         diceBag: number[];
-    }[];
+    }[],
+    menu: {
+        id: number,
+        options: string[]
+    } | null
 }
 
 type PartyGameDT = {
@@ -580,4 +483,14 @@ type PartyScoreDT = {
     playerId: number;
     score: number;
     roundNumber: number;
+}
+type PartyMenuDT = {
+    id: number;
+    gameId: number;
+    menuId: number;
+    selectedIndex: number;
+}
+
+interface PartyGameDTWithMenu extends PartyGameDT {
+    latestMenu: PartyMenuDT;
 }

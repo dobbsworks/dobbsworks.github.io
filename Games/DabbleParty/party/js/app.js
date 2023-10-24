@@ -5,6 +5,7 @@ var camera;
 var mouseHandler;
 var audioHandler;
 var playerIndex = 0;
+var clientPlayerIndex = -1;
 var currentMinigame = null;
 var board = null;
 var cutsceneService = new CutsceneService();
@@ -39,7 +40,7 @@ function Initialize() {
     setInterval(MainLoop, 1000 / 60);
     InitializeTwitchSpaceUI();
     InitializeItemList();
-    if (window.location.href.startsWith('https://dabbleworlds1.azurewebsites.net/DabbleParty') || window.location.href.startsWith("http://127.0.0.1:")) {
+    if (window.location.href.startsWith('https://dabbleworlds1.azurewebsites.net/DabbleParty') || window.location.href.startsWith("http://127.0.0.1:") || window.location.href.startsWith("https://localhost:7121/DabbleParty")) {
         // live site, let's go!
         isLoggedIn = true;
     }

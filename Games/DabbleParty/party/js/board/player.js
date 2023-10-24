@@ -15,11 +15,10 @@ var Player = /** @class */ (function () {
         this.displayedCoins = 10;
         this.gears = 1;
         this.diceBag = new DiceBag();
-        this.inventory = [itemList[0]];
+        this.inventory = [];
         this.turnOrder = 0;
         this.amountOfMovementLeft = 0;
         this.moving = false;
-        this.choosingPath = false;
         this.selectedPathIndex = 0;
         this.isInShop = false;
         this.landedOnShop = false;
@@ -41,23 +40,8 @@ var Player = /** @class */ (function () {
         var _this = this;
         if (this.token) {
             if (!cutsceneService.isCutsceneActive) {
-                if (!this.isInShop)
+                if (!this.isInShop) {
                     this.token.Update();
-                if (this.choosingPath && this.token.currentSpace) {
-                    var dirKeys = [KeyAction.Left, KeyAction.Right, KeyAction.Up, KeyAction.Down];
-                    if (dirKeys.some(function (a) { return KeyboardHandler.IsKeyPressed(a, true); })) {
-                        this.selectedPathIndex++;
-                        if (this.selectedPathIndex >= this.token.currentSpace.nextSpaces.length) {
-                            this.selectedPathIndex = 0;
-                        }
-                    }
-                    else if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
-                        var nextSpace = this.token.currentSpace.nextSpaces[this.selectedPathIndex];
-                        this.token.MoveToSpace(nextSpace);
-                        this.choosingPath = false;
-                    }
-                }
-                else {
                     if (this.token.currentSpace && this.amountOfMovementLeft > 0) {
                         if (this.token.currentSpace.spaceType.costsMovement && this.moving) {
                             this.amountOfMovementLeft--;
@@ -77,8 +61,10 @@ var Player = /** @class */ (function () {
                                 this.token.MoveToSpace(nextSpace);
                             }
                             else {
-                                this.choosingPath = true;
-                                this.selectedPathIndex = 0;
+                                if (board) {
+                                    this.isInShop = true;
+                                    board.boardUI.currentMenu = new BoardMenuChoosePath(this.token.currentSpace, this);
+                                }
                             }
                         }
                     }
@@ -107,22 +93,8 @@ var Player = /** @class */ (function () {
     };
     Player.prototype.DrawToken = function (camera) {
         if (this.token) {
-            var currentSpace = this.token.currentSpace;
-            if (this.choosingPath && currentSpace) {
-                var nextSquares = currentSpace.nextSpaces;
-                for (var i = 0; i < nextSquares.length; i++) {
-                    var nextSquare = nextSquares[i];
-                    var isSelected = this.selectedPathIndex == i;
-                    var pulse = Math.sin(((board === null || board === void 0 ? void 0 : board.timer) || 0) / 10);
-                    var scale = isSelected ? 1 + pulse / 8 : 1;
-                    var angle = Math.atan2((nextSquare.gameY - currentSpace.gameY) * 2, nextSquare.gameX - currentSpace.gameX);
-                    var distance = 75 + (isSelected ? pulse * 5 : 0);
-                    var arrowImage = tiles["boardArrow"][i][0];
-                    arrowImage.Draw(camera, this.token.x + distance * Math.cos(angle), this.token.y + distance * Math.sin(angle), 1 * scale, 0.5 * scale, false, false, angle);
-                }
-            }
             var displayedMovementRemaining = this.amountOfMovementLeft;
-            if (displayedMovementRemaining > 0 && (this.token.currentSpace == null || this.choosingPath)) {
+            if (displayedMovementRemaining > 0) {
                 DrawNumber(this.token.x, this.token.y - 100, displayedMovementRemaining, camera, 0.5);
             }
             this.token.Draw(camera);
@@ -145,7 +117,7 @@ var Player = /** @class */ (function () {
         var place = this.CurrentPlace();
         if (place < 1 || place > 4)
             return "";
-        return ["1st", "2nd", "3rd", "4th"][place - 1];
+        return NumberToOrdinal(place);
     };
     return Player;
 }());

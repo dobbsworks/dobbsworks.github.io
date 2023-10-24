@@ -322,6 +322,7 @@ var BoardCutSceneStats = /** @class */ (function (_super) {
             { space: BoardSpaceType.ShopSpace, includePasses: true },
             { space: BoardSpaceType.WallopSpace, includePasses: true },
         ];
+        _this.playerScroll = 0;
         return _this;
     }
     BoardCutSceneStats.prototype.Update = function () {
@@ -333,6 +334,17 @@ var BoardCutSceneStats = /** @class */ (function (_super) {
             cutsceneService.AddScene(new BoardCutSceneFadeOut(), new BoardCutSceneSingleAction(function () {
                 board = null;
             }), new CutsceneMainMenu());
+        }
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Down, true)) {
+            this.playerScroll++;
+            var max = board.players.length - 4;
+            if (this.playerScroll > max)
+                this.playerScroll = max;
+        }
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Up, true)) {
+            this.playerScroll--;
+            if (this.playerScroll < 0)
+                this.playerScroll = 0;
         }
     };
     BoardCutSceneStats.prototype.Draw = function (camera) {
@@ -367,7 +379,7 @@ var BoardCutSceneStats = /** @class */ (function (_super) {
         cam.ctx.fillStyle = "#FFF";
         var players = __spreadArrays(board.players);
         players.sort(function (a, b) { return a.CurrentPlace() - b.CurrentPlace(); });
-        for (var pindex = 0; pindex < players.length; pindex++) {
+        for (var pindex = this.playerScroll; pindex < 4 + this.playerScroll; pindex++) {
             var player = players[pindex];
             var y = pindex * 90 + 175 - 10 + this.baseY;
             var avatar = tiles["boardTokens"][player.avatarIndex][0];

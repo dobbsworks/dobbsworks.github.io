@@ -32,9 +32,9 @@ class MinigameWhenPigsFly extends MinigameBase {
         this.rightCurtain = new SimpleSprite(240, 0, tiles["curtain"][0][0]);
 
         this.moverCounts = [
-            Random.GetRandInt(15, 20),
-            Random.GetRandInt(15, 22),
-            Random.GetRandInt(15, 24),
+            Random.GetSeededRandInt(15, 20),
+            Random.GetSeededRandInt(15, 22),
+            Random.GetSeededRandInt(15, 24),
         ];
 
         this.confirmDigit1 = new SimpleSprite(-300, -1200, tiles["digits"][0][1]);
@@ -51,7 +51,7 @@ class MinigameWhenPigsFly extends MinigameBase {
         this.movers = [];
         let actualCount = this.moverCounts[this.roundNum - 1];
         for (let i = 0; i < actualCount; i++) {
-            let x = Random.GetRandInt(-400, 400);
+            let x = Random.GetSeededRandInt(-400, 400);
             let depth = Random.GetRand() * 4;
             let baseY = 150 - Math.sqrt(depth + 1) * 40;
             let y = baseY; // todo - aviators
@@ -61,11 +61,11 @@ class MinigameWhenPigsFly extends MinigameBase {
             if (this.roundNum == 3) {
                 y -= 100;
             }
-            let color = Random.GetRandInt(0, 7);
+            let color = Random.GetSeededRandInt(0, 7);
             let mover = new SimpleSprite(x, y, tiles["pigs"][0][color]).Scale(8) as SimpleSprite;
             mover.name = color.toString();
             let speedBase = Random.GetRand();
-            let dx = Math.sqrt(speedBase < 0.5 ? (1 - speedBase) : (speedBase - 0.5)) * 3 * (Random.GetRandInt(0, 1) == 0 ? -1 : 1);
+            let dx = Math.sqrt(speedBase < 0.5 ? (1 - speedBase) : (speedBase - 0.5)) * 3 * (Random.GetSeededRandInt(0, 1) == 0 ? -1 : 1);
             let scale = ((Math.sqrt(depth) + 5) / 5);
             dx /= scale;
             mover.Scale(1 / scale);

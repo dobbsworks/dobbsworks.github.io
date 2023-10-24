@@ -61,7 +61,7 @@ class MinigameLift extends MinigameBase {
         let ret: number[] = [];
         while (ret.length < buttonCount) {
             if (poolIter.length == 0) poolIter = [...pool];
-            let index = Random.GetRandInt(0, poolIter.length - 1);
+            let index = Random.GetSeededRandInt(0, poolIter.length - 1);
             let removed = poolIter.splice(index, 1)[0];
             ret.push(removed);
         }

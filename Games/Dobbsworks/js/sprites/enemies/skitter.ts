@@ -37,6 +37,9 @@ class Skitter extends Enemy {
                     this.isClimbing = false;
                 }
             }
+        } else {
+            this.isClimbing = false;
+            this.isHiding = true;
         }
 
         if (!this.isClimbing) {

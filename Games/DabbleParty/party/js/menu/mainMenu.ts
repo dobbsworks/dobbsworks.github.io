@@ -68,6 +68,7 @@ class MenuButtonCreateGame extends MenuButtonBase {
             currentMinigameIndex: -1,
             players: [],
             gearSpaceId: -1,
+            menu: null
         }
 
         let dt: PartyGameDT = { id: -1, data: JSON.stringify(myGameData), lastUpdate: new Date(), currentRound: -1, hostId: -1, playerIds: "", hostName: "" };
@@ -205,10 +206,9 @@ class MenuSelectGame extends MenuElement {
             DataService.JoinParty(lobby.id, selectedAvatar).then(code => {
                 if (code == -1) {
                     // can't join party!
-                } else  {
-                    // code 1, added to party, wait in the lobby
-                    // code 2, rejoining party
-                    if (code == 1 || lobby.currentRound < 1) {
+                } else {
+                    clientPlayerIndex = +code;
+                    if (lobby.currentRound < 1) {
                         handler.OpenPage(3);
                         (handler.FindById("waitingTextHost") as MenuElement).isVisible = false;
                         (handler.FindById("lobbyDisplayPlayer") as MenuLobbyStateDisplayHost).gameId = lobby.id;
@@ -243,7 +243,7 @@ class MenuTab extends MenuElement {
     OnLeft(handler: MenuHandler): void { this.TabShift(handler, -1); }
     OnRight(handler: MenuHandler): void { this.TabShift(handler, 1); }
 
-    TabShift(handler: MenuHandler, dir: -1|1) {
+    TabShift(handler: MenuHandler, dir: -1 | 1) {
         let currentIndex = this.tabList.indexOf(this.id);
         let targetIndex = currentIndex + dir;
         if (targetIndex < 0) targetIndex = this.tabList.length - 1;
@@ -260,7 +260,7 @@ class MenuTab extends MenuElement {
         }
 
         audioHandler.PlaySound("swim", true);
-        let pageId = (+(this.id.replace("tab-",""))) - 1;
+        let pageId = (+(this.id.replace("tab-", ""))) - 1;
         handler.OpenPage(pageId);
     }
     OnDown(handler: MenuHandler): void {
@@ -475,18 +475,20 @@ class MenuLobbyStateDisplayHost extends MenuElement {
     // element will periodically request lobby state from DB
     gameId = -1;
     lobbyState: GameExport | null = null;
+    minPlayersTriggered = false;
 
     FetchUpdate(handler: MenuHandler): void {
         if (this.gameId != -1) {
             DataService.GetGameData(this.gameId).then(dt => {
                 this.lobbyState = JSON.parse(dt.data);
                 this.OnReceiveGameData(dt);
-                if (this.lobbyState?.players.length == 1) {
-                    this.OnLobbyMinPlayers(handler);
-                } else if (this.lobbyState?.players.length == 4) {
-                    this.OnLobbyFull(handler);
-                } else {
-                    // wait a bit, check for players again
+                if (this.lobbyState?.players.length || 0 >= 1) {
+                    if (!this.minPlayersTriggered) {
+                        this.minPlayersTriggered = true;
+                        this.OnLobbyMinPlayers(handler);
+                    }
+                }
+                if (this.lobbyState && this.lobbyState.currentRound <= 0) {
                     setTimeout(() => {
                         this.FetchUpdate(handler);
                     }, 5000);
@@ -513,27 +515,24 @@ class MenuLobbyStateDisplayHost extends MenuElement {
                     coins: 10,
                     turnOrder: -1,
                     avatarIndex: avatarIndex,
-                    spaceIndex: 0,
+                    spaceIndex: -1,
                     items: [],
                     userId: playerId,
                     userName: playerName,
-                    diceBag: [6,6]
+                    diceBag: [6, 6]
                 };
                 this.lobbyState.players.push(newPlayer);
                 dt.data = JSON.stringify(this.lobbyState);
-                DataService.SaveGameData(dt).then(a => { console.log("Game saved to DB")});
+                DataService.SaveGameData(dt).then(a => { console.log("Game saved to DB") });
             }
         }
     }
-
-    OnLobbyFull(handler: MenuHandler): void {}
 
     OnLobbyMinPlayers(handler: MenuHandler): void {
         (handler.FindById("waitingForPlayersTextHost") as MenuElement).isVisible = false;
         let button = (handler.FindById("startGame") as MenuButtonStartGame);
         button.isVisible = true;
         handler.cursorTarget = button;
-        setTimeout(() => { this.FetchUpdate(handler); }, 5000);
     }
 
     Draw(camera: Camera): void {
@@ -557,19 +556,7 @@ class MenuLobbyStateDisplayHost extends MenuElement {
 }
 
 class MenuLobbyStateDisplayPlayer extends MenuLobbyStateDisplayHost {
-    OnLobbyFull(handler: MenuHandler): void {
-    }
-
-    OnLobbyMinPlayers(handler: MenuHandler): void {
-        (handler.FindById("waitingForPlayersTextPlayer") as MenuElement).isVisible = false;
-        (handler.FindById("waitingTextHost") as MenuElement).isVisible = true;
-        this.WaitForBoardData(handler);
-    }
-
-    OnReceiveGameData(dt: PartyGameDT): void {}
-
-    WaitForBoardData(handler: MenuHandler): void {
-        // keep asking for data until we get turn 1
+    FetchUpdate(handler: MenuHandler): void {
         if (this.gameId != -1) {
             DataService.GetGameData(this.gameId).then(dt => {
                 this.lobbyState = JSON.parse(dt.data);
@@ -578,12 +565,20 @@ class MenuLobbyStateDisplayPlayer extends MenuLobbyStateDisplayHost {
                 } else {
                     // wait a bit, check again
                     setTimeout(() => {
-                        this.WaitForBoardData(handler);
+                        this.FetchUpdate(handler);
                     }, 5000);
                 }
             });
+        } else {
+            console.log("Game id is '-1'");
         }
     }
+
+    // OnLobbyMinPlayers(handler: MenuHandler): void {
+    //     (handler.FindById("waitingForPlayersTextPlayer") as MenuElement).isVisible = false;
+    //     (handler.FindById("waitingTextHost") as MenuElement).isVisible = true;
+    // }
+
 }
 
 function MoveToBoardView(gameId: number, handler: MenuHandler, boardData: GameExport): void {
@@ -628,8 +623,8 @@ class MenuHandler {
         ["boardSelect", "turnSelect", "createGame"],
         ["lobbyDisplayHost", "waitingForPlayersTextHost", "startGame"],
         ["lobbyDisplayPlayer", "waitingForPlayersTextPlayer", "waitingTextHost"], // join a game
-        ["avatarSelect", "avatarOk"], 
-        ["minigameSelect", "minigameOk"], 
+        ["avatarSelect", "avatarOk"],
+        ["minigameSelect", "minigameOk"],
     ];
 
     OpenPage(pageIndex: number): void {

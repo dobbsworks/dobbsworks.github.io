@@ -19,6 +19,8 @@ class BoardCutSceneIntro extends BoardCutSceneSingleAction {
                 new BoardCutSceneDecideOrder(),
                 new BoardCutSceneFadeOut(),
                 new BoardCutSceneSetBackdrop(null),
+                new BoardCutSceneFadeIn(),
+                new BoardCutSceneMoveGear()
             );
         });
     }
@@ -61,10 +63,18 @@ class BoardCutSceneDecideOrder extends BoardCutScene {
     Update(): void {
         if (this.timer == 0 && board) {
             let possibleRolls = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            // if > 10 players, we need more possible numbers!
+            while (possibleRolls.length < board.players.length) {
+                possibleRolls.push(possibleRolls.length + 1);
+            }
             for (let i = 0; i < board.players.length; i++) {
-                let roll = Random.RandFrom(possibleRolls);
+                let roll = Random.SeededRandFrom(possibleRolls);
                 possibleRolls = possibleRolls.filter(a => a != roll);
                 this.rolls.push(roll);
+            }
+            
+            while (this.jumpTimes.length < board.players.length) {
+                this.jumpTimes.push(120 + Math.floor(Math.random() * 200));
             }
         }
 
@@ -100,9 +110,11 @@ class BoardCutSceneDecideOrder extends BoardCutScene {
                     }
                 }
 
+                let playersInOrder = [1, 2, 3, 4].map(b => board!.players.find(a=>a.turnOrder == b)?.avatarName);
+
                 let filler = "nobody";
-                let text = `First is ${board.players[0]?.avatarName || filler}, second is ${board.players[1]?.avatarName || filler}, ` +
-                    `third is ${board.players[2]?.avatarName || filler}, and ${board.players[3]?.avatarName || filler} will go last. ` + 
+                let text = `First is ${playersInOrder[0] || filler}, second is ${playersInOrder[1] || filler}, ` +
+                    `third is ${playersInOrder[2] || filler}, and ${playersInOrder[3] || filler} will go last. ` + 
                     `And to get things going, you'll each start with 10 coins. Good luck!`;
 
                 this.followUp = new BoardCutSceneDialog(text);

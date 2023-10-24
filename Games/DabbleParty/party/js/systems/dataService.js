@@ -45,7 +45,7 @@ var DataService = /** @class */ (function () {
             }
             onSuccess(response);
         }).catch(function (error) {
-            console.error(error);
+            //console.error(error);
             document.getElementById("errorLog").innerText += error + " \n" + endpoint + " \n" + error.stack;
             onError(error);
         });
@@ -75,6 +75,11 @@ var DataService = /** @class */ (function () {
     DataService.SubmitScore = function (gameId, score, roundNumber) {
         return new Promise(function (resolve, reject) {
             DataService.BasePost("Party/SubmitScore?gameId=" + gameId + "&score=" + score + "&roundNumber=" + roundNumber, {}, resolve, reject);
+        });
+    };
+    DataService.SubmitMenuSelection = function (gameId, menuId, selectedIndex) {
+        return new Promise(function (resolve, reject) {
+            DataService.BasePost("Party/SubmitMenuSelection?gameId=" + gameId + "&menuId=" + menuId + "&selectedIndex=" + selectedIndex, {}, resolve, reject);
         });
     };
     DataService.GetGameData = function (gameId) {

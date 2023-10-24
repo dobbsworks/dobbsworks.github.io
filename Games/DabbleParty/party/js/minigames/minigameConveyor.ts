@@ -64,9 +64,9 @@ class MinigameConveyor extends MinigameBase {
     }
 
     CreateNewBox(): void {
-        let x = Random.RandFrom([-180, 180]);
+        let x = Random.SeededRandFrom([-180, 180]);
         let y = -220;
-        let boxIndex = Random.GetRandInt(0, 2);
+        let boxIndex = Random.GetSeededRandInt(0, 2);
         let box = new SimpleSprite(x, y, tiles['conveyorBlocks'][boxIndex][0]);
         box.name = boxIndex.toString();
         this.sprites.push(box);
@@ -81,6 +81,7 @@ class MinigameConveyor extends MinigameBase {
     }
 
     Update(): void {
+        let conveyorSpeed = 2.5;
         for (let box of this.sprites.filter(a => a.name.length > 0)) {
             let conveyorBelow = this.conveyorSpots.find(a => a.x1 < box.x + 20 && a.x2 > box.x - 20 && a.y >= box.y + 20);
             box.dy += 0.2;
@@ -90,7 +91,7 @@ class MinigameConveyor extends MinigameBase {
                     // on conveyor
                     box.y = conveyorBelow.y - 20;
                     box.dy = 0;
-                    box.x += conveyorBelow.direction * 1;
+                    box.x += conveyorBelow.direction * conveyorSpeed;
                 }
             }
 
@@ -148,7 +149,7 @@ class MinigameConveyor extends MinigameBase {
         }
 
         let timerSeconds = this.timer / 60;
-        if (timerSeconds % 1 == 0 && timerSeconds > 0 && timerSeconds < 60) {
+        if (timerSeconds % 2 == 0 && timerSeconds > 0 && timerSeconds < 60) {
             this.CreateNewBox();
         }
     }

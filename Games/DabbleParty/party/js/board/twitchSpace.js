@@ -15,7 +15,7 @@ var TwitchSpaceAction = /** @class */ (function () {
     //         );
     //     });
     TwitchSpaceAction.BigCoin = new TwitchSpaceAction("Big Coin Present", "The player gains 12 to 16 coins", ["LOTTA COINS", "BIG MONEY", "They need MOAR COIN", "Dabbloons", "give em cash", "$$$$$", "Coin present ^_^", "be nice, give coins"], function (p) {
-        var coinCount = Random.GetRandInt(12, 16);
+        var coinCount = Random.GetSeededRandInt(12, 16);
         if (board)
             cutsceneService.AddScene(new BoardCutSceneAddCoins(coinCount, p));
     });
@@ -75,18 +75,18 @@ function GetRandomUserName() {
         "Lover", "Hater", "Watcher",
     ];
     var nameType = Random.GetRandIntFrom1ToNum(7);
-    var baseName = Random.RandFrom(prefixes) + Random.RandFrom(nouns);
+    var baseName = Random.SeededRandFrom(prefixes) + Random.SeededRandFrom(nouns);
     if (nameType == 1) {
-        baseName += Random.RandFrom(suffixes);
+        baseName += Random.SeededRandFrom(suffixes);
     }
     else if (nameType == 2) {
-        baseName += Random.GetRandInt(100, 9999).toString();
+        baseName += Random.GetSeededRandInt(100, 9999).toString();
     }
     else if (nameType == 3) {
-        baseName = Random.RandFrom(nouns) + Random.RandFrom(suffixes);
+        baseName = Random.SeededRandFrom(nouns) + Random.SeededRandFrom(suffixes);
     }
     else if (nameType == 4 || nameType == 5) {
-        baseName = Random.RandFrom(prefixes) + "_" + Random.RandFrom(nouns);
+        baseName = Random.SeededRandFrom(prefixes) + "_" + Random.SeededRandFrom(nouns);
     }
     var styleType = Random.GetRandIntFrom1ToNum(3);
     if (styleType == 1) {

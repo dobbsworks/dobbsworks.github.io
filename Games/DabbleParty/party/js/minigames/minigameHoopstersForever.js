@@ -131,8 +131,8 @@ var MinigameHoopstersForever = /** @class */ (function (_super) {
         return 60 * 60 - this.timer;
     };
     MinigameHoopstersForever.prototype.SetHoopPosition = function () {
-        this.hoop.x = Random.GetRandInt(-120, 380);
-        this.hoop.y = Random.GetRandInt(0, 120);
+        this.hoop.x = Random.GetSeededRandInt(-120, 380);
+        this.hoop.y = Random.GetSeededRandInt(0, 120);
         this.hoopOverlay.x = this.hoop.x;
         this.hoopOverlay.y = this.hoop.y;
     };

@@ -4,6 +4,7 @@ let camera: Camera;
 let mouseHandler: MouseHandler;
 let audioHandler: AudioHandler;
 let playerIndex: number = 0;
+let clientPlayerIndex: number = -1;
 
 let currentMinigame: MinigameBase | null = null;
 let board: BoardMap | null = null;
@@ -44,7 +45,7 @@ function Initialize() {
     InitializeTwitchSpaceUI(); 
     InitializeItemList();
 
-    if (window.location.href.startsWith('https://dabbleworlds1.azurewebsites.net/DabbleParty') || window.location.href.startsWith("http://127.0.0.1:")) {
+    if (window.location.href.startsWith('https://dabbleworlds1.azurewebsites.net/DabbleParty') || window.location.href.startsWith("http://127.0.0.1:") || window.location.href.startsWith("https://localhost:7121/DabbleParty")) {
         // live site, let's go!
         isLoggedIn = true;
     }

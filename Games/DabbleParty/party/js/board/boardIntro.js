@@ -33,7 +33,7 @@ var BoardCutSceneIntro = /** @class */ (function (_super) {
             cutsceneService.AddScene(new BoardCutSceneSetBackdrop(tiles["spaceBoardBlur"][0][0]), new BoardCutSceneSingleAction(function () {
                 var _a;
                 (_a = BoardCutScene.sprites).push.apply(_a, __spreadArrays(tokenSprites, diceSprites));
-            }), new BoardCutSceneFadeIn(), new BoardCutSceneBoardLogo(), new BoardCutSceneDialog("Welcome to Rover's Space Base! This lunar level is full of treasures to win amidst the technological wonders up here on the moon. First, let's decide who goes first."), new BoardCutSceneDecideOrder(), new BoardCutSceneFadeOut(), new BoardCutSceneSetBackdrop(null));
+            }), new BoardCutSceneFadeIn(), new BoardCutSceneBoardLogo(), new BoardCutSceneDialog("Welcome to Rover's Space Base! This lunar level is full of treasures to win amidst the technological wonders up here on the moon. First, let's decide who goes first."), new BoardCutSceneDecideOrder(), new BoardCutSceneFadeOut(), new BoardCutSceneSetBackdrop(null), new BoardCutSceneFadeIn(), new BoardCutSceneMoveGear());
         }) || this;
     }
     return BoardCutSceneIntro;
@@ -80,17 +80,23 @@ var BoardCutSceneDecideOrder = /** @class */ (function (_super) {
         return _this;
     }
     BoardCutSceneDecideOrder.prototype.Update = function () {
-        var _a, _b, _c, _d;
         if (this.timer == 0 && board) {
             var possibleRolls = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            // if > 10 players, we need more possible numbers!
+            while (possibleRolls.length < board.players.length) {
+                possibleRolls.push(possibleRolls.length + 1);
+            }
             var _loop_1 = function (i) {
-                var roll = Random.RandFrom(possibleRolls);
+                var roll = Random.SeededRandFrom(possibleRolls);
                 possibleRolls = possibleRolls.filter(function (a) { return a != roll; });
                 this_1.rolls.push(roll);
             };
             var this_1 = this;
             for (var i = 0; i < board.players.length; i++) {
                 _loop_1(i);
+            }
+            while (this.jumpTimes.length < board.players.length) {
+                this.jumpTimes.push(120 + Math.floor(Math.random() * 200));
             }
         }
         this.timer++;
@@ -122,9 +128,10 @@ var BoardCutSceneDecideOrder = /** @class */ (function (_super) {
                         turn++;
                     }
                 }
+                var playersInOrder = [1, 2, 3, 4].map(function (b) { var _a; return (_a = board.players.find(function (a) { return a.turnOrder == b; })) === null || _a === void 0 ? void 0 : _a.avatarName; });
                 var filler = "nobody";
-                var text = "First is " + (((_a = board.players[0]) === null || _a === void 0 ? void 0 : _a.avatarName) || filler) + ", second is " + (((_b = board.players[1]) === null || _b === void 0 ? void 0 : _b.avatarName) || filler) + ", " +
-                    ("third is " + (((_c = board.players[2]) === null || _c === void 0 ? void 0 : _c.avatarName) || filler) + ", and " + (((_d = board.players[3]) === null || _d === void 0 ? void 0 : _d.avatarName) || filler) + " will go last. ") +
+                var text = "First is " + (playersInOrder[0] || filler) + ", second is " + (playersInOrder[1] || filler) + ", " +
+                    ("third is " + (playersInOrder[2] || filler) + ", and " + (playersInOrder[3] || filler) + " will go last. ") +
                     "And to get things going, you'll each start with 10 coins. Good luck!";
                 this.followUp = new BoardCutSceneDialog(text);
             }

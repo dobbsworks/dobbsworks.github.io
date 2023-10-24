@@ -79,7 +79,7 @@ var MinigameLift = /** @class */ (function (_super) {
         while (ret.length < buttonCount) {
             if (poolIter.length == 0)
                 poolIter = __spreadArrays(pool);
-            var index = Random.GetRandInt(0, poolIter.length - 1);
+            var index = Random.GetSeededRandInt(0, poolIter.length - 1);
             var removed = poolIter.splice(index, 1)[0];
             ret.push(removed);
         }

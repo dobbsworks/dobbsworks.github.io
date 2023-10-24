@@ -27,9 +27,12 @@ var BoardToken = /** @class */ (function (_super) {
         _this.movementTargetSpace = null;
         _this.movementTimer = 0;
         _this.movementDuration = 20;
+        _this.readyToDraw = false;
         return _this;
     }
     BoardToken.prototype.Update = function () {
+        if (this.currentSpace)
+            this.readyToDraw = true;
         if (this.movementTargetSpace)
             this.latestSpace = this.movementTargetSpace;
         if (this.currentSpace)
@@ -71,6 +74,15 @@ var BoardToken = /** @class */ (function (_super) {
             this.movementDuration = 20;
     };
     BoardToken.prototype.GetFrameData = function (frameNum) {
+        if (!this.readyToDraw) {
+            return {
+                imageTile: tiles["boardTokens"][this.player.avatarIndex][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 9999999,
+                yOffset: this.z
+            };
+        }
         return {
             imageTile: tiles["boardTokens"][this.player.avatarIndex][0],
             xFlip: false,

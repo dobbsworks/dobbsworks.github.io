@@ -54,7 +54,7 @@ var MinigameDodgePodge = /** @class */ (function (_super) {
             var val = Random.GetRand();
             var threshold = Math.max(0.1, i / 6000 * 1.1);
             if (val < threshold) {
-                var cannonIndex = Random.GetRandInt(0, this.cannons.length - 1);
+                var cannonIndex = Random.GetSeededRandInt(0, this.cannons.length - 1);
                 var isCoin = Random.GetRand() < 0.2;
                 ret.push({ frame: i, cannonIndex: cannonIndex, isCoin: isCoin });
             }

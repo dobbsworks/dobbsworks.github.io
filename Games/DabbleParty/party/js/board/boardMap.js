@@ -1,14 +1,8 @@
 "use strict";
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
-};
 var BoardMap = /** @class */ (function () {
     function BoardMap(gameId) {
         this.gameId = gameId;
+        this.latestCompletedMenuId = -1;
         this.isSpectateMode = false;
         this.backdropTile = tiles["bgBoard"][0][0];
         this.currentRound = 1;
@@ -24,7 +18,6 @@ var BoardMap = /** @class */ (function () {
         this.topEdge = -640;
         this.bottomEdge = 640;
         this.isManualCamera = false;
-        this.scoreTimer = 0;
         this.biodomePrice = 5;
         this.currentPlayer = null;
         this.pendingMinigame = null;
@@ -137,7 +130,7 @@ var BoardMap = /** @class */ (function () {
         BoardSpace.ConnectLabels("61", "68");
         BoardSpace.ConnectLabels("70", "37");
         for (var i = 1; i <= this.players.length; i++) {
-            var p = Random.RandFrom(this.players.filter(function (a) { return a.turnOrder == 0; }));
+            var p = Random.SeededRandFrom(this.players.filter(function (a) { return a.turnOrder == 0; }));
             p.turnOrder = i;
         }
         this.players.forEach(function (a) {
@@ -147,6 +140,11 @@ var BoardMap = /** @class */ (function () {
         this.players.forEach(function (a) { return a.Update(); });
         this.boardUI.roundStarttimer = 1;
         this.PlaceGearSpace();
+    };
+    BoardMap.prototype.GetStartingSpace = function () {
+        var _a;
+        var ret = (_a = this.boardSpaces.find(function (x) { return x.label == "starting position"; })) !== null && _a !== void 0 ? _a : this.boardSpaces[0];
+        return ret;
     };
     BoardMap.prototype.IsInLast5Turns = function () {
         return this.finalRound - this.currentRound + 1 <= 5;
@@ -168,26 +166,15 @@ var BoardMap = /** @class */ (function () {
                     this.CameraFollow(this.currentPlayer || this.players[0]);
             }
         }
-        if (this.scoreTimer > 0) {
-            this.scoreTimer++;
-            if (this.scoreTimer > 100 && KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
-                this.boardUI.isShowingScores = false;
-                this.scoreTimer = 0;
-                this.currentRound++;
-                this.SaveGameStateToDB();
-                this.boardUI.roundStarttimer = 1;
-                if (this.finalRound - this.currentRound + 1 == 5) {
-                    cutsceneService.AddScene(new BoardCutSceneLast5Turns());
-                }
-                if (this.finalRound - this.currentRound + 1 == 0) {
-                    audioHandler.SetBackgroundMusic("level1");
-                    cutsceneService.AddScene(new BoardCutSceneGameEnd());
-                }
-            }
-        }
         this.CameraBounds();
         if (!this.isSpectateMode)
             this.boardUI.Update();
+        else {
+            // item menu handling
+            if (this.boardUI.currentMenu) {
+                this.boardUI.currentMenu.Update();
+            }
+        }
     };
     BoardMap.prototype.UpdateCoinDisplays = function () {
         var shouldPlaySoundUp = false;
@@ -272,6 +259,7 @@ var BoardMap = /** @class */ (function () {
             existingSpace.spaceType = BoardSpaceType.BlueBoardSpace;
         }
         target.spaceType = BoardSpaceType.GearSpace;
+        board.SaveGameStateToDB();
         return target;
     };
     BoardMap.prototype.SetGearSpace = function (id) {
@@ -327,112 +315,6 @@ var BoardMap = /** @class */ (function () {
         if (camera.scale < 0.75)
             camera.targetX = 0;
     };
-    BoardMap.prototype.CreateButtonToToggleToUserViewInOBS = function () {
-        var _this = this;
-        var container = document.getElementById("scoreInput");
-        if (container) {
-            container.innerHTML = "";
-            var button = document.createElement("button");
-            button.textContent = "I HAVE SWITCHED OBS SCENE";
-            button.onclick = function () {
-                //todo - mute audio here
-                var instructions = cutsceneService.cutscenes[0];
-                if (instructions && instructions.minigame && instructions.minigame.songId) {
-                    audioHandler.SetBackgroundMusic(instructions.minigame.songId);
-                    instructions.isDone = true;
-                }
-                _this.CreateScoreInputDOM.bind(_this)();
-            };
-            container.appendChild(button);
-        }
-    };
-    BoardMap.prototype.CreateScoreInputDOM = function () {
-        var _this = this;
-        var container = document.getElementById("scoreInput");
-        if (container) {
-            container.innerHTML = "";
-            for (var _i = 0, _a = this.players; _i < _a.length; _i++) {
-                var player = _a[_i];
-                var row = document.createElement("div");
-                row.className = "scoreRow";
-                var canvas = document.createElement("canvas");
-                canvas.width = 20;
-                canvas.height = 20;
-                canvas.style.margin = "-6px";
-                canvas.style.backgroundColor = "#0000";
-                var image = tiles["playerIcons"][player.avatarIndex][0];
-                image.Draw(new Camera(canvas), 0, 0, 0.1, 0.1, false, false, 0);
-                var input = document.createElement("input");
-                input.type = "number";
-                input.dataset.playerId = player.userId.toString();
-                input.className = "scoreInput";
-                row.appendChild(canvas);
-                row.appendChild(input);
-                container.appendChild(row);
-            }
-            var pullScoresButton = document.createElement("button");
-            pullScoresButton.textContent = "PULL SCORES";
-            pullScoresButton.onclick = function () {
-                DataService.GetScores(_this.gameId, _this.currentRound).then(function (scores) {
-                    for (var _i = 0, scores_1 = scores; _i < scores_1.length; _i++) {
-                        var score = scores_1[_i];
-                        var inputBox = document.querySelector("input[data-player-id=\"" + score.playerId + "\"]");
-                        if (inputBox) {
-                            inputBox.value = score.score.toString();
-                            inputBox.style.backgroundColor = "#AAA";
-                        }
-                    }
-                });
-                if (board) {
-                    board.pendingMinigame = null;
-                    board.SaveGameStateToDB();
-                }
-            };
-            container.appendChild(pullScoresButton);
-            var submitButton = document.createElement("button");
-            submitButton.textContent = "SUBMIT SCORES";
-            submitButton.onclick = function () { _this.OnSubmitScores.bind(_this)(); };
-            container.appendChild(submitButton);
-            var musicButton = document.createElement("button");
-            musicButton.textContent = "SWAP TO LOBBY MUSIC";
-            musicButton.onclick = function () { audioHandler.SetBackgroundMusic("lobby"); };
-            container.appendChild(musicButton);
-        }
-        this.boardUI.isShowingScores = true;
-    };
-    BoardMap.prototype.OnSubmitScores = function () {
-        this.scoreTimer = 1;
-        var container = document.getElementById("scoreInput");
-        if (container) {
-            var inputs = Array.from(document.getElementsByClassName("scoreInput"));
-            var scores = inputs.map(function (input) { return +(input.value); });
-            if (scores.length != this.players.length) {
-                console.error("WRONG INPUT COUNT");
-            }
-            else if (scores.some(function (a) { return isNaN(a); })) {
-                console.error("INVALID SCORE");
-            }
-            else if (inputs.some(function (a) { return a.value.length == 0; })) {
-                console.error("MISSING SCORE");
-            }
-            else {
-                // all good 
-                container.innerHTML = "";
-                //award coins
-                var sortedScores = __spreadArrays(scores);
-                sortedScores.sort(function (a, b) { return b - a; });
-                var topScore = sortedScores[0];
-                for (var playerIndex_1 = 0; playerIndex_1 < this.players.length; playerIndex_1++) {
-                    if (scores[playerIndex_1] == topScore) {
-                        // minigame winner! (could be multiple players triggering this block)
-                        this.players[playerIndex_1].coins += 10;
-                        this.players[playerIndex_1].statMinigameWinnings += 10;
-                        // todo put into animated value instead
-                    }
-                }
-            }
-        }
-    };
     BoardMap.prototype.SaveGameStateToDB = function () {
         var dt = {
             id: this.gameId,
@@ -449,6 +331,10 @@ var BoardMap = /** @class */ (function () {
         var _this = this;
         var gearSpace = this.boardSpaces.find(function (a) { return a.spaceType == BoardSpaceType.GearSpace; });
         var gearSpaceId = (gearSpace === null || gearSpace === void 0 ? void 0 : gearSpace.id) || -1;
+        var menu = { id: this.boardUI.menuId, options: [] };
+        if (this.boardUI.currentMenu) {
+            menu.options = this.boardUI.currentMenu.options.map(function (a) { return a.plainText; });
+        }
         var data = {
             boardId: 0,
             currentRound: this.currentRound,
@@ -466,7 +352,8 @@ var BoardMap = /** @class */ (function () {
                 diceBag: p.diceBag.dieFaces,
             }); }),
             currentMinigameIndex: this.pendingMinigame ? minigames.map(function (a) { return new a().title; }).indexOf(this.pendingMinigame.title) : -1,
-            gearSpaceId: gearSpaceId
+            gearSpaceId: gearSpaceId,
+            menu: menu
         };
         return JSON.stringify(data);
     };
@@ -484,7 +371,7 @@ var BoardMap = /** @class */ (function () {
             this.players.push(player);
             player.userId = p.userId;
             player.token = new BoardToken(player);
-            player.token.currentSpace = this.boardSpaces[p.spaceIndex];
+            player.token.currentSpace = this.boardSpaces[p.spaceIndex] || this.GetStartingSpace();
             player.gears = p.gears;
             player.coins = p.coins;
             player.displayedCoins = p.coins;
@@ -503,6 +390,14 @@ var BoardMap = /** @class */ (function () {
         }
         else {
             audioHandler.SetBackgroundMusic("level1");
+        }
+        if (data.menu &&
+            clientPlayerIndex == data.currentPlayerIndex &&
+            this.boardUI.currentMenu == null &&
+            data.menu.options.length > 0) {
+            if (data.menu.id > this.latestCompletedMenuId) {
+                this.boardUI.currentMenu = BoardMenu.CreateClientMenu(data.menu.id, data.menu.options);
+            }
         }
     };
     BoardMap.prototype.Draw = function (camera) {

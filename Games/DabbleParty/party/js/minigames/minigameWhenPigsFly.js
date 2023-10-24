@@ -46,9 +46,9 @@ var MinigameWhenPigsFly = /** @class */ (function (_super) {
         this.leftCurtain = new SimpleSprite(-240, 0, tiles["curtain"][0][0]);
         this.rightCurtain = new SimpleSprite(240, 0, tiles["curtain"][0][0]);
         this.moverCounts = [
-            Random.GetRandInt(15, 20),
-            Random.GetRandInt(15, 22),
-            Random.GetRandInt(15, 24),
+            Random.GetSeededRandInt(15, 20),
+            Random.GetSeededRandInt(15, 22),
+            Random.GetSeededRandInt(15, 24),
         ];
         this.confirmDigit1 = new SimpleSprite(-300, -1200, tiles["digits"][0][1]);
         this.confirmDigit2 = new SimpleSprite(-225, -1200, tiles["digits"][0][1]);
@@ -62,7 +62,7 @@ var MinigameWhenPigsFly = /** @class */ (function (_super) {
         this.movers = [];
         var actualCount = this.moverCounts[this.roundNum - 1];
         for (var i = 0; i < actualCount; i++) {
-            var x = Random.GetRandInt(-400, 400);
+            var x = Random.GetSeededRandInt(-400, 400);
             var depth = Random.GetRand() * 4;
             var baseY = 150 - Math.sqrt(depth + 1) * 40;
             var y = baseY; // todo - aviators
@@ -72,11 +72,11 @@ var MinigameWhenPigsFly = /** @class */ (function (_super) {
             if (this.roundNum == 3) {
                 y -= 100;
             }
-            var color = Random.GetRandInt(0, 7);
+            var color = Random.GetSeededRandInt(0, 7);
             var mover = new SimpleSprite(x, y, tiles["pigs"][0][color]).Scale(8);
             mover.name = color.toString();
             var speedBase = Random.GetRand();
-            var dx = Math.sqrt(speedBase < 0.5 ? (1 - speedBase) : (speedBase - 0.5)) * 3 * (Random.GetRandInt(0, 1) == 0 ? -1 : 1);
+            var dx = Math.sqrt(speedBase < 0.5 ? (1 - speedBase) : (speedBase - 0.5)) * 3 * (Random.GetSeededRandInt(0, 1) == 0 ? -1 : 1);
             var scale = ((Math.sqrt(depth) + 5) / 5);
             dx /= scale;
             mover.Scale(1 / scale);

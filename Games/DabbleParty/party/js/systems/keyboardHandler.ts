@@ -165,7 +165,6 @@ class KeyboardHandler {
             }
             if (document.activeElement == document.body) e.preventDefault();
         } else {
-            // console.log(keyCode);
             // e.preventDefault();
         }
 

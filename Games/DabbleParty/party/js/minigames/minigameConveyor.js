@@ -67,9 +67,9 @@ var MinigameConveyor = /** @class */ (function (_super) {
         (_a = this.sprites).push.apply(_a, __spreadArrays(this.axles, this.overlays));
     };
     MinigameConveyor.prototype.CreateNewBox = function () {
-        var x = Random.RandFrom([-180, 180]);
+        var x = Random.SeededRandFrom([-180, 180]);
         var y = -220;
-        var boxIndex = Random.GetRandInt(0, 2);
+        var boxIndex = Random.GetSeededRandInt(0, 2);
         var box = new SimpleSprite(x, y, tiles['conveyorBlocks'][boxIndex][0]);
         box.name = boxIndex.toString();
         this.sprites.push(box);
@@ -82,6 +82,7 @@ var MinigameConveyor = /** @class */ (function (_super) {
         });
     };
     MinigameConveyor.prototype.Update = function () {
+        var conveyorSpeed = 2.5;
         var _loop_1 = function (box) {
             var conveyorBelow = this_1.conveyorSpots.find(function (a) { return a.x1 < box.x + 20 && a.x2 > box.x - 20 && a.y >= box.y + 20; });
             box.dy += 0.2;
@@ -91,7 +92,7 @@ var MinigameConveyor = /** @class */ (function (_super) {
                     // on conveyor
                     box.y = conveyorBelow.y - 20;
                     box.dy = 0;
-                    box.x += conveyorBelow.direction * 1;
+                    box.x += conveyorBelow.direction * conveyorSpeed;
                 }
             }
             if (box.y >= 210) {
@@ -155,7 +156,7 @@ var MinigameConveyor = /** @class */ (function (_super) {
             this.SubmitScore(Math.floor(this.score));
         }
         var timerSeconds = this.timer / 60;
-        if (timerSeconds % 1 == 0 && timerSeconds > 0 && timerSeconds < 60) {
+        if (timerSeconds % 2 == 0 && timerSeconds > 0 && timerSeconds < 60) {
             this.CreateNewBox();
         }
     };

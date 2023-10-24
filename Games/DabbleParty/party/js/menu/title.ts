@@ -44,7 +44,7 @@ class CutsceneTitle extends BoardCutScene {
 
     CreateDiceLoop(): void {
         for (let i = 0; i < 40; i++) {
-            let faces = Random.RandFrom([4, 6, 8, 10, 12, 20]) as FaceCount;
+            let faces = Random.SeededRandFrom([4, 6, 8, 10, 12, 20]) as FaceCount;
             let die = new DiceSprite(Math.random() * 1000 - 500, Math.random() * 800 - 1200, faces, false);
             die.frame = Math.floor(Math.random() * 48);
             this.diceFall.push(die);
@@ -95,7 +95,7 @@ class CutsceneTitle extends BoardCutScene {
             audioHandler.SetBackgroundMusic("jazzy");
             // spawn big dice wave
             for (let i = 0; i < 100; i++) {
-                let faces = Random.RandFrom([4, 6, 8, 10, 12, 20]) as FaceCount;
+                let faces = Random.SeededRandFrom([4, 6, 8, 10, 12, 20]) as FaceCount;
                 let die = new DiceSprite(Math.random() * 1000 - 500, Math.random() * 600 - 900, faces, false);
                 this.diceWave.push(die);
             }
@@ -132,7 +132,7 @@ class CutsceneTitle extends BoardCutScene {
                     a.Update();
                     a.y += 6;
                     if (a.y > 400) {
-                        let faces = Random.RandFrom([4, 6, 8, 10, 12, 20]) as FaceCount;
+                        let faces = Random.SeededRandFrom([4, 6, 8, 10, 12, 20]) as FaceCount;
                         a.y -= 800;
                         a.x = Math.random() * 1000 - 500;
                         a.faces = faces;

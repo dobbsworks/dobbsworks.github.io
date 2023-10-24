@@ -35,7 +35,7 @@ class MinigameJustPlunkIt extends MinigameBase {
 
     RandomizeTarget(): void {
         this.targetRotation = Random.GetRand() * Math.PI * 2;
-        this.targetSlide = Random.GetRandInt(0, 350/5) * 5;
+        this.targetSlide = Random.GetSeededRandInt(0, 350/5) * 5;
     }
 
     GetCurrentPlunkValue(): number {

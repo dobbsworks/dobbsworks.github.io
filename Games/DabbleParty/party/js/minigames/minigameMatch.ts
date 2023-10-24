@@ -116,7 +116,7 @@ class MinigameMatch extends MinigameBase {
         let deck: number[] = [];
         let imageIndeces = [0,1,2,3,4,5,6,7,8,9];
         for (let pair = 0; pair < numPairs; pair++) {
-            let imageIndex = Random.RandFrom(imageIndeces);
+            let imageIndex = Random.SeededRandFrom(imageIndeces);
             imageIndeces = imageIndeces.filter(a => a != imageIndex);
             deck.push(imageIndex, imageIndex);
         }

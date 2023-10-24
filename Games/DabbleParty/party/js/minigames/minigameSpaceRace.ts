@@ -40,7 +40,7 @@ class MinigameSpaceRace extends MinigameBase {
             let val = Random.GetRand();
             if (val < 0.1) {
                 let x = i * 100 + 300;
-                let y = Random.GetRandInt(-180, 180);
+                let y = Random.GetSeededRandInt(-180, 180);
                 if (val < 0.03) {
                     let spr = new SimpleSprite(x, y, tiles["spaceThings"][0][0], spr => {});
                     spr.name = "rings";

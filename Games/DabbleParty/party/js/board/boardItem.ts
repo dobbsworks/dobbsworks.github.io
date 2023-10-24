@@ -3,8 +3,10 @@ abstract class BoardItem {
     abstract name: string;
     abstract description: string;
     abstract OnUse(player: Player, board: BoardMap): void;
-    OnPurchase(player: Player): void {}
+    OnCollectItem(player: Player): void {}
+    AfterPurchase(player: Player): void {}
     isPlaceholder = true;
+    isGear = false; // for tracking non-gear spending stat
 }
 
 
@@ -16,7 +18,8 @@ class ShopItemGoldenGear extends BoardItem {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     }
-    OnPurchase(player: Player): void { player.gears += 1}
+    OnCollectItem(player: Player): void { player.gears += 1}
+    isGear = true;
 }
 class ShopItemGoldenGearX2 extends BoardItem {
     imageTile = tiles["itemIcons"][3][1];
@@ -26,7 +29,8 @@ class ShopItemGoldenGearX2 extends BoardItem {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     }
-    OnPurchase(player: Player): void { player.gears += 2}
+    OnCollectItem(player: Player): void { player.gears += 2}
+    isGear = true;
 }
 class ShopItemGoldenGearX3 extends BoardItem {
     imageTile = tiles["itemIcons"][4][1];
@@ -36,7 +40,8 @@ class ShopItemGoldenGearX3 extends BoardItem {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     }
-    OnPurchase(player: Player): void { player.gears += 3}
+    OnCollectItem(player: Player): void { player.gears += 3}
+    isGear = true;
 }
 class ShopItemStealCoins extends BoardItem {
     imageTile = tiles["itemIcons"][5][1];
@@ -45,6 +50,9 @@ class ShopItemStealCoins extends BoardItem {
     OnUse(player: Player, board: BoardMap): void {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
+    }
+    AfterPurchase(player: Player): void {
+        board!.boardUI.currentMenu = BoardMenu.CreateWallopCoinMenu()
     }
 }
 class ShopItemStealGears extends BoardItem {
@@ -55,7 +63,13 @@ class ShopItemStealGears extends BoardItem {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     }
+    AfterPurchase(player: Player): void {
+        board!.boardUI.currentMenu = BoardMenu.CreateWallopGearMenu()
+    }
+    isGear = true;
 }
+
+
 class ShopItemEnterBiodome extends BoardItem {
     imageTile = tiles["itemIcons"][0][2];
     name: string = "Enter the biodome";
@@ -73,6 +87,9 @@ class ShopItemEnterAndRaise extends BoardItem {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     }
+    AfterPurchase(player: Player): void {
+        if (board) board.biodomePrice += 5;
+    }
 }
 class ShopItemWarp extends BoardItem {
     imageTile = tiles["itemIcons"][0][2];
@@ -81,6 +98,15 @@ class ShopItemWarp extends BoardItem {
     OnUse(player: Player, board: BoardMap): void {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
+    }
+    AfterPurchase(player: Player): void {
+        let currentSpace = board!.currentPlayer!.token.movementTargetSpace;
+        let warps = board!.boardSpaces.filter(a => a.label.startsWith("warp"));
+        let targetWarp = warps.filter(a => a != currentSpace)[0];
+        if (targetWarp) {
+            board!.currentPlayer!.token.currentSpace = targetWarp;
+            board!.currentPlayer!.token.MoveToSpace(targetWarp.nextSpaces[0]);
+        }
     }
 }
 
@@ -156,5 +182,15 @@ function InitializeItemList(): void {
         new BoardItemFragileD10(),
         new BoardItemFragileD12(),
         new BoardItemFragileD20(),
+
+        new ShopItemGoldenGear(),
+        new ShopItemGoldenGearX2(),
+        new ShopItemGoldenGearX3(),
+        new ShopItemStealCoins(),
+        new ShopItemStealGears(),
+
+        new ShopItemEnterBiodome(),
+        new ShopItemEnterAndRaise(),
+        new ShopItemWarp(),
     ];
 }

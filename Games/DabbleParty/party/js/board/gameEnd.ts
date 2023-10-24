@@ -318,6 +318,8 @@ class BoardCutSceneStats extends BoardCutScene {
         {space: BoardSpaceType.WallopSpace, includePasses: true},
     ];
 
+    playerScroll = 0;
+
     Update(): void {
         this.baseY *= 0.95;
         if (this.baseY < 1) this.baseY = 0;
@@ -329,6 +331,16 @@ class BoardCutSceneStats extends BoardCutScene {
                     board = null;
                 }), 
                 new CutsceneMainMenu());
+        }
+        
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Down, true)) {
+            this.playerScroll++;
+            let max = (board as BoardMap).players.length - 4;
+            if (this.playerScroll > max) this.playerScroll = max;
+        }
+        if (KeyboardHandler.IsKeyPressed(KeyAction.Up, true)) {
+            this.playerScroll--;
+            if (this.playerScroll < 0) this.playerScroll = 0;
         }
     }
     Draw(camera: Camera): void {
@@ -365,7 +377,7 @@ class BoardCutSceneStats extends BoardCutScene {
 
         let players = [...board.players];
         players.sort((a,b) => a.CurrentPlace() - b.CurrentPlace());
-        for (let pindex = 0; pindex < players.length; pindex++) {
+        for (let pindex = this.playerScroll; pindex < 4 + this.playerScroll; pindex++) {
             let player = players[pindex];
             let y = pindex * 90 + 175-10 + this.baseY;
             let avatar = tiles["boardTokens"][player.avatarIndex][0] as ImageTile;

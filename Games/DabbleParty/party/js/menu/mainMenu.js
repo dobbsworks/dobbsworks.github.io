@@ -95,6 +95,7 @@ var MenuButtonCreateGame = /** @class */ (function (_super) {
             currentMinigameIndex: -1,
             players: [],
             gearSpaceId: -1,
+            menu: null
         };
         var dt = { id: -1, data: JSON.stringify(myGameData), lastUpdate: new Date(), currentRound: -1, hostId: -1, playerIds: "", hostName: "" };
         DataService.CreateParty(dt).then(function (gameId) {
@@ -246,9 +247,8 @@ var MenuSelectGame = /** @class */ (function (_super) {
                     // can't join party!
                 }
                 else {
-                    // code 1, added to party, wait in the lobby
-                    // code 2, rejoining party
-                    if (code == 1 || lobby.currentRound < 1) {
+                    clientPlayerIndex = +code;
+                    if (lobby.currentRound < 1) {
                         handler.OpenPage(3);
                         handler.FindById("waitingTextHost").isVisible = false;
                         handler.FindById("lobbyDisplayPlayer").gameId = lobby.id;
@@ -552,23 +552,23 @@ var MenuLobbyStateDisplayHost = /** @class */ (function (_super) {
         // element will periodically request lobby state from DB
         _this.gameId = -1;
         _this.lobbyState = null;
+        _this.minPlayersTriggered = false;
         return _this;
     }
     MenuLobbyStateDisplayHost.prototype.FetchUpdate = function (handler) {
         var _this = this;
         if (this.gameId != -1) {
             DataService.GetGameData(this.gameId).then(function (dt) {
-                var _a, _b;
+                var _a;
                 _this.lobbyState = JSON.parse(dt.data);
                 _this.OnReceiveGameData(dt);
-                if (((_a = _this.lobbyState) === null || _a === void 0 ? void 0 : _a.players.length) == 1) {
-                    _this.OnLobbyMinPlayers(handler);
+                if (((_a = _this.lobbyState) === null || _a === void 0 ? void 0 : _a.players.length) || 0 >= 1) {
+                    if (!_this.minPlayersTriggered) {
+                        _this.minPlayersTriggered = true;
+                        _this.OnLobbyMinPlayers(handler);
+                    }
                 }
-                else if (((_b = _this.lobbyState) === null || _b === void 0 ? void 0 : _b.players.length) == 4) {
-                    _this.OnLobbyFull(handler);
-                }
-                else {
-                    // wait a bit, check for players again
+                if (_this.lobbyState && _this.lobbyState.currentRound <= 0) {
                     setTimeout(function () {
                         _this.FetchUpdate(handler);
                     }, 5000);
@@ -597,7 +597,7 @@ var MenuLobbyStateDisplayHost = /** @class */ (function (_super) {
                     coins: 10,
                     turnOrder: -1,
                     avatarIndex: avatarIndex,
-                    spaceIndex: 0,
+                    spaceIndex: -1,
                     items: [],
                     userId: playerId,
                     userName: playerName,
@@ -614,14 +614,11 @@ var MenuLobbyStateDisplayHost = /** @class */ (function (_super) {
             _loop_1(dtPlayerData);
         }
     };
-    MenuLobbyStateDisplayHost.prototype.OnLobbyFull = function (handler) { };
     MenuLobbyStateDisplayHost.prototype.OnLobbyMinPlayers = function (handler) {
-        var _this = this;
         handler.FindById("waitingForPlayersTextHost").isVisible = false;
         var button = handler.FindById("startGame");
         button.isVisible = true;
         handler.cursorTarget = button;
-        setTimeout(function () { _this.FetchUpdate(handler); }, 5000);
     };
     MenuLobbyStateDisplayHost.prototype.Draw = function (camera) {
         if (this.lobbyState) {
@@ -647,17 +644,8 @@ var MenuLobbyStateDisplayPlayer = /** @class */ (function (_super) {
     function MenuLobbyStateDisplayPlayer() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    MenuLobbyStateDisplayPlayer.prototype.OnLobbyFull = function (handler) {
-    };
-    MenuLobbyStateDisplayPlayer.prototype.OnLobbyMinPlayers = function (handler) {
-        handler.FindById("waitingForPlayersTextPlayer").isVisible = false;
-        handler.FindById("waitingTextHost").isVisible = true;
-        this.WaitForBoardData(handler);
-    };
-    MenuLobbyStateDisplayPlayer.prototype.OnReceiveGameData = function (dt) { };
-    MenuLobbyStateDisplayPlayer.prototype.WaitForBoardData = function (handler) {
+    MenuLobbyStateDisplayPlayer.prototype.FetchUpdate = function (handler) {
         var _this = this;
-        // keep asking for data until we get turn 1
         if (this.gameId != -1) {
             DataService.GetGameData(this.gameId).then(function (dt) {
                 _this.lobbyState = JSON.parse(dt.data);
@@ -667,10 +655,13 @@ var MenuLobbyStateDisplayPlayer = /** @class */ (function (_super) {
                 else {
                     // wait a bit, check again
                     setTimeout(function () {
-                        _this.WaitForBoardData(handler);
+                        _this.FetchUpdate(handler);
                     }, 5000);
                 }
             });
+        }
+        else {
+            console.log("Game id is '-1'");
         }
     };
     return MenuLobbyStateDisplayPlayer;

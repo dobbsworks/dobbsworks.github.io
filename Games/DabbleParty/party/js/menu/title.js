@@ -74,7 +74,7 @@ var CutsceneTitle = /** @class */ (function (_super) {
     }
     CutsceneTitle.prototype.CreateDiceLoop = function () {
         for (var i = 0; i < 40; i++) {
-            var faces = Random.RandFrom([4, 6, 8, 10, 12, 20]);
+            var faces = Random.SeededRandFrom([4, 6, 8, 10, 12, 20]);
             var die = new DiceSprite(Math.random() * 1000 - 500, Math.random() * 800 - 1200, faces, false);
             die.frame = Math.floor(Math.random() * 48);
             this.diceFall.push(die);
@@ -132,7 +132,7 @@ var CutsceneTitle = /** @class */ (function (_super) {
             audioHandler.SetBackgroundMusic("jazzy");
             // spawn big dice wave
             for (var i = 0; i < 100; i++) {
-                var faces = Random.RandFrom([4, 6, 8, 10, 12, 20]);
+                var faces = Random.SeededRandFrom([4, 6, 8, 10, 12, 20]);
                 var die = new DiceSprite(Math.random() * 1000 - 500, Math.random() * 600 - 900, faces, false);
                 this.diceWave.push(die);
             }
@@ -170,7 +170,7 @@ var CutsceneTitle = /** @class */ (function (_super) {
                     a.Update();
                     a.y += 6;
                     if (a.y > 400) {
-                        var faces = Random.RandFrom([4, 6, 8, 10, 12, 20]);
+                        var faces = Random.SeededRandFrom([4, 6, 8, 10, 12, 20]);
                         a.y -= 800;
                         a.x = Math.random() * 1000 - 500;
                         a.faces = faces;

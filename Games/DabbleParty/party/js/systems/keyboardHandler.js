@@ -97,7 +97,6 @@ var KeyboardHandler = /** @class */ (function () {
                 e.preventDefault();
         }
         else {
-            // console.log(keyCode);
             // e.preventDefault();
         }
         if (KeyboardHandler.connectedInput) {

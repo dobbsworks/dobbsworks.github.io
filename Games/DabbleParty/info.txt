@@ -4,3 +4,13 @@ To add new player characters:
     turnStartText.png
     
     get avatarName()
+
+Nice to haves:
+    allow for more than 4 player 
+        lobby ready-up (has an action at 4 players) (may not be a problem)
+        UI for scoreboard
+        UI for post minigame
+    Show scores post minigame 
+
+
+tsc --outDir ..\..\..\DabbleWorldsBackend\DabbleWorlds\wwwroot\party\js

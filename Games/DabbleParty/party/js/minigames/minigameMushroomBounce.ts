@@ -104,7 +104,6 @@ class BounceEgg extends Sprite {
                 s.y -= 2;
                 if (s.y < -100) {
                     s.isActive = false;
-                    console.log(s.age);
                 }
             }).Scale(2);
             this.minigame.sprites.push(scoreUp);

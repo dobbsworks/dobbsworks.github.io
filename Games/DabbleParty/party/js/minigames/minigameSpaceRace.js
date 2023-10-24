@@ -51,7 +51,7 @@ var MinigameSpaceRace = /** @class */ (function (_super) {
             var val = Random.GetRand();
             if (val < 0.1) {
                 var x = i * 100 + 300;
-                var y = Random.GetRandInt(-180, 180);
+                var y = Random.GetSeededRandInt(-180, 180);
                 if (val < 0.03) {
                     var spr = new SimpleSprite(x, y, tiles["spaceThings"][0][0], function (spr) { });
                     spr.name = "rings";

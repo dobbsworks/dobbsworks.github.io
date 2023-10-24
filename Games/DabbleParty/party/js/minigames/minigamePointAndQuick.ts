@@ -49,13 +49,13 @@ class MinigamePointAndQuick extends MinigameBase {
         if (this.score > 50) minSize = 3;
         if (this.score > 80) minSize = 4;
 
-        let size = Random.GetRandInt(minSize, maxSize);
+        let size = Random.GetSeededRandInt(minSize, maxSize);
 
         let targetX = -180 + this.boxStacks.length * 250;
         let targetY = 103;
         for (let i = 0; i < size; i++) {
             let spr = new SimpleSprite(targetX, targetY, tiles["directionBox"][0][4]);
-            spr.name = Random.RandFrom(["up", "down", "left", "right"]);
+            spr.name = Random.SeededRandFrom(["up", "down", "left", "right"]);
             ret.push(spr);
             targetY -= 95;
         }

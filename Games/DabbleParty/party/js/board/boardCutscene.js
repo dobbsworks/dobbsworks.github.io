@@ -170,15 +170,16 @@ var BoardCutSceneChangeDice = /** @class */ (function (_super) {
 }(BoardCutScene));
 var BoardCutScenePadding = /** @class */ (function (_super) {
     __extends(BoardCutScenePadding, _super);
-    function BoardCutScenePadding() {
+    function BoardCutScenePadding(paddingTicks) {
+        if (paddingTicks === void 0) { paddingTicks = 20; }
         var _this = _super.call(this) || this;
+        _this.paddingTicks = paddingTicks;
         _this.timer = 0;
-        _this.paddingTime = 20;
         return _this;
     }
     BoardCutScenePadding.prototype.Update = function () {
         this.timer++;
-        if (this.timer == this.paddingTime) {
+        if (this.timer == this.paddingTicks) {
             this.isDone = true;
         }
     };
@@ -234,7 +235,7 @@ var BoardCutSceneAddItem = /** @class */ (function (_super) {
             if (!this.item.isPlaceholder) {
                 this.player.inventory.push(this.item);
             }
-            this.item.OnPurchase(this.player);
+            this.item.OnCollectItem(this.player);
             audioHandler.PlaySound("dobbloon", true);
             this.isDone = true;
         }
@@ -372,7 +373,7 @@ var BoardCutSceneTwitchSpace = /** @class */ (function (_super) {
             for (var i = 0; i < weight; i++) {
                 this.spams.push({
                     name: "test",
-                    text: Random.RandFrom(action.spams),
+                    text: Random.SeededRandFrom(action.spams),
                     action: action,
                     y: 0,
                     color: "#FFF",
@@ -389,11 +390,11 @@ var BoardCutSceneTwitchSpace = /** @class */ (function (_super) {
         this.spams = Random.GetShuffledCopy(this.spams);
         this.spams.forEach(function (el, i) {
             el.y = i * heightPerRow;
-            el.color = Random.RandFrom(["Blue", " Coral", " DodgerBlue", " SpringGreen", " YellowGreen", " Green", " OrangeRed", " Red", " GoldenRod", " HotPink", " CadetBlue", " SeaGreen", " Chocolate", " BlueViolet", " Firebrick"]);
+            el.color = Random.SeededRandFrom(["Blue", " Coral", " DodgerBlue", " SpringGreen", " YellowGreen", " Green", " OrangeRed", " Red", " GoldenRod", " HotPink", " CadetBlue", " SeaGreen", " Chocolate", " BlueViolet", " Firebrick"]);
             camera.ctx.font = "700 " + 15 + "px " + "arial";
             el.name = GetRandomUserName();
             el.nameWidth = camera.ctx.measureText(el.name + ":").width;
-            el.text = Random.RandFrom(el.action.spams);
+            el.text = Random.SeededRandFrom(el.action.spams);
         });
     };
     BoardCutSceneTwitchSpace.prototype.Draw = function (camera) {
@@ -552,7 +553,7 @@ function JoinPlayers(players) {
         return players[0].avatarName;
     }
     else {
-        return "";
+        return players.map(function (a) { return a.avatarName; }).join(" & ");
     }
 }
 var BoardCutSceneLast5Turns = /** @class */ (function (_super) {
@@ -575,53 +576,74 @@ var BoardCutSceneLast5Turns = /** @class */ (function (_super) {
         this.isDone = true;
     };
     BoardCutSceneLast5Turns.prototype.GetPlacementText = function () {
-        var playerPlacements = [1, 2, 3, 4].map(function (p) { return board.players.filter(function (a) { return a.CurrentPlace() == p; }); });
-        var placementText = "";
-        if (playerPlacements[0].length == 4) {
-            // 4-way tie for first
-            placementText = "Amazingly, we have a 4-way tie for 1st place! " + JoinPlayers(playerPlacements[0]) + " are all tied for the lead.";
-        }
-        else if (playerPlacements[0].length == 3) {
-            // 3-way tie for first, 1 person in last
-            placementText = "It looks like we have a 3-way tie for 1st place! " + JoinPlayers(playerPlacements[0]) + " are tied for the lead, while " + JoinPlayers(playerPlacements[3]) + " is in dead last.";
-        }
-        else if (playerPlacements[0].length == 2) {
-            // 2-way tie for first
-            placementText = "We have a 2-way tie for 1st place! " + JoinPlayers(playerPlacements[0]) + " are vying for the win, ";
-            if (playerPlacements[2].length == 2) {
-                // 2-way tie for third
-                placementText += "and " + JoinPlayers(playerPlacements[2]) + " are tied for 3rd.";
+        var totalPlayerCount = board.players.length;
+        if (totalPlayerCount <= 4) {
+            var playerPlacements = [1, 2, 3, 4].map(function (p) { return board.players.filter(function (a) { return a.CurrentPlace() == p; }); });
+            var placementText = "";
+            if (playerPlacements[0].length == 4) {
+                // 4-way tie for first
+                placementText = "Amazingly, we have a 4-way tie for 1st place! " + JoinPlayers(playerPlacements[0]) + " are all tied for the lead.";
             }
-            else {
-                //3rd place, 4th place
-                placementText += JoinPlayers(playerPlacements[2]) + " is sitting in 3rd, and " + JoinPlayers(playerPlacements[3]) + " is in last place.";
+            else if (playerPlacements[0].length == 3) {
+                // 3-way tie for first, 1 person in last
+                placementText = "It looks like we have a 3-way tie for 1st place! " + JoinPlayers(playerPlacements[0]) + " are tied for the lead, while " + JoinPlayers(playerPlacements[3]) + " is in dead last.";
             }
-        }
-        else {
-            // 1st place
-            placementText = JoinPlayers(playerPlacements[0]) + " is in a commanding first place, ";
-            if (playerPlacements[1].length == 3) {
-                // 3-way tie for 2nd
-                placementText += "while " + JoinPlayers(playerPlacements[1]) + " are all fighting for 2nd.";
-            }
-            else if (playerPlacements[1].length == 2) {
-                // 2-way tie for 2nd, 4th place
-                placementText += JoinPlayers(playerPlacements[1]) + " are fighting for 2nd, and " + JoinPlayers(playerPlacements[3]) + " is in last place.";
-            }
-            else {
-                // 2nd place
-                placementText += JoinPlayers(playerPlacements[1]) + " is in a close 2nd, ";
+            else if (playerPlacements[0].length == 2) {
+                // 2-way tie for first
+                placementText = "We have a 2-way tie for 1st place! " + JoinPlayers(playerPlacements[0]) + " are vying for the win, ";
                 if (playerPlacements[2].length == 2) {
-                    // 2-way tie for 3rd
-                    placementText += "and " + JoinPlayers(playerPlacements[2]) + " are tied for last.";
+                    // 2-way tie for third
+                    placementText += "and " + JoinPlayers(playerPlacements[2]) + " are tied for 3rd.";
                 }
                 else {
-                    // all 4 places
-                    placementText += JoinPlayers(playerPlacements[2]) + " is in 3rd, and " + JoinPlayers(playerPlacements[3]) + " is in last place.";
+                    //3rd place, 4th place
+                    placementText += JoinPlayers(playerPlacements[2]) + " is sitting in 3rd, and " + JoinPlayers(playerPlacements[3]) + " is in last place.";
                 }
             }
+            else {
+                // 1st place
+                placementText = JoinPlayers(playerPlacements[0]) + " is in a commanding first place, ";
+                if (playerPlacements[1].length == 3) {
+                    // 3-way tie for 2nd
+                    placementText += "while " + JoinPlayers(playerPlacements[1]) + " are all fighting for 2nd.";
+                }
+                else if (playerPlacements[1].length == 2) {
+                    // 2-way tie for 2nd, 4th place
+                    placementText += JoinPlayers(playerPlacements[1]) + " are fighting for 2nd, and " + JoinPlayers(playerPlacements[3]) + " is in last place.";
+                }
+                else {
+                    // 2nd place
+                    placementText += JoinPlayers(playerPlacements[1]) + " is in a close 2nd, ";
+                    if (playerPlacements[2].length == 2) {
+                        // 2-way tie for 3rd
+                        placementText += "and " + JoinPlayers(playerPlacements[2]) + " are tied for last.";
+                    }
+                    else {
+                        // all 4 places
+                        placementText += JoinPlayers(playerPlacements[2]) + " is in 3rd, and " + JoinPlayers(playerPlacements[3]) + " is in last place.";
+                    }
+                }
+            }
+            return placementText;
         }
-        return placementText;
+        else {
+            // Alt less-pretty for more players
+            var lines = [];
+            var possiblePlaces = [];
+            for (var i = 0; i < totalPlayerCount; i++)
+                possiblePlaces.push(i + 1); // [1,2,3,4,5...]
+            var playerPlacements = possiblePlaces.map(function (p) { return board.players.filter(function (a) { return a.CurrentPlace() == p; }); });
+            for (var placeIndex = 0; placeIndex < playerPlacements.length; placeIndex++) {
+                var playersInPlace = playerPlacements[placeIndex];
+                if (playersInPlace.length == 0)
+                    continue;
+                var ordinal = NumberToOrdinal(placeIndex + 1);
+                var joinedPlayerNames = JoinPlayers(playersInPlace);
+                var text = joinedPlayerNames + " " + (playersInPlace.length == 1 ? "is" : "are") + " in " + ordinal + " place";
+                lines.push(text);
+            }
+            return lines.join(", ") + ".";
+        }
     };
     BoardCutSceneLast5Turns.prototype.Draw = function (camera) { };
     return BoardCutSceneLast5Turns;
@@ -794,3 +816,260 @@ var BoardCutSceneDevExit = /** @class */ (function (_super) {
     };
     return BoardCutSceneDevExit;
 }(BoardCutScene));
+var BoardCutScenePlayerList = /** @class */ (function (_super) {
+    __extends(BoardCutScenePlayerList, _super);
+    function BoardCutScenePlayerList() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.x = 180;
+        _this.scoreBoxes = []; // indexes into board.players
+        _this.localPlayerList = [];
+        _this.headingRow = 1;
+        _this.headingTimer = 0;
+        _this.opacity = 180;
+        return _this;
+    }
+    BoardCutScenePlayerList.prototype.GetImageY = function (boxY) { return boxY - 270 + 50; };
+    BoardCutScenePlayerList.prototype.Update = function () {
+        var _this = this;
+        this.headingTimer++;
+        this.localPlayerList.sort(this.PlayerSorter.bind(this));
+        if (this.scoreBoxes.length == 0) {
+            //init
+            this.localPlayerList = __spreadArrays(board.players);
+            this.scoreBoxes = this.localPlayerList.map(function (a) { return ({ player: a, y: 600, targetY: 600 }); });
+        }
+        else {
+            // sort by placement
+            this.scoreBoxes.sort(function (a, b) { return _this.localPlayerList.indexOf(a.player) - _this.localPlayerList.indexOf(b.player); });
+        }
+        for (var i = 0; i < this.scoreBoxes.length; i++) {
+            this.scoreBoxes[i].targetY = i * 110 + 95;
+        }
+        this.AdditionalUpdateLogic();
+        this.UpdateBoxPositions();
+    };
+    BoardCutScenePlayerList.prototype.UpdateBoxPositions = function () {
+        var boxSpeed = 4;
+        for (var _i = 0, _a = this.scoreBoxes; _i < _a.length; _i++) {
+            var scorebox = _a[_i];
+            if (Math.abs(scorebox.y - scorebox.targetY) < boxSpeed)
+                scorebox.y = scorebox.targetY;
+            if (scorebox.y < scorebox.targetY)
+                scorebox.y += boxSpeed;
+            if (scorebox.y > scorebox.targetY)
+                scorebox.y -= boxSpeed;
+        }
+    };
+    BoardCutScenePlayerList.prototype.Draw = function (camera) {
+        if (this.opacity <= 0)
+            return;
+        var ctx = camera.ctx;
+        ctx.fillStyle = "#000000" + Math.floor(this.opacity).toString(16).padStart(2, "00");
+        ctx.strokeStyle = "#FFF";
+        ctx.lineWidth = 4;
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.font = "800 " + 36 + "px " + "arial";
+        ctx.textAlign = "right";
+        var title = tiles["minigameText"][0][this.headingRow];
+        title.Draw(camera, this.x - 180, Math.min(-220, this.headingTimer - 350), 1, 1, false, false, 0);
+        for (var playerIndex_1 = 0; playerIndex_1 < board.players.length; playerIndex_1++) {
+            var scorebox = this.scoreBoxes[playerIndex_1];
+            this.DrawBasePlayerBox(playerIndex_1, scorebox.y);
+            this.AdditionalDraw(playerIndex_1, scorebox.y);
+        }
+    };
+    BoardCutScenePlayerList.prototype.DrawBasePlayerBox = function (playerIndex, y) {
+        var player = this.scoreBoxes[playerIndex].player;
+        var cam = board.boardUI.uiCamera;
+        var image = tiles["playerIcons"][player.avatarIndex][0];
+        cam.ctx.fillStyle = "#000D";
+        cam.ctx.fillRect(this.x, y, 600, 100);
+        cam.ctx.strokeRect(this.x, y, 600, 100);
+        image.Draw(cam, this.x - 480 + 50, this.GetImageY(y), 0.4, 0.4, false, false, 0);
+    };
+    return BoardCutScenePlayerList;
+}(BoardCutScene));
+var BoardCutSceneStandings = /** @class */ (function (_super) {
+    __extends(BoardCutSceneStandings, _super);
+    function BoardCutSceneStandings(awards) {
+        var _this = _super.call(this) || this;
+        _this.awards = awards;
+        _this.timer = 0;
+        return _this;
+    }
+    BoardCutSceneStandings.prototype.PlayerSorter = function (a, b) {
+        return (a.CurrentPlace() + a.turnOrder / 10) - (b.CurrentPlace() + b.turnOrder / 10);
+    };
+    BoardCutSceneStandings.prototype.AdditionalUpdateLogic = function () {
+        this.timer++;
+        if (this.timer > 150) {
+            if (this.timer % 8 == 0) {
+                var playSound = false;
+                for (var _i = 0, _a = this.awards; _i < _a.length; _i++) {
+                    var award = _a[_i];
+                    if (award.coins > 0) {
+                        award.coins--;
+                        award.player.coins++;
+                        award.player.displayedCoins++;
+                        playSound = true;
+                    }
+                }
+                if (playSound)
+                    audioHandler.PlaySound("coin", true);
+            }
+        }
+        var endTime = 400;
+        if (this.timer >= endTime) {
+            this.x += (this.timer - endTime) / 2;
+            if (this.x > 1100) {
+                this.opacity -= 3;
+            }
+            if (this.opacity <= 0)
+                this.Complete();
+        }
+    };
+    BoardCutSceneStandings.prototype.Complete = function () {
+        if (!board)
+            return;
+        this.isDone = true;
+        board.currentRound++;
+        board.SaveGameStateToDB();
+        board.boardUI.roundStarttimer = 1;
+        if (board.finalRound - board.currentRound + 1 == 5) {
+            cutsceneService.AddScene(new BoardCutSceneLast5Turns());
+        }
+        if (board.finalRound - board.currentRound + 1 == 0) {
+            audioHandler.SetBackgroundMusic("level1");
+            cutsceneService.AddScene(new BoardCutSceneGameEnd());
+        }
+    };
+    BoardCutSceneStandings.prototype.AdditionalDraw = function (playerIndex, y) {
+        // Draw placement, gears, coins
+        var player = this.scoreBoxes[playerIndex].player;
+        var cam = board.boardUI.uiCamera;
+        var gearIcon = tiles["uiLargeIcons"][0][0];
+        var coinIcon = tiles["uiLargeIcons"][0][1];
+        gearIcon.Draw(cam, this.x - 480 + 300, this.GetImageY(y), 1, 1, false, false, 0);
+        coinIcon.Draw(cam, this.x - 480 + 470, this.GetImageY(y), 1, 1, false, false, 0);
+        cam.ctx.fillStyle = "#FFF";
+        cam.ctx.textAlign = "right";
+        cam.ctx.font = "800 " + 36 + "px " + "arial";
+        cam.ctx.fillText(player.CurrentPlaceText(), this.x + 200, y + 50 + 14);
+        cam.ctx.fillText(player.gears.toString(), this.x + 400, y + 50 + 14);
+        cam.ctx.fillText(player.displayedCoins.toString(), this.x + 570, y + 50 + 14);
+        var _loop_2 = function (scorebox) {
+            var award = this_2.awards.find(function (a) { return a.player == scorebox.player; });
+            if (award && award.coins > 0) {
+                DrawText(this_2.x + 160, this_2.GetImageY(scorebox.y), "+" + award.coins, cam, 0.3, 3);
+            }
+        };
+        var this_2 = this;
+        for (var _i = 0, _a = this.scoreBoxes; _i < _a.length; _i++) {
+            var scorebox = _a[_i];
+            _loop_2(scorebox);
+        }
+    };
+    return BoardCutSceneStandings;
+}(BoardCutScenePlayerList));
+var BoardCutSceneMinigameResults = /** @class */ (function (_super) {
+    __extends(BoardCutSceneMinigameResults, _super);
+    function BoardCutSceneMinigameResults() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.headingRow = 2;
+        _this.fetchedScores = [];
+        _this.countDown = 120;
+        _this.isFetching = false;
+        _this.fetchTimer = 0;
+        return _this;
+    }
+    BoardCutSceneMinigameResults.prototype.Complete = function () {
+        this.isDone = true;
+        if (board)
+            board.pendingMinigame = null;
+        // coins are distributed based on minigame placement
+        // 10 for 1st, 3 for 2nd, 2 for 3rd
+        // If tie for 1st, we get [10, 10, 2, 0]
+        // If 3-way tie for 2nd, we get [10, 3, 3, 3]
+        var coinDistribution = [10, 3, 2];
+        var sortedScores = this.fetchedScores.map(function (a) { return a.score; });
+        sortedScores.sort(function (a, b) { return b - a; });
+        var topScore = sortedScores[0];
+        var awards = [];
+        var _loop_3 = function (fetchedScore) {
+            var scorePlacement = sortedScores.indexOf(fetchedScore.score);
+            // 0 for 1st (or if tying for 1st!)
+            var winnings = coinDistribution[scorePlacement] || 0;
+            var player = board.players.find(function (a) { return a.userId == fetchedScore.playerUserId; });
+            if (player) {
+                awards.push({ player: player, coins: winnings });
+                player.statMinigameWinnings += winnings;
+            }
+        };
+        for (var _i = 0, _a = this.fetchedScores; _i < _a.length; _i++) {
+            var fetchedScore = _a[_i];
+            _loop_3(fetchedScore);
+        }
+        cutsceneService.AddScene(new BoardCutSceneStandings(awards));
+    };
+    BoardCutSceneMinigameResults.prototype.AdditionalDraw = function (playerIndex, y) {
+        // draw scores
+        var player = this.scoreBoxes[playerIndex].player;
+        var score = this.fetchedScores.find(function (x) { return x.playerUserId == player.userId; });
+        if (score) {
+            var cam = board.boardUI.uiCamera;
+            cam.ctx.fillStyle = "#FFF";
+            cam.ctx.textAlign = "right";
+            cam.ctx.font = "800 " + 36 + "px " + "arial";
+            cam.ctx.fillText(score.score.toString(), this.x + 570, y + 50 + 14);
+        }
+    };
+    BoardCutSceneMinigameResults.prototype.AdditionalUpdateLogic = function () {
+        var _this = this;
+        audioHandler.SetBackgroundMusic("lobby");
+        var _loop_4 = function (scorebox) {
+            var matchingScore = this_3.fetchedScores.find(function (a) { return a.playerUserId == scorebox.player.userId; });
+            if (!matchingScore)
+                scorebox.targetY = 600;
+        };
+        var this_3 = this;
+        for (var _i = 0, _a = this.scoreBoxes; _i < _a.length; _i++) {
+            var scorebox = _a[_i];
+            _loop_4(scorebox);
+        }
+        if (this.fetchedScores.length == this.scoreBoxes.length && this.scoreBoxes.every(function (a) { return a.targetY == a.y; })) {
+            // all scores fetched, all locations right
+            this.countDown--;
+            if (this.countDown <= 0) {
+                this.x += this.countDown / 2;
+                if (this.x < -1000) {
+                    this.Complete();
+                }
+                // auto proceed
+            }
+        }
+        if (this.fetchedScores.length < this.scoreBoxes.length && !this.isFetching) {
+            this.fetchTimer++;
+            if (this.fetchTimer > 120) {
+                this.fetchTimer = 0;
+                this.isFetching = true;
+                DataService.GetScores(board.gameId, board.currentRound).then(function (scores) {
+                    _this.fetchedScores = scores.map(function (a) { return ({ playerUserId: a.playerId, score: a.score }); });
+                });
+            }
+        }
+    };
+    BoardCutSceneMinigameResults.prototype.PlayerSorter = function (a, b) {
+        var scoreA = this.fetchedScores.find(function (x) { return x.playerUserId == a.userId; });
+        var scoreB = this.fetchedScores.find(function (x) { return x.playerUserId == b.userId; });
+        if (!scoreA && !scoreB)
+            return 0;
+        if (scoreA && !scoreB)
+            return -1;
+        if (!scoreA && scoreB)
+            return 1;
+        if (scoreA && scoreB)
+            return scoreB.score - scoreA.score;
+        return 0;
+    };
+    return BoardCutSceneMinigameResults;
+}(BoardCutScenePlayerList));

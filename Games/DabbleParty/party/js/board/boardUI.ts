@@ -11,13 +11,23 @@ class BoardUI {
     waitFrames = 30;
     playerStartTimer = 0;
     useAltStartText = false;
+    rollTimer = 0;
 
-    currentMenu: BoardMenu | null = null;
+    menuId: number = 1;
+    _currentMenu: BoardMenu | null = null
+    get currentMenu(): BoardMenu | null {
+        return this._currentMenu
+    };
+    set currentMenu(menu: BoardMenu | null) {
+        this._currentMenu = menu;
+        this.menuId++;
+        if (!this.board.isSpectateMode) {
+            this.board.SaveGameStateToDB();
+        }
+    };
 
     isChoosingMinigame = false;
     minigameTextTime = 0;
-    isShowingScores = false;
-    scoreBoxes: { player: Player, y: number, targetY: number }[] = []; // indexes into board.players
 
     fakeMinigameNames = [
         "Turtle Will Love This One",
@@ -78,40 +88,16 @@ class BoardUI {
             if (this.fakeMinigamePool.length == 0) {
                 this.fakeMinigamePool = [...this.fakeMinigameNames];
             }
-            let drawn = Random.RandFrom(this.fakeMinigamePool);
+            let drawn = Random.SeededRandFrom(this.fakeMinigamePool);
             this.fakeMinigamePool = this.fakeMinigamePool.filter(a => a != drawn);
             this.currentRouletteTexts.push(drawn);
-        }
-    }
-
-    UpdateScoreboxes(): void {
-        let players = [...this.board.players];
-        // sort by place, tiebreaker uses turn order
-        players.sort((a, b) => (a.CurrentPlace() + a.turnOrder / 10) - (b.CurrentPlace() + b.turnOrder / 10));
-        if (this.scoreBoxes.length == 0) {
-            this.scoreBoxes = players.map(a => ({ player: a, y: 0, targetY: 0 }));
-        } else {
-            // sort by placement
-            this.scoreBoxes.sort((a,b) => players.indexOf(a.player) - players.indexOf(b.player))
-        }
-
-        for (let i = 0; i < this.scoreBoxes.length; i++) {
-            this.scoreBoxes[i].targetY = i * 110 + 95;
-        }
-
-        let boxSpeed = 4;
-        for (let scorebox of this.scoreBoxes) {
-            if (Math.abs(scorebox.y - scorebox.targetY) < boxSpeed) scorebox.y = scorebox.targetY;
-
-            if (scorebox.y < scorebox.targetY) scorebox.y += boxSpeed;
-            if (scorebox.y > scorebox.targetY) scorebox.y -= boxSpeed;
         }
     }
 
     Update(): void {
         if (this.playerStartTimer > 0) this.playerStartTimer++;
         if (this.playerStartTimer == this.slideFrames * 2 + this.waitFrames) {
-            this.currentMenu = BoardMenu.CreateItemMenu();
+            this.currentMenu = BoardMenu.CreateTurnStartMenu();
         }
         if (this.isChoosingMinigame) {
             if (this.minigameTextTime == 140) {
@@ -125,18 +111,21 @@ class BoardUI {
             this.rouletteTheta += 0.1;
             if (this.minigameTextTime == 540 && this.board.pendingMinigame) {
                 this.isChoosingMinigame = false;
-                cutsceneService.AddScene(new Instructions(this.board.pendingMinigame));
-                this.board.CreateButtonToToggleToUserViewInOBS();
+                let minigame = this.board.pendingMinigame;
+                let tickDuration = minigame.GetRemainingTicks();
+                cutsceneService.AddScene(
+                    new Instructions(this.board.pendingMinigame),
+                    new BoardCutSceneSingleAction(() => {
+                        audioHandler.SetBackgroundMusic(minigame.songId);
+                    }),
+                    new BoardCutScenePadding(tickDuration),
+                    new BoardCutSceneMinigameResults(),
+                );
             }
         } else {
             this.minigameTextTime = 0;
             this.rouletteTheta = 0;
         }
-
-        if (this.isShowingScores) {
-            this.UpdateScoreboxes();
-        }
-
 
         if (cutsceneService.isCutsceneActive) return;
 
@@ -156,7 +145,9 @@ class BoardUI {
         this.dice.forEach(a => a.Update());
 
         if (this.dice.some(a => !a.IsStopped())) {
-            if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
+            this.rollTimer++;
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true) || this.rollTimer > 40) {
+                this.rollTimer = 0;
                 let d = this.dice.find(a => !a.IsStopped());
                 if (d) {
                     d.Stop();
@@ -207,6 +198,7 @@ class BoardUI {
 
     DrawForSpectator(ctx: CanvasRenderingContext2D): void {
         this.DrawScoreboard(ctx);
+        if (this.currentMenu) this.currentMenu.Draw(ctx);
     }
 
     Draw(ctx: CanvasRenderingContext2D): void {
@@ -229,12 +221,8 @@ class BoardUI {
 
         if (this.currentMenu) this.currentMenu.Draw(ctx);
 
-        if (this.isShowingScores) {
-            this.DrawScoreboxes(ctx);
-        } else {
-            if (this.roundStarttimer == 0) {
-                this.DrawScoreboard(ctx);
-            }
+        if (this.roundStarttimer == 0) {
+            this.DrawScoreboard(ctx);
         }
         if (this.isChoosingMinigame) this.DrawMinigameChoose(ctx);
     }
@@ -306,36 +294,6 @@ class BoardUI {
         }
     }
 
-    DrawScoreboxes(ctx: CanvasRenderingContext2D): void {
-        ctx.fillStyle = "#000B";
-        ctx.strokeStyle = "#FFF";
-        ctx.lineWidth = 4;
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        ctx.font = `800 ${36}px ${"arial"}`;
-        ctx.textAlign = "right";
-
-        let title = tiles["minigameText"][0][1] as ImageTile;
-        title.Draw(this.uiCamera, 0, -220, 1, 1, false, false, 0);
-
-        let x = 180;
-        let gearIcon = tiles["uiLargeIcons"][0][0] as ImageTile;
-        let coinIcon = tiles["uiLargeIcons"][0][1] as ImageTile;
-        for (let scorebox of this.scoreBoxes) {
-            let image = tiles["playerIcons"][scorebox.player.avatarIndex][0] as ImageTile;
-            let y = scorebox.y;
-            let imageY = y - 270 + 50;
-            ctx.fillStyle = "#000D";
-            ctx.fillRect(x, y, 600, 100);
-            ctx.strokeRect(x, y, 600, 100);
-            image.Draw(this.uiCamera, x - 480 + 50, imageY, 0.4, 0.4, false, false, 0);
-            gearIcon.Draw(this.uiCamera, x - 480 + 300, imageY, 1, 1, false, false, 0);
-            coinIcon.Draw(this.uiCamera, x - 480 + 470, imageY, 1, 1, false, false, 0);
-            ctx.fillStyle = "#FFF";
-            ctx.fillText(scorebox.player.CurrentPlaceText(), x + 200, y + 50 + 14);
-            ctx.fillText(scorebox.player.gears.toString(), x + 400, y + 50 + 14);
-            ctx.fillText(scorebox.player.displayedCoins.toString(), x + 570, y + 50 + 14);
-        }
-    }
 
     rouletteTheta = 0;
     DrawMinigameChoose(ctx: CanvasRenderingContext2D): void {

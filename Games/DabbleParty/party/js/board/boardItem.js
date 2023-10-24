@@ -15,8 +15,10 @@ var __extends = (this && this.__extends) || (function () {
 var BoardItem = /** @class */ (function () {
     function BoardItem() {
         this.isPlaceholder = true;
+        this.isGear = false; // for tracking non-gear spending stat
     }
-    BoardItem.prototype.OnPurchase = function (player) { };
+    BoardItem.prototype.OnCollectItem = function (player) { };
+    BoardItem.prototype.AfterPurchase = function (player) { };
     return BoardItem;
 }());
 var ShopItemGoldenGear = /** @class */ (function (_super) {
@@ -26,13 +28,14 @@ var ShopItemGoldenGear = /** @class */ (function (_super) {
         _this.imageTile = tiles["itemIcons"][2][1];
         _this.name = "Golden Gear";
         _this.description = "Collect the most gears to win the game!";
+        _this.isGear = true;
         return _this;
     }
     ShopItemGoldenGear.prototype.OnUse = function (player, board) {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     };
-    ShopItemGoldenGear.prototype.OnPurchase = function (player) { player.gears += 1; };
+    ShopItemGoldenGear.prototype.OnCollectItem = function (player) { player.gears += 1; };
     return ShopItemGoldenGear;
 }(BoardItem));
 var ShopItemGoldenGearX2 = /** @class */ (function (_super) {
@@ -42,13 +45,14 @@ var ShopItemGoldenGearX2 = /** @class */ (function (_super) {
         _this.imageTile = tiles["itemIcons"][3][1];
         _this.name = "Golden Gear x2";
         _this.description = "Collect the most gears to win the game!";
+        _this.isGear = true;
         return _this;
     }
     ShopItemGoldenGearX2.prototype.OnUse = function (player, board) {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     };
-    ShopItemGoldenGearX2.prototype.OnPurchase = function (player) { player.gears += 2; };
+    ShopItemGoldenGearX2.prototype.OnCollectItem = function (player) { player.gears += 2; };
     return ShopItemGoldenGearX2;
 }(BoardItem));
 var ShopItemGoldenGearX3 = /** @class */ (function (_super) {
@@ -58,13 +62,14 @@ var ShopItemGoldenGearX3 = /** @class */ (function (_super) {
         _this.imageTile = tiles["itemIcons"][4][1];
         _this.name = "Golden Gear x3";
         _this.description = "Collect the most gears to win the game!";
+        _this.isGear = true;
         return _this;
     }
     ShopItemGoldenGearX3.prototype.OnUse = function (player, board) {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     };
-    ShopItemGoldenGearX3.prototype.OnPurchase = function (player) { player.gears += 3; };
+    ShopItemGoldenGearX3.prototype.OnCollectItem = function (player) { player.gears += 3; };
     return ShopItemGoldenGearX3;
 }(BoardItem));
 var ShopItemStealCoins = /** @class */ (function (_super) {
@@ -80,6 +85,9 @@ var ShopItemStealCoins = /** @class */ (function (_super) {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     };
+    ShopItemStealCoins.prototype.AfterPurchase = function (player) {
+        board.boardUI.currentMenu = BoardMenu.CreateWallopCoinMenu();
+    };
     return ShopItemStealCoins;
 }(BoardItem));
 var ShopItemStealGears = /** @class */ (function (_super) {
@@ -89,11 +97,15 @@ var ShopItemStealGears = /** @class */ (function (_super) {
         _this.imageTile = tiles["itemIcons"][2][1];
         _this.name = "Steal a golden gear";
         _this.description = "All's fair in love, war, and party games";
+        _this.isGear = true;
         return _this;
     }
     ShopItemStealGears.prototype.OnUse = function (player, board) {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
+    };
+    ShopItemStealGears.prototype.AfterPurchase = function (player) {
+        board.boardUI.currentMenu = BoardMenu.CreateWallopGearMenu();
     };
     return ShopItemStealGears;
 }(BoardItem));
@@ -125,6 +137,10 @@ var ShopItemEnterAndRaise = /** @class */ (function (_super) {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
     };
+    ShopItemEnterAndRaise.prototype.AfterPurchase = function (player) {
+        if (board)
+            board.biodomePrice += 5;
+    };
     return ShopItemEnterAndRaise;
 }(BoardItem));
 var ShopItemWarp = /** @class */ (function (_super) {
@@ -139,6 +155,15 @@ var ShopItemWarp = /** @class */ (function (_super) {
     ShopItemWarp.prototype.OnUse = function (player, board) {
         // this is just a placeholder item for shops rendering, can't be bought
         throw new Error("Method not implemented.");
+    };
+    ShopItemWarp.prototype.AfterPurchase = function (player) {
+        var currentSpace = board.currentPlayer.token.movementTargetSpace;
+        var warps = board.boardSpaces.filter(function (a) { return a.label.startsWith("warp"); });
+        var targetWarp = warps.filter(function (a) { return a != currentSpace; })[0];
+        if (targetWarp) {
+            board.currentPlayer.token.currentSpace = targetWarp;
+            board.currentPlayer.token.MoveToSpace(targetWarp.nextSpaces[0]);
+        }
     };
     return ShopItemWarp;
 }(BoardItem));
@@ -267,5 +292,13 @@ function InitializeItemList() {
         new BoardItemFragileD10(),
         new BoardItemFragileD12(),
         new BoardItemFragileD20(),
+        new ShopItemGoldenGear(),
+        new ShopItemGoldenGearX2(),
+        new ShopItemGoldenGearX3(),
+        new ShopItemStealCoins(),
+        new ShopItemStealGears(),
+        new ShopItemEnterBiodome(),
+        new ShopItemEnterAndRaise(),
+        new ShopItemWarp(),
     ];
 }

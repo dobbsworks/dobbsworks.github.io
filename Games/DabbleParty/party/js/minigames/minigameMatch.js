@@ -129,7 +129,7 @@ var MinigameMatch = /** @class */ (function (_super) {
         var deck = [];
         var imageIndeces = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
         var _loop_1 = function (pair) {
-            var imageIndex = Random.RandFrom(imageIndeces);
+            var imageIndex = Random.SeededRandFrom(imageIndeces);
             imageIndeces = imageIndeces.filter(function (a) { return a != imageIndex; });
             deck.push(imageIndex, imageIndex);
         };

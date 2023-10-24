@@ -28,7 +28,7 @@ class MinigameThanksForTheCream extends MinigameBase {
         for (let i = 0; i < 5; i++) {
             let leftEdge = Math.max(targetX - this.range, -350);
             let rightEdge = Math.min(targetX + this.range, 350);
-            targetX = Random.GetRandInt(leftEdge, rightEdge);
+            targetX = Random.GetSeededRandInt(leftEdge, rightEdge);
             let y = 300 + i * 100;
             let scoop = new SimpleSprite(targetX, y, tiles["iceCream"][playerIndex][0], (spr) => {
                 spr.y -= 5;

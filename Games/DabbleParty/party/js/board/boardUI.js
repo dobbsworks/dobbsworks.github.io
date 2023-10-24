@@ -32,11 +32,11 @@ var BoardUI = /** @class */ (function () {
         this.waitFrames = 30;
         this.playerStartTimer = 0;
         this.useAltStartText = false;
-        this.currentMenu = null;
+        this.rollTimer = 0;
+        this.menuId = 1;
+        this._currentMenu = null;
         this.isChoosingMinigame = false;
         this.minigameTextTime = 0;
-        this.isShowingScores = false;
-        this.scoreBoxes = []; // indexes into board.players
         this.fakeMinigameNames = [
             "Turtle Will Love This One",
             "The Rise And Fall",
@@ -71,6 +71,22 @@ var BoardUI = /** @class */ (function () {
         this.currentRouletteTexts = [];
         this.rouletteTheta = 0;
     }
+    Object.defineProperty(BoardUI.prototype, "currentMenu", {
+        get: function () {
+            return this._currentMenu;
+        },
+        set: function (menu) {
+            this._currentMenu = menu;
+            this.menuId++;
+            if (!this.board.isSpectateMode) {
+                this.board.SaveGameStateToDB();
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
+    ;
+    ;
     BoardUI.prototype.Clear = function () {
         this.combineTimer = 0;
         this.combinedNumber = 0;
@@ -93,7 +109,7 @@ var BoardUI = /** @class */ (function () {
             if (this_1.fakeMinigamePool.length == 0) {
                 this_1.fakeMinigamePool = __spreadArrays(this_1.fakeMinigameNames);
             }
-            var drawn = Random.RandFrom(this_1.fakeMinigamePool);
+            var drawn = Random.SeededRandFrom(this_1.fakeMinigamePool);
             this_1.fakeMinigamePool = this_1.fakeMinigamePool.filter(function (a) { return a != drawn; });
             this_1.currentRouletteTexts.push(drawn);
         };
@@ -102,36 +118,11 @@ var BoardUI = /** @class */ (function () {
             _loop_1(i);
         }
     };
-    BoardUI.prototype.UpdateScoreboxes = function () {
-        var players = __spreadArrays(this.board.players);
-        // sort by place, tiebreaker uses turn order
-        players.sort(function (a, b) { return (a.CurrentPlace() + a.turnOrder / 10) - (b.CurrentPlace() + b.turnOrder / 10); });
-        if (this.scoreBoxes.length == 0) {
-            this.scoreBoxes = players.map(function (a) { return ({ player: a, y: 0, targetY: 0 }); });
-        }
-        else {
-            // sort by placement
-            this.scoreBoxes.sort(function (a, b) { return players.indexOf(a.player) - players.indexOf(b.player); });
-        }
-        for (var i = 0; i < this.scoreBoxes.length; i++) {
-            this.scoreBoxes[i].targetY = i * 110 + 95;
-        }
-        var boxSpeed = 4;
-        for (var _i = 0, _a = this.scoreBoxes; _i < _a.length; _i++) {
-            var scorebox = _a[_i];
-            if (Math.abs(scorebox.y - scorebox.targetY) < boxSpeed)
-                scorebox.y = scorebox.targetY;
-            if (scorebox.y < scorebox.targetY)
-                scorebox.y += boxSpeed;
-            if (scorebox.y > scorebox.targetY)
-                scorebox.y -= boxSpeed;
-        }
-    };
     BoardUI.prototype.Update = function () {
         if (this.playerStartTimer > 0)
             this.playerStartTimer++;
         if (this.playerStartTimer == this.slideFrames * 2 + this.waitFrames) {
-            this.currentMenu = BoardMenu.CreateItemMenu();
+            this.currentMenu = BoardMenu.CreateTurnStartMenu();
         }
         if (this.isChoosingMinigame) {
             if (this.minigameTextTime == 140) {
@@ -145,16 +136,16 @@ var BoardUI = /** @class */ (function () {
             this.rouletteTheta += 0.1;
             if (this.minigameTextTime == 540 && this.board.pendingMinigame) {
                 this.isChoosingMinigame = false;
-                cutsceneService.AddScene(new Instructions(this.board.pendingMinigame));
-                this.board.CreateButtonToToggleToUserViewInOBS();
+                var minigame_1 = this.board.pendingMinigame;
+                var tickDuration = minigame_1.GetRemainingTicks();
+                cutsceneService.AddScene(new Instructions(this.board.pendingMinigame), new BoardCutSceneSingleAction(function () {
+                    audioHandler.SetBackgroundMusic(minigame_1.songId);
+                }), new BoardCutScenePadding(tickDuration), new BoardCutSceneMinigameResults());
             }
         }
         else {
             this.minigameTextTime = 0;
             this.rouletteTheta = 0;
-        }
-        if (this.isShowingScores) {
-            this.UpdateScoreboxes();
         }
         if (cutsceneService.isCutsceneActive)
             return;
@@ -171,7 +162,9 @@ var BoardUI = /** @class */ (function () {
         }
         this.dice.forEach(function (a) { return a.Update(); });
         if (this.dice.some(function (a) { return !a.IsStopped(); })) {
-            if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
+            this.rollTimer++;
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true) || this.rollTimer > 40) {
+                this.rollTimer = 0;
                 var d = this.dice.find(function (a) { return !a.IsStopped(); });
                 if (d) {
                     d.Stop();
@@ -217,6 +210,8 @@ var BoardUI = /** @class */ (function () {
     };
     BoardUI.prototype.DrawForSpectator = function (ctx) {
         this.DrawScoreboard(ctx);
+        if (this.currentMenu)
+            this.currentMenu.Draw(ctx);
     };
     BoardUI.prototype.Draw = function (ctx) {
         var _this = this;
@@ -241,13 +236,8 @@ var BoardUI = /** @class */ (function () {
             this.DrawRoundStart(ctx);
         if (this.currentMenu)
             this.currentMenu.Draw(ctx);
-        if (this.isShowingScores) {
-            this.DrawScoreboxes(ctx);
-        }
-        else {
-            if (this.roundStarttimer == 0) {
-                this.DrawScoreboard(ctx);
-            }
+        if (this.roundStarttimer == 0) {
+            this.DrawScoreboard(ctx);
         }
         if (this.isChoosingMinigame)
             this.DrawMinigameChoose(ctx);
@@ -320,35 +310,6 @@ var BoardUI = /** @class */ (function () {
         var this_2 = this;
         for (var turn = 1; turn <= 4; turn++) {
             _loop_2(turn);
-        }
-    };
-    BoardUI.prototype.DrawScoreboxes = function (ctx) {
-        ctx.fillStyle = "#000B";
-        ctx.strokeStyle = "#FFF";
-        ctx.lineWidth = 4;
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        ctx.font = "800 " + 36 + "px " + "arial";
-        ctx.textAlign = "right";
-        var title = tiles["minigameText"][0][1];
-        title.Draw(this.uiCamera, 0, -220, 1, 1, false, false, 0);
-        var x = 180;
-        var gearIcon = tiles["uiLargeIcons"][0][0];
-        var coinIcon = tiles["uiLargeIcons"][0][1];
-        for (var _i = 0, _a = this.scoreBoxes; _i < _a.length; _i++) {
-            var scorebox = _a[_i];
-            var image = tiles["playerIcons"][scorebox.player.avatarIndex][0];
-            var y = scorebox.y;
-            var imageY = y - 270 + 50;
-            ctx.fillStyle = "#000D";
-            ctx.fillRect(x, y, 600, 100);
-            ctx.strokeRect(x, y, 600, 100);
-            image.Draw(this.uiCamera, x - 480 + 50, imageY, 0.4, 0.4, false, false, 0);
-            gearIcon.Draw(this.uiCamera, x - 480 + 300, imageY, 1, 1, false, false, 0);
-            coinIcon.Draw(this.uiCamera, x - 480 + 470, imageY, 1, 1, false, false, 0);
-            ctx.fillStyle = "#FFF";
-            ctx.fillText(scorebox.player.CurrentPlaceText(), x + 200, y + 50 + 14);
-            ctx.fillText(scorebox.player.gears.toString(), x + 400, y + 50 + 14);
-            ctx.fillText(scorebox.player.displayedCoins.toString(), x + 570, y + 50 + 14);
         }
     };
     BoardUI.prototype.DrawMinigameChoose = function (ctx) {

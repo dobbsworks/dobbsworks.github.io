@@ -54,7 +54,7 @@ var MinigameJustPlunkIt = /** @class */ (function (_super) {
     };
     MinigameJustPlunkIt.prototype.RandomizeTarget = function () {
         this.targetRotation = Random.GetRand() * Math.PI * 2;
-        this.targetSlide = Random.GetRandInt(0, 350 / 5) * 5;
+        this.targetSlide = Random.GetSeededRandInt(0, 350 / 5) * 5;
     };
     MinigameJustPlunkIt.prototype.GetCurrentPlunkValue = function () {
         var theta1 = this.dial.rotation;

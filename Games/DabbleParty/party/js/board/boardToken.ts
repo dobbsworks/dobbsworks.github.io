@@ -13,12 +13,14 @@ class BoardToken extends Sprite {
     latestSpace!: BoardSpace;
     movementTimer = 0;
     movementDuration = 20;
+    readyToDraw = false;
 
     constructor(private player: Player) {
         super(0,0);
     }
 
     Update(): void {
+        if (this.currentSpace) this.readyToDraw = true;
         if (this.movementTargetSpace) this.latestSpace = this.movementTargetSpace;
         if (this.currentSpace) this.latestSpace = this.currentSpace;
         if (this.movementStartingSpace && this.movementTargetSpace) {
@@ -59,6 +61,15 @@ class BoardToken extends Sprite {
     }
 
     GetFrameData(frameNum: number): FrameData {
+        if (!this.readyToDraw) {
+            return {
+                imageTile: tiles["boardTokens"][this.player.avatarIndex][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 9999999,
+                yOffset: this.z
+            };
+        }
         return {
             imageTile: tiles["boardTokens"][this.player.avatarIndex][0],
             xFlip: false,

@@ -7,12 +7,10 @@ FEATURES
         fire lizard - shoots fireballs, then vulnerable
         winged pig
         thunder cloud - activates wires with strikes
-        Mimic - angry eyebrows attach to sprite below (not to enemies/platforms)
-        
         
 
     List level status in MyLevels
-    
+    Pause fluid level change during screen transition
 
 
 MENU/UI CHANGES
