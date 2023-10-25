@@ -106,7 +106,7 @@ var BoardMenu = /** @class */ (function () {
         if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
             this.ChooseHighlightedOption();
         }
-        else if (KeyboardHandler.IsKeyPressed(KeyAction.Up, true)) {
+        else if (KeyboardHandler.IsKeyPressed(KeyAction.Up, true) || KeyboardHandler.IsKeyPressed(KeyAction.Left, true)) {
             if (this.selectedMenuItem > 0) {
                 this.selectedMenuItem--;
             }
@@ -114,7 +114,7 @@ var BoardMenu = /** @class */ (function () {
                 this.selectedMenuItem = this.options.length - 1;
             }
         }
-        else if (KeyboardHandler.IsKeyPressed(KeyAction.Down, true)) {
+        else if (KeyboardHandler.IsKeyPressed(KeyAction.Down, true) || KeyboardHandler.IsKeyPressed(KeyAction.Right, true)) {
             if (this.selectedMenuItem < this.options.length - 1) {
                 this.selectedMenuItem++;
             }

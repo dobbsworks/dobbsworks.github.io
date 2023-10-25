@@ -35,7 +35,7 @@ class BoardCutSceneAddCoins extends BoardCutScene {
 }
 
 class BoardCutSceneChangeDice extends BoardCutScene {
-    constructor(private direction: "up" | "down", private player: Player, private numDiceUpgrades: number) {
+    constructor(private direction: "up" | "down", private player: Player, numDiceUpgrades: number) {
         super();
 
         let currentFaces = [...player.diceBag.dieFaces];
@@ -145,7 +145,7 @@ class BoardCutScenePadding extends BoardCutScene {
 }
 
 class BoardCutSceneMoveGear extends BoardCutScene {
-    constructor() {
+    constructor(private isInitial: boolean) {
         super();
     }
     private timer = 0;
@@ -153,7 +153,13 @@ class BoardCutSceneMoveGear extends BoardCutScene {
     Update(): void {
         if (!board) return;
         this.timer++;
-        if (this.timer == 1) this.targetSpace = board.PlaceGearSpace();
+        if (this.timer == 1) {
+            if (this.isInitial) {
+                this.targetSpace = board.boardSpaces.find(a => a.spaceType == BoardSpaceType.GearSpace) || board.boardSpaces[0];
+            } else {
+                this.targetSpace = board.PlaceGearSpace();
+            }
+        }
         if (this.targetSpace) board.CameraFocusSpace(this.targetSpace);
         if (this.timer > 60) this.isDone = true;
     }
@@ -796,8 +802,10 @@ abstract class BoardCutScenePlayerList extends BoardCutScene {
 
         for (let playerIndex = 0; playerIndex < board!.players.length; playerIndex++) {
             let scorebox = this.scoreBoxes[playerIndex];
-            this.DrawBasePlayerBox(playerIndex, scorebox.y);
-            this.AdditionalDraw(playerIndex, scorebox.y);
+            if (scorebox) {
+                this.DrawBasePlayerBox(playerIndex, scorebox.y);
+                this.AdditionalDraw(playerIndex, scorebox.y);
+            }
         }
     }
 
@@ -914,7 +922,6 @@ class BoardCutSceneMinigameResults  extends BoardCutScenePlayerList {
         
         let sortedScores = this.fetchedScores.map(a => a.score); 
         sortedScores.sort((a, b) => b - a);
-        let topScore = sortedScores[0];
         let awards: {player: Player, coins: number}[] = [];
 
         for (let fetchedScore of this.fetchedScores) {
@@ -950,7 +957,7 @@ class BoardCutSceneMinigameResults  extends BoardCutScenePlayerList {
             let matchingScore = this.fetchedScores.find(a => a.playerUserId == scorebox.player.userId);
             if (!matchingScore) scorebox.targetY = 600;
         }
-        if (this.fetchedScores.length == this.scoreBoxes.length && this.scoreBoxes.every(a => a.targetY == a.y)) {
+        if (this.fetchedScores.length == this.scoreBoxes.length && this.scoreBoxes.every(a => a.targetY == a.y && a.targetY != 600)) {
             // all scores fetched, all locations right
             this.countDown--;
             if (this.countDown <= 0) {
@@ -967,8 +974,12 @@ class BoardCutSceneMinigameResults  extends BoardCutScenePlayerList {
             if (this.fetchTimer > 120) {
                 this.fetchTimer = 0;
                 this.isFetching = true;
+                let me = this;
                 DataService.GetScores(board!.gameId, board!.currentRound).then(scores => {
-                    this.fetchedScores = scores.map(a => ({playerUserId: a.playerId, score: a.score}));
+                    me.fetchedScores = scores.map(a => ({playerUserId: a.playerId, score: a.score}));
+                    if (playmode == PlayMode.playinghost) {
+                        me.fetchedScores.push({playerUserId: board!.players[clientPlayerIndex].userId, score: latestMinigameScore});
+                    }
                 });
             }
         }

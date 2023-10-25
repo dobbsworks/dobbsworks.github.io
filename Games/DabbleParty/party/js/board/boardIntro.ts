@@ -20,7 +20,7 @@ class BoardCutSceneIntro extends BoardCutSceneSingleAction {
                 new BoardCutSceneFadeOut(),
                 new BoardCutSceneSetBackdrop(null),
                 new BoardCutSceneFadeIn(),
-                new BoardCutSceneMoveGear()
+                new BoardCutSceneMoveGear(true)
             );
         });
     }

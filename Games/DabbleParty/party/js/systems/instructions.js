@@ -62,7 +62,7 @@ var Instructions = /** @class */ (function (_super) {
         if (this.doneTimer > 25) {
             this.isDone = true;
             audioHandler.SetBackgroundMusic("silence");
-            if (board.isSpectateMode) {
+            if (playmode == PlayMode.client || playmode == PlayMode.playinghost) {
                 // set minigame
                 currentMinigame = this.minigame;
             }
@@ -103,7 +103,7 @@ var Instructions = /** @class */ (function (_super) {
             camera.ctx.fillText(instruction, 420, y);
             y += 27;
         }
-        if (board && board.isSpectateMode) {
+        if (playmode == PlayMode.client || playmode == PlayMode.playinghost) {
             camera.ctx.fillStyle = "#000";
             camera.ctx.textAlign = "left";
             camera.ctx.font = "800 " + 18 + "px " + "arial";

@@ -43,7 +43,7 @@ class TwitchSpaceAction {
         "The Golden Gear is moved to a new location", 
         ["Move the gear", "gear shuffle NOW", "change gear space", "move gear?"], (p: Player) => {
             if (board) cutsceneService.AddScene(
-                new BoardCutSceneMoveGear()
+                new BoardCutSceneMoveGear(false)
             );
         });
 }

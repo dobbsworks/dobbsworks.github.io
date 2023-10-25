@@ -993,7 +993,6 @@ var BoardCutSceneMinigameResults = /** @class */ (function (_super) {
         var coinDistribution = [10, 3, 2];
         var sortedScores = this.fetchedScores.map(function (a) { return a.score; });
         sortedScores.sort(function (a, b) { return b - a; });
-        var topScore = sortedScores[0];
         var awards = [];
         var _loop_3 = function (fetchedScore) {
             var scorePlacement = sortedScores.indexOf(fetchedScore.score);
@@ -1054,6 +1053,9 @@ var BoardCutSceneMinigameResults = /** @class */ (function (_super) {
                 this.isFetching = true;
                 DataService.GetScores(board.gameId, board.currentRound).then(function (scores) {
                     _this.fetchedScores = scores.map(function (a) { return ({ playerUserId: a.playerId, score: a.score }); });
+                    if (playmode == PlayMode.playinghost) {
+                        _this.fetchedScores.push({ playerUserId: clientPlayerIndex, score: latestMinigameScore });
+                    }
                 });
             }
         }

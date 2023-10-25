@@ -328,7 +328,7 @@ class BoardCutSceneStats extends BoardCutScene {
             cutsceneService.AddScene(
                 new BoardCutSceneFadeOut(), 
                 new BoardCutSceneSingleAction(() => {
-                    board = null;
+                    PostgameCleanup();
                 }), 
                 new CutsceneMainMenu());
         }
@@ -379,6 +379,7 @@ class BoardCutSceneStats extends BoardCutScene {
         players.sort((a,b) => a.CurrentPlace() - b.CurrentPlace());
         for (let pindex = this.playerScroll; pindex < 4 + this.playerScroll; pindex++) {
             let player = players[pindex];
+            if (!player) continue;
             let y = pindex * 90 + 175-10 + this.baseY;
             let avatar = tiles["boardTokens"][player.avatarIndex][0] as ImageTile;
             avatar.Draw(cam, 65, y, 0.4, 0.4, false, false, 0);

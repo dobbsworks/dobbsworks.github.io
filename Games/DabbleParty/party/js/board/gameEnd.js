@@ -332,7 +332,7 @@ var BoardCutSceneStats = /** @class */ (function (_super) {
         if (KeyboardHandler.IsKeyPressed(KeyAction.Action1, true)) {
             this.isDone = true;
             cutsceneService.AddScene(new BoardCutSceneFadeOut(), new BoardCutSceneSingleAction(function () {
-                board = null;
+                PostgameCleanup();
             }), new CutsceneMainMenu());
         }
         if (KeyboardHandler.IsKeyPressed(KeyAction.Down, true)) {

@@ -126,7 +126,7 @@ class BoardSpaceType {
         () => tiles["partySquares"][0][4],
         true,
         (player: Player) => {
-            if (board) cutsceneService.AddScene(new BoardCutSceneChangeDice("up", player, 1));
+            if (board) cutsceneService.AddScene(new BoardCutSceneChangeDice("up", player, 2));
         },
         BoardSpaceType.DoNothing);
     static GrayBoardSpace = new BoardSpaceType(

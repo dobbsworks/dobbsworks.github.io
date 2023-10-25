@@ -96,9 +96,11 @@ class BoardMenu {
                 this.selectedMenuItem = 0;
             }
         } else {
-            if (!this.waitingForData) {
-                this.waitingForData = true;
-                this.RequestData();
+            if (!this.waitingForData && board!.currentPlayer) {
+                if (board.players.indexOf(board.currentPlayer) != clientPlayerIndex) {
+                    this.waitingForData = true;
+                    this.RequestData();
+                }
             }
         }
     }
@@ -444,7 +446,7 @@ class BoardMenuGearShop extends BoardMenuShop {
             setTimeout(() => { audioHandler.SetBackgroundMusic("level1"); }, 6000)
         }));
         cutsceneService.AddScene(new BoardCutSceneAddItem(new ShopItemGoldenGear(), board!.currentPlayer!));
-        cutsceneService.AddScene(new BoardCutSceneMoveGear());
+        cutsceneService.AddScene(new BoardCutSceneMoveGear(false));
         board!.PlaceGearSpace();
     }
 }

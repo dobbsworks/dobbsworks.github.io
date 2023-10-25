@@ -9,7 +9,16 @@ let clientPlayerIndex: number = -1;
 let currentMinigame: MinigameBase | null = null;
 let board: BoardMap | null = null;
 let cutsceneService = new CutsceneService();
-let isLoggedIn = false;
+let isLoggedIn = false || true;
+let latestMinigameScore = 0;
+
+enum PlayMode {
+    none,
+    client,
+    host,
+    playinghost
+}
+let playmode: PlayMode = PlayMode.none;
 
 let minigames: (new() => MinigameBase)[] = [
     MinigameChip,
@@ -50,6 +59,17 @@ function Initialize() {
         isLoggedIn = true;
     }
     cutsceneService.AddScene(new CutscenePreTitle());
+}
+
+function PostgameCleanup(): void {
+    board = null;
+    let canvas = <HTMLCanvasElement>document.getElementById("canvas");
+    camera = new Camera(canvas);
+    playerIndex = 0;
+    clientPlayerIndex = -1;
+    BoardSpace.allConstructedSpaces = [];
+    BoardSpace.numConstructed = 0;
+    playmode = PlayMode.none;
 }
 
 var times: number[] = [];

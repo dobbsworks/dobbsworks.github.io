@@ -126,10 +126,15 @@ var MinigameBase = /** @class */ (function () {
         }
         else {
             if (board) {
-                DataService.SubmitScore(board.gameId, score, board.currentRound).then(function () {
-                    if (board)
-                        board.SpectateUpdateLoop(true);
-                });
+                if (playmode == PlayMode.client) {
+                    DataService.SubmitScore(board.gameId, score, board.currentRound).then(function () {
+                        if (board)
+                            board.SpectateUpdateLoop(true);
+                    });
+                }
+                else if (playmode == PlayMode.playinghost) {
+                    latestMinigameScore = score;
+                }
             }
         }
         this.isEnded = true;

@@ -9,7 +9,16 @@ var clientPlayerIndex = -1;
 var currentMinigame = null;
 var board = null;
 var cutsceneService = new CutsceneService();
-var isLoggedIn = false;
+var isLoggedIn = false || true;
+var latestMinigameScore = 0;
+var PlayMode;
+(function (PlayMode) {
+    PlayMode[PlayMode["none"] = 0] = "none";
+    PlayMode[PlayMode["client"] = 1] = "client";
+    PlayMode[PlayMode["host"] = 2] = "host";
+    PlayMode[PlayMode["playinghost"] = 3] = "playinghost";
+})(PlayMode || (PlayMode = {}));
+var playmode = PlayMode.none;
 var minigames = [
     MinigameChip,
     MinigameConveyor,
@@ -45,6 +54,16 @@ function Initialize() {
         isLoggedIn = true;
     }
     cutsceneService.AddScene(new CutscenePreTitle());
+}
+function PostgameCleanup() {
+    board = null;
+    var canvas = document.getElementById("canvas");
+    camera = new Camera(canvas);
+    playerIndex = 0;
+    clientPlayerIndex = -1;
+    BoardSpace.allConstructedSpaces = [];
+    BoardSpace.numConstructed = 0;
+    playmode = PlayMode.none;
 }
 var times = [];
 function MainLoop() {

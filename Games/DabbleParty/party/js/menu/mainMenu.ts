@@ -46,11 +46,14 @@ class MenuText extends MenuElement {
 }
 
 class MenuButtonCreateGame extends MenuButtonBase {
-    text = "Create Game";
+    text = "Host Only";
     cursorAnchorOffsetX = -110;
+    OnLeft(handler: MenuHandler): void { handler.JumpTo("createAndPlay"); }
+    OnRight(handler: MenuHandler): void { this.OnLeft(handler); }
     OnUp(handler: MenuHandler): void { handler.JumpTo("turnSelect"); }
     OnDown(handler: MenuHandler): void { handler.JumpTo("tab-2"); }
     OnAction(handler: MenuHandler): void {
+        playmode = PlayMode.host;
         let turnSelector = (handler.FindById("turnSelect") as MenuTurnSelect);
         let turns = turnSelector.turnChoices[turnSelector.selectionIndex];
 
@@ -76,12 +79,33 @@ class MenuButtonCreateGame extends MenuButtonBase {
             handler.OpenPage(2);
             (handler.FindById("waitingTextHost") as MenuElement).isVisible = false;
             setTimeout(() => {
-                let display = (handler.FindById("lobbyDisplayHost") as MenuLobbyStateDisplayHost);
-                display.gameId = gameId;
-                (document.getElementById("inputSection") as HTMLElement).style.display = "flex";
-                display.FetchUpdate(handler);
+                this.Callback(handler, gameId);
             }, 1000);
         })
+    }
+
+    Callback(handler: MenuHandler, gameId: number) {
+        let display = (handler.FindById("lobbyDisplayHost") as MenuLobbyStateDisplayHost);
+        display.gameId = gameId;
+        (document.getElementById("inputSection") as HTMLElement).style.display = "flex";
+        display.FetchUpdate(handler)
+    }
+}
+
+class MenuButtonCreateAndPlayGame extends MenuButtonCreateGame {
+    text = "Play Along";
+    OnLeft(handler: MenuHandler): void { handler.JumpTo("createGame"); }
+    OnRight(handler: MenuHandler): void { this.OnLeft(handler); }
+    Callback(handler: MenuHandler, gameId: number) {
+        super.Callback(handler, gameId);
+        playmode = PlayMode.playinghost;
+
+        let avatarSelect = (handler.FindById("avatarSelect") as MenuAvatarSelect);
+        let selectedAvatar = avatarSelect.selectionIndex;
+        playerIndex = avatarSelect.selectionIndex % 4;
+        DataService.JoinParty(gameId, selectedAvatar).then(code => {
+            clientPlayerIndex = +code;
+        });
     }
 }
 
@@ -101,6 +125,7 @@ class MenuButtonStartGame extends MenuButtonBase {
             audioHandler.PlaySound("spaceFanfare", false);
             let hostControls = document.getElementById("inputSection");
             if (hostControls) hostControls.style.display = "block";
+
             setTimeout(() => {
                 audioHandler.SetBackgroundMusic("level1")
             }, 7000);
@@ -330,20 +355,24 @@ class MenuBoardSelect extends MenuElement {
 }
 
 class MenuTurnSelect extends MenuBoardSelect {
-    turnChoices = [15, 20, 30, 10];
+    turnChoices = [15, 20, 30, 1, 6, 10];
     selectionTexts = [
         ["The default game duration,", "perfectly tailored for optimal", "fun."],
         ["A slightly longer game,", "where careful choices pay", "off over the long run."],
         ["A very long-haul game,", "a party marathon for diehard", "fans."],
+        ["You can just do freeplay", "if you want to? I don't", "understand???"],
+        ["Hee hee hoo hoo", "", ""],
         ["A quick game, where luck", "can turn things around more", "easily."],
     ]
+    selectionCount = this.selectionTexts.length;
     protected embedImage = "menuSmallEmbed";
     protected textYOffset = 24;
     DrawSelectionContents(camera: Camera): void {
         camera.ctx.font = `800 ${28}px ${"arial"}`;
         camera.ctx.textAlign = "center";
         camera.ctx.fillStyle = "#222";
-        let textLine = `${this.turnChoices[this.selectionIndex]} Rounds`;
+        let numTurns = this.turnChoices[this.selectionIndex];
+        let textLine = `${numTurns} Round${numTurns == 1 ? "" : "s"}`;
         camera.ctx.fillText(textLine, this.centerX + 480, this.centerY + 10 + 270);
     }
     OnUp(handler: MenuHandler): void { handler.JumpTo("boardSelect"); }
@@ -585,7 +614,7 @@ function MoveToBoardView(gameId: number, handler: MenuHandler, boardData: GameEx
     handler.cutscene.isDone = true;
     board = new BoardMap(gameId);
     board.Initialize();
-    board.isSpectateMode = true;
+    playmode = PlayMode.client;
     board.FromData(boardData);
     board.CameraFocusSpace(board.boardSpaces[0]);
     board.SpectateUpdateLoop(false);
@@ -605,7 +634,9 @@ class MenuHandler {
         new MenuButtonSearchForGames("searchForGames", 200, 170),
         new MenuBoardSelect("boardSelect", -150, -70),
         new MenuTurnSelect("turnSelect", -150, 60),
-        new MenuButtonCreateGame("createGame", 0, 170),
+        new MenuButtonCreateGame("createGame", -200, 170),
+        new MenuButtonCreateAndPlayGame("createAndPlay", 200, 170),
+
         new MenuLobbyStateDisplayHost("lobbyDisplayHost", 0, 0),
         new MenuLobbyStateDisplayPlayer("lobbyDisplayPlayer", 0, 0),
         new MenuText("waitingForPlayersTextHost", 0, 170, "Waiting for players to join..."),
@@ -620,7 +651,7 @@ class MenuHandler {
     currentPageIndex = 0;
     pages = [
         ["selectGame", "searchForGames", "avatarChange", "avatarDisplay"],
-        ["boardSelect", "turnSelect", "createGame"],
+        ["boardSelect", "turnSelect", "createGame", "createAndPlay"],
         ["lobbyDisplayHost", "waitingForPlayersTextHost", "startGame"],
         ["lobbyDisplayPlayer", "waitingForPlayersTextPlayer", "waitingTextHost"], // join a game
         ["avatarSelect", "avatarOk"],

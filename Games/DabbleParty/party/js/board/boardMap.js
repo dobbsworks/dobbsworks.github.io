@@ -3,7 +3,6 @@ var BoardMap = /** @class */ (function () {
     function BoardMap(gameId) {
         this.gameId = gameId;
         this.latestCompletedMenuId = -1;
-        this.isSpectateMode = false;
         this.backdropTile = tiles["bgBoard"][0][0];
         this.currentRound = 1;
         this.finalRound = 15;
@@ -161,14 +160,15 @@ var BoardMap = /** @class */ (function () {
         else {
             this.players.forEach(function (a) { return a.Update(); });
             this.ManualCameraControl();
-            if (!this.isSpectateMode) {
+            if (playmode == PlayMode.host || playmode == PlayMode.playinghost) {
                 if (this.currentPlayer)
                     this.CameraFollow(this.currentPlayer || this.players[0]);
             }
         }
         this.CameraBounds();
-        if (!this.isSpectateMode)
+        if (playmode == PlayMode.host || playmode == PlayMode.playinghost) {
             this.boardUI.Update();
+        }
         else {
             // item menu handling
             if (this.boardUI.currentMenu) {
@@ -283,7 +283,7 @@ var BoardMap = /** @class */ (function () {
         if (KeyboardHandler.IsKeyPressed(KeyAction.Cancel, false)) {
             this.isManualCamera = false;
         }
-        if (this.isManualCamera || this.isSpectateMode) {
+        if (this.isManualCamera || playmode == PlayMode.client) {
             var cameraSpeed = 5;
             if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false))
                 camera.targetY -= cameraSpeed;
@@ -410,7 +410,7 @@ var BoardMap = /** @class */ (function () {
         this.boardSpaces.forEach(function (a) { return a.Draw(camera); });
         this.players.forEach(function (a) { return a.DrawToken(camera); });
         this.boardOverlaySprites.forEach(function (a) { return a.Draw(camera); });
-        if (this.isSpectateMode) {
+        if (playmode == PlayMode.client) {
             this.boardUI.DrawForSpectator(camera.ctx);
         }
         else {

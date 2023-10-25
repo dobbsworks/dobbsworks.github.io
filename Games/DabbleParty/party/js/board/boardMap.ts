@@ -1,9 +1,10 @@
+
+
 class BoardMap {
 
     constructor(public gameId: number) {}
 
     latestCompletedMenuId = -1;
-    isSpectateMode = false;
     backdropTile: ImageTile = tiles["bgBoard"][0][0];
     currentRound = 1;
     finalRound = 15;
@@ -153,7 +154,7 @@ class BoardMap {
 
         this.players.forEach(a => a.Update());
         this.boardUI.roundStarttimer = 1;
-        this.PlaceGearSpace();
+        //this.PlaceGearSpace();
     }
 
     GetStartingSpace(): BoardSpace {
@@ -176,13 +177,14 @@ class BoardMap {
         } else {
             this.players.forEach(a => a.Update());
             this.ManualCameraControl();
-            if (!this.isSpectateMode) {
+            if (playmode == PlayMode.host || playmode == PlayMode.playinghost) {
                 if (this.currentPlayer) this.CameraFollow(this.currentPlayer || this.players[0]);
             }
         }
         this.CameraBounds();
-        if (!this.isSpectateMode) this.boardUI.Update();
-        else {
+        if (playmode == PlayMode.host || playmode == PlayMode.playinghost) {
+            this.boardUI.Update();
+        } else {
             // item menu handling
             if (this.boardUI.currentMenu) {
                 this.boardUI.currentMenu.Update();
@@ -303,7 +305,7 @@ class BoardMap {
             this.isManualCamera = false;
         }
 
-        if (this.isManualCamera || this.isSpectateMode) {
+        if (this.isManualCamera || playmode == PlayMode.client) {
             let cameraSpeed = 5;
             if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false)) camera.targetY -= cameraSpeed;
             if (KeyboardHandler.IsKeyPressed(KeyAction.Down, false)) camera.targetY += cameraSpeed;
@@ -400,6 +402,12 @@ class BoardMap {
             player.diceBag = new DiceBag(p.diceBag as FaceCount[])
         }
 
+        let myPlayer = data.players[clientPlayerIndex];
+        if (myPlayer) {
+            playerIndex = myPlayer.turnOrder % 4;
+            if (playerIndex < 0) playerIndex = 0;
+        }
+
         this.currentPlayer = this.players[data.currentPlayerIndex] || null;
 
         this.SetGearSpace(data.gearSpaceId);
@@ -436,7 +444,7 @@ class BoardMap {
         this.players.forEach(a => a.DrawToken(camera));
         this.boardOverlaySprites.forEach(a => a.Draw(camera));
 
-        if (this.isSpectateMode) {
+        if (playmode == PlayMode.client) {
             this.boardUI.DrawForSpectator(camera.ctx);
         } else {
             this.boardUI.Draw(camera.ctx);

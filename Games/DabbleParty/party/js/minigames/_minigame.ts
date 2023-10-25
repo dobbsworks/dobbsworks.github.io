@@ -71,7 +71,11 @@ abstract class MinigameBase {
                     mainMenu.menuHandler.cursorTarget = (mainMenu.menuHandler.FindById("minigameSelect") as MenuElement);
                     cutsceneService.AddScene(mainMenu);
                 } else {
-                    cutsceneService.AddScene(new BoardCutSceneFadeIn());
+                    if (playmode == PlayMode.client) {
+                        cutsceneService.AddScene(new BoardCutSceneFadeIn());
+                    } else if (playmode == PlayMode.playinghost) {
+                        cutsceneService.AddScene(new BoardCutSceneMinigameResults());
+                    }
                 }
             }
         }
@@ -127,9 +131,13 @@ abstract class MinigameBase {
             }
         } else {
             if (board) {
-                DataService.SubmitScore(board.gameId, score, board.currentRound).then(() => {
-                    if (board) board.SpectateUpdateLoop(true)
-                });
+                if (playmode == PlayMode.client) {
+                    DataService.SubmitScore(board.gameId, score, board.currentRound).then(() => {
+                        if (board) board.SpectateUpdateLoop(true)
+                    });
+                } else if (playmode == PlayMode.playinghost) {
+                    latestMinigameScore = score;
+                }
             }
         }
 

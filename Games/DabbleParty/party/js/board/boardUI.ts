@@ -21,7 +21,7 @@ class BoardUI {
     set currentMenu(menu: BoardMenu | null) {
         this._currentMenu = menu;
         this.menuId++;
-        if (!this.board.isSpectateMode) {
+        if (playmode == PlayMode.host || playmode == PlayMode.playinghost) {
             this.board.SaveGameStateToDB();
         }
     };
@@ -113,14 +113,21 @@ class BoardUI {
                 this.isChoosingMinigame = false;
                 let minigame = this.board.pendingMinigame;
                 let tickDuration = minigame.GetRemainingTicks();
-                cutsceneService.AddScene(
-                    new Instructions(this.board.pendingMinigame),
-                    new BoardCutSceneSingleAction(() => {
-                        audioHandler.SetBackgroundMusic(minigame.songId);
-                    }),
-                    new BoardCutScenePadding(tickDuration),
-                    new BoardCutSceneMinigameResults(),
-                );
+
+                if (playmode == PlayMode.host) {
+                    cutsceneService.AddScene(
+                        new Instructions(this.board.pendingMinigame),
+                        new BoardCutSceneSingleAction(() => {
+                            audioHandler.SetBackgroundMusic(minigame.songId);
+                        }),
+                        new BoardCutScenePadding(tickDuration),
+                        new BoardCutSceneMinigameResults(),
+                    );
+                } else if (playmode == PlayMode.playinghost) {
+                    cutsceneService.AddScene(
+                        new Instructions(this.board.pendingMinigame),
+                    );
+                }
             }
         } else {
             this.minigameTextTime = 0;

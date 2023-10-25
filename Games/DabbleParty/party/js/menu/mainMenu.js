@@ -74,13 +74,17 @@ var MenuButtonCreateGame = /** @class */ (function (_super) {
     __extends(MenuButtonCreateGame, _super);
     function MenuButtonCreateGame() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.text = "Create Game";
+        _this.text = "Host Only";
         _this.cursorAnchorOffsetX = -110;
         return _this;
     }
+    MenuButtonCreateGame.prototype.OnLeft = function (handler) { handler.JumpTo("createGame"); };
+    MenuButtonCreateGame.prototype.OnRight = function (handler) { this.OnLeft(handler); };
     MenuButtonCreateGame.prototype.OnUp = function (handler) { handler.JumpTo("turnSelect"); };
     MenuButtonCreateGame.prototype.OnDown = function (handler) { handler.JumpTo("tab-2"); };
     MenuButtonCreateGame.prototype.OnAction = function (handler) {
+        var _this = this;
+        playmode = PlayMode.host;
         var turnSelector = handler.FindById("turnSelect");
         var turns = turnSelector.turnChoices[turnSelector.selectionIndex];
         var boardSelector = handler.FindById("boardSelect");
@@ -102,15 +106,39 @@ var MenuButtonCreateGame = /** @class */ (function (_super) {
             handler.OpenPage(2);
             handler.FindById("waitingTextHost").isVisible = false;
             setTimeout(function () {
-                var display = handler.FindById("lobbyDisplayHost");
-                display.gameId = gameId;
-                document.getElementById("inputSection").style.display = "flex";
-                display.FetchUpdate(handler);
+                _this.Callback(handler, gameId);
             }, 1000);
         });
     };
+    MenuButtonCreateGame.prototype.Callback = function (handler, gameId) {
+        var display = handler.FindById("lobbyDisplayHost");
+        display.gameId = gameId;
+        document.getElementById("inputSection").style.display = "flex";
+        display.FetchUpdate(handler);
+    };
     return MenuButtonCreateGame;
 }(MenuButtonBase));
+var MenuButtonCreateAndPlayGame = /** @class */ (function (_super) {
+    __extends(MenuButtonCreateAndPlayGame, _super);
+    function MenuButtonCreateAndPlayGame() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.text = "Play Along";
+        return _this;
+    }
+    MenuButtonCreateAndPlayGame.prototype.OnLeft = function (handler) { handler.JumpTo("createAndPlay"); };
+    MenuButtonCreateAndPlayGame.prototype.OnRight = function (handler) { this.OnLeft(handler); };
+    MenuButtonCreateAndPlayGame.prototype.Callback = function (handler, gameId) {
+        _super.prototype.Callback.call(this, handler, gameId);
+        playmode = PlayMode.playinghost;
+        var avatarSelect = handler.FindById("avatarSelect");
+        var selectedAvatar = avatarSelect.selectionIndex;
+        playerIndex = avatarSelect.selectionIndex % 4;
+        DataService.JoinParty(gameId, selectedAvatar).then(function (code) {
+            clientPlayerIndex = +code;
+        });
+    };
+    return MenuButtonCreateAndPlayGame;
+}(MenuButtonCreateGame));
 var MenuButtonStartGame = /** @class */ (function (_super) {
     __extends(MenuButtonStartGame, _super);
     function MenuButtonStartGame() {
@@ -670,7 +698,7 @@ function MoveToBoardView(gameId, handler, boardData) {
     handler.cutscene.isDone = true;
     board = new BoardMap(gameId);
     board.Initialize();
-    board.isSpectateMode = true;
+    playmode = PlayMode.client;
     board.FromData(boardData);
     board.CameraFocusSpace(board.boardSpaces[0]);
     board.SpectateUpdateLoop(false);
@@ -690,7 +718,8 @@ var MenuHandler = /** @class */ (function () {
             new MenuButtonSearchForGames("searchForGames", 200, 170),
             new MenuBoardSelect("boardSelect", -150, -70),
             new MenuTurnSelect("turnSelect", -150, 60),
-            new MenuButtonCreateGame("createGame", 0, 170),
+            new MenuButtonCreateGame("createGame", -200, 170),
+            new MenuButtonCreateAndPlayGame("createAndPlay", 200, 170),
             new MenuLobbyStateDisplayHost("lobbyDisplayHost", 0, 0),
             new MenuLobbyStateDisplayPlayer("lobbyDisplayPlayer", 0, 0),
             new MenuText("waitingForPlayersTextHost", 0, 170, "Waiting for players to join..."),
@@ -705,7 +734,7 @@ var MenuHandler = /** @class */ (function () {
         this.currentPageIndex = 0;
         this.pages = [
             ["selectGame", "searchForGames", "avatarChange", "avatarDisplay"],
-            ["boardSelect", "turnSelect", "createGame"],
+            ["boardSelect", "turnSelect", "createGame", "createAndPlay"],
             ["lobbyDisplayHost", "waitingForPlayersTextHost", "startGame"],
             ["lobbyDisplayPlayer", "waitingForPlayersTextPlayer", "waitingTextHost"],
             ["avatarSelect", "avatarOk"],
