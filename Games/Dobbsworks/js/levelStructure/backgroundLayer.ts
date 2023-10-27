@@ -109,7 +109,7 @@ class BackgroundLayer {
 
         for (let destX = initialX; destX < camera.canvas.width; destX += dx) {
             for (let destY = initialY; destY < camera.canvas.height && destY + Math.abs(dy) >= 0; destY += dy) {
-                this.imageTiles[tileIndex].Draw(camera.ctx, destX, destY, scale);
+                this.imageTiles[tileIndex].Draw(camera.ctx, Math.floor(destX), Math.floor(destY), scale);
 
                 if (!this.backgroundSource.yLoop) destY = 99999999;
             }

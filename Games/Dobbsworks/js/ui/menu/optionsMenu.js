@@ -67,7 +67,7 @@ var OptionsMenu = /** @class */ (function (_super) {
             if (editorHandler.isInEditMode && editorHandler.isMinimizedMode) {
                 editorHandler.ToggleMinimizeMode();
             }
-            MenuHandler.GoBack();
+            MenuHandler.GoBack(false);
         });
         if (editorHandler.isInEditMode && !editorHandler.isMinimizedMode) {
             editorHandler.ToggleMinimizeMode();
@@ -147,7 +147,7 @@ var PreferencesMenu = /** @class */ (function (_super) {
         var backButton = this.CreateButton("Back");
         container.AddChild(backButton);
         backButton.onClickEvents.push(function () {
-            MenuHandler.GoBack();
+            MenuHandler.GoBack(false);
         });
         return ret;
     };

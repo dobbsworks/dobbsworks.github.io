@@ -27,7 +27,8 @@ var MenuHandler = /** @class */ (function () {
         MenuHandler.CurrentMenu = menu;
         return menu;
     };
-    MenuHandler.GoBack = function () {
+    MenuHandler.GoBack = function (backThroughBlanks) {
+        if (backThroughBlanks === void 0) { backThroughBlanks = true; }
         var menu = MenuHandler.MenuStack.pop();
         if (MenuHandler.CurrentMenu) {
             var current_1 = MenuHandler.CurrentMenu;
@@ -38,7 +39,10 @@ var MenuHandler = /** @class */ (function () {
         }
         if (menu) {
             menu.Show();
-            //if (menu instanceof BlankMenu) MenuHandler.GoBack();
+            if (backThroughBlanks) {
+                if (menu instanceof BlankMenu)
+                    MenuHandler.GoBack();
+            }
         }
     };
     MenuHandler.Update = function () {

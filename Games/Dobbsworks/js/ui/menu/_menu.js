@@ -28,7 +28,7 @@ var Menu = /** @class */ (function () {
         backButtonText.yOffset = 20;
         backButton.AddChild(backButtonText);
         backButton.onClickEvents.push(function () {
-            MenuHandler.GoBack();
+            MenuHandler.GoBack(false);
         });
         return backButton;
     };
