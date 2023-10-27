@@ -29,7 +29,7 @@ abstract class Menu {
         backButtonText.yOffset = 20;
         backButton.AddChild(backButtonText);
         backButton.onClickEvents.push(() => {
-            MenuHandler.GoBack();
+            MenuHandler.GoBack(false);
         })
         return backButton;
     }

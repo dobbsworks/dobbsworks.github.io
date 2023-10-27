@@ -11,6 +11,10 @@ FEATURES
 
     List level status in MyLevels
     Pause fluid level change during screen transition
+    countdown platforms?
+    
+    user level list 
+    link to level
 
 
 MENU/UI CHANGES
@@ -41,7 +45,6 @@ LATER CONTENT RELEASES
         
     bouncing skull that also bounces off of backdrop tiles!
     candle that can burn things?
-    breakable blocks
     
 
 

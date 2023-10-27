@@ -14,6 +14,8 @@ class MenuHandler {
         if (MenuHandler.CurrentMenu) {
             MenuHandler.MenuStack.push(MenuHandler.CurrentMenu);
             MenuHandler.CurrentMenu.Hide(-1);
+        } else {
+            MenuHandler.MenuStack.push(new BlankMenu());
         }
         return MenuHandler.CreateMenu(menuType);
     }
@@ -30,20 +32,22 @@ class MenuHandler {
     
     static CurrentMenu: Menu | null = null;
 
-    static GoBack(): void {
+    static GoBack(backThroughBlanks: boolean = true): void {
         let menu = MenuHandler.MenuStack.pop();
 
         if (MenuHandler.CurrentMenu) {
-            let menu = MenuHandler.CurrentMenu;
-            menu.Hide(1);
+            let current = MenuHandler.CurrentMenu;
+            current.Hide(1);
             setTimeout(() => {
-                menu.Dispose();
+                current.Dispose();
             }, 200)
         }
 
         if (menu) {
             menu.Show();
-            if (menu instanceof BlankMenu) MenuHandler.GoBack();
+            if (backThroughBlanks) {
+                if (menu instanceof BlankMenu) MenuHandler.GoBack();
+            }
         }
     }
 

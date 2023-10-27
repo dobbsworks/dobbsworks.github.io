@@ -1,5 +1,5 @@
 class Version {
-    static Current = "1.11.0";
+    static Current = "1.11.2";
 
     private static Compare(v1: string, v2: string): number {
         let v1Subs = v1.split(".");

@@ -55,7 +55,7 @@ class OptionsMenu extends Menu {
             if (editorHandler.isInEditMode && editorHandler.isMinimizedMode) {
                 editorHandler.ToggleMinimizeMode();
             }
-            MenuHandler.GoBack();
+            MenuHandler.GoBack(false);
         })
 
         if (editorHandler.isInEditMode && !editorHandler.isMinimizedMode) {
@@ -144,7 +144,7 @@ class PreferencesMenu extends Menu {
         let backButton = this.CreateButton("Back");
         container.AddChild(backButton);
         backButton.onClickEvents.push(() => {
-            MenuHandler.GoBack();
+            MenuHandler.GoBack(false);
         })
 
         return ret;

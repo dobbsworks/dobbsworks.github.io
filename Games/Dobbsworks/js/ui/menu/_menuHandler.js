@@ -13,6 +13,9 @@ var MenuHandler = /** @class */ (function () {
             MenuHandler.MenuStack.push(MenuHandler.CurrentMenu);
             MenuHandler.CurrentMenu.Hide(-1);
         }
+        else {
+            MenuHandler.MenuStack.push(new BlankMenu());
+        }
         return MenuHandler.CreateMenu(menuType);
     };
     MenuHandler.SubMenuInstance = function (menu) {
@@ -27,16 +30,15 @@ var MenuHandler = /** @class */ (function () {
     MenuHandler.GoBack = function () {
         var menu = MenuHandler.MenuStack.pop();
         if (MenuHandler.CurrentMenu) {
-            var menu_1 = MenuHandler.CurrentMenu;
-            menu_1.Hide(1);
+            var current_1 = MenuHandler.CurrentMenu;
+            current_1.Hide(1);
             setTimeout(function () {
-                menu_1.Dispose();
+                current_1.Dispose();
             }, 200);
         }
         if (menu) {
             menu.Show();
-            if (menu instanceof BlankMenu)
-                MenuHandler.GoBack();
+            //if (menu instanceof BlankMenu) MenuHandler.GoBack();
         }
     };
     MenuHandler.Update = function () {

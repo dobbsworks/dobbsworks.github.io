@@ -55,6 +55,10 @@ var Skitter = /** @class */ (function (_super) {
                 }
             }
         }
+        else {
+            this.isClimbing = false;
+            this.isHiding = true;
+        }
         if (!this.isClimbing) {
             this.ApplyGravity();
         }
