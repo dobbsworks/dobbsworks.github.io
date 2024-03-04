@@ -76,7 +76,6 @@ var BoardCutSceneChangeDice = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.direction = direction;
         _this.player = player;
-        _this.numDiceUpgrades = numDiceUpgrades;
         _this.timer = 0;
         _this.diceIndecesToChange = [];
         _this.diceYOffset = 500;
@@ -188,8 +187,9 @@ var BoardCutScenePadding = /** @class */ (function (_super) {
 }(BoardCutScene));
 var BoardCutSceneMoveGear = /** @class */ (function (_super) {
     __extends(BoardCutSceneMoveGear, _super);
-    function BoardCutSceneMoveGear() {
+    function BoardCutSceneMoveGear(isInitial) {
         var _this = _super.call(this) || this;
+        _this.isInitial = isInitial;
         _this.timer = 0;
         _this.targetSpace = null;
         return _this;
@@ -198,8 +198,14 @@ var BoardCutSceneMoveGear = /** @class */ (function (_super) {
         if (!board)
             return;
         this.timer++;
-        if (this.timer == 1)
-            this.targetSpace = board.PlaceGearSpace();
+        if (this.timer == 1) {
+            if (this.isInitial) {
+                this.targetSpace = board.boardSpaces.find(function (a) { return a.spaceType == BoardSpaceType.GearSpace; }) || board.boardSpaces[0];
+            }
+            else {
+                this.targetSpace = board.PlaceGearSpace();
+            }
+        }
         if (this.targetSpace)
             board.CameraFocusSpace(this.targetSpace);
         if (this.timer > 60)
@@ -874,8 +880,10 @@ var BoardCutScenePlayerList = /** @class */ (function (_super) {
         title.Draw(camera, this.x - 180, Math.min(-220, this.headingTimer - 350), 1, 1, false, false, 0);
         for (var playerIndex_1 = 0; playerIndex_1 < board.players.length; playerIndex_1++) {
             var scorebox = this.scoreBoxes[playerIndex_1];
-            this.DrawBasePlayerBox(playerIndex_1, scorebox.y);
-            this.AdditionalDraw(playerIndex_1, scorebox.y);
+            if (scorebox) {
+                this.DrawBasePlayerBox(playerIndex_1, scorebox.y);
+                this.AdditionalDraw(playerIndex_1, scorebox.y);
+            }
         }
     };
     BoardCutScenePlayerList.prototype.DrawBasePlayerBox = function (playerIndex, y) {
@@ -939,7 +947,7 @@ var BoardCutSceneStandings = /** @class */ (function (_super) {
             cutsceneService.AddScene(new BoardCutSceneLast5Turns());
         }
         if (board.finalRound - board.currentRound + 1 == 0) {
-            audioHandler.SetBackgroundMusic("level1");
+            audioHandler.SetBackgroundMusic(board.songId);
             cutsceneService.AddScene(new BoardCutSceneGameEnd());
         }
     };
@@ -1023,7 +1031,6 @@ var BoardCutSceneMinigameResults = /** @class */ (function (_super) {
         }
     };
     BoardCutSceneMinigameResults.prototype.AdditionalUpdateLogic = function () {
-        var _this = this;
         audioHandler.SetBackgroundMusic("lobby");
         var _loop_4 = function (scorebox) {
             var matchingScore = this_3.fetchedScores.find(function (a) { return a.playerUserId == scorebox.player.userId; });
@@ -1035,7 +1042,7 @@ var BoardCutSceneMinigameResults = /** @class */ (function (_super) {
             var scorebox = _a[_i];
             _loop_4(scorebox);
         }
-        if (this.fetchedScores.length == this.scoreBoxes.length && this.scoreBoxes.every(function (a) { return a.targetY == a.y; })) {
+        if (this.fetchedScores.length == this.scoreBoxes.length && this.scoreBoxes.every(function (a) { return a.targetY == a.y && a.targetY != 600; })) {
             // all scores fetched, all locations right
             this.countDown--;
             if (this.countDown <= 0) {
@@ -1051,10 +1058,11 @@ var BoardCutSceneMinigameResults = /** @class */ (function (_super) {
             if (this.fetchTimer > 120) {
                 this.fetchTimer = 0;
                 this.isFetching = true;
+                var me_1 = this;
                 DataService.GetScores(board.gameId, board.currentRound).then(function (scores) {
-                    _this.fetchedScores = scores.map(function (a) { return ({ playerUserId: a.playerId, score: a.score }); });
+                    me_1.fetchedScores = scores.map(function (a) { return ({ playerUserId: a.playerId, score: a.score }); });
                     if (playmode == PlayMode.playinghost) {
-                        _this.fetchedScores.push({ playerUserId: clientPlayerIndex, score: latestMinigameScore });
+                        me_1.fetchedScores.push({ playerUserId: board.players[clientPlayerIndex].userId, score: latestMinigameScore });
                     }
                 });
             }

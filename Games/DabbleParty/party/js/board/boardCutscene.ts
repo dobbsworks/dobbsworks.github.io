@@ -872,7 +872,7 @@ class BoardCutSceneStandings extends BoardCutScenePlayerList {
             cutsceneService.AddScene(new BoardCutSceneLast5Turns());
         }
         if (board.finalRound - board.currentRound + 1 == 0) {
-            audioHandler.SetBackgroundMusic("level1");
+            audioHandler.SetBackgroundMusic(board.songId);
             cutsceneService.AddScene(new BoardCutSceneGameEnd());
         }
     }

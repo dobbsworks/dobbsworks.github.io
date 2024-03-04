@@ -118,6 +118,8 @@ function CreateTitle() {
         `${char1} Closes the Queue`,
         `${char1} ${Rand(["Finds", "Lost"])} Dracula`,
         `hehe`,
+        `${char1} Mails Turtle a Snail`,
+        `${char1} Mails Turtle another Snail`,
     ]);
 }
 

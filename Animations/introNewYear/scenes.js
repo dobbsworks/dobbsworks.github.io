@@ -748,7 +748,7 @@ function Scene13() {
     sprites.push(logo);
 
     let title = "And a Happy New Dobbs";
-    let num = "2022";
+    let num = new Date().getFullYear();
     let color = Rand(["#f6c729", "#03c802", "#04d8f7", "#f73738"])
     let episodeNumber = new StaticText(`Episode ${num}:`, 30, color, "black", 0, 190);
     let episodeTitle = new StaticText(title, 30, color, "black", 0, 230);

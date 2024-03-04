@@ -115,19 +115,22 @@ class MenuButtonStartGame extends MenuButtonBase {
     cursorAnchorOffsetX = -110;
     OnAction(handler: MenuHandler): void {
         let lobbyDisplay = handler.FindById("lobbyDisplayHost") as MenuLobbyStateDisplayHost;
+        let boardSelector = (handler.FindById("boardSelect") as MenuBoardSelect);
+        let boardId = boardSelector.selectionIndex;
         if (lobbyDisplay.lobbyState) {
-            board = new BoardMap(lobbyDisplay.gameId);
+            let boardType = boards[boardId];
+            board = new boardType(lobbyDisplay.gameId);
             board.Initialize();
             board.FromData(lobbyDisplay.lobbyState);
             //board.CameraFocusSpace(board.boardSpaces[0]);
             handler.cutscene.isDone = true;
             audioHandler.SetBackgroundMusic("silence");
-            audioHandler.PlaySound("spaceFanfare", false);
+            audioHandler.PlaySound(board.fanfare, false);
             let hostControls = document.getElementById("inputSection");
             if (hostControls) hostControls.style.display = "block";
 
             setTimeout(() => {
-                audioHandler.SetBackgroundMusic("level1")
+                audioHandler.SetBackgroundMusic(board!.songId)
             }, 7000);
             cutsceneService.AddScene(new BoardCutSceneIntro());
         }
@@ -612,7 +615,8 @@ class MenuLobbyStateDisplayPlayer extends MenuLobbyStateDisplayHost {
 
 function MoveToBoardView(gameId: number, handler: MenuHandler, boardData: GameExport): void {
     handler.cutscene.isDone = true;
-    board = new BoardMap(gameId);
+    let boardType = boards[boardData.boardId];
+    board = new boardType(gameId);
     board.Initialize();
     playmode = PlayMode.client;
     board.FromData(boardData);

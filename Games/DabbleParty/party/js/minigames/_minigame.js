@@ -70,7 +70,12 @@ var MinigameBase = /** @class */ (function () {
                     cutsceneService.AddScene(mainMenu);
                 }
                 else {
-                    cutsceneService.AddScene(new BoardCutSceneFadeIn());
+                    if (playmode == PlayMode.client) {
+                        cutsceneService.AddScene(new BoardCutSceneFadeIn());
+                    }
+                    else if (playmode == PlayMode.playinghost) {
+                        cutsceneService.AddScene(new BoardCutSceneMinigameResults());
+                    }
                 }
             }
         }

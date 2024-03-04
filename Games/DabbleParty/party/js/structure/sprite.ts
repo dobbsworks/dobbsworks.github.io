@@ -79,8 +79,10 @@ class SimpleSprite extends Sprite {
     }
     public Animate(animationSpeed: number): void {
         if (currentMinigame && this.imageTile) {
+            let time = currentMinigame.timer;
+            if (time < 0) time += 600;
             let totalFrames = this.imageTile.tileMap.rows * this.imageTile.tileMap.cols;
-            let frameIndex = Math.floor(animationSpeed * currentMinigame.timer) % totalFrames;
+            let frameIndex = Math.floor(animationSpeed * time) % totalFrames;
             let col = frameIndex % this.imageTile.tileMap.cols;
             let row = Math.floor(frameIndex / this.imageTile.tileMap.cols);
             this.imageTile = this.imageTile.tileMap[col][row];

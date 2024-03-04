@@ -78,7 +78,7 @@ var MenuButtonCreateGame = /** @class */ (function (_super) {
         _this.cursorAnchorOffsetX = -110;
         return _this;
     }
-    MenuButtonCreateGame.prototype.OnLeft = function (handler) { handler.JumpTo("createGame"); };
+    MenuButtonCreateGame.prototype.OnLeft = function (handler) { handler.JumpTo("createAndPlay"); };
     MenuButtonCreateGame.prototype.OnRight = function (handler) { this.OnLeft(handler); };
     MenuButtonCreateGame.prototype.OnUp = function (handler) { handler.JumpTo("turnSelect"); };
     MenuButtonCreateGame.prototype.OnDown = function (handler) { handler.JumpTo("tab-2"); };
@@ -125,7 +125,7 @@ var MenuButtonCreateAndPlayGame = /** @class */ (function (_super) {
         _this.text = "Play Along";
         return _this;
     }
-    MenuButtonCreateAndPlayGame.prototype.OnLeft = function (handler) { handler.JumpTo("createAndPlay"); };
+    MenuButtonCreateAndPlayGame.prototype.OnLeft = function (handler) { handler.JumpTo("createGame"); };
     MenuButtonCreateAndPlayGame.prototype.OnRight = function (handler) { this.OnLeft(handler); };
     MenuButtonCreateAndPlayGame.prototype.Callback = function (handler, gameId) {
         _super.prototype.Callback.call(this, handler, gameId);
@@ -150,19 +150,22 @@ var MenuButtonStartGame = /** @class */ (function (_super) {
     }
     MenuButtonStartGame.prototype.OnAction = function (handler) {
         var lobbyDisplay = handler.FindById("lobbyDisplayHost");
+        var boardSelector = handler.FindById("boardSelect");
+        var boardId = boardSelector.selectionIndex;
         if (lobbyDisplay.lobbyState) {
-            board = new BoardMap(lobbyDisplay.gameId);
+            var boardType = boards[boardId];
+            board = new boardType(lobbyDisplay.gameId);
             board.Initialize();
             board.FromData(lobbyDisplay.lobbyState);
             //board.CameraFocusSpace(board.boardSpaces[0]);
             handler.cutscene.isDone = true;
             audioHandler.SetBackgroundMusic("silence");
-            audioHandler.PlaySound("spaceFanfare", false);
+            audioHandler.PlaySound(board.fanfare, false);
             var hostControls = document.getElementById("inputSection");
             if (hostControls)
                 hostControls.style.display = "block";
             setTimeout(function () {
-                audioHandler.SetBackgroundMusic("level1");
+                audioHandler.SetBackgroundMusic(board.songId);
             }, 7000);
             cutsceneService.AddScene(new BoardCutSceneIntro());
         }
@@ -406,13 +409,16 @@ var MenuTurnSelect = /** @class */ (function (_super) {
     __extends(MenuTurnSelect, _super);
     function MenuTurnSelect() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.turnChoices = [15, 20, 30, 10];
+        _this.turnChoices = [15, 20, 30, 1, 6, 10];
         _this.selectionTexts = [
             ["The default game duration,", "perfectly tailored for optimal", "fun."],
             ["A slightly longer game,", "where careful choices pay", "off over the long run."],
             ["A very long-haul game,", "a party marathon for diehard", "fans."],
+            ["You can just do freeplay", "if you want to? I don't", "understand???"],
+            ["Hee hee hoo hoo", "", ""],
             ["A quick game, where luck", "can turn things around more", "easily."],
         ];
+        _this.selectionCount = _this.selectionTexts.length;
         _this.embedImage = "menuSmallEmbed";
         _this.textYOffset = 24;
         return _this;
@@ -421,7 +427,8 @@ var MenuTurnSelect = /** @class */ (function (_super) {
         camera.ctx.font = "800 " + 28 + "px " + "arial";
         camera.ctx.textAlign = "center";
         camera.ctx.fillStyle = "#222";
-        var textLine = this.turnChoices[this.selectionIndex] + " Rounds";
+        var numTurns = this.turnChoices[this.selectionIndex];
+        var textLine = numTurns + " Round" + (numTurns == 1 ? "" : "s");
         camera.ctx.fillText(textLine, this.centerX + 480, this.centerY + 10 + 270);
     };
     MenuTurnSelect.prototype.OnUp = function (handler) { handler.JumpTo("boardSelect"); };
@@ -696,7 +703,8 @@ var MenuLobbyStateDisplayPlayer = /** @class */ (function (_super) {
 }(MenuLobbyStateDisplayHost));
 function MoveToBoardView(gameId, handler, boardData) {
     handler.cutscene.isDone = true;
-    board = new BoardMap(gameId);
+    var boardType = boards[boardData.boardId];
+    board = new boardType(gameId);
     board.Initialize();
     playmode = PlayMode.client;
     board.FromData(boardData);

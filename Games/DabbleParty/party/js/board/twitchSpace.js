@@ -34,7 +34,7 @@ var TwitchSpaceAction = /** @class */ (function () {
     });
     TwitchSpaceAction.GoldGearMove = new TwitchSpaceAction("Move Golden Gear", "The Golden Gear is moved to a new location", ["Move the gear", "gear shuffle NOW", "change gear space", "move gear?"], function (p) {
         if (board)
-            cutsceneService.AddScene(new BoardCutSceneMoveGear());
+            cutsceneService.AddScene(new BoardCutSceneMoveGear(false));
     });
     return TwitchSpaceAction;
 }());

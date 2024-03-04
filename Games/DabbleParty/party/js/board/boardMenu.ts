@@ -443,7 +443,7 @@ class BoardMenuGearShop extends BoardMenuShop {
         cutsceneService.AddScene(new BoardCutSceneSingleAction(() => {
             audioHandler.SetBackgroundMusic("silence");
             audioHandler.PlaySound("gearGet", true);
-            setTimeout(() => { audioHandler.SetBackgroundMusic("level1"); }, 6000)
+            setTimeout(() => { audioHandler.SetBackgroundMusic(board!.songId); }, 6000)
         }));
         cutsceneService.AddScene(new BoardCutSceneAddItem(new ShopItemGoldenGear(), board!.currentPlayer!));
         cutsceneService.AddScene(new BoardCutSceneMoveGear(false));

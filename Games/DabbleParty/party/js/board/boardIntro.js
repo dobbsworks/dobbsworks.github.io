@@ -33,7 +33,7 @@ var BoardCutSceneIntro = /** @class */ (function (_super) {
             cutsceneService.AddScene(new BoardCutSceneSetBackdrop(tiles["spaceBoardBlur"][0][0]), new BoardCutSceneSingleAction(function () {
                 var _a;
                 (_a = BoardCutScene.sprites).push.apply(_a, __spreadArrays(tokenSprites, diceSprites));
-            }), new BoardCutSceneFadeIn(), new BoardCutSceneBoardLogo(), new BoardCutSceneDialog("Welcome to Rover's Space Base! This lunar level is full of treasures to win amidst the technological wonders up here on the moon. First, let's decide who goes first."), new BoardCutSceneDecideOrder(), new BoardCutSceneFadeOut(), new BoardCutSceneSetBackdrop(null), new BoardCutSceneFadeIn(), new BoardCutSceneMoveGear());
+            }), new BoardCutSceneFadeIn(), new BoardCutSceneBoardLogo(), new BoardCutSceneDialog(board.introText + " First, let's decide who goes first."), new BoardCutSceneDecideOrder(), new BoardCutSceneFadeOut(), new BoardCutSceneSetBackdrop(null), new BoardCutSceneFadeIn(), new BoardCutSceneMoveGear(true));
         }) || this;
     }
     return BoardCutSceneIntro;
@@ -64,8 +64,9 @@ var BoardCutSceneBoardLogo = /** @class */ (function (_super) {
             this.isDone = true;
     };
     BoardCutSceneBoardLogo.prototype.Draw = function (camera) {
-        var logo = tiles["spaceBoardTitle"][0][0];
-        logo.Draw(camera, 0, this.y, 1.5, 1.5, false, false, 0);
+        var logo = board === null || board === void 0 ? void 0 : board.logo;
+        if (logo)
+            logo.Draw(camera, 0, this.y, 1.5, 1.5, false, false, 0);
     };
     return BoardCutSceneBoardLogo;
 }(BoardCutScene));

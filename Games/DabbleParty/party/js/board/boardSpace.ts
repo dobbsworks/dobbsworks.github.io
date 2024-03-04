@@ -62,7 +62,7 @@ class BoardSpace {
         this.spaceType.getImageTile().Draw(camera, this.gameX, this.gameY, 0.2, 0.2, false, false, 0, 1);
         // let coord1 = camera.GameCoordToCanvas(this.gameX, this.gameY);
         // camera.ctx.font = `200 ${10}px ${"arial"}`;
-        // camera.ctx.fillText(this.id.toString(), coord1.canvasX, coord1.canvasY);
+        // camera.ctx.fillText(this.label, coord1.canvasX, coord1.canvasY);
     }
 
     DrawConnections(camera: Camera): void {

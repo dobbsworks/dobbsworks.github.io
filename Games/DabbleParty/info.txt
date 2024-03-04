@@ -13,4 +13,27 @@ Nice to haves:
     Show scores post minigame 
 
 
+New minigames:
+    Rigged - ship rigging, pull a rope
+        https://www.mariowiki.com/List_of_Mario_Party_minigames#/media/File:PipeMazeMP1.png
+    Turtle Potluck
+    Hover Cat Kitchen
+        Drop ingredients into pot?
+    Match 3?
+
+
+Ironlands
+    Parchment/map background
+    Large dice
+    Character sheets
+    Wooden table beneath
+    Areas: 
+        Deep Woods
+        Ashenlands
+        The Veil
+        Shattered Wastes (ice)
+    Molsc
+    Maybe central area with patroling molsc?
+
+
 tsc --outDir ..\..\..\DabbleWorldsBackend\DabbleWorlds\wwwroot\party\js

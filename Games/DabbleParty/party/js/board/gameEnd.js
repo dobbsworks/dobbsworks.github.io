@@ -381,6 +381,8 @@ var BoardCutSceneStats = /** @class */ (function (_super) {
         players.sort(function (a, b) { return a.CurrentPlace() - b.CurrentPlace(); });
         for (var pindex = this.playerScroll; pindex < 4 + this.playerScroll; pindex++) {
             var player = players[pindex];
+            if (!player)
+                continue;
             var y = pindex * 90 + 175 - 10 + this.baseY;
             var avatar = tiles["boardTokens"][player.avatarIndex][0];
             avatar.Draw(cam, 65, y, 0.4, 0.4, false, false, 0);

@@ -89,8 +89,11 @@ var SimpleSprite = /** @class */ (function (_super) {
     };
     SimpleSprite.prototype.Animate = function (animationSpeed) {
         if (currentMinigame && this.imageTile) {
+            var time = currentMinigame.timer;
+            if (time < 0)
+                time += 600;
             var totalFrames = this.imageTile.tileMap.rows * this.imageTile.tileMap.cols;
-            var frameIndex = Math.floor(animationSpeed * currentMinigame.timer) % totalFrames;
+            var frameIndex = Math.floor(animationSpeed * time) % totalFrames;
             var col = frameIndex % this.imageTile.tileMap.cols;
             var row = Math.floor(frameIndex / this.imageTile.tileMap.cols);
             this.imageTile = this.imageTile.tileMap[col][row];

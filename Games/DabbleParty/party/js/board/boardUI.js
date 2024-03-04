@@ -144,7 +144,7 @@ var BoardUI = /** @class */ (function () {
                     }), new BoardCutScenePadding(tickDuration), new BoardCutSceneMinigameResults());
                 }
                 else if (playmode == PlayMode.playinghost) {
-                    cutsceneService.AddScene(new Instructions(this.board.pendingMinigame), new BoardCutScenePadding(tickDuration), new BoardCutSceneMinigameResults());
+                    cutsceneService.AddScene(new Instructions(this.board.pendingMinigame));
                 }
             }
         }
@@ -157,7 +157,7 @@ var BoardUI = /** @class */ (function () {
         if (this.roundStarttimer > 0) {
             if (this.roundStarttimer == 1) {
                 audioHandler.PlaySound("roundStart", false);
-                audioHandler.SetBackgroundMusic("level1");
+                audioHandler.SetBackgroundMusic(board.songId);
             }
             this.roundStarttimer++;
             if (this.roundStarttimer > 100) {

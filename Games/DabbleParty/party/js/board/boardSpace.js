@@ -60,9 +60,9 @@ var BoardSpace = /** @class */ (function () {
     };
     BoardSpace.prototype.Draw = function (camera) {
         this.spaceType.getImageTile().Draw(camera, this.gameX, this.gameY, 0.2, 0.2, false, false, 0, 1);
-        // let coord1 = camera.GameCoordToCanvas(this.gameX, this.gameY);
-        // camera.ctx.font = `200 ${10}px ${"arial"}`;
-        // camera.ctx.fillText(this.id.toString(), coord1.canvasX, coord1.canvasY);
+        var coord1 = camera.GameCoordToCanvas(this.gameX, this.gameY);
+        camera.ctx.font = "200 " + 10 + "px " + "arial";
+        camera.ctx.fillText(this.label, coord1.canvasX, coord1.canvasY);
     };
     BoardSpace.prototype.DrawConnections = function (camera) {
         camera.ctx.fillStyle = "#3f454a";
@@ -116,7 +116,7 @@ var BoardSpaceType = /** @class */ (function () {
     }, BoardSpaceType.DoNothing);
     BoardSpaceType.DiceUpgradeSpace = new BoardSpaceType(function () { return tiles["partySquares"][0][4]; }, true, function (player) {
         if (board)
-            cutsceneService.AddScene(new BoardCutSceneChangeDice("up", player, 1));
+            cutsceneService.AddScene(new BoardCutSceneChangeDice("up", player, 2));
     }, BoardSpaceType.DoNothing);
     BoardSpaceType.GrayBoardSpace = new BoardSpaceType(function () { return tiles["partySquares"][0][2]; }, false, BoardSpaceType.DoNothing, BoardSpaceType.DoNothing);
     BoardSpaceType.ShopSpace = new BoardSpaceType(function () { return tiles["partySquares"][1][2]; }, true, function (player) {

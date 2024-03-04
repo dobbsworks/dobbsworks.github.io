@@ -34,7 +34,8 @@ var minigames = [
     MinigameSnowtemPole,
     MinigameSpaceRace,
     MinigameThanksForTheCream,
-    MinigameWhenPigsFly
+    MinigameWhenPigsFly,
+    MinigameRigged,
 ];
 function Initialize() {
     LoadImageSources();
@@ -53,7 +54,12 @@ function Initialize() {
         // live site, let's go!
         isLoggedIn = true;
     }
-    cutsceneService.AddScene(new CutscenePreTitle());
+    //cutsceneService.AddScene(new CutscenePreTitle());
+    //currentMinigame = new MinigameRigged();
+    // TEMP
+    var boardType = boards[1];
+    board = new boardType(-1);
+    board.Initialize();
 }
 function PostgameCleanup() {
     board = null;

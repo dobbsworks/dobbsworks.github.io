@@ -1,0 +1,1 @@
+Zip file incoming. You'll need to extract the files into a folder called "art" in the directory "%localappdata%low/Dabble Works/Pen Pals". From there you can edit the files however you want. Try to keep the circles the same size as the originals

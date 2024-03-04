@@ -140,7 +140,7 @@ class BoardUI {
         if (this.roundStarttimer > 0) {
             if (this.roundStarttimer == 1) {
                 audioHandler.PlaySound("roundStart", false);
-                audioHandler.SetBackgroundMusic("level1");
+                audioHandler.SetBackgroundMusic(board!.songId);
             }
             this.roundStarttimer++;
             if (this.roundStarttimer > 100) {

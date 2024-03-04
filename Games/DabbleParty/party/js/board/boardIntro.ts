@@ -15,7 +15,7 @@ class BoardCutSceneIntro extends BoardCutSceneSingleAction {
                 new BoardCutSceneSingleAction(() => { BoardCutScene.sprites.push(...tokenSprites, ...diceSprites) }),
                 new BoardCutSceneFadeIn(),
                 new BoardCutSceneBoardLogo(),
-                new BoardCutSceneDialog("Welcome to Rover's Space Base! This lunar level is full of treasures to win amidst the technological wonders up here on the moon. First, let's decide who goes first."),
+                new BoardCutSceneDialog(board.introText + " First, let's decide who goes first."),
                 new BoardCutSceneDecideOrder(),
                 new BoardCutSceneFadeOut(),
                 new BoardCutSceneSetBackdrop(null),
@@ -47,8 +47,8 @@ class BoardCutSceneBoardLogo extends BoardCutScene {
         if (this.timer > 400) this.isDone = true;
     }
     Draw(camera: Camera): void {
-        let logo = tiles["spaceBoardTitle"][0][0] as ImageTile;
-        logo.Draw(camera, 0, this.y, 1.5, 1.5, false, false, 0);
+        let logo = board?.logo;
+        if (logo) logo.Draw(camera, 0, this.y, 1.5, 1.5, false, false, 0);
     }
 
 }

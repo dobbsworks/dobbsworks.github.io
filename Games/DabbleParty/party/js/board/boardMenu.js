@@ -123,9 +123,11 @@ var BoardMenu = /** @class */ (function () {
             }
         }
         else {
-            if (!this.waitingForData) {
-                this.waitingForData = true;
-                this.RequestData();
+            if (!this.waitingForData && board.currentPlayer) {
+                if (board.players.indexOf(board.currentPlayer) != clientPlayerIndex) {
+                    this.waitingForData = true;
+                    this.RequestData();
+                }
             }
         }
     };
@@ -443,10 +445,10 @@ var BoardMenuGearShop = /** @class */ (function (_super) {
         cutsceneService.AddScene(new BoardCutSceneSingleAction(function () {
             audioHandler.SetBackgroundMusic("silence");
             audioHandler.PlaySound("gearGet", true);
-            setTimeout(function () { audioHandler.SetBackgroundMusic("level1"); }, 6000);
+            setTimeout(function () { audioHandler.SetBackgroundMusic(board.songId); }, 6000);
         }));
         cutsceneService.AddScene(new BoardCutSceneAddItem(new ShopItemGoldenGear(), board.currentPlayer));
-        cutsceneService.AddScene(new BoardCutSceneMoveGear());
+        cutsceneService.AddScene(new BoardCutSceneMoveGear(false));
         board.PlaceGearSpace();
     };
     return BoardMenuGearShop;
