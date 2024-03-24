@@ -22,6 +22,7 @@ var Escarghost = /** @class */ (function (_super) {
         _this.canBeBouncedOn = false;
         _this.isDestroyedByLight = true;
         _this.killedByProjectiles = false;
+        _this.immuneToSlideKill = true;
         _this.patrolTimer = 0;
         return _this;
     }

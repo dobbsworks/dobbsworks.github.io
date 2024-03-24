@@ -22,11 +22,9 @@ class LevelMap {
     frameNum: number = 0;
     doorTransition: DoorTransition | null = null;
     fadeOutRatio: number = 1;
-    bgColorTop: string = "#87cefa";
-    bgColorBottom: string = "#ffffff";
-    bgColorTopPositionRatio: number = 0;
-    bgColorBottomPositionRatio: number = 1;
-    overlayOpacity: number = 0.4;
+    sky = new Sky();
+    targetSky: Sky | null = null;
+    skyChangeTimer = 0;
     spriteWaterMode: boolean = false;
     playerWaterMode: boolean = false;
     mapHeight: number = 20;
@@ -64,6 +62,7 @@ class LevelMap {
     windParticles: { x: number, y: number, offset: number }[] = [];
 
     hasHorizontalWrap = false;
+    hasLowGravity = false;
 
     Update(): void {
         BenchmarkService.Log("MapUpdate");
@@ -166,6 +165,8 @@ class LevelMap {
             }
         }
 
+        this.UpdateSky();
+
         if (camera.transitionTimer > 0) {
             // do not process any updates
         } else if (this.doorTransition) {
@@ -184,17 +185,17 @@ class LevelMap {
         let ctx = camera.ctx;
         BenchmarkService.Log("DrawBackdrop");
         var grd = camera.ctx.createLinearGradient(0, 0, 0, camera.canvas.height);
-        grd.addColorStop(this.bgColorTopPositionRatio, this.bgColorTop);
-        grd.addColorStop(this.bgColorBottomPositionRatio, this.bgColorBottom);
+        grd.addColorStop(this.sky.bgColorTopPositionRatio, this.sky.bgColorTop);
+        grd.addColorStop(this.sky.bgColorBottomPositionRatio, this.sky.bgColorBottom);
         camera.ctx.fillStyle = grd;
         camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
         this.backgroundLayers.forEach(a => a.Draw(camera, this.frameNum));
-        if (this.overlayOpacity > 0) {
-            let opacityHex = this.overlayOpacity.toString(16).substring(2, 4).padEnd(2, "0");
-            if (this.overlayOpacity == 1) opacityHex = "FF";
+        if (this.sky.overlayOpacity > 0) {
+            let opacityHex = this.sky.overlayOpacity.toString(16).substring(2, 4).padEnd(2, "0");
+            if (this.sky.overlayOpacity == 1) opacityHex = "FF";
             var grd2 = camera.ctx.createLinearGradient(0, 0, 0, camera.canvas.height);
-            grd2.addColorStop(this.bgColorTopPositionRatio, this.bgColorTop + opacityHex);
-            grd2.addColorStop(this.bgColorBottomPositionRatio, this.bgColorBottom + opacityHex);
+            grd2.addColorStop(this.sky.bgColorTopPositionRatio, this.sky.bgColorTop + opacityHex);
+            grd2.addColorStop(this.sky.bgColorBottomPositionRatio, this.sky.bgColorBottom + opacityHex);
             camera.ctx.fillStyle = grd2;
             camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
         }
@@ -417,7 +418,14 @@ class LevelMap {
             let y = sprite.tileCoord.tileY;
             let additionalProps = sprite.editorProps || [];
 
-            let spriteStr = [spriteIndex, x, y, ...additionalProps].map(a => Utility.toTwoDigitB64(a));
+            let spriteStr = [spriteIndex, x, y].map(a => Utility.toTwoDigitB64(a));
+            if (additionalProps.length > 0) {
+                if ((+(additionalProps[0])).toString() == additionalProps[0]) { // isnumeric
+                    spriteStr.push(...additionalProps.map(a => Utility.toTwoDigitB64(+a)));
+                } else {
+                    spriteStr.push(...additionalProps);
+                }
+            }
             spriteList.push(spriteStr.join(''));
         }
 
@@ -430,6 +438,7 @@ class LevelMap {
             this.spriteWaterMode ? 1 : 0,
             this.songId,
             this.hasHorizontalWrap ? 1 : 0,
+            this.hasLowGravity ? 1 : 0,
         ];
 
         return [
@@ -440,18 +449,54 @@ class LevelMap {
         ].join("|");
     }
 
+    LoadSkyFromString(skyData: string): Sky {
+        let sky = new Sky();
+        let skyDataPieces = skyData.split(",");
+        sky.bgColorTop = skyDataPieces[0];
+        sky.bgColorTopPositionRatio = parseFloat(skyDataPieces[2]);
+        sky.bgColorBottomPositionRatio = parseFloat(skyDataPieces[3]);
+        sky.overlayOpacity = parseFloat(skyDataPieces[4]);
+        sky.bgColorBottom = skyDataPieces[1];
+
+        return sky;
+    }
+
+    UpdateSky(): void {
+        if (this.targetSky) {
+            this.skyChangeTimer++;
+
+            var hasUpdated = false;
+            for (let prop of ["bgColorBottom", "bgColorTop"]) {
+                if ((<any>this.sky)[prop] != (<any>this.targetSky)[prop]) {
+                    hasUpdated = true;
+                    (<any>this.sky)[prop] = Utility.ApproachColor((<any>this.sky)[prop], (<any>this.targetSky)[prop], 1);
+                }
+            }
+            for (let prop of ["overlayOpacity", "bgColorBottomPositionRatio", "bgColorTopPositionRatio"]) {
+                if ((<any>this.sky)[prop] != (<any>this.targetSky)[prop]) {
+                    hasUpdated = true;
+                    (<any>this.sky)[prop] = Utility.Approach((<any>this.sky)[prop], (<any>this.targetSky)[prop], 0.01);
+                }
+            }
+            if (!hasUpdated || this.skyChangeTimer > 255) {
+                this.sky = this.targetSky;
+                this.targetSky = null;
+                this.skyChangeTimer = 0;
+            }
+        }
+    }
+
+
+
+
+
     LoadBackgroundsFromImportString(importStr: string): void {
         let importedSections = importStr.split(";");
         let skyData = importedSections.shift();
         if (skyData) {
-            let skyDataPieces = skyData.split(",");
-            this.bgColorTop = skyDataPieces[0];
-            this.bgColorTopPositionRatio = parseFloat(skyDataPieces[2]);
-            this.bgColorBottomPositionRatio = parseFloat(skyDataPieces[3]);
-            this.overlayOpacity = parseFloat(skyDataPieces[4]);
-            editorHandler.skyEditor.topColorPanel.SetColor(this.bgColorTop);
-            this.bgColorBottom = skyDataPieces[1];
-            editorHandler.skyEditor.bottomColorPanel.SetColor(this.bgColorBottom);
+            this.sky = this.LoadSkyFromString(skyData);
+            editorHandler.skyEditor.topColorPanel.SetColor(this.sky.bgColorTop);
+            editorHandler.skyEditor.bottomColorPanel.SetColor(this.sky.bgColorBottom);
         }
 
         for (let i = 0; i < 4; i++) {
@@ -468,15 +513,19 @@ class LevelMap {
 
     GetBackgroundExportString(): string {
         this.GenerateThumbnail();
-        let skyString = [
-            this.bgColorTop,
-            this.bgColorBottom,
-            this.bgColorTopPositionRatio.toFixed(2),
-            this.bgColorBottomPositionRatio.toFixed(2),
-            this.overlayOpacity.toFixed(2)
-        ].join(",");
+        let skyString = this.GetSkyExportString();
         return skyString + ";" + this.backgroundLayers.map(a => a.ExportToString()).join(";")
             + ";" + this.waterColor + ";" + this.purpleWaterColor + ";" + this.lavaColor;
+    }
+
+    GetSkyExportString(): string {
+        return [
+            this.sky.bgColorTop,
+            this.sky.bgColorBottom,
+            this.sky.bgColorTopPositionRatio.toFixed(2),
+            this.sky.bgColorBottomPositionRatio.toFixed(2),
+            this.sky.overlayOpacity.toFixed(2)
+        ].join(",");
     }
 
     GenerateThumbnail(): HTMLCanvasElement {
@@ -542,6 +591,7 @@ class LevelMap {
         ret.playerWaterMode = properties[2] == "1";
         ret.spriteWaterMode = properties[3] == "1";
         ret.hasHorizontalWrap = properties[5] == "1";
+        ret.hasLowGravity = properties[6] == "1";
 
         if (editorHandler) {
             if (editorHandler.playerWaterModeToggle) {
@@ -552,6 +602,9 @@ class LevelMap {
             }
             if (editorHandler.horizontalWrapToggle) {
                 editorHandler.horizontalWrapToggle.isSelected = ret.hasHorizontalWrap;
+            }
+            if (editorHandler.lowGravityToggle) {
+                editorHandler.lowGravityToggle.isSelected = ret.hasLowGravity;
             }
         }
 
@@ -576,17 +629,22 @@ class LevelMap {
             let spriteType = spriteTypes[spriteIndex];
             let rawPropsStr = spriteStr.slice(6);
 
-            let additionalProps: number[] = [];
-            for (let i = 0; i < rawPropsStr.length; i += 2) {
-                let propB64 = rawPropsStr.slice(i, 2);
-                let propNum = Utility.IntFromB64(propB64);
-                additionalProps.push(propNum);
+            let additionalProps: string[] = [];
+            if (rawPropsStr.length > 10) {
+                // not foolproof, but this should only happen for non-numeric props
+                additionalProps = [rawPropsStr]
+            } else {
+                for (let i = 0; i < rawPropsStr.length; i += 2) {
+                    let propB64 = rawPropsStr.slice(i, 2);
+                    let propNum = Utility.IntFromB64(propB64);
+                    additionalProps.push(propNum.toString());
+                }
             }
 
             let editorSprite = new EditorSprite(spriteType, { tileX: spriteX, tileY: spriteY });
             editorSprite.editorProps = additionalProps;
             if (editorSprite.spriteInstance instanceof BasePlatform) {
-                if (additionalProps[0]) editorSprite.width = additionalProps[0];
+                if (additionalProps[0]) editorSprite.width = +(additionalProps[0]);
             }
             editorHandler.sprites.push(editorSprite);
             editorSprite.ResetSprite();
@@ -603,6 +661,7 @@ class LevelMap {
         currentMap.playerWaterMode = false;
         currentMap.spriteWaterMode = false;
         currentMap.hasHorizontalWrap = false;
+        currentMap.hasLowGravity = false;
         currentMap.mapHeight = 12;
         currentMap.cameraLocksHorizontal = [];
         currentMap.cameraLocksVertical = [];
@@ -642,6 +701,14 @@ class DoorTransition {
 
     public timer: number = 0;
     public doorAnimation: DoorAnimation | null = null;
+}
+
+class Sky {
+    bgColorTop: string = "#87cefa";
+    bgColorBottom: string = "#ffffff";
+    bgColorTopPositionRatio: number = 0;
+    bgColorBottomPositionRatio: number = 1;
+    overlayOpacity: number = 0.4;
 }
 
 class FluidLevel {

@@ -232,7 +232,8 @@ function hslToRGB(hsl: Hsl) {
         x = c * (1 - Math.abs((h / 60) % 2 - 1)),
         m = l - c / 2,
         r, g, b;
-
+    if (h < 0) h += 3600;
+    h %= 360;
     if (h < 60) {
         r = c;
         g = x;

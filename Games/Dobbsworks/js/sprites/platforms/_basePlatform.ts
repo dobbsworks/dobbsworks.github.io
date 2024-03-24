@@ -1,8 +1,8 @@
 abstract class BasePlatform extends Sprite {
 
-    constructor(x: number, y: number, layer: LevelLayer, editorProps: number[]) {
+    constructor(x: number, y: number, layer: LevelLayer, editorProps: string[]) {
         super(x, y, layer, editorProps);
-        let numTiles = editorProps[0] || 3;
+        let numTiles = +(editorProps[0]) || 3;
         this.width = numTiles * layer.tileWidth;
     }
 
@@ -12,6 +12,9 @@ abstract class BasePlatform extends Sprite {
     public isPlatform: boolean = true;
     respectsSolidTiles = false;
     public abstract tilesetRow: number;
+    public leftCapCol: number = 1;
+    public rightCapCol: number = 3;
+    public middleCol: number = 2;
     public xRenderOffset: number = 0;
     public yRenderOffset: number = 0;
     public anchor: Direction = Direction.Up;
@@ -43,13 +46,13 @@ abstract class BasePlatform extends Sprite {
             }]
         }
         let frames = [{
-            imageTile: tiles[this.sourceImage][1][this.tilesetRow],
+            imageTile: tiles[this.sourceImage][this.leftCapCol][this.tilesetRow],
             xFlip: false,
             yFlip: false,
             xOffset: 0 + this.xRenderOffset,
             yOffset: 0 + this.yRenderOffset
         }, {
-            imageTile: tiles[this.sourceImage][3][this.tilesetRow],
+            imageTile: tiles[this.sourceImage][this.rightCapCol][this.tilesetRow],
             xFlip: false,
             yFlip: false,
             xOffset: -(this.width - 12) + this.xRenderOffset,
@@ -57,7 +60,7 @@ abstract class BasePlatform extends Sprite {
         }];
         for (let x = 12; x < this.width - 12; x += 12) {
             frames.push({
-                imageTile: tiles[this.sourceImage][2][this.tilesetRow],
+                imageTile: tiles[this.sourceImage][this.middleCol][this.tilesetRow],
                 xFlip: false,
                 yFlip: false,
                 xOffset: -x + this.xRenderOffset,

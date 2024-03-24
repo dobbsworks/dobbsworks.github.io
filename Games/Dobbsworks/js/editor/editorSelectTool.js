@@ -247,6 +247,7 @@ var EditorSelectionMover = /** @class */ (function (_super) {
                 currentMap.mainLayer.sprites.push(deadSprite);
             }
             editorHandler.sprites.push(sprite);
+            sprite.ResetSprite();
             var maxAllowed = sprite.spriteInstance.maxAllowed;
             if (maxAllowed > 0) {
                 var spritesOnMap = editorHandler.sprites.filter(function (a) { return a.spriteType == sprite.spriteType; });

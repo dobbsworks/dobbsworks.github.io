@@ -104,6 +104,17 @@ var SpritePlacer = /** @class */ (function (_super) {
             this.xHoldOffset = 0;
             this.yHoldOffset = 0;
             editorHandler.sprites.push(this.heldSprite);
+            if (this.heldSprite.spriteInstance instanceof SkyChangeTrigger) {
+                // set sky color
+                this.heldSprite.editorProps = [currentMap.GetSkyExportString()];
+                this.heldSprite.spriteInstance.skyString = this.heldSprite.editorProps[0];
+            }
+            if (this.heldSprite.spriteInstance instanceof MusicChangeTrigger) {
+                // set song id
+                this.heldSprite.editorProps = [currentMap.songId.toString()];
+                this.heldSprite.spriteInstance.songIndex = currentMap.songId;
+                this.heldSprite.ResetSprite();
+            }
         }
         this.heldSprite.isHeld = true;
     };
@@ -119,8 +130,8 @@ var SpritePlacer = /** @class */ (function (_super) {
                     }
                     this.heldSprite.width += widthChange;
                     if (!this.heldSprite.editorProps[0])
-                        this.heldSprite.editorProps[0] = 3;
-                    this.heldSprite.editorProps[0] += widthChange;
+                        this.heldSprite.editorProps[0] = "3";
+                    this.heldSprite.editorProps[0] = (+(this.heldSprite.editorProps[0]) + widthChange).toString();
                     if (this.resizeSide == -1) {
                         this.heldSprite.tileCoord.tileX -= widthChange;
                     }

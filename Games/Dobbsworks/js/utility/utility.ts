@@ -153,4 +153,48 @@ class Utility {
         if (x >= a && x <= b) return true;
         return false;
     }
+
+    static Lerp(from: number, to: number, weight: number): number {
+        return from + (to - from) * weight;
+    }
+    static Approach(from: number, to: number, amount: number): number {
+        if (Math.abs(from - to) <= amount) return to;
+        if (from < to) return from + amount;
+        return from - amount;
+    }
+
+    // static LerpColor(from: string, to: string, weight: number): string {
+    //     let hsl1 = rgbStringToHSL(from);
+    //     let hsl2 = rgbStringToHSL(to);
+    //     if (Math.abs(hsl2.h - hsl1.h) > 180) {
+    //         if (hsl1.h > 180) hsl1.h -= 360;
+    //         if (hsl2.h > 180) hsl2.h -= 360;
+    //     }
+    //     let hslNew = {
+    //         h: Utility.Lerp(hsl1.h, hsl2.h, weight) % 360,
+    //         s: Utility.Lerp(hsl1.s, hsl2.s, weight),
+    //         l: Utility.Lerp(hsl1.l, hsl2.l, weight),
+    //     };
+    //     return hslToRGB(hslNew);
+    // }
+    static ApproachColor(from: string, to: string, speed: number): string {
+        var rgbToInts = (rgb: string) => {
+            return [0,1,2].map((n,i) => {
+                let a = rgb.replace("#","");
+                let l = Math.floor(a.length / 3);
+                let s = i * l;
+                let sub = a.substring(s, s + l);
+                return parseInt(sub, 16);
+        });}
+        let rgb1 = rgbToInts(from);
+        let rgb2 = rgbToInts(to);
+
+        for (let i = 0; i < 3; i++) {
+            if (Math.abs(rgb1[i] - rgb2[i]) <= speed) rgb1[i] = rgb2[i];
+            if (rgb1[i] < rgb2[i]) rgb1[i] += speed;
+            if (rgb1[i] > rgb2[i]) rgb1[i] -= speed;
+        }
+
+        return "#" + rgb1.map(a => a.toString(16).padStart(2, "00")).join("");
+    }
 }

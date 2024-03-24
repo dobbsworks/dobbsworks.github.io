@@ -46,6 +46,7 @@ class EditorHandler {
     playerWaterModeToggle!: EditorButtonToggle;
     spriteWaterModeToggle!: EditorButtonToggle;
     horizontalWrapToggle!: EditorButtonToggle;
+    lowGravityToggle!: EditorButtonToggle;
 
     playerFrames: { fd: FrameData, x: number, y: number }[] = [];
 
@@ -113,6 +114,7 @@ class EditorHandler {
             new SlopeFill("Mountain", TileType.MountainGround),
             new SlopeFill("Haunt", TileType.HauntGround),
             new SlopeFill("Derelict", TileType.DerelictGround),
+            new SlopeFill("Cart", TileType.CartGround),
         ];
         let tileRowBlocks: TileType[] = [
             TileType.Dirt,
@@ -129,6 +131,7 @@ class EditorHandler {
             TileType.MountainGround,
             TileType.HauntGround,
             TileType.DerelictGround,
+            TileType.CartGround,
         ]
         let tilePanelButtons: EditorButton[] = [];
         let tooltips = ["Solid ground", "Solid ground", "Solid ground", "Semisolid", "Backdrop", "Ladder", "Deadly block", "Decor"];
@@ -156,20 +159,25 @@ class EditorHandler {
 
 
         /* ENEMY PANEL */
-        let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Wooly, WoolyBooly, Snail, SapphireSnail, RubySnail, Escarghost, Prickle, PrickleEgg, PrickleShell, PrickleRock, Skitter, DrSnips, AFish, Angler, Lurchin, Clammy, Pufferfish,
-            Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, SpicyJelly, Shrubbert, OrangeShrubbert, Vinedicator, GrayGrowth, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, BaddleTrigger];
+        let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Wooly, WoolyBooly, 
+            Snail, SapphireSnail, RubySnail, Escarghost, Prickle, PrickleEgg, PrickleShell, PrickleRock, Skitter, 
+            DrSnips, AFish, Angler, Lurchin, Clammy, Pufferfish,
+            Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, SpicyJelly, JumboJelly,
+            Taptop, Shrubbert, OrangeShrubbert, Vinedicator, GrayGrowth, SnowtemPole, Snoworm, BouncingSnowWorm, KingSlush, 
+            Sparky, Orbbit, Keplurk, Nimby, Yufo, BigYufo, Blaster, 
+            Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, BaddleTrigger, Bernie, Dragon];
         let enemyButtons = enemyTypes.map(a => new EditorButtonSprite(a));
 
         enemyButtons.filter(a => a.spriteType == Piggle || a.spriteType == Snail).forEach(a => hotbarDefaults.push(a));
         let enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 8);
 
         let gizmoTypes: (SpriteType)[] = [
-            BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform,
-            MushroomSpring, Baseball, SoccerBall, BowlingBall, Battery, Door, Fan, Key, FlatKey, BubbleKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
+            BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform, FlipPlatform, SlowFlipPlatform,
+            MushroomSpring, Baseball, SoccerBall, BowlingBall, Battery, Door, Minecart, Teacup, Fan, Key, FlatKey, BubbleKey, GuardedKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, SpringRing, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
             SpinRing, FragileSpinRing, PortalRing, //Stopwatch,
         ];
         let gizmoButtons: EditorButton[] = gizmoTypes.map(a => new EditorButtonSprite(a));
-        let keyIndex = gizmoButtons.findIndex(a => a instanceof EditorButtonSprite && a.spriteType == BubbleKey);
+        let keyIndex = gizmoButtons.findIndex(a => a instanceof EditorButtonSprite && a.spriteType == GuardedKey);
         gizmoButtons.splice(keyIndex + 1, 0, new EditorButtonTile(TileType.Lock, "Lock block"));
 
         gizmoButtons.push(new EditorButtonTile(TileType.ConveyorLeft, "Conveyor (left)").AppendImage(tiles["editor"][0][2]));
@@ -182,6 +190,8 @@ class EditorHandler {
 
         gizmoButtons.push(new EditorButtonTile(TileType.Barrel, "Barrel"));
         gizmoButtons.push(new EditorButtonTile(TileType.SteelBarrel, "Steel Barrel"));
+        gizmoButtons.push(new EditorButtonSprite(EmptyBarrel));
+        gizmoButtons.push(new EditorButtonSprite(EmptySteelBarrel));
         gizmoButtons.push(new EditorButtonTile(TileType.Pumpkin, "Pumpkin"));
         gizmoButtons.push(new EditorButtonTile(TileType.BubbleBlock1, "Bubble block"));
         gizmoButtons.push(new EditorButtonTile(TileType.HangingVine, "Hanging vines"));
@@ -249,6 +259,8 @@ class EditorHandler {
             new EditorButtonTile(TileType.PowerBlock, "Power source"),
             new EditorButtonTile(TileType.CircuitHurtOff, "Zappy wire"),
             new EditorButtonTile(TileType.CircuitHurtSolidOff, "Zappy block"),
+            new EditorButtonTile(TileType.FirePillarOff, "Fire pillar activator"),
+            new EditorButtonTile(TileType.DragonSwoopOff, "Dragon swoop activator"),
             //new EditorButtonTile(TileType.CircuitMusicOff, "Music block"),
 
             new EditorButtonSprite(Winch),
@@ -330,6 +342,7 @@ class EditorHandler {
         this.playerButton = new EditorButtonSprite(Player);
         this.hoverPlayerButton = new EditorButtonSprite(HoverPlayer);
         this.horizontalWrapToggle = new EditorButtonToggle(tiles["editor"][0][9], "Toggle horizontal screen wrap", currentMap.hasHorizontalWrap, (state) => { currentMap.hasHorizontalWrap = state });
+        this.lowGravityToggle = new EditorButtonToggle(tiles["editor"][3][10], "Toggle low gravity", currentMap.hasLowGravity, (state) => { currentMap.hasLowGravity = state });
         let levelFlowPanel = this.CreateFloatingButtonPanel([
             this.playerButton,
             this.hoverPlayerButton,
@@ -354,6 +367,11 @@ class EditorHandler {
             //new EditorButtonSprite(CopperGear),
             //new EditorButtonSprite(IronGear),
             this.horizontalWrapToggle,
+            this.lowGravityToggle,
+            new EditorButtonSprite(SkyChangeTrigger),
+            new EditorButtonSprite(MusicFadeTrigger),
+            new EditorButtonSprite(MusicChangeTrigger),
+            //new EditorButtonSprite(FirePillarTrigger),
 
         ], 4, 6);
         let levelFlowHandle = new EditorButtonDrawerHandle(tiles["editor"][5][3], "Level flow element", [levelFlowPanel]);
@@ -452,10 +470,13 @@ class EditorHandler {
         let honeyBrush = new EditorButtonTile(TileType.Honey, "Honey");
         let honeyLeftBrush = new EditorButtonTile(TileType.HoneyLeft, "Honey wall (left)");
         let honeyRightBrush = new EditorButtonTile(TileType.HoneyRight, "Honey wall (right)");
+        let bouncySlimeBrush = new EditorButtonTile(TileType.BouncySlime, "Bouncy Slime");
+        let bouncyLeftBrush = new EditorButtonTile(TileType.BouncyLeft, "Bouncy slime (left)");
+        let bouncyRightBrush = new EditorButtonTile(TileType.BouncyRight, "Bouncy slime (right)");
 
         let ret = this.CreateFloatingButtonPanel([
             waterBrush, waterfallBrush, quickSandBrush, purpleWaterBrush, poisonGasBrush, bubbleButton,
-            lavaBrush, slimeBrush, honeyBrush, honeyLeftBrush, honeyRightBrush,
+            lavaBrush, slimeBrush, honeyBrush, honeyLeftBrush, honeyRightBrush, bouncySlimeBrush, bouncyLeftBrush, bouncyRightBrush,
             new EditorButtonTile(TileType.InitialWaterLevel, "Initial water level"),
             new EditorButtonTile(TileType.InitialPurpleWaterLevel, "Initial poison water level"),
             new EditorButtonTile(TileType.InitialLavaLevel, "Initial lava level"),

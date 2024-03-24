@@ -73,6 +73,13 @@
     <script src="js/sprites/enemies/skitter.js?v=1.11.2"></script>
     <script src="js/sprites/enemies/angler.js?v=1.11.2"></script>
     <script src="js/sprites/enemies/vine.js?v=1.11.2"></script>
+    <script src="js/sprites/enemies/dragon.js?v=1.11.2"></script>
+    <script src="js/sprites/enemies/dragonSwoop.js?v=1.11.2"></script>
+    <script src="js/sprites/enemies/babyDragon.js?v=1.11.2"></script>
+    <script src="js/sprites/enemies/taptop.js?v=1.11.2"></script>
+    <script src="js/sprites/enemies/cloud.js?v=1.11.2"></script>
+    <script src="js/sprites/enemies/bigSnowman.js?v=1.11.2"></script>
+    <script src="js/sprites/enemies/bigSlime.js?v=1.11.2"></script>
 
     <script src="js/sprites/player.js?v=1.11.2"></script>
 
@@ -118,6 +125,7 @@
     <script src="js/sprites/gadgets/pipeContent.js?v=1.11.2"></script>
     <script src="js/sprites/gadgets/bomb.js?v=1.11.2"></script>
     <script src="js/sprites/gadgets/waterBalloon.js?v=1.11.2"></script>
+    <script src="js/sprites/gadgets/minecart.js?v=1.11.2"></script>
     <!-- <script src="js/sprites/gadgets/stopwatch.js?v=1.11.2"></script> -->
     
     <script src="js/sprites/level/goldGear.js?v=1.11.2"></script>
@@ -130,9 +138,13 @@
     <script src="js/sprites/level/cameraLock.js?v=1.11.2"></script>
     <script src="js/sprites/level/cameraScrollTrigger.js?v=1.11.2"></script>
     <script src="js/sprites/level/windTrigger.js?v=1.11.2"></script>
+    <script src="js/sprites/level/firePillarTrigger.js?v=1.11.2"></script>
+    <script src="js/sprites/level/skyChangeTrigger.js?v=1.11.2"></script>
+    <script src="js/sprites/level/musicChangeTrigger.js?v=1.11.2"></script>
     
     <script src="js/sprites/hazards/propeller.js?v=1.11.2"></script>
     <script src="js/sprites/hazards/saw.js?v=1.11.2"></script>
+    <script src="js/sprites/hazards/firePillar.js?v=1.11.2"></script>
 
     <script src="js/sprites/particles/poof.js?v=1.11.2"></script>
     <script src="js/sprites/particles/shimmer.js?v=1.11.2"></script>
@@ -212,6 +224,7 @@
     <script src="js/sprites/platforms/bouncePlatform.js?v=1.11.2"></script>
     <script src="js/sprites/platforms/mushroomPlatform.js?v=1.11.2"></script>
     <script src="js/sprites/platforms/slimePlatform.js?v=1.11.2"></script>
+    <script src="js/sprites/platforms/flipPlatform.js?v=1.11.2"></script>
     
     <script src="js/systems/benchmarkService.js?v=1.11.2"></script>
     <script src="js/systems/deathLogService.js?v=1.11.2"></script>
@@ -277,6 +290,22 @@
         <img src="images/enemies/skitter.png?v=1.11.2" data-cols="6" data-rows="1" />
         <img src="images/enemies/angler.png?v=1.11.2" data-cols="4" data-rows="1" />
         <img src="images/enemies/vine.png?v=1.11.2" data-cols="8" data-rows="3" />
+        <img src="images/enemies/taptop.png?v=1.11.2" data-cols="4" data-rows="1" />
+        <img src="images/enemies/cloud.png?v=1.11.2" data-cols="4" data-rows="1" />
+        <img src="images/enemies/lightning.png?v=1.11.2" data-cols="4" data-rows="1" />
+        
+        <img src="images/enemies/dragon/arms.png?v=1.11.2" data-cols="4" data-rows="1" />
+        <img src="images/enemies/dragon/body.png?v=1.11.2" data-cols="2" data-rows="1" />
+        <img src="images/enemies/dragon/flying.png?v=1.11.2" data-cols="1" data-rows="1" />
+        <img src="images/enemies/dragon/legs.png?v=1.11.2" data-cols="4" data-rows="1" />
+        <img src="images/enemies/dragon/wings.png?v=1.11.2" data-cols="2" data-rows="6" />
+        <img src="images/enemies/dragon/flamepillar.png?v=1.11.2" data-cols="1" data-rows="4" />
+        <img src="images/enemies/dragon/flametrigger.png?v=1.11.2" data-cols="1" data-rows="1" />
+        <img src="images/enemies/dragon/dragonwarning.png?v=1.11.2" data-cols="1" data-rows="1" />
+        <img src="images/enemies/dragon/babyDragon.png?v=1.11.2" data-cols="1" data-rows="4" />
+        <img src="images/enemies/bigSnowball.png?v=1.11.2" data-cols="12" data-rows="1" />
+        <img src="images/enemies/bigSnowmanHead.png?v=1.11.2" data-cols="2" data-rows="1" />
+        <img src="images/enemies/bigSlime.png?v=1.11.2" data-cols="2" data-rows="5" />
 
         <img src="images/gadgets/hanging.png?v=1.11.2" data-cols="4" data-rows="3" />
         <img src="images/gadgets/conveyor.png?v=1.11.2" data-cols="3" data-rows="4" />
@@ -286,12 +315,13 @@
         <img src="images/gadgets/bowlingball.png?v=1.11.2" data-cols="8" data-rows="1" />
         <img src="images/gadgets/wire.png?v=1.11.2" data-cols="10" data-rows="10" />
         <img src="images/gadgets/gust.png?v=1.11.2" data-cols="12" data-rows="4" />
-        <img src="images/gadgets/barrel.png?v=1.11.2" data-cols="8" data-rows="4" />
+        <img src="images/gadgets/barrel.png?v=1.11.2" data-cols="8" data-rows="5" />
         <img src="images/gadgets/pumpkin.png?v=1.11.2" data-cols="8" data-rows="2" />
         <img src="images/gadgets/door.png?v=1.11.2" data-cols="6" data-rows="2" />
         <img src="images/gadgets/lockpoof.png?v=1.11.2" data-cols="10" data-rows="1" />
         <img src="images/gadgets/platform.png?v=1.11.2" data-cols="4" data-rows="12" />
         <img src="images/gadgets/platform2.png?v=1.11.2" data-cols="4" data-rows="4" />
+        <img src="images/gadgets/flipPlatform.png?v=1.11.2" data-cols="6" data-rows="2" />
         <img src="images/gadgets/gears.png?v=1.11.2" data-cols="6" data-rows="4" />
         <img src="images/gadgets/bubbleBlock.png?v=1.11.2" data-cols="5" data-rows="2" />
         <img src="images/gadgets/motorTrack.png?v=1.11.2" data-cols="8" data-rows="7" />
@@ -329,6 +359,7 @@
         <img src="images/gadgets/key.png?v=1.11.2" data-cols="5" data-rows="2" />
         <img src="images/gadgets/waterBalloon.png?v=1.11.2" data-cols="1" data-rows="1" />
         <img src="images/gadgets/bulletBlock.png?v=1.11.2" data-cols="4" data-rows="1" />
+        <img src="images/gadgets/minecart.png?v=1.11.2" data-cols="1" data-rows="3" />
         
         <img src="images/fluids/fluids.png?v=1.11.2" data-cols="8" data-rows="9" />
         <img src="images/fluids/water.png?v=1.11.2" data-cols="8" data-rows="6" />
@@ -352,6 +383,8 @@
         <img src="images/particles/flameEffect.png?v=1.11.2" data-cols="8" data-rows="1" />
         <img src="images/particles/shimmer.png?v=1.11.2" data-cols="11" data-rows="1" />
         <img src="images/particles/points.png?v=1.11.2" data-cols="10" data-rows="10" />
+        <img src="images/particles/fireBreath.png?v=1.11.2" data-cols="10" data-rows="1" />
+        <img src="images/particles/cloudBits.png?v=1.11.2" data-cols="3" data-rows="1" />
 
         <img src="images/ui/logo.png?v=1.11.2" data-cols="3" data-rows="1" />
         <img src="images/ui/editor.png?v=1.11.2" data-cols="7" data-rows="11" />

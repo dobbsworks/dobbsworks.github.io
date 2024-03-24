@@ -33,17 +33,17 @@ class KeyDomino extends Key {
         this.isActive = false;
     }
 
-    GetFrameData(frameNum: number): FrameData {
+    GetFrameData(frameNum: number): FrameData[] {
         let totalFrames = Object.keys(tiles["lockpoof"]).length;
         let frame = Math.floor(this.age * totalFrames / this.numFrames);
         if (frame < 0) frame = 0;
         if (frame >= totalFrames) frame = totalFrames - 1;
-        return {
+        return [{
             imageTile: tiles["lockpoof"][frame][0],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
             yOffset: 0
-        };
+        }];
     }
 }

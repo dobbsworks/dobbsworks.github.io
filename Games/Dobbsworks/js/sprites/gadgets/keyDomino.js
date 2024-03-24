@@ -62,13 +62,13 @@ var KeyDomino = /** @class */ (function (_super) {
             frame = 0;
         if (frame >= totalFrames)
             frame = totalFrames - 1;
-        return {
-            imageTile: tiles["lockpoof"][frame][0],
-            xFlip: false,
-            yFlip: false,
-            xOffset: 0,
-            yOffset: 0
-        };
+        return [{
+                imageTile: tiles["lockpoof"][frame][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            }];
     };
     return KeyDomino;
 }(Key));

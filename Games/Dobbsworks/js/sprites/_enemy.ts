@@ -3,13 +3,14 @@ abstract class Enemy extends Sprite {
     bumpsEnemies: boolean = true;
     isInDeathAnimation: boolean = false;
     stackStun: { x: number, y: number, frames: number } | null = null;
-    stackedOn: Enemy | null = null;
+    stackedOn: Sprite | null = null;
     stackIndex: number = 0;
     destackForgiveness: number = -1;
     killedByProjectiles: boolean = true;
     canStandOn: boolean = false;
     damagesPlayer: boolean = true;
     canSpinBounceOn: boolean = false;
+    immuneToSlideKill: boolean = false;
 
     bounceSoundId: string = "bop";
 
@@ -68,11 +69,13 @@ abstract class Enemy extends Sprite {
                 this.destackForgiveness = 0;
                 this.y = this.stackedOn.y - this.height;
             }
-            this.stackIndex = this.stackedOn.stackIndex + 1;
-            this.direction = this.stackedOn.direction;
-            if (!this.stackedOn.isActive) {
-                this.stackedOn = this.stackedOn.stackedOn;
-                this.destackForgiveness = 10;
+            if (this.stackedOn instanceof Enemy) {
+                this.stackIndex = this.stackedOn.stackIndex + 1;
+                this.direction = this.stackedOn.direction;
+                if (!this.stackedOn.isActive) {
+                    this.stackedOn = this.stackedOn.stackedOn;
+                    this.destackForgiveness = 10;
+                }
             }
             if (this.stackedOn) {
                 let targetX = this.stackedOn.xMid - this.width / 2 + Math.sin(this.age / 15 + this.stackIndex) / 2;
@@ -133,7 +136,7 @@ abstract class Enemy extends Sprite {
 
     private ApplyStackStun(): void {
         let enemyBelow = this.stackedOn;
-        if (enemyBelow) {
+        if (enemyBelow && enemyBelow instanceof Enemy) {
             enemyBelow.stackStun = { x: enemyBelow.x, y: enemyBelow.y, frames: 20 };
             enemyBelow.ApplyStackStun();
         }
@@ -217,5 +220,27 @@ abstract class Enemy extends Sprite {
         }
     }
 
+    public IsPlayerInLineOfSight() {
+        if (player) {
+            let isPlayerInLineOfSightVertically =
+                player.yBottom <= this.yBottom + 12 &&
+                player.yBottom >= this.yBottom - 12;
 
+            let numberOfTilesVision = 10;
+            let isPlayerInLineOfSightHorizontally =
+                this.direction == -1 ?
+                    (
+                        player.xMid >= this.xMid - 12 * numberOfTilesVision &&
+                        player.xMid <= this.xMid
+                    ) :
+                    (
+                        player.xMid <= this.xMid + 12 * numberOfTilesVision &&
+                        player.xMid >= this.xMid);
+
+            if (isPlayerInLineOfSightVertically && isPlayerInLineOfSightHorizontally) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

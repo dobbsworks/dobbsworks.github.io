@@ -5,6 +5,7 @@ class Wallop extends Enemy {
     public width: number = 12;
     respectsSolidTiles = true;
     killedByProjectiles = false;
+    immuneToSlideKill = true;
     canBeBouncedOn = false;
     canSpinBounceOn = true;
     isSolidBox = true;

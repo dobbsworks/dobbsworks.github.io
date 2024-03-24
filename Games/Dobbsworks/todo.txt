@@ -27,7 +27,6 @@ LATER CONTENT RELEASES
     magnet
     fuse + candle + fused cannon
         waterfall extinguishes fuse, blocked by umbrella
-    low gravity
     reverse gravity
     lasers/mirrors
     echo = https://blog.gskinner.com/archives/2019/02/reverb-web-audio-api.html

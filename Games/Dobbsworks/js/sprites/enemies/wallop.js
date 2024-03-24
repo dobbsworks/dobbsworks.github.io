@@ -20,6 +20,7 @@ var Wallop = /** @class */ (function (_super) {
         _this.width = 12;
         _this.respectsSolidTiles = true;
         _this.killedByProjectiles = false;
+        _this.immuneToSlideKill = true;
         _this.canBeBouncedOn = false;
         _this.canSpinBounceOn = true;
         _this.isSolidBox = true;

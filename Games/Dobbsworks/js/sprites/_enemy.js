@@ -27,6 +27,7 @@ var Enemy = /** @class */ (function (_super) {
         _this.canStandOn = false;
         _this.damagesPlayer = true;
         _this.canSpinBounceOn = false;
+        _this.immuneToSlideKill = false;
         _this.bounceSoundId = "bop";
         _this.OnHitByProjectile = Enemy.defaultProjectileHandler;
         return _this;
@@ -85,11 +86,13 @@ var Enemy = /** @class */ (function (_super) {
                 this.destackForgiveness = 0;
                 this.y = this.stackedOn.y - this.height;
             }
-            this.stackIndex = this.stackedOn.stackIndex + 1;
-            this.direction = this.stackedOn.direction;
-            if (!this.stackedOn.isActive) {
-                this.stackedOn = this.stackedOn.stackedOn;
-                this.destackForgiveness = 10;
+            if (this.stackedOn instanceof Enemy) {
+                this.stackIndex = this.stackedOn.stackIndex + 1;
+                this.direction = this.stackedOn.direction;
+                if (!this.stackedOn.isActive) {
+                    this.stackedOn = this.stackedOn.stackedOn;
+                    this.destackForgiveness = 10;
+                }
             }
             if (this.stackedOn) {
                 var targetX = this.stackedOn.xMid - this.width / 2 + Math.sin(this.age / 15 + this.stackIndex) / 2;
@@ -159,7 +162,7 @@ var Enemy = /** @class */ (function (_super) {
     };
     Enemy.prototype.ApplyStackStun = function () {
         var enemyBelow = this.stackedOn;
-        if (enemyBelow) {
+        if (enemyBelow && enemyBelow instanceof Enemy) {
             enemyBelow.stackStun = { x: enemyBelow.x, y: enemyBelow.y, frames: 20 };
             enemyBelow.ApplyStackStun();
         }
@@ -251,6 +254,22 @@ var Enemy = /** @class */ (function (_super) {
                 }
             }
         }
+    };
+    Enemy.prototype.IsPlayerInLineOfSight = function () {
+        if (player) {
+            var isPlayerInLineOfSightVertically = player.yBottom <= this.yBottom + 12 &&
+                player.yBottom >= this.yBottom - 12;
+            var numberOfTilesVision = 10;
+            var isPlayerInLineOfSightHorizontally = this.direction == -1 ?
+                (player.xMid >= this.xMid - 12 * numberOfTilesVision &&
+                    player.xMid <= this.xMid) :
+                (player.xMid <= this.xMid + 12 * numberOfTilesVision &&
+                    player.xMid >= this.xMid);
+            if (isPlayerInLineOfSightVertically && isPlayerInLineOfSightHorizontally) {
+                return true;
+            }
+        }
+        return false;
     };
     return Enemy;
 }(Sprite));

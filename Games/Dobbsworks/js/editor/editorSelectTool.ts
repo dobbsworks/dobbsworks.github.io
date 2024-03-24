@@ -209,6 +209,7 @@ class EditorSelectionMover extends EditorTool {
                 currentMap.mainLayer.sprites.push(deadSprite);
             }
             editorHandler.sprites.push(sprite);
+            sprite.ResetSprite();
             let maxAllowed = sprite.spriteInstance.maxAllowed;
             if (maxAllowed > 0) {
                 let spritesOnMap = editorHandler.sprites.filter(a => a.spriteType == sprite.spriteType);

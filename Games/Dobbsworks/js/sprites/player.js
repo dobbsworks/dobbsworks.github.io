@@ -134,7 +134,7 @@ var Player = /** @class */ (function (_super) {
     };
     Player.prototype.PlayerMovement = function () {
         var _this = this;
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e, _f, _g;
         if (this.yoyoTimer > 0) {
             this.yoyoTimer--;
             return;
@@ -195,6 +195,16 @@ var Player = /** @class */ (function (_super) {
                 }
             }
         }
+        // jumbo jelly
+        var jellyContainer = null;
+        var jellies = this.layer.sprites.filter(function (a) { return a instanceof JumboJelly; });
+        if (jellies.length > 0) {
+            jellyContainer = (_c = jellies.find(function (a) { return a.Overlaps(_this); })) !== null && _c !== void 0 ? _c : null;
+            if (jellyContainer) {
+                this.isInWater = true;
+                isLosingBreath = true;
+            }
+        }
         if (this.isInWater && !wasInWater) {
             if ((waterTileAtFoot === null || waterTileAtFoot === void 0 ? void 0 : waterTileAtFoot.isSwimmable) || (globalWaterHeight !== -1 && globalWaterHeight < this.yBottom)) {
                 this.dy = 0;
@@ -204,8 +214,8 @@ var Player = /** @class */ (function (_super) {
             }
         }
         this.HandleBreath(isLosingBreath);
-        this.isInQuicksand = ((_c = this.layer.map) === null || _c === void 0 ? void 0 : _c.waterLayer.GetTileByPixel(this.xMid, this.yBottom - 0.1).tileType.isQuicksand) || false;
-        if (this.isOnGround || this.isClimbing || ((this.isInWater || this.isInQuicksand) && this.heldItem == null) || this.isTouchingStickyWall || ((_d = this.heldItem) === null || _d === void 0 ? void 0 : _d.canHangFrom)) {
+        this.isInQuicksand = ((_d = this.layer.map) === null || _d === void 0 ? void 0 : _d.waterLayer.GetTileByPixel(this.xMid, this.yBottom - 0.1).tileType.isQuicksand) || false;
+        if (this.isOnGround || this.isClimbing || ((this.isInWater || this.isInQuicksand) && this.heldItem == null) || this.isTouchingStickyWall || ((_e = this.heldItem) === null || _e === void 0 ? void 0 : _e.canHangFrom)) {
             if (this.age > 1)
                 this.coyoteTimer = 0;
             this.isSpinJumping = false;
@@ -216,8 +226,14 @@ var Player = /** @class */ (function (_super) {
         if (this.jumpTimer > -1) {
             if (this.windDy > 0)
                 this.jumpTimer += this.windDy;
-            if (isJumpHeld || this.forcedJumpTimer > 0)
-                this.jumpTimer++;
+            if (isJumpHeld || this.forcedJumpTimer > 0) {
+                if (currentMap.hasLowGravity) {
+                    this.jumpTimer += 0.5;
+                }
+                else {
+                    this.jumpTimer++;
+                }
+            }
             if (!isJumpHeld && this.forcedJumpTimer <= 0) {
                 this.jumpTimer = -1;
                 if (this.dy < -1)
@@ -225,7 +241,7 @@ var Player = /** @class */ (function (_super) {
             }
             // below controls how many frames of upward velocity we get
             var numJumpFrames = 18;
-            if ((_e = this.heldItem) === null || _e === void 0 ? void 0 : _e.isHeavy)
+            if ((_f = this.heldItem) === null || _f === void 0 ? void 0 : _f.isHeavy)
                 numJumpFrames = 6;
             if (this.jumpTimer > numJumpFrames)
                 this.jumpTimer = -1;
@@ -286,10 +302,11 @@ var Player = /** @class */ (function (_super) {
             }
             this.isSliding = false;
         }
-        if ((this.isInWater && (!waterLayerAtMid.isSwimmable && globalWaterHeight > this.yMid) && !currentMap.playerWaterMode)) {
+        if ((this.isInWater && (!waterLayerAtMid.isSwimmable && globalWaterHeight > this.yMid) && !currentMap.playerWaterMode) && (jellyContainer == null || jellyContainer.y > this.yMid)) {
             // break through water surface
-            if (isJumpHeld && this.dy < 0)
+            if (isJumpHeld && this.dy < 0) {
                 this.dy = -1.3;
+            }
             else if (this.dy < 0)
                 this.dy = 0;
         }
@@ -297,6 +314,12 @@ var Player = /** @class */ (function (_super) {
         var downPressed = KeyboardHandler.IsKeyPressed(KeyAction.Down, false) && !(this.neutralTimer > 0);
         var leftPressed = KeyboardHandler.IsKeyPressed(KeyAction.Left, false) && !(this.neutralTimer > 0);
         var rightPressed = KeyboardHandler.IsKeyPressed(KeyAction.Right, false) && !(this.neutralTimer > 0);
+        if (this.parentSprite && this.parentSprite instanceof Rideable) {
+            upPressed = false;
+            downPressed = false;
+            leftPressed = false;
+            rightPressed = false;
+        }
         if (leftPressed && this.dx > 0)
             this.isSliding = false;
         if (rightPressed && this.dx < 0)
@@ -306,7 +329,7 @@ var Player = /** @class */ (function (_super) {
         this.climbCooldownTimer++;
         var tileAtMid = this.layer.GetTileByPixel(this.xMid, this.yMid);
         var tileAtFoot = this.layer.GetTileByPixel(this.xMid, this.yBottom - 0.25);
-        var isAtLadderTop = (tileAtFoot.tileType.isClimbable && ((_f = tileAtFoot.GetSemisolidNeighbor()) === null || _f === void 0 ? void 0 : _f.tileType.solidity) == Solidity.Top);
+        var isAtLadderTop = (tileAtFoot.tileType.isClimbable && ((_g = tileAtFoot.GetSemisolidNeighbor()) === null || _g === void 0 ? void 0 : _g.tileType.solidity) == Solidity.Top);
         var isTouchingLadder = tileAtMid.tileType.isClimbable || isAtLadderTop;
         if (upPressed && isTouchingLadder && this.climbCooldownTimer > 20 && this.heldItem == null) {
             this.isClimbing = true;
@@ -508,6 +531,11 @@ var Player = /** @class */ (function (_super) {
         // very similar to Bounce()
         // if (this.jumpBufferTimer > 0) console.log("BUFFER JUMP", this.jumpBufferTimer);
         // if (this.coyoteTimer > 0) console.log("COYOTE TIME", this.coyoteTimer);
+        if (this.parentSprite && this.parentSprite instanceof Rideable) {
+            var canJump = this.parentSprite.OnTryJump(this);
+            if (!canJump)
+                return;
+        }
         this.jumpBufferTimer = -1;
         this.coyoteTimer = 999999;
         this.dy = (Math.abs(this.dx) > 0.3 || this.isSpinJumping) ? -1.5 : -1.2;
@@ -539,6 +567,11 @@ var Player = /** @class */ (function (_super) {
         }
         if ((_a = this.heldItem) === null || _a === void 0 ? void 0 : _a.canHangFrom) {
             this.heldItem.framesSinceThrown = 1;
+            if (this.heldItem instanceof SpringRingHandle) {
+                //this.dxFromPlatform = this.heldItem.dx;
+                if (this.heldItem.dy < 0)
+                    this.dyFromPlatform = this.heldItem.dy * 2;
+            }
             this.heldItem = null;
             this.dy = -1.5;
         }
@@ -580,7 +613,8 @@ var Player = /** @class */ (function (_super) {
         this.dy = -1.5;
         this.jumpTimer = 0;
         this.isClimbing = false;
-        this.parentSprite = null;
+        if (!(this.parentSprite instanceof Rideable))
+            this.parentSprite = null;
         this.RefreshFloatTimer();
     };
     Player.prototype.HandleBreath = function (isLosingBreath) {
@@ -671,6 +705,10 @@ var Player = /** @class */ (function (_super) {
     };
     Player.prototype.HandleEnemies = function () {
         var _a;
+        var rideSprite = this.parentSprite;
+        if (!(rideSprite instanceof Rideable))
+            rideSprite = null;
+        var isRidingEnemyKiller = rideSprite && rideSprite instanceof Minecart && Math.abs(rideSprite.dx) > 1;
         var sprites = this.layer.sprites;
         for (var _i = 0, sprites_1 = sprites; _i < sprites_1.length; _i++) {
             var sprite = sprites_1[_i];
@@ -701,19 +739,27 @@ var Player = /** @class */ (function (_super) {
                         sprite.OnBounce();
                     }
                     sprite.SharedOnBounce(); //enemy-specific method
+                    if (rideSprite) {
+                        this.dy = -2;
+                        rideSprite.dy = this.dy;
+                    }
                 }
-                else if (landingOnTop && sprite.canSpinBounceOn && this.isSpinJumping) {
+                else if (landingOnTop && sprite.canSpinBounceOn && (this.isSpinJumping || rideSprite)) {
                     this.Bounce();
                     audioHandler.PlaySound("spinBounce", true);
                     var particle = new Pow(this.x, this.y, this.layer, []);
                     particle.x = this.xMid - particle.width / 2;
                     particle.y = this.yBottom - particle.height / 2;
                     this.layer.sprites.push(particle);
+                    if (rideSprite) {
+                        this.dy = -2;
+                        rideSprite.dy = this.dy;
+                    }
                 }
                 else if (sprite.canStandOn && currentlyAbove && isHorizontalOverlap) {
                 }
                 else if (!sprite.isInDeathAnimation && this.xRight > sprite.x && this.x < sprite.xRight && this.yBottom > sprite.y && this.y < sprite.yBottom) {
-                    if (this.isSliding && sprite.killedByProjectiles) {
+                    if ((this.isSliding || isRidingEnemyKiller) && !sprite.immuneToSlideKill) {
                         sprite.isActive = false;
                         var deadSprite = new DeadEnemy(sprite);
                         this.layer.sprites.push(deadSprite);
@@ -803,8 +849,22 @@ var Player = /** @class */ (function (_super) {
     };
     Player.prototype.OnPlayerHurt = function () {
         var _this = this;
-        if (this.heldItem && this.heldItem instanceof GoldHeart)
-            return;
+        if (this.heldItem) {
+            var takeDamage = this.heldItem.OnHolderTakeDamage();
+            if (takeDamage == HeldDamageBlockType.Invincible)
+                return;
+            if (takeDamage == HeldDamageBlockType.Iframe) {
+                this.ActivateIFrames();
+                return;
+            }
+        }
+        if (this.parentSprite && this.parentSprite instanceof Rideable) {
+            var takeDamage = this.parentSprite.OnRiderTakeDamage();
+            if (!takeDamage) {
+                this.ActivateIFrames();
+                return;
+            }
+        }
         if (this.iFrames == 0) {
             var nextHeart_1 = this.layer.sprites.find(function (a) { return a instanceof ExtraHitHeartSmall && a.parent == _this; });
             if (nextHeart_1) {
@@ -950,6 +1010,7 @@ var Player = /** @class */ (function (_super) {
                     var isYOverlap = Math.abs(spriteYBottom - myY) < 2.5;
                     if (isXOverlap && isYOverlap) {
                         this.heldItem = sprite;
+                        sprite.OnPickup();
                         startedHolding = true;
                         audioHandler.PlaySound("pick-up", true);
                         break;
@@ -1032,7 +1093,7 @@ var Player = /** @class */ (function (_super) {
                     if (this.heldItem) {
                         var xDistanceFromTarget = Math.abs(this.heldItem.xMid - this.width / 2 - this.x);
                         var yDistanceFromTarget = Math.abs(this.heldItem.yBottom - this.y);
-                        if (xDistanceFromTarget > 2 || yDistanceFromTarget > 2) {
+                        if (xDistanceFromTarget > this.heldItem.maxHoldDistance || yDistanceFromTarget > this.heldItem.maxHoldDistance) {
                             this.heldItem.framesSinceThrown = 1;
                             this.heldItem = null;
                         }
@@ -1176,6 +1237,8 @@ var Player = /** @class */ (function (_super) {
         };
     };
     Player.prototype.OnAfterDraw = function (camera) {
+        if (this.heldItem)
+            this.heldItem.Draw(camera, currentMap.frameNum);
         var ctx = camera.ctx;
         if (this.currentBreath < this.maxBreath) {
             var x = (this.x - camera.x - 3) * camera.scale + camera.canvas.width / 2;

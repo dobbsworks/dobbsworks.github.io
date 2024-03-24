@@ -30,8 +30,10 @@ var TileType = /** @class */ (function () {
         this.drainsAir = false;
         this.canWalkOn = true; //sticky honey blocks
         this.canJumpFrom = true; //sticky slime blocks
+        this.bounceFrom = false;
         this.isFire = false;
         this.isStickyWall = false;
+        this.isBouncyWall = false;
         this.isJumpWall = false;
         this.isWarpWall = false;
         this.isExemptFromSlime = false;
@@ -385,6 +387,22 @@ var TileType = /** @class */ (function () {
         TileType.FireTop;
         TileType.BulletBlock;
         TileType.RedGirder2;
+        TileType.FirePillarOff;
+        TileType.FirePillarOn;
+        TileType.DragonSwoopOff;
+        TileType.DragonSwoopOn;
+        TileType.BouncySlime,
+            TileType.BouncyLeft,
+            TileType.BouncyRight,
+            TileType.CartGround;
+        TileType.CartBrick;
+        TileType.CartBlock;
+        TileType.CartTop;
+        TileType.CartBack;
+        TileType.CartLadder;
+        TileType.CartSpikes;
+        TileType.DecorCart;
+        TileType.RegisterSlope("Cart", 14);
     };
     TileType.RegisterSlope = function (keyBase, tileRow) {
         var colIter = 8;
@@ -1256,6 +1274,54 @@ var TileType = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    Object.defineProperty(TileType, "CartGround", {
+        get: function () { return TileType.GetTileType("CartGround", "terrain", 0, 14, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "CartBrick", {
+        get: function () { return TileType.GetTileType("CartBrick", "terrain", 1, 14, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "CartBlock", {
+        get: function () { return TileType.GetTileType("CartBlock", "terrain", 2, 14, Solidity.Block, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "CartTop", {
+        get: function () { return TileType.GetTileType("CartTop", "terrain", 3, 14, Solidity.Top, TargetLayer.semisolid); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "CartBack", {
+        get: function () { return TileType.GetTileType("CartBack", "terrain", 4, 14, Solidity.None, TargetLayer.backdrop); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "CartLadder", {
+        get: function () { return TileType.GetTileType("CartLadder", "terrain", 5, 14, Solidity.None, TargetLayer.main, function (tileType) { tileType.isClimbable = true; }); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DecorCart", {
+        get: function () { return TileType.GetTileType("DecorCart", "terrain", 7, 14, Solidity.None, TargetLayer.main); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "CartSpikes", {
+        get: function () {
+            return TileType.GetTileType("CartSpikes", "terrain", 6, 14, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.hurtOnBottom = true;
+                tileType.hurtOnTop = true;
+                tileType.hurtOnLeft = true;
+                tileType.hurtOnRight = true;
+                tileType.clockWiseRotationTileName = "CartSpikesRight";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(TileType, "PurpleWater", {
         get: function () {
             return TileType.GetTileType("PurpleWater", "purpleWater", 0, 0, Solidity.None, TargetLayer.water, function (tileType) {
@@ -1299,6 +1365,16 @@ var TileType = /** @class */ (function () {
                 tileType.imageTile.yOffset = -2;
                 tileType.canJumpFrom = false;
                 tileType.isExemptFromSlime = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "BouncySlime", {
+        get: function () {
+            return TileType.GetTileType("BouncySlime", "fluids", 4, 3, Solidity.Top, TargetLayer.semisolid, function (tileType) {
+                tileType.imageTile.yOffset = -2;
+                tileType.bounceFrom = true;
             });
         },
         enumerable: false,
@@ -1384,6 +1460,28 @@ var TileType = /** @class */ (function () {
             return TileType.GetTileType("HoneyRight", "fluids", 6, 2, Solidity.RightWall, TargetLayer.semisolid, function (tileType) {
                 tileType.imageTile.xOffset = -8;
                 tileType.isStickyWall = true;
+                tileType.isExemptFromSlime = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "BouncyLeft", {
+        get: function () {
+            return TileType.GetTileType("BouncyLeft", "fluids", 5, 3, Solidity.LeftWall, TargetLayer.semisolid, function (tileType) {
+                tileType.imageTile.xOffset = 8;
+                tileType.isBouncyWall = true;
+                tileType.isExemptFromSlime = true;
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "BouncyRight", {
+        get: function () {
+            return TileType.GetTileType("BouncyRight", "fluids", 6, 3, Solidity.RightWall, TargetLayer.semisolid, function (tileType) {
+                tileType.imageTile.xOffset = -8;
+                tileType.isBouncyWall = true;
                 tileType.isExemptFromSlime = true;
             });
         },
@@ -2804,6 +2902,56 @@ var TileType = /** @class */ (function () {
     };
     Object.defineProperty(TileType, "Cracks", {
         get: function () { return TileType.GetTileType("Cracks", "bomb", 0, 2, Solidity.None, TargetLayer.wire); },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "FirePillarOff", {
+        get: function () {
+            return TileType.GetTileType("FirePillarOff", "wire", 0, 5, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.canBePowered = true;
+                tileType.poweredTileName = "FirePillarOn";
+                tileType.onPowered = function (tile) {
+                    var oldPillars = tile.layer.sprites.filter(function (a) { return a instanceof FirePillar && a.x == tile.tileX * 12 - 2; });
+                    oldPillars.forEach(function (a) { return a.isActive = false; });
+                    var newPillar = new FirePillar(tile.tileX * 12 - 2, tile.tileY * 12, tile.layer, []);
+                    tile.layer.sprites.push(newPillar);
+                };
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "FirePillarOn", {
+        get: function () {
+            return TileType.GetTileType("FirePillarOn", "wire", 1, 5, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.canBePowered = true;
+                tileType.unpoweredTileName = "FirePillarOff";
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DragonSwoopOff", {
+        get: function () {
+            return TileType.GetTileType("DragonSwoopOff", "wire", 2, 5, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.canBePowered = true;
+                tileType.poweredTileName = "DragonSwoopOn";
+                tileType.onPowered = function (tile) {
+                    var swoop = new DragonSwoop(tile.tileX * 12 - 45, tile.tileY * 12 + 1, tile.layer, []);
+                    tile.layer.sprites.push(swoop);
+                };
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(TileType, "DragonSwoopOn", {
+        get: function () {
+            return TileType.GetTileType("DragonSwoopOn", "wire", 3, 5, Solidity.Block, TargetLayer.main, function (tileType) {
+                tileType.canBePowered = true;
+                tileType.unpoweredTileName = "DragonSwoopOff";
+            });
+        },
         enumerable: false,
         configurable: true
     });

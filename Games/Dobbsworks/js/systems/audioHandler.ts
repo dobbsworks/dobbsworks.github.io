@@ -9,6 +9,8 @@ class AudioHandler {
 
     initialized = false;
     currentBgm = "";
+    crossfadeBgm = "";
+    crossfadeSpeed = 0.01;
 
     audioObjects: AudioObject[] = [];
     segments: {src: HTMLAudioElement, endTime: number}[] = [];
@@ -84,25 +86,77 @@ class AudioHandler {
         this.currentBgm = id;
     }
 
+    SetCrossfadeBackgroundMusic(id: string) {
+        if (this.currentBgm === id) return;
+        
+        let xbgm = this.audioObjects.find(a => a.id === id);
+        if (xbgm) {
+            if (xbgm) {
+                if (this.crossfadeBgm) {
+                    //already crossfading...
+                    let bgm = this.audioObjects.find(a => a.id === this.currentBgm);
+                    if (bgm) {
+                        bgm.audioElement.volume == 0.0;
+                        bgm.src.pause();
+                        bgm.src.currentTime = 0;
+                        bgm.audioElement.volume = 1.0;
+                    }
+                    this.currentBgm = this.crossfadeBgm;
+                    this.crossfadeBgm = "";
+                }
+
+                xbgm.audioElement.volume = 0.0;
+                this.crossfadeBgm = id;
+                xbgm.src.play().then().catch(e => console.error(e));
+            }
+        }
+    }
+
     Update(): void {
         this.HandleMusicLoop();
         this.HandleSegments();
+        this.HandleCrossfade();
+    }
+
+    HandleCrossfade(): void {
+        if (!this.crossfadeBgm) return;
+
+        let bgm = this.audioObjects.find(a => a.id === this.currentBgm);
+        let xbgm = this.audioObjects.find(a => a.id === this.crossfadeBgm);
+
+        if (bgm && xbgm) {
+            bgm.audioElement.volume = Utility.Approach(bgm.audioElement.volume, 0.0, this.crossfadeSpeed);
+            xbgm.audioElement.volume = Utility.Approach(xbgm.audioElement.volume, 1.0, this.crossfadeSpeed);
+
+            if (bgm.audioElement.volume == 0.0 && xbgm.audioElement.volume == 1.0) {
+                // swap complete
+                bgm.src.pause();
+                bgm.src.currentTime = 0;
+                bgm.audioElement.volume = 1.0;
+
+                this.currentBgm = this.crossfadeBgm;
+                this.crossfadeBgm = "";
+            }
+        }
+
     }
 
     HandleMusicLoop(): void {
-        let bgm = this.audioObjects.find(a => a.id === this.currentBgm);
-        if (bgm) {
-            let bpm = +(bgm.src.dataset.bpm || "0");
-            let introBeats = +(bgm.src.dataset.introBeats || "0");
-            let loopBeats = +(bgm.src.dataset.loopBeats || "0");
-            if (bpm && introBeats && loopBeats) {
-                let loopLengthSeconds = (loopBeats / bpm) * 60;
-                let loopPointSeconds = ((introBeats + loopBeats) / bpm) * 60;
-                if (bgm.src.currentTime > loopPointSeconds) {
-                    bgm.src.currentTime -= loopLengthSeconds;
+        [this.currentBgm, this.crossfadeBgm].forEach(m => {
+            let bgm = this.audioObjects.find(a => a.id === m);
+            if (bgm) {
+                let bpm = +(bgm.src.dataset.bpm || "0");
+                let introBeats = +(bgm.src.dataset.introBeats || "0");
+                let loopBeats = +(bgm.src.dataset.loopBeats || "0");
+                if (bpm && introBeats && loopBeats) {
+                    let loopLengthSeconds = (loopBeats / bpm) * 60;
+                    let loopPointSeconds = ((introBeats + loopBeats) / bpm) * 60;
+                    if (bgm.src.currentTime > loopPointSeconds) {
+                        bgm.src.currentTime -= loopLengthSeconds;
+                    }
                 }
             }
-        }
+        })
     }
 
     HandleSegments(): void {

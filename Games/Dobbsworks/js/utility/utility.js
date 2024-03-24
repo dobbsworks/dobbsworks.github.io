@@ -134,6 +134,52 @@ var Utility = /** @class */ (function () {
             return true;
         return false;
     };
+    Utility.Lerp = function (from, to, weight) {
+        return from + (to - from) * weight;
+    };
+    Utility.Approach = function (from, to, amount) {
+        if (Math.abs(from - to) <= amount)
+            return to;
+        if (from < to)
+            return from + amount;
+        return from - amount;
+    };
+    // static LerpColor(from: string, to: string, weight: number): string {
+    //     let hsl1 = rgbStringToHSL(from);
+    //     let hsl2 = rgbStringToHSL(to);
+    //     if (Math.abs(hsl2.h - hsl1.h) > 180) {
+    //         if (hsl1.h > 180) hsl1.h -= 360;
+    //         if (hsl2.h > 180) hsl2.h -= 360;
+    //     }
+    //     let hslNew = {
+    //         h: Utility.Lerp(hsl1.h, hsl2.h, weight) % 360,
+    //         s: Utility.Lerp(hsl1.s, hsl2.s, weight),
+    //         l: Utility.Lerp(hsl1.l, hsl2.l, weight),
+    //     };
+    //     return hslToRGB(hslNew);
+    // }
+    Utility.ApproachColor = function (from, to, speed) {
+        var rgbToInts = function (rgb) {
+            return [0, 1, 2].map(function (n, i) {
+                var a = rgb.replace("#", "");
+                var l = Math.floor(a.length / 3);
+                var s = i * l;
+                var sub = a.substring(s, s + l);
+                return parseInt(sub, 16);
+            });
+        };
+        var rgb1 = rgbToInts(from);
+        var rgb2 = rgbToInts(to);
+        for (var i = 0; i < 3; i++) {
+            if (Math.abs(rgb1[i] - rgb2[i]) <= speed)
+                rgb1[i] = rgb2[i];
+            if (rgb1[i] < rgb2[i])
+                rgb1[i] += speed;
+            if (rgb1[i] > rgb2[i])
+                rgb1[i] -= speed;
+        }
+        return "#" + rgb1.map(function (a) { return a.toString(16).padStart(2, "00"); }).join("");
+    };
     Utility.b64Str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     return Utility;
 }());

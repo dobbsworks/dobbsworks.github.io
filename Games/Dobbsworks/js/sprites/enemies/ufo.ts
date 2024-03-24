@@ -116,6 +116,7 @@ class YufoLaser extends Enemy {
     respectsSolidTiles = true;
     canBeBouncedOn = false;
     killedByProjectiles = false;
+    immuneToSlideKill = true;
 
     Update(): void {
         this.dy = 2;

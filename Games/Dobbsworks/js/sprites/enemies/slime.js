@@ -164,6 +164,7 @@ var FrostEffect = /** @class */ (function (_super) {
         _this.height = 18;
         _this.width = 25;
         _this.killedByProjectiles = false;
+        _this.immuneToSlideKill = true;
         _this.respectsSolidTiles = false;
         _this.imageSource = "frostEffect";
         _this.timer = 0;

@@ -70,13 +70,7 @@ class Angler extends Enemy {
 
         let frames = [1,2,3,2,1,0];
         let frame = frames[Math.floor(frameNum / 5) % frames.length];
-        let ret = [{
-            imageTile: tiles["angler"][frame][0],
-            xFlip: this.direction == 1,
-            yFlip: false,
-            xOffset: 4,
-            yOffset: 4
-        }];
+        let ret: FrameData[] = []
 
         if (this.disguise) {
             if (Math.floor(this.revealTimer / 5) % 2 == 0) {
@@ -94,6 +88,19 @@ class Angler extends Enemy {
             });
         }
 
+        ret .push({
+            imageTile: tiles["angler"][frame][0],
+            xFlip: this.direction == 1,
+            yFlip: false,
+            xOffset: 4,
+            yOffset: 4
+        });
+
+        if (this.disguise) {
+            if (Math.floor(this.revealTimer / 5) % 2 == 0) {
+                ret = [this.disguise];
+            }
+        }
         return ret;
     }
 }

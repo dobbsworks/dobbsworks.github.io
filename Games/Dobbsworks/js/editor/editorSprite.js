@@ -152,11 +152,18 @@ var EditorSprite = /** @class */ (function () {
                 imgTile.Draw(camera.ctx, (this.spriteInstance.x - camera.x - fd.xOffset + imgTile.width / 2 * totalWiggle) * camera.scale + camera.canvas.width / 2, (this.spriteInstance.y - camera.y - fd.yOffset - imgTile.height / 2 * totalWiggle) * camera.scale + camera.canvas.height / 2, camera.scale, fd.xFlip, fd.yFlip, 1 + totalWiggle);
             }
         }
-        // camera.ctx.strokeStyle = "#F008";
-        // camera.ctx.strokeRect(
-        //     (this.tileCoord.tileX * 12 - camera.x) * camera.scale + camera.canvas.width / 2,
-        //     (this.tileCoord.tileY * 12 - camera.y) * camera.scale + camera.canvas.height / 2,
-        //     12 * camera.scale, 12 * camera.scale);
+        if (this.spriteInstance instanceof SkyChangeTrigger) {
+            if (!this.spriteInstance.skyString)
+                return;
+            var y1 = (this.tileCoord.tileY * 12 + 1 - camera.y) * camera.scale + camera.canvas.height / 2;
+            var x1 = (this.tileCoord.tileX * 12 + 1 - camera.x) * camera.scale + camera.canvas.width / 2;
+            var sky = currentMap.LoadSkyFromString(this.spriteInstance.skyString);
+            var grd = camera.ctx.createLinearGradient(0, y1, 0, y1 + 10 * camera.scale);
+            grd.addColorStop(sky.bgColorTopPositionRatio, sky.bgColorTop);
+            grd.addColorStop(sky.bgColorBottomPositionRatio, sky.bgColorBottom);
+            camera.ctx.fillStyle = grd;
+            camera.ctx.fillRect(x1, y1, 10 * camera.scale, 10 * camera.scale);
+        }
     };
     EditorSprite.prototype.Copy = function () {
         var spr = new EditorSprite(this.spriteType, __assign({}, this.tileCoord));

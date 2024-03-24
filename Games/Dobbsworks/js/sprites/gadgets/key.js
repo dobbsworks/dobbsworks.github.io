@@ -103,13 +103,13 @@ var Key = /** @class */ (function (_super) {
             frame = Math.floor(this.poofTimer / 20 * 4);
             this.frameRow = 0;
         }
-        return {
-            imageTile: tiles["key"][frame][this.frameRow],
-            xFlip: false,
-            yFlip: false,
-            xOffset: 0,
-            yOffset: 1 + this.GetYOffset(frameNum)
-        };
+        return [{
+                imageTile: tiles["key"][frame][this.frameRow],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 1 + this.GetYOffset(frameNum)
+            }];
     };
     Key.prototype.GetYOffset = function (frameNum) {
         return 0;
@@ -161,3 +161,82 @@ var BubbleKey = /** @class */ (function (_super) {
     };
     return BubbleKey;
 }(Key));
+var GuardedKey = /** @class */ (function (_super) {
+    __extends(GuardedKey, _super);
+    function GuardedKey() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.height = 11;
+        _this.width = 12;
+        _this.frameRow = 1;
+        _this.frameCol = 2;
+        return _this;
+    }
+    GuardedKey.prototype.OnMapLoad = function () {
+        var _this = this;
+        // check for holder
+        var sprite = this.layer.sprites.find(function (a) { return a.x < _this.xMid && a.xRight > _this.xMid && a.y < _this.yBottom + 6 && a.yBottom > _this.yBottom + 6 && a.canMotorHold; });
+        if (sprite) {
+            var newSprite = this.ReplaceWithSpriteType(GuardedKeyHeld);
+            newSprite.guardian = sprite;
+        }
+    };
+    GuardedKey.prototype.GetFrameData = function (frameNum) {
+        var ret = [];
+        if (editorHandler.isInEditMode) {
+            ret.push({
+                imageTile: tiles["itemWrapper"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: -12
+            });
+        }
+        ret.push({
+            imageTile: tiles["key"][2][1],
+            xFlip: false,
+            yFlip: false,
+            xOffset: 0,
+            yOffset: 0
+        });
+        return ret;
+    };
+    return GuardedKey;
+}(Key));
+var GuardedKeyHeld = /** @class */ (function (_super) {
+    __extends(GuardedKeyHeld, _super);
+    function GuardedKeyHeld() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.height = 11;
+        _this.width = 12;
+        _this.respectsSolidTiles = true;
+        _this.canBeHeld = false;
+        _this.guardian = null;
+        return _this;
+    }
+    GuardedKeyHeld.prototype.Update = function () {
+        if (this.guardian) {
+            this.x = this.guardian.xMid - this.width / 2;
+            this.y = this.guardian.yMid - this.height / 2;
+        }
+    };
+    GuardedKeyHeld.prototype.GetFrameData = function (frameNum) {
+        if (frameNum % 30 >= 10) {
+            return [{
+                    imageTile: tiles["empty"][0][0],
+                    xFlip: false,
+                    yFlip: false,
+                    xOffset: 0,
+                    yOffset: 0
+                }];
+        }
+        var ret = [{
+                imageTile: tiles["key"][2][1],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            }];
+        return ret;
+    };
+    return GuardedKeyHeld;
+}(Sprite));

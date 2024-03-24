@@ -80,10 +80,12 @@ function Scene1() {
             }
         }
     }
+    var lives = "03";
+    if (Math.random() < 0.2) lives = "06";
     var lifeCount = [
         new StaticImage(images.dobbshead, 2, -100, 0),
         new StaticText("x", 50, "white", "black", 0, 0),
-        new StaticText("03", 50, "white", "black", 100, 0)
+        new StaticText(lives, 50, "white", "black", 100, 0)
     ];
     sprites.push(...lifeCount);
     lifeCount.forEach(a => {
@@ -112,7 +114,9 @@ function Scene2() {
         new StaticImage(images.tree, 3, 500 - a * 300 + b * 1000, -200),
         new StaticImage(images.tree, 3, 700 - a * 500 + b * 1000, -150),
         new StaticImage(images.tree, 2.5, 700 - a * 400 + b * 1000, -150),
-        new StaticImage(images.tree, 2, 300 - a * 250 + b * 1000, -200)
+        new StaticImage(images.tree, 2, 300 - a * 250 + b * 1000, -200),
+        new StaticImage(images.bush, 3.2, 600 - a * 400 + b * 1000, -140),
+        new StaticImage(images.bush, 6, 400 - a * 350 + b * 1200, 100)
     ]));
 
     trees.sort((a, b) => a.baseY - b.baseY);
@@ -126,8 +130,8 @@ function Scene2() {
     let initialS2s = [
         new Rect(grassGradient, 0, -40, 1800, 50),
         new Rect("#64b87a", 0, 50, 1800, 140),
-        ...terrain,
         new Ground(0, 500),
+        ...terrain,
         dobbs,
         dobbsname,
         ...coins,
@@ -140,6 +144,7 @@ function Scene2() {
     terrain.forEach(a => {
         a.Update = () => {
             let deltaY = (dobbs.baseY - a.baseY);
+            if (deltaY < 0) deltaY *= -0.5;
             a.x -= 4 / (deltaY / 150) * 0.5;
             if (a.x < -1000) a.isActive = false;
         }
@@ -484,7 +489,7 @@ function Scene8() {
     var crowd = [
         "vidz", "riddle", "yosh", "jen", "ehnu", "typ",
         "gfe", "hudson", "mantis", "mushu", "owley", "richard",
-        "crow", "", "", "burger", "", "sceptile"
+        "crow", "", "", "burger", "mac", "sceptile"
     ]
 
     function GetShuffledArray(array) {

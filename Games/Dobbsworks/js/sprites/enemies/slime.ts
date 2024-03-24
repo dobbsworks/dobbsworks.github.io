@@ -137,6 +137,7 @@ class FrostEffect extends Enemy {
     height = 18;
     width = 25;
     killedByProjectiles = false;
+    immuneToSlideKill = true;
     respectsSolidTiles = false;
     imageSource = "frostEffect"
 

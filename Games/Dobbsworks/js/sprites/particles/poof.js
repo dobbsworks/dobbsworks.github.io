@@ -79,3 +79,51 @@ var Twinkle = /** @class */ (function (_super) {
     }
     return Twinkle;
 }(Pow));
+var BaseParticle = /** @class */ (function (_super) {
+    __extends(BaseParticle, _super);
+    function BaseParticle() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.height = 0;
+        _this.width = 0;
+        _this.respectsSolidTiles = false;
+        _this.isExemptFromSilhoutte = true;
+        _this.imageName = "pow";
+        _this.animationSpeed = 1; // frames per imageTile, should be >= 1
+        return _this;
+    }
+    BaseParticle.prototype.Update = function () {
+        if (this.height == 0) {
+            var imageTile = tiles[this.imageName][0][0];
+            this.width = imageTile.width;
+            this.height = imageTile.height;
+            this.x -= this.width / 2;
+            this.y -= this.height / 2;
+        }
+        if (this.age >= this.animationSpeed * Object.values(tiles[this.imageName]).length)
+            this.isActive = false;
+        this.MoveByVelocity();
+    };
+    BaseParticle.prototype.GetFrameData = function (frameNum) {
+        if (this.height == 0)
+            this.Update();
+        var frame = Math.floor(this.age / this.animationSpeed) % Object.values(tiles[this.imageName]).length;
+        return {
+            imageTile: tiles[this.imageName][frame][0],
+            xFlip: false,
+            yFlip: false,
+            xOffset: 0,
+            yOffset: 0
+        };
+    };
+    return BaseParticle;
+}(Sprite));
+var CloudBit = /** @class */ (function (_super) {
+    __extends(CloudBit, _super);
+    function CloudBit() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.imageName = "cloudBits";
+        _this.animationSpeed = 8;
+        return _this;
+    }
+    return CloudBit;
+}(BaseParticle));

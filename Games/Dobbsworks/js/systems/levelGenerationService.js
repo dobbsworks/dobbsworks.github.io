@@ -175,7 +175,7 @@ var LevelGenerator = /** @class */ (function () {
             var x = sprite.tileCoord.tileX;
             var y = sprite.tileCoord.tileY;
             var additionalProps = sprite.editorProps || [];
-            var spriteStr = __spreadArrays([spriteIndex, x, y], additionalProps).map(function (a) { return Utility.toTwoDigitB64(a); });
+            var spriteStr = __spreadArrays([spriteIndex, x, y], additionalProps).map(function (a) { return Utility.toTwoDigitB64(+a); });
             spriteList.push(spriteStr.join(''));
         }
         return __spreadArrays(currentMap.GetLayerList().map(function (a) { return a.ExportToString(numColumns); }), [

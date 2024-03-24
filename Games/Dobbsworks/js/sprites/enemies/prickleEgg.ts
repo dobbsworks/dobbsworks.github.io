@@ -99,6 +99,7 @@ class PrickleRock extends Enemy {
     canBeBouncedOn = false;
     initialized = false;
     killedByProjectiles = false;
+    immuneToSlideKill = true;
     canSpinBounceOn = true;
 
     Update(): void {

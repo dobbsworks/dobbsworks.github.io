@@ -4,6 +4,8 @@ var AudioHandler = /** @class */ (function () {
         this.startMuted = false;
         this.initialized = false;
         this.currentBgm = "";
+        this.crossfadeBgm = "";
+        this.crossfadeSpeed = 0.01;
         this.audioObjects = [];
         this.segments = [];
         this.levelSongList = [
@@ -106,25 +108,72 @@ var AudioHandler = /** @class */ (function () {
         }
         this.currentBgm = id;
     };
+    AudioHandler.prototype.SetCrossfadeBackgroundMusic = function (id) {
+        var _this = this;
+        if (this.currentBgm === id)
+            return;
+        var xbgm = this.audioObjects.find(function (a) { return a.id === id; });
+        if (xbgm) {
+            if (xbgm) {
+                if (this.crossfadeBgm) {
+                    //already crossfading...
+                    var bgm = this.audioObjects.find(function (a) { return a.id === _this.currentBgm; });
+                    if (bgm) {
+                        bgm.audioElement.volume == 0.0;
+                        bgm.src.pause();
+                        bgm.src.currentTime = 0;
+                        bgm.audioElement.volume = 1.0;
+                    }
+                    this.currentBgm = this.crossfadeBgm;
+                    this.crossfadeBgm = "";
+                }
+                xbgm.audioElement.volume = 0.0;
+                this.crossfadeBgm = id;
+                xbgm.src.play().then().catch(function (e) { return console.error(e); });
+            }
+        }
+    };
     AudioHandler.prototype.Update = function () {
         this.HandleMusicLoop();
         this.HandleSegments();
+        this.HandleCrossfade();
+    };
+    AudioHandler.prototype.HandleCrossfade = function () {
+        var _this = this;
+        if (!this.crossfadeBgm)
+            return;
+        var bgm = this.audioObjects.find(function (a) { return a.id === _this.currentBgm; });
+        var xbgm = this.audioObjects.find(function (a) { return a.id === _this.crossfadeBgm; });
+        if (bgm && xbgm) {
+            bgm.audioElement.volume = Utility.Approach(bgm.audioElement.volume, 0.0, this.crossfadeSpeed);
+            xbgm.audioElement.volume = Utility.Approach(xbgm.audioElement.volume, 1.0, this.crossfadeSpeed);
+            if (bgm.audioElement.volume == 0.0 && xbgm.audioElement.volume == 1.0) {
+                // swap complete
+                bgm.src.pause();
+                bgm.src.currentTime = 0;
+                bgm.audioElement.volume = 1.0;
+                this.currentBgm = this.crossfadeBgm;
+                this.crossfadeBgm = "";
+            }
+        }
     };
     AudioHandler.prototype.HandleMusicLoop = function () {
         var _this = this;
-        var bgm = this.audioObjects.find(function (a) { return a.id === _this.currentBgm; });
-        if (bgm) {
-            var bpm = +(bgm.src.dataset.bpm || "0");
-            var introBeats = +(bgm.src.dataset.introBeats || "0");
-            var loopBeats = +(bgm.src.dataset.loopBeats || "0");
-            if (bpm && introBeats && loopBeats) {
-                var loopLengthSeconds = (loopBeats / bpm) * 60;
-                var loopPointSeconds = ((introBeats + loopBeats) / bpm) * 60;
-                if (bgm.src.currentTime > loopPointSeconds) {
-                    bgm.src.currentTime -= loopLengthSeconds;
+        [this.currentBgm, this.crossfadeBgm].forEach(function (m) {
+            var bgm = _this.audioObjects.find(function (a) { return a.id === m; });
+            if (bgm) {
+                var bpm = +(bgm.src.dataset.bpm || "0");
+                var introBeats = +(bgm.src.dataset.introBeats || "0");
+                var loopBeats = +(bgm.src.dataset.loopBeats || "0");
+                if (bpm && introBeats && loopBeats) {
+                    var loopLengthSeconds = (loopBeats / bpm) * 60;
+                    var loopPointSeconds = ((introBeats + loopBeats) / bpm) * 60;
+                    if (bgm.src.currentTime > loopPointSeconds) {
+                        bgm.src.currentTime -= loopLengthSeconds;
+                    }
                 }
             }
-        }
+        });
     };
     AudioHandler.prototype.HandleSegments = function () {
         var now = +(new Date());

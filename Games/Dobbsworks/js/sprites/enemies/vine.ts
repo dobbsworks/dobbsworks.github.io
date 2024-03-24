@@ -5,6 +5,7 @@ class Vinedicator extends Enemy {
     respectsSolidTiles = true;
     canBeBouncedOn = false;
     killedByProjectiles = false;
+    immuneToSlideKill = true;
     canSpinBounceOn = true;
 
     hitTimer = 0;
@@ -108,6 +109,7 @@ class VineProjectile extends Enemy {
     public width: number = 4;
     public respectsSolidTiles: boolean = true;
     killedByProjectiles = false;
+    immuneToSlideKill = true;
     canBeBouncedOn = true;
     colOffset = 0;
     Update(): void {

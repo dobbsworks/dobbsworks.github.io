@@ -7,6 +7,7 @@ class BigYufo extends Enemy {
     isPlatform = true;
     canStandOn = true;
     killedByProjectiles = false;
+    immuneToSlideKill = true;
     zIndex = 1;
 
     tractorTiles = 8;

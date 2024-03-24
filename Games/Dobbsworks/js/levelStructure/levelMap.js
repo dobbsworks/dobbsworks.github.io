@@ -18,11 +18,9 @@ var LevelMap = /** @class */ (function () {
         this.frameNum = 0;
         this.doorTransition = null;
         this.fadeOutRatio = 1;
-        this.bgColorTop = "#87cefa";
-        this.bgColorBottom = "#ffffff";
-        this.bgColorTopPositionRatio = 0;
-        this.bgColorBottomPositionRatio = 1;
-        this.overlayOpacity = 0.4;
+        this.sky = new Sky();
+        this.targetSky = null;
+        this.skyChangeTimer = 0;
         this.spriteWaterMode = false;
         this.playerWaterMode = false;
         this.mapHeight = 20;
@@ -53,6 +51,7 @@ var LevelMap = /** @class */ (function () {
         this.windOpacity = 0;
         this.windParticles = [];
         this.hasHorizontalWrap = false;
+        this.hasLowGravity = false;
         mainLayer.map = this;
         wireLayer.map = this;
         waterLayer.map = this;
@@ -181,6 +180,7 @@ var LevelMap = /** @class */ (function () {
                     this.fullDarknessRatio = 0;
             }
         }
+        this.UpdateSky();
         if (camera.transitionTimer > 0) {
             // do not process any updates
         }
@@ -201,18 +201,18 @@ var LevelMap = /** @class */ (function () {
         var ctx = camera.ctx;
         BenchmarkService.Log("DrawBackdrop");
         var grd = camera.ctx.createLinearGradient(0, 0, 0, camera.canvas.height);
-        grd.addColorStop(this.bgColorTopPositionRatio, this.bgColorTop);
-        grd.addColorStop(this.bgColorBottomPositionRatio, this.bgColorBottom);
+        grd.addColorStop(this.sky.bgColorTopPositionRatio, this.sky.bgColorTop);
+        grd.addColorStop(this.sky.bgColorBottomPositionRatio, this.sky.bgColorBottom);
         camera.ctx.fillStyle = grd;
         camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
         this.backgroundLayers.forEach(function (a) { return a.Draw(camera, _this.frameNum); });
-        if (this.overlayOpacity > 0) {
-            var opacityHex = this.overlayOpacity.toString(16).substring(2, 4).padEnd(2, "0");
-            if (this.overlayOpacity == 1)
+        if (this.sky.overlayOpacity > 0) {
+            var opacityHex = this.sky.overlayOpacity.toString(16).substring(2, 4).padEnd(2, "0");
+            if (this.sky.overlayOpacity == 1)
                 opacityHex = "FF";
             var grd2 = camera.ctx.createLinearGradient(0, 0, 0, camera.canvas.height);
-            grd2.addColorStop(this.bgColorTopPositionRatio, this.bgColorTop + opacityHex);
-            grd2.addColorStop(this.bgColorBottomPositionRatio, this.bgColorBottom + opacityHex);
+            grd2.addColorStop(this.sky.bgColorTopPositionRatio, this.sky.bgColorTop + opacityHex);
+            grd2.addColorStop(this.sky.bgColorBottomPositionRatio, this.sky.bgColorBottom + opacityHex);
             camera.ctx.fillStyle = grd2;
             camera.ctx.fillRect(0, 0, camera.canvas.width, camera.canvas.height);
         }
@@ -437,7 +437,16 @@ var LevelMap = /** @class */ (function () {
             var x = sprite.tileCoord.tileX;
             var y = sprite.tileCoord.tileY;
             var additionalProps = sprite.editorProps || [];
-            var spriteStr = __spreadArrays([spriteIndex, x, y], additionalProps).map(function (a) { return Utility.toTwoDigitB64(a); });
+            var spriteStr = [spriteIndex, x, y].map(function (a) { return Utility.toTwoDigitB64(a); });
+            if (additionalProps.length > 0) {
+                if ((+(additionalProps[0])).toString() == additionalProps[0]) { // isnumeric
+                    spriteStr.push.apply(// isnumeric
+                    spriteStr, additionalProps.map(function (a) { return Utility.toTwoDigitB64(+a); }));
+                }
+                else {
+                    spriteStr.push.apply(spriteStr, additionalProps);
+                }
+            }
             spriteList.push(spriteStr.join(''));
         }
         var layers = this.GetLayerList().map(function (a) { return a.ExportToString(); });
@@ -448,6 +457,7 @@ var LevelMap = /** @class */ (function () {
             this.spriteWaterMode ? 1 : 0,
             this.songId,
             this.hasHorizontalWrap ? 1 : 0,
+            this.hasLowGravity ? 1 : 0,
         ];
         return __spreadArrays([
             properties.join(";"),
@@ -456,18 +466,48 @@ var LevelMap = /** @class */ (function () {
             spriteList.join(";"),
         ]).join("|");
     };
+    LevelMap.prototype.LoadSkyFromString = function (skyData) {
+        var sky = new Sky();
+        var skyDataPieces = skyData.split(",");
+        sky.bgColorTop = skyDataPieces[0];
+        sky.bgColorTopPositionRatio = parseFloat(skyDataPieces[2]);
+        sky.bgColorBottomPositionRatio = parseFloat(skyDataPieces[3]);
+        sky.overlayOpacity = parseFloat(skyDataPieces[4]);
+        sky.bgColorBottom = skyDataPieces[1];
+        return sky;
+    };
+    LevelMap.prototype.UpdateSky = function () {
+        if (this.targetSky) {
+            this.skyChangeTimer++;
+            var hasUpdated = false;
+            for (var _i = 0, _a = ["bgColorBottom", "bgColorTop"]; _i < _a.length; _i++) {
+                var prop = _a[_i];
+                if (this.sky[prop] != this.targetSky[prop]) {
+                    hasUpdated = true;
+                    this.sky[prop] = Utility.ApproachColor(this.sky[prop], this.targetSky[prop], 1);
+                }
+            }
+            for (var _b = 0, _c = ["overlayOpacity", "bgColorBottomPositionRatio", "bgColorTopPositionRatio"]; _b < _c.length; _b++) {
+                var prop = _c[_b];
+                if (this.sky[prop] != this.targetSky[prop]) {
+                    hasUpdated = true;
+                    this.sky[prop] = Utility.Approach(this.sky[prop], this.targetSky[prop], 0.01);
+                }
+            }
+            if (!hasUpdated || this.skyChangeTimer > 255) {
+                this.sky = this.targetSky;
+                this.targetSky = null;
+                this.skyChangeTimer = 0;
+            }
+        }
+    };
     LevelMap.prototype.LoadBackgroundsFromImportString = function (importStr) {
         var importedSections = importStr.split(";");
         var skyData = importedSections.shift();
         if (skyData) {
-            var skyDataPieces = skyData.split(",");
-            this.bgColorTop = skyDataPieces[0];
-            this.bgColorTopPositionRatio = parseFloat(skyDataPieces[2]);
-            this.bgColorBottomPositionRatio = parseFloat(skyDataPieces[3]);
-            this.overlayOpacity = parseFloat(skyDataPieces[4]);
-            editorHandler.skyEditor.topColorPanel.SetColor(this.bgColorTop);
-            this.bgColorBottom = skyDataPieces[1];
-            editorHandler.skyEditor.bottomColorPanel.SetColor(this.bgColorBottom);
+            this.sky = this.LoadSkyFromString(skyData);
+            editorHandler.skyEditor.topColorPanel.SetColor(this.sky.bgColorTop);
+            editorHandler.skyEditor.bottomColorPanel.SetColor(this.sky.bgColorBottom);
         }
         for (var i = 0; i < 4; i++) {
             if (importedSections[i])
@@ -482,15 +522,18 @@ var LevelMap = /** @class */ (function () {
     };
     LevelMap.prototype.GetBackgroundExportString = function () {
         this.GenerateThumbnail();
-        var skyString = [
-            this.bgColorTop,
-            this.bgColorBottom,
-            this.bgColorTopPositionRatio.toFixed(2),
-            this.bgColorBottomPositionRatio.toFixed(2),
-            this.overlayOpacity.toFixed(2)
-        ].join(",");
+        var skyString = this.GetSkyExportString();
         return skyString + ";" + this.backgroundLayers.map(function (a) { return a.ExportToString(); }).join(";")
             + ";" + this.waterColor + ";" + this.purpleWaterColor + ";" + this.lavaColor;
+    };
+    LevelMap.prototype.GetSkyExportString = function () {
+        return [
+            this.sky.bgColorTop,
+            this.sky.bgColorBottom,
+            this.sky.bgColorTopPositionRatio.toFixed(2),
+            this.sky.bgColorBottomPositionRatio.toFixed(2),
+            this.sky.overlayOpacity.toFixed(2)
+        ].join(",");
     };
     LevelMap.prototype.GenerateThumbnail = function () {
         var canvas = document.createElement("canvas");
@@ -552,6 +595,7 @@ var LevelMap = /** @class */ (function () {
         ret.playerWaterMode = properties[2] == "1";
         ret.spriteWaterMode = properties[3] == "1";
         ret.hasHorizontalWrap = properties[5] == "1";
+        ret.hasLowGravity = properties[6] == "1";
         if (editorHandler) {
             if (editorHandler.playerWaterModeToggle) {
                 editorHandler.playerWaterModeToggle.isSelected = ret.playerWaterMode;
@@ -561,6 +605,9 @@ var LevelMap = /** @class */ (function () {
             }
             if (editorHandler.horizontalWrapToggle) {
                 editorHandler.horizontalWrapToggle.isSelected = ret.hasHorizontalWrap;
+            }
+            if (editorHandler.lowGravityToggle) {
+                editorHandler.lowGravityToggle.isSelected = ret.hasLowGravity;
             }
         }
         ret.songId = +(properties[4] || "0");
@@ -584,16 +631,22 @@ var LevelMap = /** @class */ (function () {
             var spriteType = spriteTypes[spriteIndex];
             var rawPropsStr = spriteStr.slice(6);
             var additionalProps = [];
-            for (var i = 0; i < rawPropsStr.length; i += 2) {
-                var propB64 = rawPropsStr.slice(i, 2);
-                var propNum = Utility.IntFromB64(propB64);
-                additionalProps.push(propNum);
+            if (rawPropsStr.length > 10) {
+                // not foolproof, but this should only happen for non-numeric props
+                additionalProps = [rawPropsStr];
+            }
+            else {
+                for (var i = 0; i < rawPropsStr.length; i += 2) {
+                    var propB64 = rawPropsStr.slice(i, 2);
+                    var propNum = Utility.IntFromB64(propB64);
+                    additionalProps.push(propNum.toString());
+                }
             }
             var editorSprite = new EditorSprite(spriteType, { tileX: spriteX, tileY: spriteY });
             editorSprite.editorProps = additionalProps;
             if (editorSprite.spriteInstance instanceof BasePlatform) {
                 if (additionalProps[0])
-                    editorSprite.width = additionalProps[0];
+                    editorSprite.width = +(additionalProps[0]);
             }
             editorHandler.sprites.push(editorSprite);
             editorSprite.ResetSprite();
@@ -609,6 +662,7 @@ var LevelMap = /** @class */ (function () {
         currentMap.playerWaterMode = false;
         currentMap.spriteWaterMode = false;
         currentMap.hasHorizontalWrap = false;
+        currentMap.hasLowGravity = false;
         currentMap.mapHeight = 12;
         currentMap.cameraLocksHorizontal = [];
         currentMap.cameraLocksVertical = [];
@@ -649,6 +703,16 @@ var DoorTransition = /** @class */ (function () {
         this.doorAnimation = null;
     }
     return DoorTransition;
+}());
+var Sky = /** @class */ (function () {
+    function Sky() {
+        this.bgColorTop = "#87cefa";
+        this.bgColorBottom = "#ffffff";
+        this.bgColorTopPositionRatio = 0;
+        this.bgColorBottomPositionRatio = 1;
+        this.overlayOpacity = 0.4;
+    }
+    return Sky;
 }());
 var FluidLevel = /** @class */ (function () {
     function FluidLevel(surfaceTile, mainTile, fluidTypeIndex) {

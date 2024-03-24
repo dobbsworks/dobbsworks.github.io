@@ -34,6 +34,8 @@ var Sprite = /** @class */ (function () {
         this.isInWaterfall = false;
         this.isInQuicksand = false;
         this.floatsInWater = false;
+        this.floatsInLava = false;
+        this.isInLava = false; // only used if Floats In Lava
         this.floatingPointOffset = 0;
         this.slowFall = false;
         this.gustUpTimer = 0; // number of frames remaining to assume is in updraft
@@ -45,14 +47,15 @@ var Sprite = /** @class */ (function () {
         this.isSolidBox = false;
         this.parentSprite = null;
         this.canBeHeld = false;
+        this.maxHoldDistance = 2;
         this.canHangFrom = false;
         this.canBeBouncedOn = false;
         this.hurtsEnemies = false;
-        this.isInTractorBeam = false;
         this.isDestroyedByLight = false;
         this.onScreenTimer = 0;
         this.isDuplicate = false;
         this.trackPipeExit = null;
+        this.ridingYOffset = 0;
         // used for editor
         this.anchor = Direction.Down;
         this.maxAllowed = -1; // -1 for no limit
@@ -167,6 +170,24 @@ var Sprite = /** @class */ (function () {
         this.gustUpTimer--;
         if (!this.respectsSolidTiles)
             this.isOnGround = false;
+        // BOUNCY
+        var rightBouncyWalls = this.touchedRightWalls.filter(function (a) { return a instanceof LevelTile && a.tileType.isBouncyWall; });
+        var leftBouncyWalls = this.touchedLeftWalls.filter(function (a) { return a instanceof LevelTile && a.tileType.isBouncyWall; });
+        var isBouncing = false;
+        if (rightBouncyWalls.length > 0) {
+            this.dx = -2;
+            isBouncing = true;
+        }
+        else if (leftBouncyWalls.length > 0) {
+            this.dx = 2;
+            isBouncing = true;
+        }
+        else if (this.standingOn.some(function (a) { return a.tileType == TileType.BouncySlime; })) {
+            this.dy = -3.8;
+            isBouncing = true;
+        }
+        if (isBouncing && this.IsOnScreen())
+            audioHandler.PlaySound("boing", true);
         // ISSUES WITH WARP WALL:
         // 1. momentum! Wall reaction is what triggers "touching wall", but that also reduces velocity
         // 2. clearance! Need to check if there's enough room on the other side!
@@ -230,7 +251,6 @@ var Sprite = /** @class */ (function () {
         var _a, _b;
         if (this instanceof Enemy && this.stackedOn)
             return;
-        this.isInTractorBeam = false;
         // move towards maxFallSpeed at rate of fallAccel
         var targetFallSpeed = this.maxDY;
         // ORGINAL: 1.5
@@ -239,6 +259,16 @@ var Sprite = /** @class */ (function () {
         // NEXT 0.07
         if (this.slowFall || (this instanceof Player && ((_a = this.heldItem) === null || _a === void 0 ? void 0 : _a.slowFall))) {
             targetFallSpeed = 0.4;
+        }
+        if (this.floatsInLava) {
+            var wasInLava = false;
+            this.isInLava = this.IsInLava();
+            if (this.isInLava) {
+                targetFallSpeed = -0.8;
+                fallAccel = 0.3;
+                if (!wasInLava)
+                    this.dy = 0;
+            }
         }
         if (this.isInWater && !this.isInWaterfall) {
             if (this.floatsInWater) {
@@ -259,7 +289,6 @@ var Sprite = /** @class */ (function () {
             var bigYufo = bigYufos_1[_i];
             var inTractor = bigYufo.IsSpriteInTractorBeam(this);
             if (inTractor) {
-                this.isInTractorBeam = true;
                 targetFallSpeed *= -1;
                 break;
             }
@@ -291,6 +320,8 @@ var Sprite = /** @class */ (function () {
             targetFallSpeed += this.windDy;
             fallAccel += this.windDy * 0.1;
         }
+        if (currentMap.hasLowGravity)
+            targetFallSpeed *= 0.4;
         // adjust dy
         if (Math.abs(this.dy - targetFallSpeed) < fallAccel) {
             // speeds are close, just set value
@@ -318,11 +349,12 @@ var Sprite = /** @class */ (function () {
         this.dx = (direction * 1) / 4 + thrower.GetTotalDx();
         this.dy = 0;
     };
-    Sprite.prototype.IsOnScreen = function () {
-        return (this.xRight + 10 > camera.x - camera.canvas.width / 2 / camera.scale)
-            && (this.x - 10 < camera.x + camera.canvas.width / 2 / camera.scale)
-            && (this.yBottom + 10 > camera.y - camera.canvas.height / 2 / camera.scale)
-            && (this.y - 10 < camera.y + camera.canvas.height / 2 / camera.scale);
+    Sprite.prototype.IsOnScreen = function (margin) {
+        if (margin === void 0) { margin = 10; }
+        return (this.xRight + margin > camera.x - camera.canvas.width / 2 / camera.scale)
+            && (this.x - margin < camera.x + camera.canvas.width / 2 / camera.scale)
+            && (this.yBottom + margin > camera.y - camera.canvas.height / 2 / camera.scale)
+            && (this.y - margin < camera.y + camera.canvas.height / 2 / camera.scale);
     };
     Sprite.prototype.WaitForOnScreen = function () {
         if (this.onScreenTimer <= 2) {
@@ -368,6 +400,9 @@ var Sprite = /** @class */ (function () {
             this.dx *= 0.98;
         }
     };
+    Sprite.prototype.OnHolderTakeDamage = function () {
+        return HeldDamageBlockType.Vulnerable; // yes, holder takes damage
+    };
     Sprite.prototype.ReactToPlatforms = function () {
         var _a, _b;
         // this velocity stored separately to better manage momentum jumps
@@ -381,6 +416,8 @@ var Sprite = /** @class */ (function () {
             //     this.parentSprite = null;
             // }
         }
+        if (this instanceof BigYufo)
+            return;
         (_a = this.touchedLeftWalls).push.apply(_a, this.reactedLeftWalls);
         (_b = this.touchedRightWalls).push.apply(_b, this.reactedRightWalls);
         this.reactedLeftWalls = [];
@@ -553,8 +590,8 @@ var Sprite = /** @class */ (function () {
     };
     Sprite.prototype.IsInLava = function () {
         var _a;
-        var isLavaAtMid = ((_a = this.layer.map) === null || _a === void 0 ? void 0 : _a.waterLayer.GetTileByPixel(this.xMid, this.yMid + this.floatingPointOffset).tileType) == TileType.Lava;
-        if (isLavaAtMid)
+        var isLavaAtBottom = ((_a = this.layer.map) === null || _a === void 0 ? void 0 : _a.waterLayer.GetTileByPixel(this.xMid, this.yBottom + this.floatingPointOffset).tileType) == TileType.Lava;
+        if (isLavaAtBottom)
             return true;
         var map = this.layer.map;
         if (map && map.lavaLevel.currentY !== -1) {
@@ -733,7 +770,7 @@ var Sprite = /** @class */ (function () {
         this.x = +(this.x.toFixed(3));
         this.y = +(this.y.toFixed(3));
         if (this.parentSprite && this.standingOn.length == 0) {
-            this.y = this.parentSprite.y - this.height;
+            this.y = this.parentSprite.y - this.height + this.parentSprite.ridingYOffset;
         }
         if (this.isPlatform && this.GetTotalDy() > 0) {
             for (var _i = 0, _a = this.layer.sprites.filter(function (a) { return a.parentSprite == _this; }); _i < _a.length; _i++) {
@@ -799,8 +836,9 @@ var Sprite = /** @class */ (function () {
             }
         }
     };
-    Sprite.prototype.GetHeightOfSolid = function (xOffset, direction) {
+    Sprite.prototype.GetHeightOfSolid = function (xOffset, direction, numTilesToCheck) {
         var _a, _b;
+        if (numTilesToCheck === void 0) { numTilesToCheck = 2; }
         var bottomY = this.y + (direction == 1 ? this.height : 0);
         var pixelsToCheck = [this.xMid, this.x, this.xRight - 0.01];
         var tileIndexContainingYOfInterest = Math.floor(bottomY / this.layer.tileHeight);
@@ -866,7 +904,7 @@ var Sprite = /** @class */ (function () {
                 }
             };
             var this_1 = this;
-            for (var rowIndex = startRowIndex; rowIndex !== startRowIndex + 2 * direction; rowIndex += direction) {
+            for (var rowIndex = startRowIndex; rowIndex !== startRowIndex + numTilesToCheck * direction; rowIndex += direction) {
                 _loop_1(rowIndex);
             }
         }
@@ -1050,6 +1088,12 @@ var Sprite = /** @class */ (function () {
             if (doopster.duplicateSprite == this)
                 doopster.duplicateSprite = newSprite;
         }
+        var guardedKeys = this.layer.sprites.filter(function (a) { return a instanceof GuardedKeyHeld; });
+        for (var _a = 0, guardedKeys_1 = guardedKeys; _a < guardedKeys_1.length; _a++) {
+            var guardedKey = guardedKeys_1[_a];
+            if (guardedKey.guardian == this)
+                guardedKey.guardian = newSprite;
+        }
         this.layer.sprites.push(newSprite);
         this.layer.sprites = this.layer.sprites.filter(function (a) { return a != _this; });
         newSprite.x = this.x + this.width / 2 - newSprite.width / 2;
@@ -1065,6 +1109,7 @@ var Sprite = /** @class */ (function () {
     };
     Sprite.prototype.OnBeforeDraw = function (camera) { };
     Sprite.prototype.OnAfterDraw = function (camera) { };
+    Sprite.prototype.OnAfterAllSpritesDraw = function (camera, frameNum) { };
     Sprite.prototype.Draw = function (camera, frameNum) {
         this.OnBeforeDraw(camera);
         var frameData = this.GetFrameData(frameNum);
@@ -1080,8 +1125,15 @@ var Sprite = /** @class */ (function () {
         this.OnAfterDraw(camera);
     };
     Sprite.prototype.OnDead = function () {
+        var _this = this;
         var hearts = this.layer.sprites.filter(function (a) { return a instanceof GoldHeart; });
         hearts.forEach(function (a) { return a.isBroken = true; });
+        var guardedKeys = this.layer.sprites.filter(function (a) { return a instanceof GuardedKeyHeld; });
+        guardedKeys.forEach(function (a) {
+            if (a.guardian == _this) {
+                a.ReplaceWithSpriteType(GuardedKey);
+            }
+        });
     };
     Sprite.prototype.LaunchSprite = function (sprite, direction) {
         var parentMotor = sprite.GetParentMotor();
@@ -1195,3 +1247,9 @@ var Sprite = /** @class */ (function () {
     };
     return Sprite;
 }());
+var HeldDamageBlockType;
+(function (HeldDamageBlockType) {
+    HeldDamageBlockType[HeldDamageBlockType["Invincible"] = 0] = "Invincible";
+    HeldDamageBlockType[HeldDamageBlockType["Vulnerable"] = 1] = "Vulnerable";
+    HeldDamageBlockType[HeldDamageBlockType["Iframe"] = 2] = "Iframe";
+})(HeldDamageBlockType || (HeldDamageBlockType = {}));

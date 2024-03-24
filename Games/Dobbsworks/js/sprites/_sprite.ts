@@ -3,7 +3,7 @@ abstract class Sprite {
         public x: number,
         public y: number,
         public layer: LevelLayer,
-        editorProps: number[]
+        editorProps: string[]
     ) { }
 
     public static get clockwiseRotationSprite(): (SpriteType | null) { return null; }
@@ -47,6 +47,8 @@ abstract class Sprite {
     public isInWaterfall: boolean = false;
     public isInQuicksand: boolean = false;
     public floatsInWater: boolean = false;
+    public floatsInLava: boolean = false;
+    public isInLava: boolean = false; // only used if Floats In Lava
     public floatingPointOffset: number = 0;
     public slowFall: boolean = false;
     public gustUpTimer: number = 0; // number of frames remaining to assume is in updraft
@@ -61,14 +63,15 @@ abstract class Sprite {
     public parentSprite: Sprite | null = null;
     public abstract respectsSolidTiles: boolean;
     public canBeHeld: boolean = false;
+    public maxHoldDistance = 2;
     public canHangFrom: boolean = false;
     public canBeBouncedOn: boolean = false;
     public hurtsEnemies: boolean = false;
-    public isInTractorBeam: boolean = false;
     isDestroyedByLight = false;
     onScreenTimer: number = 0;
     isDuplicate = false;
     trackPipeExit: LevelTile | null = null;
+    public ridingYOffset = 0;
 
     // used for editor
     public anchor: Direction | null = Direction.Down;
@@ -152,6 +155,23 @@ abstract class Sprite {
         this.gustUpTimer--;
         if (!this.respectsSolidTiles) this.isOnGround = false;
 
+        // BOUNCY
+        let rightBouncyWalls = <LevelTile[]>this.touchedRightWalls.filter(a => a instanceof LevelTile && a.tileType.isBouncyWall);
+        let leftBouncyWalls = <LevelTile[]>this.touchedLeftWalls.filter(a => a instanceof LevelTile && a.tileType.isBouncyWall);
+        let isBouncing = false;
+        if (rightBouncyWalls.length > 0) {
+            this.dx = -2;
+            isBouncing = true;
+        } else if (leftBouncyWalls.length > 0) {
+            this.dx = 2;
+            isBouncing = true;
+        } else if (this.standingOn.some(a => a.tileType == TileType.BouncySlime)) {
+            this.dy = -3.8;
+            isBouncing = true;
+        }
+        if (isBouncing && this.IsOnScreen()) audioHandler.PlaySound("boing", true);
+        
+
         // ISSUES WITH WARP WALL:
         // 1. momentum! Wall reaction is what triggers "touching wall", but that also reduces velocity
         // 2. clearance! Need to check if there's enough room on the other side!
@@ -214,7 +234,6 @@ abstract class Sprite {
 
     ApplyGravity(): void {
         if (this instanceof Enemy && this.stackedOn) return;
-        this.isInTractorBeam = false;
 
         // move towards maxFallSpeed at rate of fallAccel
         let targetFallSpeed = this.maxDY;
@@ -227,8 +246,17 @@ abstract class Sprite {
             targetFallSpeed = 0.4;
         }
 
+        if (this.floatsInLava) {
+            let wasInLava = false;
+            this.isInLava = this.IsInLava();
+            if (this.isInLava) {
+                targetFallSpeed = -0.8;
+                fallAccel = 0.3;
+                if (!wasInLava) this.dy = 0;
+            }
+        } 
         if (this.isInWater && !this.isInWaterfall) {
-            if (this.floatsInWater) {
+             if (this.floatsInWater) {
                 targetFallSpeed = -0.8;
                 fallAccel = 0.03;
             } else {
@@ -246,7 +274,6 @@ abstract class Sprite {
         for (let bigYufo of bigYufos) {
             let inTractor = bigYufo.IsSpriteInTractorBeam(this);
             if (inTractor) {
-                this.isInTractorBeam = true;
                 targetFallSpeed *= -1;
                 break;
             }
@@ -280,6 +307,8 @@ abstract class Sprite {
             fallAccel += this.windDy * 0.1;
         }
 
+        if (currentMap.hasLowGravity) targetFallSpeed *= 0.4;
+
         // adjust dy
         if (Math.abs(this.dy - targetFallSpeed) < fallAccel) {
             // speeds are close, just set value
@@ -309,11 +338,11 @@ abstract class Sprite {
         this.dy = 0;
     }
 
-    IsOnScreen(): boolean {
-        return (this.xRight + 10 > camera.x - camera.canvas.width / 2 / camera.scale)
-            && (this.x - 10 < camera.x + camera.canvas.width / 2 / camera.scale)
-            && (this.yBottom + 10 > camera.y - camera.canvas.height / 2 / camera.scale)
-            && (this.y - 10 < camera.y + camera.canvas.height / 2 / camera.scale);
+    IsOnScreen(margin: number = 10): boolean {
+        return (this.xRight + margin > camera.x - camera.canvas.width / 2 / camera.scale)
+            && (this.x - margin < camera.x + camera.canvas.width / 2 / camera.scale)
+            && (this.yBottom + margin > camera.y - camera.canvas.height / 2 / camera.scale)
+            && (this.y - margin < camera.y + camera.canvas.height / 2 / camera.scale);
     }
 
     WaitForOnScreen(): boolean {
@@ -359,6 +388,10 @@ abstract class Sprite {
         }
     }
 
+    OnHolderTakeDamage(): HeldDamageBlockType { 
+        return HeldDamageBlockType.Vulnerable; // yes, holder takes damage
+    }
+
     private ReactToPlatforms(): void {
         // this velocity stored separately to better manage momentum jumps
         if (this.parentSprite) {
@@ -369,6 +402,8 @@ abstract class Sprite {
             //     this.parentSprite = null;
             // }
         }
+
+        if (this instanceof BigYufo) return;
 
         this.touchedLeftWalls.push(...this.reactedLeftWalls);
         this.touchedRightWalls.push(...this.reactedRightWalls);
@@ -536,8 +571,8 @@ abstract class Sprite {
     }
 
     IsInLava(): boolean {
-        let isLavaAtMid = this.layer.map?.waterLayer.GetTileByPixel(this.xMid, this.yMid + this.floatingPointOffset).tileType == TileType.Lava;
-        if (isLavaAtMid) return true;
+        let isLavaAtBottom = this.layer.map?.waterLayer.GetTileByPixel(this.xMid, this.yBottom + this.floatingPointOffset).tileType == TileType.Lava;
+        if (isLavaAtBottom) return true;
 
         let map = this.layer.map;
         if (map && map.lavaLevel.currentY !== -1) {
@@ -713,7 +748,7 @@ abstract class Sprite {
         this.y = +(this.y.toFixed(3));
 
         if (this.parentSprite && this.standingOn.length == 0) {
-            this.y = this.parentSprite.y - this.height;
+            this.y = this.parentSprite.y - this.height + this.parentSprite.ridingYOffset;
         }
         if (this.isPlatform && this.GetTotalDy() > 0) {
             for (let sprite of this.layer.sprites.filter(a => a.parentSprite == this)) {
@@ -780,7 +815,7 @@ abstract class Sprite {
     }
 
 
-    GetHeightOfSolid(xOffset: number, direction: 1 | -1): { tiles: LevelTile[], yPixel: number } {
+    GetHeightOfSolid(xOffset: number, direction: 1 | -1, numTilesToCheck = 2): { tiles: LevelTile[], yPixel: number } {
         let bottomY = this.y + (direction == 1 ? this.height : 0);
         let pixelsToCheck = [this.xMid, this.x, this.xRight - 0.01];
         let tileIndexContainingYOfInterest = Math.floor(bottomY / this.layer.tileHeight)
@@ -792,7 +827,7 @@ abstract class Sprite {
         for (let xPixel of pixelsToCheck) {
             let colIndex = Math.floor((xPixel + xOffset) / this.layer.tileWidth);
 
-            for (let rowIndex = startRowIndex; rowIndex !== startRowIndex + 2 * direction; rowIndex += direction) {
+            for (let rowIndex = startRowIndex; rowIndex !== startRowIndex + numTilesToCheck * direction; rowIndex += direction) {
                 // only checking next few rows
                 if (!this.layer.tiles[colIndex]) continue;
                 if (middleSlopeSolidity && rowIndex == middleSlopeRowIndex) {
@@ -1026,6 +1061,12 @@ abstract class Sprite {
             if (doopster.duplicateSprite == this) doopster.duplicateSprite = newSprite;
         }
 
+        let guardedKeys = <GuardedKeyHeld[]>this.layer.sprites.filter(a => a instanceof GuardedKeyHeld);
+        for (let guardedKey of guardedKeys) {
+            if (guardedKey.guardian == this) guardedKey.guardian = newSprite;
+        }
+
+
         this.layer.sprites.push(newSprite);
         this.layer.sprites = this.layer.sprites.filter(a => a != this);
         newSprite.x = this.x + this.width / 2 - newSprite.width / 2;
@@ -1043,6 +1084,7 @@ abstract class Sprite {
 
     OnBeforeDraw(camera: Camera): void { }
     OnAfterDraw(camera: Camera): void { }
+    OnAfterAllSpritesDraw(camera: Camera, frameNum: number): void { }
     Draw(camera: Camera, frameNum: number): void {
         this.OnBeforeDraw(camera);
         let frameData = this.GetFrameData(frameNum);
@@ -1059,6 +1101,13 @@ abstract class Sprite {
     OnDead(): void {
         let hearts = <GoldHeart[]>this.layer.sprites.filter(a => a instanceof GoldHeart);
         hearts.forEach(a => a.isBroken = true);
+        
+        let guardedKeys = <GuardedKeyHeld[]>this.layer.sprites.filter(a => a instanceof GuardedKeyHeld);
+        guardedKeys.forEach(a => {
+            if (a.guardian == this) {
+                a.ReplaceWithSpriteType(GuardedKey);
+            }
+        })
     }
 
 
@@ -1165,4 +1214,10 @@ abstract class Sprite {
     public GetMidToMidDistance(sprite: Sprite): number {
         return Math.sqrt( (this.xMid - sprite.xMid)**2 + (this.yMid - sprite.yMid)**2 );
     }
+}
+
+enum HeldDamageBlockType {
+    Invincible,
+    Vulnerable,
+    Iframe
 }
