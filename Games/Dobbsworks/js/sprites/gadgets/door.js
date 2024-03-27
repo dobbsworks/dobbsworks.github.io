@@ -84,10 +84,13 @@ var ScaredyDoor = /** @class */ (function (_super) {
         _this.respectsSolidTiles = false;
         _this.originalX = -1;
         _this.originalY = -1;
+        _this.zIndex = -1;
         _this.checksSinceEnemiesNear = 0;
         return _this;
     }
     ScaredyDoor.prototype.Update = function () {
+        if (!this.WaitForOnScreen())
+            return;
         if (this.originalX == -1) {
             this.originalX = this.x;
             this.originalY = this.y;

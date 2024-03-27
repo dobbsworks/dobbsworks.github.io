@@ -67,10 +67,14 @@ class ScaredyDoor extends Sprite {
     respectsSolidTiles = false;
     originalX = -1;
     originalY = -1;
+    public zIndex: number = -1;
 
     checksSinceEnemiesNear = 0;
 
     Update(): void {
+
+        if (!this.WaitForOnScreen()) return;
+
         if (this.originalX == -1) {
             this.originalX = this.x;
             this.originalY = this.y;
