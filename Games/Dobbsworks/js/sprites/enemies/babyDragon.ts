@@ -27,7 +27,7 @@ class Bernie extends Enemy {
             if (this.flameTimer > 0) {
                 let fire = new SingleFireBreath((this.direction == -1 ? this.x - 2 : this.xRight + 2) - 3, this.y + 1, this.layer, []);
                 fire.dx = 1.6 * this.direction;
-                fire.dy = Math.random() / 2 - 0.25;
+                fire.dy = Random.random() / 2 - 0.25;
                 this.layer.sprites.push(fire);
             } 
             if (this.flameTimer > 30) {

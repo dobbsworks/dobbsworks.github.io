@@ -143,13 +143,13 @@ var EditorHandler = /** @class */ (function () {
             Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, SpicyJelly, JumboJelly,
             Taptop, Shrubbert, OrangeShrubbert, Vinedicator, GrayGrowth, SnowtemPole, Snoworm, BouncingSnowWorm, KingSlush,
             Sparky, Orbbit, Keplurk, Nimby, Yufo, BigYufo, Blaster,
-            Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, BaddleTrigger, Bernie, Dragon];
+            Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, BaddleTrigger, Bernie, DabbleDragon];
         var enemyButtons = enemyTypes.map(function (a) { return new EditorButtonSprite(a); });
         enemyButtons.filter(function (a) { return a.spriteType == Piggle || a.spriteType == Snail; }).forEach(function (a) { return hotbarDefaults.push(a); });
         var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 8);
         var gizmoTypes = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform, FlipPlatform, SlowFlipPlatform,
-            MushroomSpring, Baseball, SoccerBall, BowlingBall, Battery, Door, Minecart, Teacup, Fan, Key, FlatKey, BubbleKey, GuardedKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, SpringRing, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
+            MushroomSpring, Baseball, SoccerBall, BowlingBall, Battery, Door, ScaredyDoor, Minecart, Teacup, Fan, Key, FlatKey, BubbleKey, GuardedKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, SpringRing, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
             SpinRing, FragileSpinRing, PortalRing,
         ];
         var gizmoButtons = gizmoTypes.map(function (a) { return new EditorButtonSprite(a); });
@@ -333,6 +333,7 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonSprite(SkyChangeTrigger),
             new EditorButtonSprite(MusicFadeTrigger),
             new EditorButtonSprite(MusicChangeTrigger),
+            new EditorButtonSprite(FirePillarTrigger),
         ], 4, 6);
         var levelFlowHandle = new EditorButtonDrawerHandle(tiles["editor"][5][3], "Level flow element", [levelFlowPanel]);
         var levelFlowHandlePanel = new Panel(mapSizePanel.x + 160, mapSizePanel.y, 70, 70);
@@ -470,6 +471,7 @@ var EditorHandler = /** @class */ (function () {
         camera.Reset();
     };
     EditorHandler.prototype.SwitchToPlayMode = function () {
+        Random.Reset();
         this.playerFrames = [];
         if (this.isMinimizedMode)
             this.ToggleMinimizeMode();

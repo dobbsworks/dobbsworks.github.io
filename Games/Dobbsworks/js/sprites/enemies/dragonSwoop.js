@@ -24,9 +24,19 @@ var DragonSwoop = /** @class */ (function (_super) {
         _this.canStandOn = true;
         _this.anchor = Direction.Down;
         _this.initialized = false;
+        _this.pauseTimer = 60;
+        _this.playedAudio = false;
         return _this;
     }
     DragonSwoop.prototype.Update = function () {
+        if (!this.playedAudio) {
+            this.playedAudio = true;
+            audioHandler.PlaySound("alert", false);
+        }
+        if (this.pauseTimer > 0) {
+            this.pauseTimer--;
+            return;
+        }
         if (!this.initialized) {
             this.initialized = true;
             if (player) {
@@ -42,7 +52,7 @@ var DragonSwoop = /** @class */ (function (_super) {
         var leftScreenEdge = camera.x - camera.canvas.width / 2 / camera.scale;
         var rightScreenEdge = camera.x + camera.canvas.width / 2 / camera.scale;
         if (frameNum % 4 < 2) {
-            if (this.xRight < leftScreenEdge) {
+            if (this.xRight < leftScreenEdge && this.dx >= 0) {
                 return {
                     imageTile: tiles["dragonwarning"][0][0],
                     xFlip: false,
@@ -51,7 +61,7 @@ var DragonSwoop = /** @class */ (function (_super) {
                     yOffset: 0
                 };
             }
-            if (this.x > rightScreenEdge) {
+            if (this.x > rightScreenEdge && this.dx <= 0) {
                 return {
                     imageTile: tiles["dragonwarning"][0][0],
                     xFlip: false,

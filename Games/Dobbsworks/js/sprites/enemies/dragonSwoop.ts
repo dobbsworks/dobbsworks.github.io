@@ -8,8 +8,20 @@ class DragonSwoop extends Enemy {
     canStandOn = true;
     anchor = Direction.Down;
     initialized = false;
+    pauseTimer = 60;
+    playedAudio = false;
 
     Update(): void {
+        if (!this.playedAudio) {
+            this.playedAudio = true;
+            audioHandler.PlaySound("alert", false);
+        }
+
+        if (this.pauseTimer > 0) {
+            this.pauseTimer--; 
+            return;
+        }
+
         if (!this.initialized) {
             this.initialized = true;
             if (player) {
@@ -21,6 +33,7 @@ class DragonSwoop extends Enemy {
         this.AccelerateHorizontally(0.01, 3 * this.direction);
         this.ApplyInertia();
         this.ReactToVerticalWind();
+
     }
 
     GetFrameData(frameNum: number): FrameData {
@@ -29,7 +42,7 @@ class DragonSwoop extends Enemy {
         var rightScreenEdge = camera.x + camera.canvas.width / 2 / camera.scale;
 
         if (frameNum % 4 < 2) {
-            if (this.xRight < leftScreenEdge) {
+            if (this.xRight < leftScreenEdge && this.dx >= 0) {
                 return {
                     imageTile: tiles["dragonwarning"][0][0],
                     xFlip: false,
@@ -38,7 +51,7 @@ class DragonSwoop extends Enemy {
                     yOffset: 0
                 }
             }
-            if (this.x > rightScreenEdge) {
+            if (this.x > rightScreenEdge && this.dx <= 0) {
                 return {
                     imageTile: tiles["dragonwarning"][0][0],
                     xFlip: false,

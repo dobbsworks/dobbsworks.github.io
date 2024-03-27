@@ -8,6 +8,12 @@ class FirePillar extends Hazard {
     Update(): void {
         super.Update();
         if (this.age > this.warningTime + 60) this.isActive = false;
+        if (this.age == 1) {
+            audioHandler.PlaySound("fire-charge-up", false);
+        } 
+        if (this.age == this.warningTime) {
+            audioHandler.PlaySound("long-fire", false);
+        }
     }
 
     IsHazardActive(): boolean {
@@ -39,10 +45,10 @@ class FirePillar extends Hazard {
         let ret: FrameData[] = [];
         while (targetY < bottomOfScreen + 24) {
             ret.push({
-                imageTile: tiles["flamepillar"][0][frame],
+                imageTile: tiles["flamepillar"][this.age < this.warningTime ? 1 : 0][frame],
                 xFlip: mirror,
                 yFlip: false,
-                xOffset: 8,
+                xOffset: 7,
                 yOffset: -(targetY - this.y) + yOffset
             });
             targetY += 24;

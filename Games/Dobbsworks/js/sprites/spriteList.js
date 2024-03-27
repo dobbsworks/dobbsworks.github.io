@@ -153,7 +153,7 @@ var spriteTypes = [
     Angler,
     Vinedicator,
     GrayGrowth,
-    Dragon,
+    DabbleDragon,
     FirePillarTrigger,
     SkyChangeTrigger,
     MusicChangeTrigger,
@@ -171,4 +171,5 @@ var spriteTypes = [
     JumboJelly,
     FlipPlatform,
     SlowFlipPlatform,
+    ScaredyDoor,
 ];

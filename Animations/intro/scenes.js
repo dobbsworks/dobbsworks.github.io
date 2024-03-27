@@ -80,8 +80,10 @@ function Scene1() {
             }
         }
     }
-    var lives = "03";
-    if (Math.random() < 0.2) lives = "06";
+    var lifeCount = 3;
+    if (Math.random() < 0.2) lifeCount = 6; //mac
+    lifeCount++; // doopu
+    var lives = lifeCount.toString().padStart(2, "00");
     var lifeCount = [
         new StaticImage(images.dobbshead, 2, -100, 0),
         new StaticText("x", 50, "white", "black", 0, 0),

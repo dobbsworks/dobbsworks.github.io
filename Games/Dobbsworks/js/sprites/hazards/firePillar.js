@@ -27,6 +27,12 @@ var FirePillar = /** @class */ (function (_super) {
         _super.prototype.Update.call(this);
         if (this.age > this.warningTime + 60)
             this.isActive = false;
+        if (this.age == 1) {
+            audioHandler.PlaySound("fire-charge-up", false);
+        }
+        if (this.age == this.warningTime) {
+            audioHandler.PlaySound("long-fire", false);
+        }
     };
     FirePillar.prototype.IsHazardActive = function () {
         return this.age > this.warningTime;
@@ -52,10 +58,10 @@ var FirePillar = /** @class */ (function (_super) {
         var ret = [];
         while (targetY < bottomOfScreen + 24) {
             ret.push({
-                imageTile: tiles["flamepillar"][0][frame],
+                imageTile: tiles["flamepillar"][this.age < this.warningTime ? 1 : 0][frame],
                 xFlip: mirror,
                 yFlip: false,
-                xOffset: 8,
+                xOffset: 7,
                 yOffset: -(targetY - this.y) + yOffset
             });
             targetY += 24;

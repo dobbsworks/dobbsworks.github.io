@@ -141,7 +141,7 @@ abstract class Sprite {
             let motor = this.GetParentMotor();
             if (!motor) {
                 if (
-                    this.xRight < -36 || this.x > this.layer.GetMaxX() + 36 ||
+                    this.xRight < -36*2 || this.x > this.layer.GetMaxX() + 36*2 ||
                     this.y > this.layer.GetMaxY() + 36 || this.yBottom < -240) {
                     // way off-screen! Delete
                     this.isActive = false;

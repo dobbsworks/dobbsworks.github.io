@@ -165,7 +165,7 @@ class EditorHandler {
             Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, SpicyJelly, JumboJelly,
             Taptop, Shrubbert, OrangeShrubbert, Vinedicator, GrayGrowth, SnowtemPole, Snoworm, BouncingSnowWorm, KingSlush, 
             Sparky, Orbbit, Keplurk, Nimby, Yufo, BigYufo, Blaster, 
-            Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, BaddleTrigger, Bernie, Dragon];
+            Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, BaddleTrigger, Bernie, DabbleDragon];
         let enemyButtons = enemyTypes.map(a => new EditorButtonSprite(a));
 
         enemyButtons.filter(a => a.spriteType == Piggle || a.spriteType == Snail).forEach(a => hotbarDefaults.push(a));
@@ -173,7 +173,7 @@ class EditorHandler {
 
         let gizmoTypes: (SpriteType)[] = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform, FlipPlatform, SlowFlipPlatform,
-            MushroomSpring, Baseball, SoccerBall, BowlingBall, Battery, Door, Minecart, Teacup, Fan, Key, FlatKey, BubbleKey, GuardedKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, SpringRing, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
+            MushroomSpring, Baseball, SoccerBall, BowlingBall, Battery, Door, ScaredyDoor, Minecart, Teacup, Fan, Key, FlatKey, BubbleKey, GuardedKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, SpringRing, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
             SpinRing, FragileSpinRing, PortalRing, //Stopwatch,
         ];
         let gizmoButtons: EditorButton[] = gizmoTypes.map(a => new EditorButtonSprite(a));
@@ -371,7 +371,7 @@ class EditorHandler {
             new EditorButtonSprite(SkyChangeTrigger),
             new EditorButtonSprite(MusicFadeTrigger),
             new EditorButtonSprite(MusicChangeTrigger),
-            //new EditorButtonSprite(FirePillarTrigger),
+            new EditorButtonSprite(FirePillarTrigger),
 
         ], 4, 6);
         let levelFlowHandle = new EditorButtonDrawerHandle(tiles["editor"][5][3], "Level flow element", [levelFlowPanel]);
@@ -524,6 +524,7 @@ class EditorHandler {
     }
 
     SwitchToPlayMode(): void {
+        Random.Reset();
         this.playerFrames = [];
         if (this.isMinimizedMode) this.ToggleMinimizeMode();
         this.CloseDrawers();
