@@ -279,6 +279,7 @@ var LevelLayer = /** @class */ (function () {
             if (sprite instanceof Enemy) {
                 sprite.EnemyUpdate();
             }
+            sprite.OnAfterUpdate();
         }
         this.sprites = this.sprites.filter(function (a) { return a.isActive; });
         if ((_a = this.map) === null || _a === void 0 ? void 0 : _a.hasHorizontalWrap) {

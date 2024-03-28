@@ -62,26 +62,6 @@ var DabbleDragon = /** @class */ (function (_super) {
         // apple to eat?
         // bouncy flower platform - makes you spin jump
         // enemy door? Becomes a door once no enemies in range for ~5 seconds
-        // phase 1
-        // dragon screams from off-screen
-        // large fire pillars in auto-scroll
-        // have to navigate cave while dodging fire blasts from top and bottom, maybe also from sides?
-        // phase 2, climbing the mountain, autoscroll
-        // dragon swoops from sides
-        // target player but limit based on camera
-        // dots indicate path?
-        // you can use dragon as platform for some jumps, but damages if you direct hit
-        // definitely need to hide a heart up a chain
-        // phase 3, top of the mountain
-        // dragon lands on arena, screenshake
-        // particle fire blasts, leaves fading fire terrain
-        // dragon occasionally takes flight, leaves from top of screen, then does either a swoop or fire attack pattern
-        // Dragon picks up an enemy with its tail and throws it
-        // player has to watch for usable ammo enemies (snails)
-        // (need a new enemy that can become ammo after being stomped)
-        // After first hit, increase fireball speed, swoop speed
-        // After second hit, loud roar shatters all breakable blocks on screen, reducing arena size
-        // Third hit, falls off screen, death cry, player gets a key bubble
         // door, checkpoint
         // Ride dragon out of caves
         // Large platform, you can maneuver it up and down while standing on it, or you can jump
@@ -347,7 +327,7 @@ var DabbleDragon = /** @class */ (function (_super) {
         if (this.currentAttackPattern == 8 && this.attackTimer > 600) {
             newAttackPattern = 9;
             this.damagesPlayer = true;
-            var enemyType = this.hits <= 1 ? Snail : Taptop;
+            var enemyType = Snail;
             var spr = new enemyType(this.x, this.y, this.layer, []);
             this.layer.sprites.push(spr);
             this.heldItem = spr;

@@ -172,4 +172,5 @@ var spriteTypes = [
     FlipPlatform,
     SlowFlipPlatform,
     ScaredyDoor,
+    ElderDragon,
 ];

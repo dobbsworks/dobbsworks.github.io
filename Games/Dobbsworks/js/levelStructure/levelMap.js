@@ -189,6 +189,7 @@ var LevelMap = /** @class */ (function () {
         }
         else {
             BenchmarkService.Log("SpriteUpdate");
+            this.backdropLayer.Update();
             this.mainLayer.Update();
             BenchmarkService.Log("CircuitUpdate");
             CircuitHandler.UpdateCircuits(this.wireLayer, this.mainLayer.sprites);
@@ -259,6 +260,7 @@ var LevelMap = /** @class */ (function () {
         this.DrawGlobalWind();
         BenchmarkService.Log("DrawLayers");
         this.backdropLayer.DrawTiles(camera, this.frameNum);
+        this.backdropLayer.DrawSprites(camera, this.frameNum);
         this.waterLayer.DrawTiles(camera, this.frameNum);
         this.mainLayer.DrawTiles(camera, this.frameNum);
         this.wireLayer.DrawTiles(camera, this.frameNum);

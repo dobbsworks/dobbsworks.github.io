@@ -263,6 +263,7 @@ class LevelLayer {
             if (sprite instanceof Enemy) {
                 sprite.EnemyUpdate();
             }
+            sprite.OnAfterUpdate();
         }
         this.sprites = this.sprites.filter(a => a.isActive);
         if (this.map?.hasHorizontalWrap) {

@@ -652,9 +652,9 @@ var Player = /** @class */ (function (_super) {
     };
     Player.prototype.PushByAutoscroll = function () {
         if (camera.isAutoscrollingHorizontally) {
-            if (this.x < camera.GetLeftCameraEdge() && this.dx < camera.autoscrollX)
+            if (this.x <= camera.GetLeftCameraEdge() && this.dx <= camera.autoscrollX)
                 this.dx = camera.autoscrollX;
-            if (this.xRight > camera.GetRightCameraEdge() && this.dx > camera.autoscrollX)
+            if (this.xRight >= camera.GetRightCameraEdge() && this.dx >= camera.autoscrollX)
                 this.dx = camera.autoscrollX;
         }
     };
@@ -675,14 +675,14 @@ var Player = /** @class */ (function (_super) {
         }
         if (camera.isAutoscrollingHorizontally || (camera.isAutoscrollingVertically && !currentMap.hasHorizontalWrap)) {
             var leftEdge = camera.GetLeftCameraEdge();
-            if (this.x < leftEdge) {
+            if (this.x <= leftEdge) {
                 if (this.isTouchingRightWall && camera.autoscrollX > 0)
                     this.OnPlayerDead(false);
                 else
                     this.x = leftEdge;
             }
             var rightEdge = camera.GetRightCameraEdge();
-            if (this.xRight > rightEdge) {
+            if (this.xRight >= rightEdge) {
                 if (this.isTouchingLeftWall && camera.autoscrollX < 0)
                     this.OnPlayerDead(false);
                 else
