@@ -6,6 +6,9 @@ var Random = /** @class */ (function () {
     Random.Reset = function () {
         this.seed = 0;
     };
+    Random.Bump = function (val) {
+        this.seed += val;
+    };
     Random.random = function () {
         var seed = this.seed;
         this.seed++;

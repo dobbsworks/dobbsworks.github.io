@@ -81,3 +81,56 @@ var DragonSwoop = /** @class */ (function (_super) {
     };
     return DragonSwoop;
 }(Enemy));
+var CrashingDragon = /** @class */ (function (_super) {
+    __extends(CrashingDragon, _super);
+    function CrashingDragon() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.height = 10;
+        _this.width = 102;
+        _this.respectsSolidTiles = false;
+        _this.canBeHeld = false;
+        _this.floatsInWater = false;
+        _this.isPlatform = true;
+        _this.zIndex = 2;
+        _this.direction = 1;
+        return _this;
+    }
+    CrashingDragon.prototype.Update = function () {
+        if (!this.WaitForOnScreen())
+            return;
+        this.AccelerateHorizontally(0.04, this.direction * 1.5);
+        if (player && player.parentSprite == this) {
+            if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false)) {
+                this.AccelerateVertically(0.02, -1.5);
+            }
+            else if (KeyboardHandler.IsKeyPressed(KeyAction.Down, false)) {
+                this.AccelerateVertically(0.02, 1.5);
+            }
+            else {
+                this.dy *= 0.95;
+            }
+        }
+        else {
+            this.dy *= 0.95;
+        }
+        this.ReactToWater();
+        this.MoveByVelocity();
+        if (this.age % 10 == 0) {
+            var fireX = this.x + Math.random() * this.width - 3;
+            var fireY = this.y + Math.random() * this.height - 3;
+            var fire = new SingleFireBreath(fireX, fireY, this.layer, []);
+            fire.hurtsPlayer = false;
+            this.layer.sprites.push(fire);
+        }
+    };
+    CrashingDragon.prototype.GetFrameData = function (frameNum) {
+        return {
+            imageTile: tiles["flying"][0][1],
+            xFlip: this.direction == 1,
+            yFlip: false,
+            xOffset: this.direction == 1 ? 8 : 8,
+            yOffset: 7
+        };
+    };
+    return CrashingDragon;
+}(Sprite));

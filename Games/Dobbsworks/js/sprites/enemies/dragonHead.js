@@ -73,6 +73,7 @@ var ElderDragon = /** @class */ (function (_super) {
         rightHand.head = head;
         var gem = new ElderDragonGem(head.x + head.width / 2 + 24, head.y, head.layer, []);
         head.gem = gem;
+        gem.head = head;
         if (this.layer.map) {
             this.layer.map.backdropLayer.sprites.push(leftEye, rightEye, head, gem, leftHand, rightHand);
         }
@@ -120,6 +121,9 @@ var ElderDragonHand = /** @class */ (function (_super) {
         _this.canBeBouncedOn = false;
         _this.isPlatform = true;
         _this.canStandOn = true;
+        _this.killedByProjectiles = false;
+        _this.immuneToSlideKill = true;
+        _this.zIndex = 2;
         _this.flipped = false;
         _this.homeX = 0;
         _this.homeY = 0;
@@ -128,6 +132,7 @@ var ElderDragonHand = /** @class */ (function (_super) {
         _this.handOnGround = false;
         _this.wasFist = false;
         _this.isFist = false;
+        _this.canSpawnThrowableMeteor = false;
         return _this;
     }
     ElderDragonHand.prototype.Update = function () {
@@ -144,12 +149,36 @@ var ElderDragonHand = /** @class */ (function (_super) {
         var wasOnGround = this.handOnGround;
         this.handOnGround = this.isOnGround;
         if (!wasOnGround && this.handOnGround) {
+            audioHandler.PlaySound("bigcrash", false);
             camera.shakeTimerY = 20;
+            if (this.head.currentAttackPattern == 4 && this.head.leftHand == this) {
+                var tiles_2 = [Math.floor((Random.random() - 0.5) * 14)];
+                if (this.head.gem.hits == 1)
+                    tiles_2.push(Math.floor((Random.random() - 0.5) * 14));
+                if (this.head.gem.hits == 1)
+                    tiles_2.push(Math.floor((Random.random() - 0.5) * 14));
+                if (this.head.gem.hits == 2)
+                    tiles_2.push(Math.floor((Random.random() - 0.5) * 14));
+                if (this.head.gem.hits == 2)
+                    tiles_2.push(Math.floor((Random.random() - 0.5) * 14));
+                tiles_2 = tiles_2.filter(Utility.OnlyUnique);
+                for (var _i = 0, tiles_1 = tiles_2; _i < tiles_1.length; _i++) {
+                    var tile = tiles_1[_i];
+                    var x = this.head.xMid + tile * 14 - 5;
+                    var y = camera.GetTopCameraEdge() - 12;
+                    var meteor = new SmallMeteor(x, y, this.layer, []);
+                    this.layer.sprites.push(meteor);
+                    meteor.willCoolOff = this.canSpawnThrowableMeteor;
+                    this.canSpawnThrowableMeteor = false;
+                }
+            }
+            var oldMeteors = this.layer.sprites.filter(function (a) { return a instanceof GrabbableMeteor && a.age > 300 && a.isOnGround; });
+            oldMeteors.forEach(function (a) { return a.ReplaceWithSpriteType(BrokenMeteor); });
         }
         if (player && this.head.currentAttackPattern != -1) {
             // a bit hacky, need to slow down hand so player can land on it
             var xDist = Math.abs(this.xMid - player.xMid);
-            if (player.yBottom < this.y && xDist < 30) {
+            if (player.yBottom - 2 < this.y && xDist < 30) {
                 this.dy *= 0.85;
             }
         }
@@ -209,8 +238,8 @@ var ElderDragonHead = /** @class */ (function (_super) {
         _this.resetX = 0;
         _this.resetY = 0;
         _this.killedByProjectiles = false;
+        _this.immuneToSlideKill = true;
         _this.hurtTimer = 0;
-        _this.hits = 0;
         _this.homeX = 0;
         _this.homeY = 0;
         _this.mainLayer = currentMap.mainLayer;
@@ -225,12 +254,15 @@ var ElderDragonHead = /** @class */ (function (_super) {
         _this.initialized = false;
         _this.timeBetweenFlames = 30;
         _this.flameSpacing = 36;
+        _this.floorY = 99999;
         return _this;
     }
     // -1   pop-up from below screen
     // 0    idle
     // 1    fire line
     // 2    single hand slap
+    // 3    fist clap
+    // 4    fist bongo, meteors
     ElderDragonHead.prototype.Update = function () {
         this.dx *= 0.99;
         this.dy *= 0.99;
@@ -240,6 +272,29 @@ var ElderDragonHead = /** @class */ (function (_super) {
         this.ReactToVerticalWind();
         if (this.hurtTimer > 0) {
             this.hurtTimer--;
+        }
+        if (this.gem.hits >= 3) {
+            this.leftHand.layer.sprites.forEach(function (a) {
+                if (a instanceof SmallMeteor || a instanceof ThrownMeteor || a instanceof GrabbableMeteor) {
+                    a.ReplaceWithSpriteType(BrokenMeteor);
+                }
+            });
+            if (this.attackTimer % 3 == 0) {
+                var fireX = this.x + Math.random() * this.width - 3;
+                var fireY = this.y + Math.random() * this.height - 3;
+                var fire = new SingleFireBreath(fireX, fireY, this.layer, []);
+                fire.hurtsPlayer = false;
+                this.layer.sprites.push(fire);
+            }
+            if (this.attackTimer % 10 == 0) {
+                audioHandler.PlaySound("bigcrash", false);
+            }
+            if (!this.IsOnScreen()) {
+                this.isActive = false;
+                camera.shakeTimerY = 25;
+                camera.autoscrollX = 0.25;
+            }
+            this.AccelerateVertically(0.04, 2);
         }
     };
     ElderDragonHead.prototype.OnAfterUpdate = function () {
@@ -265,6 +320,12 @@ var ElderDragonHead = /** @class */ (function (_super) {
         this.gem.x = this.x + 9;
         this.gem.y = this.y - 15;
     };
+    ElderDragonHead.prototype.Dead = function () {
+        this.leftHand.respectsSolidTiles = false;
+        this.rightHand.respectsSolidTiles = false;
+        this.leftHand.damagesPlayer = false;
+        this.rightHand.damagesPlayer = false;
+    };
     ElderDragonHead.prototype.AttackLogic = function () {
         this.attackTimer++;
         if (this.currentAttackPattern == -1) {
@@ -289,7 +350,6 @@ var ElderDragonHead = /** @class */ (function (_super) {
                 this.movingHand = player.xMid < this.xMid ? this.leftHand : this.rightHand;
                 this.movingHand.targetX = player.x;
                 this.movingHand.targetY = camera.GetTopCameraEdge();
-                this.movingHand.respectsSolidTiles = true;
             }
             if (this.attackTimer == 90) {
                 this.movingHand.targetY = camera.GetBottomCameraEdge();
@@ -297,7 +357,6 @@ var ElderDragonHead = /** @class */ (function (_super) {
             if (this.attackTimer == 180) {
                 this.movingHand.targetX = this.movingHand.homeX;
                 this.movingHand.targetY = this.movingHand.homeY;
-                this.movingHand.respectsSolidTiles = false;
             }
         }
         if (this.currentAttackPattern == 3 && player) {
@@ -310,17 +369,12 @@ var ElderDragonHead = /** @class */ (function (_super) {
             if (this.attackTimer == 60) {
                 this.leftHand.isFist = true;
                 this.rightHand.isFist = true;
-                var ground = this.GetHeightOfSolid(0, 1, 10);
-                if (ground.tiles.length > 0) {
-                    this.leftHand.targetY = ground.yPixel - 12;
-                    this.rightHand.targetY = ground.yPixel - 12;
-                }
+                this.leftHand.targetY = this.floorY;
+                this.rightHand.targetY = this.floorY;
             }
             if (this.attackTimer == 120) {
                 this.leftHand.targetX = this.xMid;
                 this.rightHand.targetX = this.xMid;
-                this.leftHand.respectsSolidTiles = true;
-                this.rightHand.respectsSolidTiles = true;
             }
             if (this.attackTimer == 220) {
                 this.leftHand.targetX = this.leftHand.homeX;
@@ -329,8 +383,37 @@ var ElderDragonHead = /** @class */ (function (_super) {
                 this.rightHand.targetY = this.rightHand.homeY;
                 this.leftHand.isFist = false;
                 this.rightHand.isFist = false;
-                this.leftHand.respectsSolidTiles = false;
-                this.rightHand.respectsSolidTiles = false;
+            }
+        }
+        if (this.currentAttackPattern == 4) {
+            if (this.attackTimer == 1) {
+                this.leftHand.targetX = this.xMid - 112;
+                this.rightHand.targetX = this.xMid + 112;
+                this.leftHand.targetY = this.y;
+                this.rightHand.targetY = this.y;
+            }
+            if (this.attackTimer > 1 && this.attackTimer < 220) {
+                this.leftHand.isFist = true;
+                this.rightHand.isFist = true;
+                if (this.attackTimer % 30 == 0) {
+                    this.leftHand.targetY = this.floorY;
+                    this.rightHand.targetY = this.floorY;
+                }
+                if (this.attackTimer % 30 == 15) {
+                    this.leftHand.targetY = this.leftHand.homeY + 12;
+                    this.rightHand.targetY = this.rightHand.homeY + 12;
+                }
+                if (this.attackTimer == 185) {
+                    this.leftHand.canSpawnThrowableMeteor = true;
+                }
+            }
+            if (this.attackTimer == 340) {
+                this.leftHand.targetX = this.leftHand.homeX;
+                this.leftHand.targetY = this.leftHand.homeY;
+                this.rightHand.targetX = this.rightHand.homeX;
+                this.rightHand.targetY = this.rightHand.homeY;
+                this.leftHand.isFist = false;
+                this.rightHand.isFist = false;
             }
         }
     };
@@ -348,12 +431,18 @@ var ElderDragonHead = /** @class */ (function (_super) {
             });
         }
         if (this.currentAttackPattern == 0 && this.attackTimer > 60) {
-            newAttackPattern = 3;
+            newAttackPattern = 1;
         }
         if (this.currentAttackPattern == 1 && this.attackTimer > (264 / this.flameSpacing * this.timeBetweenFlames)) {
-            newAttackPattern = 0;
+            newAttackPattern = 2;
         }
         if (this.currentAttackPattern == 2 && this.attackTimer > 200) {
+            newAttackPattern = 3;
+        }
+        if (this.currentAttackPattern == 3 && this.attackTimer > 240) {
+            newAttackPattern = 4;
+        }
+        if (this.currentAttackPattern == 4 && this.attackTimer > 360) {
             newAttackPattern = 0;
         }
         if (newAttackPattern != this.currentAttackPattern) {
@@ -382,14 +471,39 @@ var ElderDragonGem = /** @class */ (function (_super) {
         _this.height = 14;
         _this.width = 11;
         _this.respectsSolidTiles = false;
+        _this.immuneToSlideKill = true;
+        _this.killedByProjectiles = false;
         _this.damagesPlayer = false;
+        _this.hurtTimer = 0;
+        _this.hits = 0;
+        _this.OnHitByProjectile = function (enemy, projectile) {
+            if (_this.hurtTimer <= 0) {
+                _this.hurtTimer = 60;
+                projectile.isActive = false;
+                _this.hits++;
+                if (_this.hits >= 3) {
+                    _this.hits = 3;
+                    _this.head.Dead();
+                    _this.damagesPlayer = false;
+                    _this.hurtTimer = 6000;
+                    audioHandler.PlaySound("dragon-defeat", false);
+                }
+                else {
+                    audioHandler.PlaySound("dragon-roar", false);
+                }
+            }
+        };
         return _this;
     }
     ElderDragonGem.prototype.Update = function () {
+        if (this.hurtTimer > 0) {
+            this.hurtTimer--;
+        }
     };
     ElderDragonGem.prototype.GetFrameData = function (frameNum) {
+        var hurtOffset = Math.floor(this.hurtTimer / 4) % 2;
         return {
-            imageTile: tiles["dragonCrystal"][0][0],
+            imageTile: tiles["dragonCrystal"][this.hits][hurtOffset],
             xFlip: false,
             yFlip: false,
             xOffset: 0,

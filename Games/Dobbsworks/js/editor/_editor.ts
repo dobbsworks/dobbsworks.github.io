@@ -174,7 +174,7 @@ class EditorHandler {
         let gizmoTypes: (SpriteType)[] = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform, FlipPlatform, SlowFlipPlatform,
             MushroomSpring, Baseball, SoccerBall, BowlingBall, Battery, Door, ScaredyDoor, Minecart, Teacup, Fan, Key, FlatKey, BubbleKey, GuardedKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, SpringRing, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
-            SpinRing, FragileSpinRing, PortalRing, //Stopwatch,
+            SpinRing, FragileSpinRing, PortalRing, CrashingDragon, //Stopwatch,
         ];
         let gizmoButtons: EditorButton[] = gizmoTypes.map(a => new EditorButtonSprite(a));
         let keyIndex = gizmoButtons.findIndex(a => a instanceof EditorButtonSprite && a.spriteType == GuardedKey);

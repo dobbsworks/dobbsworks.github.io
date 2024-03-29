@@ -61,6 +61,7 @@ class ElderDragon extends Sprite {
 
         let gem = new ElderDragonGem(head.x + head.width / 2 + 24, head.y, head.layer, []);
         head.gem = gem;
+        gem.head = head;
 
         if (this.layer.map) {
             this.layer.map.backdropLayer.sprites.push(leftEye, rightEye, head, gem, leftHand, rightHand);
@@ -103,6 +104,9 @@ class ElderDragonHand extends Enemy {
     isPlatform = true;
     canStandOn = true;
     head!: ElderDragonHead;
+    killedByProjectiles = false;
+    immuneToSlideKill = true;
+    public zIndex: number = 2;
 
     flipped = false;
     homeX = 0;
@@ -114,6 +118,7 @@ class ElderDragonHand extends Enemy {
     handOnGround = false;
     private wasFist = false;
     isFist = false;
+    canSpawnThrowableMeteor = false;
 
     Update(): void {
         this.width = this.isFist ? 18 : 48;
@@ -131,13 +136,38 @@ class ElderDragonHand extends Enemy {
         let wasOnGround = this.handOnGround;
         this.handOnGround = this.isOnGround;
         if (!wasOnGround && this.handOnGround) {
+            audioHandler.PlaySound("bigcrash", false);
             camera.shakeTimerY = 20;
+
+            if (this.head.currentAttackPattern == 4 && this.head.leftHand == this) {
+
+                let tiles = [ Math.floor((Random.random() - 0.5) * 14) ];
+                if (this.head.gem.hits == 1) tiles.push(Math.floor((Random.random() - 0.5) * 14));
+                if (this.head.gem.hits == 1) tiles.push(Math.floor((Random.random() - 0.5) * 14));
+                if (this.head.gem.hits == 2) tiles.push(Math.floor((Random.random() - 0.5) * 14));
+                if (this.head.gem.hits == 2) tiles.push(Math.floor((Random.random() - 0.5) * 14));
+                tiles = tiles.filter(Utility.OnlyUnique);
+
+                for (let tile of tiles) {
+                    let x = this.head.xMid + tile * 14 - 5;
+                    let y = camera.GetTopCameraEdge() - 12;
+    
+                    let meteor = new SmallMeteor(x, y, this.layer, []);
+                    this.layer.sprites.push(meteor);
+                    meteor.willCoolOff = this.canSpawnThrowableMeteor;
+                    this.canSpawnThrowableMeteor = false;
+                }
+
+            }
+
+            let oldMeteors = <GrabbableMeteor[]>this.layer.sprites.filter(a => a instanceof GrabbableMeteor && a.age > 300 && a.isOnGround);
+            oldMeteors.forEach(a => a.ReplaceWithSpriteType(BrokenMeteor));
         }
 
         if (player && this.head.currentAttackPattern != -1) {
             // a bit hacky, need to slow down hand so player can land on it
             let xDist  = Math.abs(this.xMid - player.xMid);
-            if (player.yBottom < this.y && xDist < 30) {
+            if (player.yBottom - 2 < this.y && xDist < 30) {
                 this.dy *= 0.85;
             }
         }
@@ -164,6 +194,8 @@ class ElderDragonHand extends Enemy {
         if (Math.abs(targetX - this.xMid) > 1) this.AccelerateHorizontally(0.07, (targetX > this.xMid ? 1 : -1)* 3);
         this.dy *= 0.95;
         this.dx *= 0.95;
+
+
     }
 
     GetFrameData(frameNum: number): FrameData {
@@ -196,8 +228,8 @@ class ElderDragonHead extends Enemy {
     resetX = 0;
     resetY = 0;
     killedByProjectiles = false;
+    immuneToSlideKill = true;
     hurtTimer = 0;
-    hits = 0;
 
     leftEye!: ElderDragonEye;
     rightEye!: ElderDragonEye;
@@ -223,6 +255,7 @@ class ElderDragonHead extends Enemy {
     
     timeBetweenFlames = 30;
     flameSpacing = 36;
+    floorY = 99999;
 
     movingHand!: ElderDragonHand;
 
@@ -230,6 +263,8 @@ class ElderDragonHead extends Enemy {
     // 0    idle
     // 1    fire line
     // 2    single hand slap
+    // 3    fist clap
+    // 4    fist bongo, meteors
 
     Update(): void {
         this.dx *= 0.99;
@@ -242,6 +277,30 @@ class ElderDragonHead extends Enemy {
         
         if (this.hurtTimer > 0) {
             this.hurtTimer--;
+        }
+
+        if (this.gem.hits >= 3) {
+            this.leftHand.layer.sprites.forEach(a => {
+                if (a instanceof SmallMeteor || a instanceof ThrownMeteor || a instanceof GrabbableMeteor) {
+                    a.ReplaceWithSpriteType(BrokenMeteor);
+                }
+            })
+            if (this.attackTimer % 3 == 0) {
+                let fireX = this.x + Math.random() * this.width - 3;
+                let fireY = this.y + Math.random() * this.height - 3;
+                let fire = new SingleFireBreath(fireX, fireY, this.layer, []);
+                fire.hurtsPlayer = false;
+                this.layer.sprites.push(fire);
+            }
+            if (this.attackTimer % 10 == 0) {
+                audioHandler.PlaySound("bigcrash", false);
+            }
+            if (!this.IsOnScreen()) {
+                this.isActive = false;
+                camera.shakeTimerY = 25;
+                camera.autoscrollX = 0.25;
+            }
+            this.AccelerateVertically(0.04, 2);
         }
     }
     public OnAfterUpdate(): void {
@@ -265,6 +324,13 @@ class ElderDragonHead extends Enemy {
 
         this.gem.x = this.x + 9;
         this.gem.y = this.y - 15;
+    }
+
+    Dead(): void {
+        this.leftHand.respectsSolidTiles = false;
+        this.rightHand.respectsSolidTiles = false;
+        this.leftHand.damagesPlayer = false;
+        this.rightHand.damagesPlayer = false;
     }
 
     AttackLogic(): void {
@@ -291,7 +357,6 @@ class ElderDragonHead extends Enemy {
                 this.movingHand = player.xMid < this.xMid ? this.leftHand : this.rightHand;
                 this.movingHand.targetX = player.x;
                 this.movingHand.targetY = camera.GetTopCameraEdge();
-                this.movingHand.respectsSolidTiles = true;
             }
             if (this.attackTimer == 90) {
                 this.movingHand.targetY = camera.GetBottomCameraEdge();
@@ -299,7 +364,6 @@ class ElderDragonHead extends Enemy {
             if (this.attackTimer == 180) {
                 this.movingHand.targetX = this.movingHand.homeX;
                 this.movingHand.targetY = this.movingHand.homeY;
-                this.movingHand.respectsSolidTiles = false;
             }
         }
         if (this.currentAttackPattern == 3 && player) {
@@ -312,19 +376,13 @@ class ElderDragonHead extends Enemy {
             if (this.attackTimer == 60) {
                 this.leftHand.isFist = true;
                 this.rightHand.isFist = true;
-
-                let ground = this.GetHeightOfSolid(0, 1, 10);
-                if (ground.tiles.length > 0) {
-                    this.leftHand.targetY = ground.yPixel - 12;
-                    this.rightHand.targetY = ground.yPixel - 12;
-                }
+                this.leftHand.targetY = this.floorY;
+                this.rightHand.targetY = this.floorY;
 
             }
             if (this.attackTimer == 120) {
                 this.leftHand.targetX = this.xMid;
                 this.rightHand.targetX = this.xMid;
-                this.leftHand.respectsSolidTiles = true;
-                this.rightHand.respectsSolidTiles = true;
             }
             if (this.attackTimer == 220) {
                 this.leftHand.targetX = this.leftHand.homeX;
@@ -333,8 +391,38 @@ class ElderDragonHead extends Enemy {
                 this.rightHand.targetY = this.rightHand.homeY;
                 this.leftHand.isFist = false;
                 this.rightHand.isFist = false;
-                this.leftHand.respectsSolidTiles = false;
-                this.rightHand.respectsSolidTiles = false;
+            }
+        }
+        if (this.currentAttackPattern == 4) {
+            if (this.attackTimer == 1) {
+                this.leftHand.targetX = this.xMid - 112;
+                this.rightHand.targetX = this.xMid + 112;
+                this.leftHand.targetY = this.y;
+                this.rightHand.targetY = this.y;
+            }
+            if (this.attackTimer > 1 && this.attackTimer < 220) {
+                this.leftHand.isFist = true;
+                this.rightHand.isFist = true;
+                if (this.attackTimer % 30 == 0) {
+                    this.leftHand.targetY = this.floorY;
+                    this.rightHand.targetY = this.floorY;
+                }
+                if (this.attackTimer % 30 == 15) {
+                    this.leftHand.targetY = this.leftHand.homeY + 12;
+                    this.rightHand.targetY = this.rightHand.homeY + 12;
+                }
+                if (this.attackTimer == 185) {
+                    this.leftHand.canSpawnThrowableMeteor = true;
+                }
+            }
+
+            if (this.attackTimer == 340) {
+                this.leftHand.targetX = this.leftHand.homeX;
+                this.leftHand.targetY = this.leftHand.homeY;
+                this.rightHand.targetX = this.rightHand.homeX;
+                this.rightHand.targetY = this.rightHand.homeY;
+                this.leftHand.isFist = false;
+                this.rightHand.isFist = false;
             }
         }
     }
@@ -353,12 +441,18 @@ class ElderDragonHead extends Enemy {
             })
         }
         if (this.currentAttackPattern == 0 && this.attackTimer > 60) { 
-            newAttackPattern = 3;
+            newAttackPattern = 1;
         }
         if (this.currentAttackPattern == 1 && this.attackTimer > (264 / this.flameSpacing * this.timeBetweenFlames)) { 
-            newAttackPattern = 0;
+            newAttackPattern = 2;
         }
         if (this.currentAttackPattern == 2 && this.attackTimer > 200) { 
+            newAttackPattern = 3;
+        }
+        if (this.currentAttackPattern == 3 && this.attackTimer > 240) { 
+            newAttackPattern = 4;
+        }
+        if (this.currentAttackPattern == 4 && this.attackTimer > 360) { 
             newAttackPattern = 0;
         }
 
@@ -388,12 +482,43 @@ class ElderDragonGem extends Enemy {
     public height: number = 14;
     public width: number = 11;
     public respectsSolidTiles: boolean = false;
+    immuneToSlideKill = true;
+    killedByProjectiles = false;
     damagesPlayer: boolean = false;
+    head!: ElderDragonHead;
+
+    hurtTimer = 0;
+    hits = 0;
+
     Update(): void {
+        if (this.hurtTimer > 0) {
+            this.hurtTimer--;
+        }
     }
+
+    OnHitByProjectile = (enemy: Enemy, projectile: Sprite) => {
+        if (this.hurtTimer <= 0) {
+            this.hurtTimer = 60;
+            projectile.isActive = false;
+            this.hits++;
+
+            if (this.hits >= 3) {
+                this.hits = 3;
+                this.head.Dead();
+                this.damagesPlayer = false;
+                this.hurtTimer = 6000;
+                audioHandler.PlaySound("dragon-defeat", false);
+            } else {
+                audioHandler.PlaySound("dragon-roar", false);
+            }
+        }
+    }
+
+
     GetFrameData(frameNum: number): FrameData {
+        var hurtOffset = Math.floor(this.hurtTimer / 4) % 2;
         return {
-            imageTile: tiles["dragonCrystal"][0][0],
+            imageTile: tiles["dragonCrystal"][this.hits][hurtOffset],
             xFlip: false,
             yFlip: false,
             xOffset: 0,

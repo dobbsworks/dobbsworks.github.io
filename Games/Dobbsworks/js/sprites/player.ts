@@ -301,6 +301,12 @@ class Player extends Sprite {
         let leftPressed = KeyboardHandler.IsKeyPressed(KeyAction.Left, false) && !(this.neutralTimer > 0);
         let rightPressed = KeyboardHandler.IsKeyPressed(KeyAction.Right, false) && !(this.neutralTimer > 0);
 
+        if (upPressed) Random.Bump(1);
+        if (downPressed) Random.Bump(2);
+        if (leftPressed) Random.Bump(3);
+        if (rightPressed) Random.Bump(4);
+        if (isJumpHeld) Random.Bump(5);
+
         if (this.parentSprite && this.parentSprite instanceof Rideable) {
             upPressed = false;
             downPressed = false;

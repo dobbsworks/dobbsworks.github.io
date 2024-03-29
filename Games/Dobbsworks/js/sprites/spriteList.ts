@@ -189,4 +189,5 @@ var spriteTypes: SpriteType[] = [
     SlowFlipPlatform,
     ScaredyDoor,
     ElderDragon,
+    CrashingDragon,
 ];

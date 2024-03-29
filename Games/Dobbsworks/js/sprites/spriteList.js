@@ -173,4 +173,5 @@ var spriteTypes = [
     SlowFlipPlatform,
     ScaredyDoor,
     ElderDragon,
+    CrashingDragon,
 ];

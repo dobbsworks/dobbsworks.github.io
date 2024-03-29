@@ -150,7 +150,7 @@ var EditorHandler = /** @class */ (function () {
         var gizmoTypes = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform, FlipPlatform, SlowFlipPlatform,
             MushroomSpring, Baseball, SoccerBall, BowlingBall, Battery, Door, ScaredyDoor, Minecart, Teacup, Fan, Key, FlatKey, BubbleKey, GuardedKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, SpringRing, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
-            SpinRing, FragileSpinRing, PortalRing,
+            SpinRing, FragileSpinRing, PortalRing, CrashingDragon,
         ];
         var gizmoButtons = gizmoTypes.map(function (a) { return new EditorButtonSprite(a); });
         var keyIndex = gizmoButtons.findIndex(function (a) { return a instanceof EditorButtonSprite && a.spriteType == GuardedKey; });

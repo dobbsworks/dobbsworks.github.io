@@ -5,6 +5,9 @@ class Random {
     static Reset(): void {
         this.seed = 0;
     }
+    static Bump(val: number): void {
+        this.seed += val;
+    }
     static random(): number {
         let seed = this.seed;
         this.seed++;
