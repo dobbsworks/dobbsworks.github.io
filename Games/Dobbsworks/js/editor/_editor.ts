@@ -161,11 +161,11 @@ class EditorHandler {
         /* ENEMY PANEL */
         let enemyTypes: SpriteType[] = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Wooly, WoolyBooly, 
             Snail, SapphireSnail, RubySnail, Escarghost, Prickle, PrickleEgg, PrickleShell, PrickleRock, Skitter, 
-            DrSnips, AFish, Angler, Lurchin, Clammy, Pufferfish,
+            DrSnips, AFish, Angler, Lurchin, Clammy, Pufferfish, Grouper,
             Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, SpicyJelly, JumboJelly,
             Taptop, Shrubbert, OrangeShrubbert, Vinedicator, GrayGrowth, SnowtemPole, Snoworm, BouncingSnowWorm, KingSlush, 
             Sparky, Orbbit, Keplurk, Nimby, Yufo, BigYufo, Blaster, 
-            Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, BaddleTrigger, Bernie, DabbleDragon, ElderDragon];
+            Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, Klobber, BaddleTrigger, Bernie, DabbleDragon, ElderDragon];
         let enemyButtons = enemyTypes.map(a => new EditorButtonSprite(a));
 
         enemyButtons.filter(a => a.spriteType == Piggle || a.spriteType == Snail).forEach(a => hotbarDefaults.push(a));
@@ -174,7 +174,7 @@ class EditorHandler {
         let gizmoTypes: (SpriteType)[] = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform, FlipPlatform, SlowFlipPlatform,
             MushroomSpring, Baseball, SoccerBall, BowlingBall, Battery, Door, ScaredyDoor, Minecart, Teacup, Fan, Key, FlatKey, BubbleKey, GuardedKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, SpringRing, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
-            SpinRing, FragileSpinRing, PortalRing, CrashingDragon, //Stopwatch,
+            SpinRing, FragileSpinRing, PortalRing, //Stopwatch,
         ];
         let gizmoButtons: EditorButton[] = gizmoTypes.map(a => new EditorButtonSprite(a));
         let keyIndex = gizmoButtons.findIndex(a => a instanceof EditorButtonSprite && a.spriteType == GuardedKey);
@@ -221,6 +221,8 @@ class EditorHandler {
         // gizmoButtons.push(new EditorButtonTile(TileType.WallWarpRight, "Warp Wall (right)"));
         gizmoButtons.push(new EditorButtonSprite(Doopster));
         gizmoButtons.push(new EditorButtonSprite(Dabbot));
+        gizmoButtons.push(new EditorButtonSprite(CrashingDragon));
+        gizmoButtons.push(new EditorButtonSprite(Drakkie));
 
         let gizmoPanel = this.CreateFloatingButtonPanel(gizmoButtons, 5, 8);
 

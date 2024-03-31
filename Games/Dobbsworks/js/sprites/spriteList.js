@@ -174,4 +174,7 @@ var spriteTypes = [
     ScaredyDoor,
     ElderDragon,
     CrashingDragon,
+    Drakkie,
+    Klobber,
+    Grouper,
 ];

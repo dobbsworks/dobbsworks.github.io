@@ -139,18 +139,18 @@ var EditorHandler = /** @class */ (function () {
         /* ENEMY PANEL */
         var enemyTypes = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Wooly, WoolyBooly,
             Snail, SapphireSnail, RubySnail, Escarghost, Prickle, PrickleEgg, PrickleShell, PrickleRock, Skitter,
-            DrSnips, AFish, Angler, Lurchin, Clammy, Pufferfish,
+            DrSnips, AFish, Angler, Lurchin, Clammy, Pufferfish, Grouper,
             Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, SpicyJelly, JumboJelly,
             Taptop, Shrubbert, OrangeShrubbert, Vinedicator, GrayGrowth, SnowtemPole, Snoworm, BouncingSnowWorm, KingSlush,
             Sparky, Orbbit, Keplurk, Nimby, Yufo, BigYufo, Blaster,
-            Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, BaddleTrigger, Bernie, DabbleDragon, ElderDragon];
+            Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, Klobber, BaddleTrigger, Bernie, DabbleDragon, ElderDragon];
         var enemyButtons = enemyTypes.map(function (a) { return new EditorButtonSprite(a); });
         enemyButtons.filter(function (a) { return a.spriteType == Piggle || a.spriteType == Snail; }).forEach(function (a) { return hotbarDefaults.push(a); });
         var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 8);
         var gizmoTypes = [
             BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform, FlipPlatform, SlowFlipPlatform,
             MushroomSpring, Baseball, SoccerBall, BowlingBall, Battery, Door, ScaredyDoor, Minecart, Teacup, Fan, Key, FlatKey, BubbleKey, GuardedKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, SpringRing, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
-            SpinRing, FragileSpinRing, PortalRing, CrashingDragon,
+            SpinRing, FragileSpinRing, PortalRing,
         ];
         var gizmoButtons = gizmoTypes.map(function (a) { return new EditorButtonSprite(a); });
         var keyIndex = gizmoButtons.findIndex(function (a) { return a instanceof EditorButtonSprite && a.spriteType == GuardedKey; });
@@ -193,6 +193,8 @@ var EditorHandler = /** @class */ (function () {
         // gizmoButtons.push(new EditorButtonTile(TileType.WallWarpRight, "Warp Wall (right)"));
         gizmoButtons.push(new EditorButtonSprite(Doopster));
         gizmoButtons.push(new EditorButtonSprite(Dabbot));
+        gizmoButtons.push(new EditorButtonSprite(CrashingDragon));
+        gizmoButtons.push(new EditorButtonSprite(Drakkie));
         var gizmoPanel = this.CreateFloatingButtonPanel(gizmoButtons, 5, 8);
         var brushTypeHandle = new EditorButtonDrawerHandle(tiles["editor"][4][0], "Brush types", []);
         var brushButtons = [

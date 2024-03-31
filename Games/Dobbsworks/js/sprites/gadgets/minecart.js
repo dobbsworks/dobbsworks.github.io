@@ -23,6 +23,7 @@ var Rideable = /** @class */ (function (_super) {
         }
         if (this.isOnGround || this.parentSprite) {
             this.dy -= 2.2;
+            this.parentSprite = null;
         }
         return false;
     };

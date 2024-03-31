@@ -75,7 +75,7 @@ class DragonSwoop extends Enemy {
 class CrashingDragon extends Sprite {
     public height: number = 10;
     public width: number = 102;
-    respectsSolidTiles = true;
+    respectsSolidTiles = false;
     canBeHeld = false;
     floatsInWater = false;
     isPlatform = true;

@@ -40,6 +40,7 @@ var Sprite = /** @class */ (function () {
         this.slowFall = false;
         this.gustUpTimer = 0; // number of frames remaining to assume is in updraft
         this.canMotorHold = true;
+        this.reactsToWind = true;
         this.isExemptFromSilhoutte = false;
         this.age = 0;
         this.framesSinceThrown = -1;
@@ -189,52 +190,32 @@ var Sprite = /** @class */ (function () {
         }
         if (isBouncing && this.IsOnScreen())
             audioHandler.PlaySound("boing", true);
-        // ISSUES WITH WARP WALL:
-        // 1. momentum! Wall reaction is what triggers "touching wall", but that also reduces velocity
-        // 2. clearance! Need to check if there's enough room on the other side!
-        // 3. what in the world was happening with shells
-        //TODO: repeat this for sprites that never touch wall
-        // let leftWarpWall = <LevelTile>this.touchedLeftWalls.find(a => a instanceof LevelTile && a.tileType.isWarpWall)
-        // if (leftWarpWall) {
-        //     let yIndex = leftWarpWall.tileY;
-        //     let acrossWarpWall = leftWarpWall.layer.tiles.map(a => a[yIndex]).find(a => a.tileX > leftWarpWall.tileX && a.tileType == TileType.WallWarpRight);
-        //     if (acrossWarpWall) {
-        //         this.x = acrossWarpWall.tileX * this.layer.tileWidth - this.width;
-        //     }
-        // } else {
-        //     let rightWarpWall = <LevelTile>this.touchedRightWalls.find(a => a instanceof LevelTile && a.tileType.isWarpWall)
-        //     if (rightWarpWall) {
-        //         let yIndex = rightWarpWall.tileY;
-        //         let acrossWarpWall = rightWarpWall.layer.tiles.map(a => a[yIndex]).find(a => a.tileX < rightWarpWall.tileX && a.tileType == TileType.WallWarpLeft);
-        //         if (acrossWarpWall) {
-        //             this.x = (acrossWarpWall.tileX + 1) * this.layer.tileWidth;
-        //         }
-        //     }
-        // }
-        var tileAtCenter = this.layer.GetTileByPixel(this.xMid, this.yMid).tileType;
-        // if the wind speed is greater than the sprite's speed,
-        // give a bit more dx to the sprite (but don't exceed wind speed?)
-        if (tileAtCenter.windX != 0 || currentMap.globalWindX != 0) {
-            //this.dx = (this.dx * 9 + windTile.windX/2) / 10;
-            this.dxFromWind = tileAtCenter.windX + currentMap.globalWindX * 0.3;
-        }
-        else {
-            if (Math.abs(this.dxFromWind) < 0.1) {
-                this.dx += this.dxFromWind;
-                this.dxFromWind = 0;
+        if (this.reactsToWind) {
+            var tileAtCenter = this.layer.GetTileByPixel(this.xMid, this.yMid).tileType;
+            // if the wind speed is greater than the sprite's speed,
+            // give a bit more dx to the sprite (but don't exceed wind speed?)
+            if (tileAtCenter.windX != 0 || currentMap.globalWindX != 0) {
+                //this.dx = (this.dx * 9 + windTile.windX/2) / 10;
+                this.dxFromWind = tileAtCenter.windX + currentMap.globalWindX * 0.3;
             }
             else {
-                this.dx += (this.dxFromWind > 0) ? 0.1 : -0.1;
-                this.dxFromWind -= (this.dxFromWind > 0) ? 0.1 : -0.1;
+                if (Math.abs(this.dxFromWind) < 0.1) {
+                    this.dx += this.dxFromWind;
+                    this.dxFromWind = 0;
+                }
+                else {
+                    this.dx += (this.dxFromWind > 0) ? 0.1 : -0.1;
+                    this.dxFromWind -= (this.dxFromWind > 0) ? 0.1 : -0.1;
+                }
             }
+            if (this.touchedLeftWalls.length > 0 && this.dxFromWind < 0)
+                this.dxFromWind = 0;
+            if (this.touchedRightWalls.length > 0 && this.dxFromWind > 0)
+                this.dxFromWind = 0;
+            this.windDy = tileAtCenter.windY + currentMap.globalWindY * 0.3;
+            if (this.windDy < 0)
+                this.gustUpTimer = 3;
         }
-        if (this.touchedLeftWalls.length > 0 && this.dxFromWind < 0)
-            this.dxFromWind = 0;
-        if (this.touchedRightWalls.length > 0 && this.dxFromWind > 0)
-            this.dxFromWind = 0;
-        this.windDy = tileAtCenter.windY + currentMap.globalWindY * 0.3;
-        if (this.windDy < 0)
-            this.gustUpTimer = 3;
         var trackPipe = this.GetOverlappingTrackPipe();
         if (trackPipe) {
             var newSprite = this.ReplaceWithSpriteType(PipeContent);
@@ -246,7 +227,9 @@ var Sprite = /** @class */ (function () {
         }
     };
     Sprite.prototype.ReactToVerticalWind = function () {
-        this.dyFromWind = this.windDy;
+        if (this.reactsToWind) {
+            this.dyFromWind = this.windDy;
+        }
     };
     Sprite.prototype.ApplyGravity = function () {
         var _a, _b;

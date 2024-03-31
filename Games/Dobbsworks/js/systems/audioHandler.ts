@@ -241,6 +241,10 @@ class AudioHandler {
         "stairs",
         "dread",
         "tenacious",
+        
+        "scales",
+        "totality",
+        "lullaby",
     ]
 }
 

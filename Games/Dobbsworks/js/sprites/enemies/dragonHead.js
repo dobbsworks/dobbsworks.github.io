@@ -22,6 +22,7 @@ var ElderDragon = /** @class */ (function (_super) {
         _this.canMotorHold = false;
         _this.timer = 0;
         _this.maxAllowed = 1;
+        _this.reactsToWind = false;
         return _this;
     }
     ElderDragon.prototype.Update = function () {
@@ -74,13 +75,26 @@ var ElderDragon = /** @class */ (function (_super) {
         var gem = new ElderDragonGem(head.x + head.width / 2 + 24, head.y, head.layer, []);
         head.gem = gem;
         gem.head = head;
+        var body = new ElderDragonBody(head.x, head.y, head.layer, []);
+        body.x = head.xMid - body.width / 2;
+        body.y = head.yMid;
+        head.body = body;
         if (this.layer.map) {
-            this.layer.map.backdropLayer.sprites.push(leftEye, rightEye, head, gem, leftHand, rightHand);
+            this.layer.map.backdropLayer.sprites.push(body, leftEye, rightEye, head, gem, leftHand, rightHand);
         }
     };
     ElderDragon.prototype.GetFrameData = function (frameNum) {
+        if (editorHandler.isInEditMode) {
+            return {
+                imageTile: tiles["dragonHeadThumb"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            };
+        }
         return {
-            imageTile: tiles["dragonHeadThumb"][0][0],
+            imageTile: tiles["empty"][0][0],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
@@ -93,6 +107,7 @@ var ElderDragonEye = /** @class */ (function (_super) {
     __extends(ElderDragonEye, _super);
     function ElderDragonEye() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.reactsToWind = false;
         _this.height = 15;
         _this.width = 14;
         _this.respectsSolidTiles = false;
@@ -124,6 +139,7 @@ var ElderDragonHand = /** @class */ (function (_super) {
         _this.killedByProjectiles = false;
         _this.immuneToSlideKill = true;
         _this.zIndex = 2;
+        _this.reactsToWind = false;
         _this.flipped = false;
         _this.homeX = 0;
         _this.homeY = 0;
@@ -187,8 +203,10 @@ var ElderDragonHand = /** @class */ (function (_super) {
             if (this.head.leftHand == this && this.xRight > this.head.xMid) {
                 this.dx = 0;
                 this.x = this.head.xMid - this.width;
-                if (camera.shakeTimerY == 0)
+                if (camera.shakeTimerY == 0) {
                     camera.shakeTimerY = 20;
+                    audioHandler.PlaySound("bigcrash", false);
+                }
             }
             if (this.head.rightHand == this && this.x < this.head.xMid) {
                 this.dx = 0;
@@ -230,6 +248,7 @@ var ElderDragonHead = /** @class */ (function (_super) {
     __extends(ElderDragonHead, _super);
     function ElderDragonHead() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.reactsToWind = false;
         _this.height = 24;
         _this.width = 24;
         _this.respectsSolidTiles = false;
@@ -243,18 +262,13 @@ var ElderDragonHead = /** @class */ (function (_super) {
         _this.homeX = 0;
         _this.homeY = 0;
         _this.mainLayer = currentMap.mainLayer;
-        // falling rocks, 1 breaks into heavy stone
-        // need to jump on hand, hit head with stone
-        // attacks
-        // flame pillar cascade (1 gap between?)
-        // both hands up, then smash down, rocks fall
-        // slam hands closer and closer
         _this.currentAttackPattern = -1;
         _this.attackTimer = 0;
         _this.initialized = false;
         _this.timeBetweenFlames = 30;
         _this.flameSpacing = 36;
         _this.floorY = 99999;
+        _this.originalWind = -9999;
         return _this;
     }
     // -1   pop-up from below screen
@@ -270,10 +284,27 @@ var ElderDragonHead = /** @class */ (function (_super) {
         this.AttackLogic();
         this.ReactToWater();
         this.ReactToVerticalWind();
+        if (this.originalWind == -9999) {
+            this.originalWind = currentMap.globalWindX;
+        }
         if (this.hurtTimer > 0) {
             this.hurtTimer--;
         }
+        if (this.gem.hits == 2) {
+            var flapFrames = [0, 1, 2, 4, 6, 9, 14, 19, 24, 28, 30, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 11, 10, 9, 8, 7, 5, 3, 1, 0, 0, 0];
+            var flapTimer = Math.floor(this.age / 4) % flapFrames.length;
+            this.body.flap = -flapFrames[flapTimer] * 0.5;
+            currentMap.globalWindX *= 0.95;
+            if (this.age % 120 == 30) {
+                audioHandler.PlaySound("wing-flap", false);
+                currentMap.globalWindX = 1;
+                if (this.age % 240 == 30) {
+                    currentMap.globalWindX = -1;
+                }
+            }
+        }
         if (this.gem.hits >= 3) {
+            currentMap.globalWindX = this.originalWind;
             this.leftHand.layer.sprites.forEach(function (a) {
                 if (a instanceof SmallMeteor || a instanceof ThrownMeteor || a instanceof GrabbableMeteor) {
                     a.ReplaceWithSpriteType(BrokenMeteor);
@@ -299,6 +330,7 @@ var ElderDragonHead = /** @class */ (function (_super) {
     };
     ElderDragonHead.prototype.OnAfterUpdate = function () {
         this.MoveEyes();
+        this.body.y = this.yMid;
     };
     ElderDragonHead.prototype.MoveEyes = function () {
         var xOffset = 0;
@@ -454,13 +486,16 @@ var ElderDragonHead = /** @class */ (function (_super) {
         return tiles["dragonHeadThumb"][0][0];
     };
     ElderDragonHead.prototype.GetFrameData = function (frameNum) {
-        return {
-            imageTile: tiles["dragonHead"][0][0],
-            xFlip: false,
-            yFlip: false,
-            xOffset: 32,
-            yOffset: 36
-        };
+        var ret = [
+            {
+                imageTile: tiles["dragonHead"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 32,
+                yOffset: 36
+            }
+        ];
+        return ret;
     };
     return ElderDragonHead;
 }(Enemy));
@@ -468,6 +503,7 @@ var ElderDragonGem = /** @class */ (function (_super) {
     __extends(ElderDragonGem, _super);
     function ElderDragonGem() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.reactsToWind = false;
         _this.height = 14;
         _this.width = 11;
         _this.respectsSolidTiles = false;
@@ -512,3 +548,44 @@ var ElderDragonGem = /** @class */ (function (_super) {
     };
     return ElderDragonGem;
 }(Enemy));
+var ElderDragonBody = /** @class */ (function (_super) {
+    __extends(ElderDragonBody, _super);
+    function ElderDragonBody() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.reactsToWind = false;
+        _this.height = 76;
+        _this.width = 83;
+        _this.respectsSolidTiles = false;
+        _this.flap = 0;
+        return _this;
+    }
+    ElderDragonBody.prototype.Update = function () {
+    };
+    ElderDragonBody.prototype.GetFrameData = function (frameNum) {
+        var ret = [
+            {
+                imageTile: tiles["dragonWing"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 170,
+                yOffset: this.flap
+            },
+            {
+                imageTile: tiles["dragonWing"][0][0],
+                xFlip: true,
+                yFlip: false,
+                xOffset: -40,
+                yOffset: this.flap
+            },
+            {
+                imageTile: tiles["dragonBody"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 0,
+                yOffset: 0
+            }
+        ];
+        return ret;
+    };
+    return ElderDragonBody;
+}(Sprite));

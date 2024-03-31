@@ -36,6 +36,9 @@ var AudioHandler = /** @class */ (function () {
             "stairs",
             "dread",
             "tenacious",
+            "scales",
+            "totality",
+            "lullaby",
         ];
     }
     AudioHandler.prototype.Initialize = function () {

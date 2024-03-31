@@ -83,6 +83,7 @@
     <script src="js/sprites/enemies/cloud.js?v=1.11.2"></script>
     <script src="js/sprites/enemies/bigSnowman.js?v=1.11.2"></script>
     <script src="js/sprites/enemies/bigSlime.js?v=1.11.2"></script>
+    <script src="js/sprites/enemies/grouper.js?v=1.11.2"></script>
 
     <script src="js/sprites/player.js?v=1.11.2"></script>
 
@@ -129,6 +130,7 @@
     <script src="js/sprites/gadgets/bomb.js?v=1.11.2"></script>
     <script src="js/sprites/gadgets/waterBalloon.js?v=1.11.2"></script>
     <script src="js/sprites/gadgets/minecart.js?v=1.11.2"></script>
+    <script src="js/sprites/gadgets/rideableDragon.js?v=1.11.2"></script>
     <!-- <script src="js/sprites/gadgets/stopwatch.js?v=1.11.2"></script> -->
     
     <script src="js/sprites/level/goldGear.js?v=1.11.2"></script>
@@ -282,6 +284,7 @@
         <img src="images/enemies/pufferfish.png?v=1.11.2" data-cols="2" data-rows="1" />
         <img src="images/enemies/wallop.png?v=1.11.2" data-cols="6" data-rows="4" />
         <img src="images/enemies/bigWallop.png?v=1.11.2" data-cols="3" data-rows="2" />
+        <img src="images/enemies/biggerWallop.png?v=1.11.2" data-cols="3" data-rows="1" />
         <img src="images/enemies/sapphireSnail.png?v=1.11.2" data-cols="2" data-rows="1" />
         <img src="images/enemies/escarghost.png?v=1.11.2" data-cols="2" data-rows="2" />
         <img src="images/enemies/sheep.png?v=1.11.2" data-cols="6" data-rows="2" />
@@ -296,6 +299,7 @@
         <img src="images/enemies/taptop.png?v=1.11.2" data-cols="4" data-rows="1" />
         <img src="images/enemies/cloud.png?v=1.11.2" data-cols="4" data-rows="1" />
         <img src="images/enemies/lightning.png?v=1.11.2" data-cols="4" data-rows="1" />
+        <img src="images/enemies/grouper.png?v=1.11.2" data-cols="1" data-rows="1" />
         
         <img src="images/enemies/dragon/arms.png?v=1.11.2" data-cols="4" data-rows="3" />
         <img src="images/enemies/dragon/body.png?v=1.11.2" data-cols="2" data-rows="2" />
@@ -305,7 +309,7 @@
         <img src="images/enemies/dragon/flamepillar.png?v=1.11.2" data-cols="2" data-rows="4" />
         <img src="images/enemies/dragon/flametrigger.png?v=1.11.2" data-cols="1" data-rows="1" />
         <img src="images/enemies/dragon/dragonwarning.png?v=1.11.2" data-cols="1" data-rows="1" />
-        <img src="images/enemies/dragon/babyDragon.png?v=1.11.2" data-cols="1" data-rows="4" />
+        <img src="images/enemies/dragon/babyDragon.png?v=1.11.2" data-cols="2" data-rows="5" />
 
         <img src="images/enemies/dragon/dragonHeadThumb.png?v=1.11.2" data-cols="1" data-rows="1" />
         <img src="images/enemies/dragon/dragonClaw.png?v=1.11.2" data-cols="1" data-rows="1" />
@@ -313,6 +317,8 @@
         <img src="images/enemies/dragon/dragonCrystal.png?v=1.11.2" data-cols="4" data-rows="2" />
         <img src="images/enemies/dragon/dragonEye.png?v=1.11.2" data-cols="1" data-rows="1" />
         <img src="images/enemies/dragon/dragonFist.png?v=1.11.2" data-cols="1" data-rows="1" />
+        <img src="images/enemies/dragon/dragonBody.png?v=1.11.2" data-cols="1" data-rows="1" />
+        <img src="images/enemies/dragon/dragonWing.png?v=1.11.2" data-cols="1" data-rows="1" />
         <img src="images/enemies/dragon/smallMeteor.png?v=1.11.2" data-cols="4" data-rows="1" />
 
         <img src="images/enemies/bigSnowball.png?v=1.11.2" data-cols="12" data-rows="1" />
@@ -371,6 +377,7 @@
         <img src="images/gadgets/key.png?v=1.11.2" data-cols="5" data-rows="2" />
         <img src="images/gadgets/waterBalloon.png?v=1.11.2" data-cols="1" data-rows="1" />
         <img src="images/gadgets/bulletBlock.png?v=1.11.2" data-cols="4" data-rows="1" />
+        <img src="images/gadgets/minecart.png?v=1.11.2" data-cols="1" data-rows="3" />
         <img src="images/gadgets/minecart.png?v=1.11.2" data-cols="1" data-rows="3" />
         
         <img src="images/fluids/fluids.png?v=1.11.2" data-cols="8" data-rows="9" />
@@ -501,6 +508,10 @@
             <audio id="stairs" controls src="audio/music/Stairs.mp3" data-bpm="96" data-intro-beats="32" data-loop-beats="112"></audio>
             <audio id="dread" controls src="audio/music/Dread.mp3" data-bpm="112" data-intro-beats="0" data-loop-beats="192"></audio>
             <audio id="tenacious" controls src="audio/music/Tenacious.mp3" data-bpm="100" data-intro-beats="128" data-loop-beats="320"></audio>
+
+            <audio id="scales" controls src="audio/music/Scales.mp3" data-bpm="163" data-intro-beats="0" data-loop-beats="256"></audio>
+            <audio id="totality" controls src="audio/music/Totality.mp3" data-bpm="90" data-intro-beats="32" data-loop-beats="80"></audio>
+            <audio id="lullaby" controls src="audio/music/Lullaby.mp3" data-bpm="103" data-intro-beats="0" data-loop-beats="32"></audio>
 
 
         </div>

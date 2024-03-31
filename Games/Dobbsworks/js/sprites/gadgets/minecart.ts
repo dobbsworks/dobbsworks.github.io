@@ -5,6 +5,7 @@ abstract class Rideable extends Sprite {
         }
         if (this.isOnGround || this.parentSprite) {
             this.dy -= 2.2;
+            this.parentSprite = null;
         }
         return false;
     }

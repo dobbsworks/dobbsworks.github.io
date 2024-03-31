@@ -122,3 +122,124 @@ var FloppingFish = /** @class */ (function (_super) {
     };
     return FloppingFish;
 }(Sprite));
+var Grouper = /** @class */ (function (_super) {
+    __extends(Grouper, _super);
+    function Grouper() {
+        // creates school of fish when scrolled on screen
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.height = 8;
+        _this.width = 18;
+        _this.respectsSolidTiles = true;
+        _this.canMotorHold = false;
+        _this.initialized = false;
+        _this.fish = [];
+        return _this;
+    }
+    Grouper.prototype.GetThumbnail = function () {
+        return tiles["grouper"][0][0];
+    };
+    Grouper.prototype.Update = function () {
+        if (!this.WaitForOnScreen())
+            return;
+        var fishPositionArray = [
+            [2, 4, 6, 9.5],
+            [1, 3, 5, 7, 9],
+            [0, 2, 4, 6, 8],
+            [1, 3, 5, 7, 9],
+            [2, 4, 6, 9.5],
+        ];
+        if (!this.initialized) {
+            this.initialized = true;
+            var fishCount = fishPositionArray.flat().length;
+            for (var i = 0; i < fishCount; i++) {
+                var fish = new GrouperFish(this.x, this.y, this.layer, []);
+                this.layer.sprites.push(fish);
+                this.fish.push(fish);
+            }
+        }
+        var formation = "fish";
+        if (formation == "fish") {
+            var fishIndex = 0;
+            for (var row = 0; row < fishPositionArray.length; row++) {
+                for (var col = 0; col < fishPositionArray[row].length; col++) {
+                    var targetX = fishPositionArray[row][col] * 10;
+                    var targetY = (row - 2) * 10;
+                    var fish = this.fish[fishIndex];
+                    fish.targetX = Math.cos(this.age / 20) * targetX + this.x + Math.sin(this.age / 30 + fishIndex) * 2;
+                    fish.targetY = Math.sin(this.age / 20) * targetY + this.y + Math.cos(this.age / 30 - fishIndex) * 1;
+                    fishIndex++;
+                }
+            }
+        }
+    };
+    Grouper.prototype.GetFrameData = function (frameNum) {
+        if (editorHandler.isInEditMode) {
+            return {
+                imageTile: tiles["grouper"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 6,
+                yOffset: 2
+            };
+        }
+        else {
+            return {
+                imageTile: tiles["empty"][0][0],
+                xFlip: false,
+                yFlip: false,
+                xOffset: 6,
+                yOffset: 2
+            };
+        }
+    };
+    return Grouper;
+}(Sprite));
+var GrouperFish = /** @class */ (function (_super) {
+    __extends(GrouperFish, _super);
+    function GrouperFish() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.height = 8;
+        _this.width = 18;
+        _this.respectsSolidTiles = true;
+        _this.canBeBouncedOn = true;
+        _this.targetX = 0;
+        _this.targetY = 0;
+        return _this;
+    }
+    GrouperFish.prototype.Update = function () {
+        this.ReactToWater();
+        if (this.isInWater) {
+            this.ApplyInertia();
+            this.ReactToVerticalWind();
+            var theta = Math.atan2(this.targetY - this.yMid, this.targetX - this.xMid);
+            var targetSpeed = 0.75;
+            var accel = 0.010;
+            this.AccelerateHorizontally(accel, targetSpeed * Math.cos(theta));
+            this.AccelerateVertically(accel, targetSpeed * Math.sin(theta));
+            this.dx *= 0.97;
+            this.dy *= 0.97;
+        }
+        else {
+            this.ApplyGravity();
+            if (this.isOnGround) {
+                this.ReplaceWithSprite(new DeadEnemy(this));
+            }
+        }
+        this.canBeBouncedOn = (player && !player.isInWater);
+    };
+    GrouperFish.prototype.OnSpinBounce = function () { this.ReplaceWithSpriteType(Poof); };
+    GrouperFish.prototype.OnBounce = function () {
+        this.ReplaceWithSprite(new DeadEnemy(this));
+        this.OnDead();
+    };
+    GrouperFish.prototype.GetFrameData = function (frameNum) {
+        return {
+            imageTile: tiles["grouper"][0][0],
+            xFlip: this.direction == 1,
+            yFlip: false,
+            xOffset: 6,
+            yOffset: 2
+        };
+    };
+    return GrouperFish;
+}(Enemy));

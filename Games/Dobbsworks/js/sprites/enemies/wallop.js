@@ -251,6 +251,8 @@ var BigWallop = /** @class */ (function (_super) {
         _this.peripheryActiveDistance = 36;
         _this.watchDirections = [Direction.Down];
         _this.collideSound = "bigcrash";
+        _this.imageSource = "bigWallop";
+        _this.showArrows = true;
         return _this;
     }
     Object.defineProperty(BigWallop, "clockwiseRotationSprite", {
@@ -298,7 +300,7 @@ var BigWallop = /** @class */ (function (_super) {
             col = 1;
         }
         var ret = [];
-        if (editorHandler.isInEditMode) {
+        if (editorHandler.isInEditMode && this.showArrows) {
             if (this.watchDirections.indexOf(Direction.Down) > -1) {
                 ret.push({ imageTile: tiles["editor"][3][9], xFlip: false, yFlip: false, xOffset: -12, yOffset: 12 });
                 ret.push({ imageTile: tiles["editor"][4][9], xFlip: false, yFlip: false, xOffset: -12, yOffset: -36 });
@@ -309,7 +311,7 @@ var BigWallop = /** @class */ (function (_super) {
             }
         }
         ret.push({
-            imageTile: tiles["bigWallop"][col][this.frameRow],
+            imageTile: tiles[this.imageSource][col][this.frameRow],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
@@ -507,3 +509,23 @@ var Wallopeño = /** @class */ (function (_super) {
     };
     return Wallopeño;
 }(Enemy));
+var Klobber = /** @class */ (function (_super) {
+    __extends(Klobber, _super);
+    function Klobber() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.width = 72;
+        _this.height = 72;
+        _this.maxSpeed = 1.0;
+        _this.accel = 0.1;
+        _this.imageSource = "biggerWallop";
+        _this.showArrows = false;
+        _this.watchDirections = [Direction.Left, Direction.Right];
+        return _this;
+    }
+    Object.defineProperty(Klobber, "clockwiseRotationSprite", {
+        get: function () { return null; },
+        enumerable: false,
+        configurable: true
+    });
+    return Klobber;
+}(BigWallop));

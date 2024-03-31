@@ -122,6 +122,7 @@ var CrashingDragon = /** @class */ (function (_super) {
             fire.hurtsPlayer = false;
             this.layer.sprites.push(fire);
         }
+        // to do - when collide with wall...?
     };
     CrashingDragon.prototype.GetFrameData = function (frameNum) {
         return {
