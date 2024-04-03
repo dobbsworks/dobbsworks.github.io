@@ -16,7 +16,7 @@ abstract class Rideable extends Sprite {
 }
 
 class Minecart extends Rideable {
-    public height: number = 10;
+    public height: number = 9;
     public width: number = 17;
     respectsSolidTiles = true;
     rolls = true;
@@ -53,7 +53,7 @@ class Minecart extends Rideable {
             xFlip: false,
             yFlip: false,
             xOffset: 2,
-            yOffset: 0
+            yOffset: 1
         };
     }
 }

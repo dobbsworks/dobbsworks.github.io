@@ -123,6 +123,7 @@ class Player extends Sprite {
     }
 
     PlayerMovement(): void {
+
         if (this.yoyoTimer > 0) {
             this.yoyoTimer--;
             return;

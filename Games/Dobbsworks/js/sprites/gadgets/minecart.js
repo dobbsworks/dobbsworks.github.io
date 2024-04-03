@@ -36,7 +36,7 @@ var Minecart = /** @class */ (function (_super) {
     __extends(Minecart, _super);
     function Minecart() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.height = 10;
+        _this.height = 9;
         _this.width = 17;
         _this.respectsSolidTiles = true;
         _this.rolls = true;
@@ -70,7 +70,7 @@ var Minecart = /** @class */ (function (_super) {
             xFlip: false,
             yFlip: false,
             xOffset: 2,
-            yOffset: 0
+            yOffset: 1
         };
     };
     return Minecart;

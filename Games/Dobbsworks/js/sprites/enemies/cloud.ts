@@ -65,6 +65,8 @@ class Nimby extends Enemy {
                     lightning.y = this.yBottom;
                     this.layer.sprites.push(lightning);
 
+                    audioHandler.PlaySound("lightning", false);
+
                     if (!currentMap.targetSky) {
                         currentMap.targetSky = currentMap.sky;
                     }

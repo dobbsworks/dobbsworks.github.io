@@ -72,6 +72,7 @@ var Nimby = /** @class */ (function (_super) {
                     lightning.x = this.xMid - lightning.width / 2;
                     lightning.y = this.yBottom;
                     this.layer.sprites.push(lightning);
+                    audioHandler.PlaySound("lightning", false);
                     if (!currentMap.targetSky) {
                         currentMap.targetSky = currentMap.sky;
                     }
