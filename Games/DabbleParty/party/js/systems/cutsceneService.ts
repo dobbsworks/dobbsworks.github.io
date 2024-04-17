@@ -3,7 +3,10 @@ class CutsceneService {
     public cutscenes: BoardCutScene[] = [];
 
     public get isCutsceneActive(): boolean {
-        return this.cutscenes.length > 0;
+        if (this.cutscenes.length > 0) {
+            return this.cutscenes[0].hidesUI;
+        }
+        return false;
     }
 
     public Update(): void {

@@ -165,7 +165,7 @@ class BoardUI {
             }
         }
 
-        if (this.dice.length > 0 && this.dice.every(a => a.IsDoneAnimating())) {
+        if (this.dice.length > 0 && this.dice.every(a => a.IsDoneAnimating()) && cutsceneService.cutscenes.length == 0) {
             if (this.combineTimer == 0) this.dice.forEach(a => a.HideDie());
 
             let moveScale = [1.05, 1.03, 1.01, 0.99, 0.98, 0.95][this.combineTimer] || 0.9;
@@ -355,7 +355,7 @@ class DiceSprite extends Sprite {
     public frame: number = 0;
     private _isStopped = false;
     chosenValue = 0;
-    private framesSinceStop = 0;
+    framesSinceStop = 0;
     private isHiding = false;
     private dieScale = 1.5;
     constructor(public x: number, public y: number, public faces: FaceCount, private isFragile: boolean) {

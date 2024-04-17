@@ -33,6 +33,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
 var BoardCutScene = /** @class */ (function () {
     function BoardCutScene() {
         this.isDone = false;
+        this.hidesUI = true;
     }
     BoardCutScene.prototype.GetFollowUpCutscenes = function () { return []; };
     ;
@@ -1083,3 +1084,90 @@ var BoardCutSceneMinigameResults = /** @class */ (function (_super) {
     };
     return BoardCutSceneMinigameResults;
 }(BoardCutScenePlayerList));
+var BoardCutSceneMolscRoll = /** @class */ (function (_super) {
+    __extends(BoardCutSceneMolscRoll, _super);
+    function BoardCutSceneMolscRoll() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.timer = 0;
+        _this.hidesUI = false;
+        _this.result = "";
+        _this.descr = "";
+        return _this;
+    }
+    BoardCutSceneMolscRoll.prototype.Update = function () {
+        this.timer++;
+        if (!board || !board.currentPlayer)
+            return;
+        if (this.timer == 1) {
+            audioHandler.PlaySound("diceRoll", true);
+            var y = -100;
+            board.boardUI.dice = [
+                new DiceSprite(-200, y, 6, false),
+                new DiceSprite(0, y, 10, false),
+                new DiceSprite(200, y, 10, false)
+            ];
+        }
+        if (this.timer == 200) {
+            // add bonus
+            board.boardUI.dice[0].chosenValue += 2;
+            board.boardUI.dice[0].framesSinceStop = 0;
+            //      str     weak    miss
+            // +0	09.17%	31.67%	59.17%
+            // +1	15.17%	39.67%	45.17%
+            // +2	23.17%	43.67%	33.17%
+            // +3	33.17%	43.67%	23.17%
+            // +4	45.17%	39.67%	15.17%
+        }
+        if (this.timer == 300) {
+            // determine hit type
+            var action = board.boardUI.dice[0].chosenValue;
+            var chal1 = board.boardUI.dice[1].chosenValue;
+            var chal2 = board.boardUI.dice[2].chosenValue;
+            if (action > chal1 && action > chal2) {
+                // strong hit
+                this.result = "Strong Hit!";
+                this.descr = "You discover secret treasure!";
+                cutsceneService.AddScene(new BoardCutSceneAddCoins(10, board.currentPlayer));
+            }
+            else if (action <= chal1 && action <= chal2) {
+                // miss
+                this.result = "Miss!";
+                this.descr = "You are attacked by a molsc!";
+                cutsceneService.AddScene(new BoardCutSceneAddCoins(-10, board.currentPlayer));
+            }
+            else {
+                // weak hit
+                this.result = "Weak Hit!";
+                this.descr = "You escape the molsc, barely";
+                cutsceneService.AddScene(new BoardCutSceneAddCoins(-2, board.currentPlayer));
+            }
+        }
+        if (this.timer == 500) {
+            board.boardUI.dice = [];
+            this.isDone = true;
+        }
+    };
+    BoardCutSceneMolscRoll.prototype.Draw = function (camera) {
+        if (this.result) {
+            var cam = board.boardUI.uiCamera;
+            cam.ctx.strokeStyle = "#000";
+            cam.ctx.lineWidth = 4;
+            cam.ctx.fillStyle = "#FFF";
+            cam.ctx.textAlign = "center";
+            cam.ctx.font = "800 " + 64 + "px " + "arial";
+            cam.ctx.strokeText(this.result, 960 / 2, 300);
+            cam.ctx.fillText(this.result, 960 / 2, 300);
+        }
+        if (this.descr) {
+            var cam = board.boardUI.uiCamera;
+            cam.ctx.strokeStyle = "#000";
+            cam.ctx.lineWidth = 2;
+            cam.ctx.fillStyle = "#FFF";
+            cam.ctx.textAlign = "center";
+            cam.ctx.font = "800 " + 40 + "px " + "arial";
+            cam.ctx.strokeText(this.descr, 960 / 2, 360);
+            cam.ctx.fillText(this.descr, 960 / 2, 360);
+        }
+    };
+    return BoardCutSceneMolscRoll;
+}(BoardCutScene));

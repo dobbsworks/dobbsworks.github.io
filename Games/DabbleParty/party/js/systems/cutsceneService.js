@@ -5,7 +5,10 @@ var CutsceneService = /** @class */ (function () {
     }
     Object.defineProperty(CutsceneService.prototype, "isCutsceneActive", {
         get: function () {
-            return this.cutscenes.length > 0;
+            if (this.cutscenes.length > 0) {
+                return this.cutscenes[0].hidesUI;
+            }
+            return false;
         },
         enumerable: false,
         configurable: true
