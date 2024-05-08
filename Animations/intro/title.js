@@ -3,7 +3,7 @@ function CreateTitle() {
         "Dobbs",
         Rand([
             "Hover Cat",
-            "Gracie",
+            //"Gracie",
             //"Lil' Toadette",
             "Rover",
             // ]),
@@ -23,6 +23,7 @@ function CreateTitle() {
             "Theron",
             "Popples",
             "Doopu",
+            "Mac",
             Rand([
                 "Torgan",
                 "Serene",
