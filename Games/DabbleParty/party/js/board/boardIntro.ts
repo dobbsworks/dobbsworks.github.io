@@ -11,7 +11,7 @@ class BoardCutSceneIntro extends BoardCutSceneSingleAction {
             let diceSprites = board.players.map((p, i) => new DiceSprite(xs[i], -350, 10, false));
 
             cutsceneService.AddScene(
-                new BoardCutSceneSetBackdrop(tiles["spaceBoardBlur"][0][0]),
+                new BoardCutSceneSetBackdrop(board.blurTile),
                 new BoardCutSceneSingleAction(() => { BoardCutScene.sprites.push(...tokenSprites, ...diceSprites) }),
                 new BoardCutSceneFadeIn(),
                 new BoardCutSceneBoardLogo(),

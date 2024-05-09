@@ -579,7 +579,7 @@ var BoardCutSceneLast5Turns = /** @class */ (function (_super) {
             "Additionally, passing a golden gear space will now let you buy a pair of gears. And if you land on the space, you'll have the option to buy three!",
             "It's not over until it's over! Best of luck to all the players!"
         ];
-        cutsceneService.AddScene(new BoardCutSceneFadeOut(), new BoardCutSceneSetBackdrop(tiles["spaceBoardBlur"][0][0]), new BoardCutSceneFadeIn(), new BoardCutSceneDialog(texts.join("\\")), new BoardCutSceneFadeOut(), new BoardCutSceneSetBackdrop(null), new BoardCutSceneFadeIn());
+        cutsceneService.AddScene(new BoardCutSceneFadeOut(), new BoardCutSceneSetBackdrop(board.blurTile), new BoardCutSceneFadeIn(), new BoardCutSceneDialog(texts.join("\\")), new BoardCutSceneFadeOut(), new BoardCutSceneSetBackdrop(null), new BoardCutSceneFadeIn());
         this.isDone = true;
     };
     BoardCutSceneLast5Turns.prototype.GetPlacementText = function () {

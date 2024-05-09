@@ -9,6 +9,8 @@ abstract class BoardMap {
     abstract fanfare: string;
     latestCompletedMenuId = -1;
     backdropTile: ImageTile = tiles["bgBoard"][0][0];
+    blurTile: ImageTile = tiles["spaceBoardBlur"][0][0];
+
     currentRound = 1;
     finalRound = 15;
     boardSprites: Sprite[] = [];
@@ -532,6 +534,7 @@ class BoardMapIron extends BoardMap {
     fanfare = "ironIntro";
     introText = "Welcome to The Ironlands! This harsh and dangerous landscape is teeming with ancient secrets, terrifying beasts, and untold treasures.";
     backdropTile: ImageTile = tiles["bgBoard"][0][0];
+    blurTile: ImageTile = tiles["ironBoardBlur"][0][0];
     SetupBoardSpaces(): void {
         this.boardSprites = [
             new SimpleSprite(0, 0, tiles["boardIronTerrain"][0][0]),

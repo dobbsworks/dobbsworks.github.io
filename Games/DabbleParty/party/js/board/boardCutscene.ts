@@ -524,7 +524,7 @@ class BoardCutSceneLast5Turns extends BoardCutScene {
 
         cutsceneService.AddScene(
             new BoardCutSceneFadeOut(),
-            new BoardCutSceneSetBackdrop(tiles["spaceBoardBlur"][0][0]),
+            new BoardCutSceneSetBackdrop(board.blurTile),
             new BoardCutSceneFadeIn(),
             new BoardCutSceneDialog(texts.join("\\")),
             new BoardCutSceneFadeOut(),

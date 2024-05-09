@@ -17,6 +17,7 @@ var BoardMap = /** @class */ (function () {
         this.gameId = gameId;
         this.latestCompletedMenuId = -1;
         this.backdropTile = tiles["bgBoard"][0][0];
+        this.blurTile = tiles["spaceBoardBlur"][0][0];
         this.currentRound = 1;
         this.finalRound = 15;
         this.boardSprites = [];
@@ -466,6 +467,7 @@ var BoardMapIron = /** @class */ (function (_super) {
         _this.fanfare = "ironIntro";
         _this.introText = "Welcome to The Ironlands! This harsh and dangerous landscape is teeming with ancient secrets, terrifying beasts, and untold treasures.";
         _this.backdropTile = tiles["bgBoard"][0][0];
+        _this.blurTile = tiles["ironBoardBlur"][0][0];
         return _this;
     }
     BoardMapIron.prototype.SetupBoardSpaces = function () {
