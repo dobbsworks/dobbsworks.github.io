@@ -115,6 +115,8 @@ function Scene2() {
         new StaticImage(images.tree, 2, 300 - a * 250 + b * 1000, -200)
     ]));
 
+
+
     trees.sort((a, b) => a.baseY - b.baseY);
     terrain.push(...trees)
 
@@ -146,6 +148,13 @@ function Scene2() {
     })
     setTimeout(() => { camera.focus = dobbs; }, 45 * frames)
     setTimeout(() => { dobbs.Jump(); }, 210 * frames)
+
+    let statue = new StaticImage(images.perfection, 1, 2150, -60);
+    sprites.push(statue);
+    statue.Update = () => {
+        statue.x -= 2.5;
+        if (statue.x < -1000) statue.isActive = false;
+    }
 
     for (let coinIndex of [0, 1]) {
         setTimeout(() => {
@@ -213,6 +222,7 @@ function Scene3() {
     }, flyTime);
 
     setTimeout(Scene4, flyTime + 60 * frames);
+
 }
 
 // balloon
@@ -251,6 +261,9 @@ function Scene4() {
     SetInterp(flag, { x: -2400 }, 0, 400, "linear");
     sprites.push(flag)
 
+    let krobus = new StaticImage(images.krobus, 3, 2497, 235);
+    SetInterp(krobus, { x: -3600 }, 0, 600, "linear");
+    sprites.push(krobus)
 
 
     let balloon = new StaticImage(images.balloon, 6, -200, 0);
