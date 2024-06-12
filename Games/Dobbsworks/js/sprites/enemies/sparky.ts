@@ -7,6 +7,7 @@ class Sparky extends Enemy {
     dir: Direction = Direction.Right;
     anchor = null;
     killedByProjectiles = false;
+    immuneToSlideKill = true;
     timer = 0;
     pathingType: "wire" | "track" | null = null;
 

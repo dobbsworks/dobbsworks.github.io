@@ -86,13 +86,7 @@ var Angler = /** @class */ (function (_super) {
     Angler.prototype.GetFrameData = function (frameNum) {
         var frames = [1, 2, 3, 2, 1, 0];
         var frame = frames[Math.floor(frameNum / 5) % frames.length];
-        var ret = [{
-                imageTile: tiles["angler"][frame][0],
-                xFlip: this.direction == 1,
-                yFlip: false,
-                xOffset: 4,
-                yOffset: 4
-            }];
+        var ret = [];
         if (this.disguise) {
             if (Math.floor(this.revealTimer / 5) % 2 == 0) {
                 ret = [this.disguise];
@@ -106,6 +100,18 @@ var Angler = /** @class */ (function (_super) {
                 xOffset: 1.5,
                 yOffset: -9
             });
+        }
+        ret.push({
+            imageTile: tiles["angler"][frame][0],
+            xFlip: this.direction == 1,
+            yFlip: false,
+            xOffset: 4,
+            yOffset: 4
+        });
+        if (this.disguise) {
+            if (Math.floor(this.revealTimer / 5) % 2 == 0) {
+                ret = [this.disguise];
+            }
         }
         return ret;
     };

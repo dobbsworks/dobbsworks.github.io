@@ -93,6 +93,7 @@ var EditorHandler = /** @class */ (function () {
             new SlopeFill("Mountain", TileType.MountainGround),
             new SlopeFill("Haunt", TileType.HauntGround),
             new SlopeFill("Derelict", TileType.DerelictGround),
+            new SlopeFill("Cart", TileType.CartGround),
         ];
         var tileRowBlocks = [
             TileType.Dirt,
@@ -109,6 +110,7 @@ var EditorHandler = /** @class */ (function () {
             TileType.MountainGround,
             TileType.HauntGround,
             TileType.DerelictGround,
+            TileType.CartGround,
         ];
         var tilePanelButtons = [];
         var tooltips = ["Solid ground", "Solid ground", "Solid ground", "Semisolid", "Backdrop", "Ladder", "Deadly block", "Decor"];
@@ -135,18 +137,23 @@ var EditorHandler = /** @class */ (function () {
         }
         var tilePanel = this.CreateFloatingButtonPanel(tilePanelButtons, 5, 9);
         /* ENEMY PANEL */
-        var enemyTypes = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Wooly, WoolyBooly, Snail, SapphireSnail, RubySnail, Escarghost, Prickle, PrickleEgg, PrickleShell, PrickleRock, Skitter, DrSnips, AFish, Angler, Lurchin, Clammy, Pufferfish,
-            Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, SpicyJelly, Shrubbert, OrangeShrubbert, Vinedicator, GrayGrowth, SnowtemPole, Snoworm, BouncingSnowWorm, Sparky, Orbbit, Keplurk, Yufo, Blaster, Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, BaddleTrigger];
+        var enemyTypes = [Piggle, Hoggle, Biggle, PogoPiggle, PorcoRosso, PorcoBlu, Wooly, WoolyBooly,
+            Snail, SapphireSnail, RubySnail, Escarghost, Prickle, PrickleEgg, PrickleShell, PrickleRock, Skitter,
+            DrSnips, AFish, Angler, Lurchin, Clammy, Pufferfish, Grouper,
+            Snouter, PricklySnouter, BeeWithSunglasses, Bigby, Spurpider, ClimbingSpurpider, LittleJelly, ChillyJelly, SpicyJelly, JumboJelly,
+            Taptop, Shrubbert, OrangeShrubbert, Vinedicator, GrayGrowth, SnowtemPole, Snoworm, BouncingSnowWorm, KingSlush,
+            Sparky, Orbbit, Keplurk, Nimby, Yufo, BigYufo, Blaster,
+            Wallop, WallopPlatform, Wallopeño, BigWallop, BigWallopPlatform, Klobber, BaddleTrigger, Bernie, DabbleDragon, ElderDragon];
         var enemyButtons = enemyTypes.map(function (a) { return new EditorButtonSprite(a); });
         enemyButtons.filter(function (a) { return a.spriteType == Piggle || a.spriteType == Snail; }).forEach(function (a) { return hotbarDefaults.push(a); });
         var enemyPanel = this.CreateFloatingButtonPanel(enemyButtons, 5, 8);
         var gizmoTypes = [
-            BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform,
-            MushroomSpring, Baseball, SoccerBall, BowlingBall, Battery, Door, Fan, Key, FlatKey, BubbleKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
+            BouncePlatform, CloudPlatform, FloatingPlatform, RisingPlatform, ShakyPlatform, WeightedPlatform, MushroomPlatform, Splatform, FlipPlatform, SlowFlipPlatform,
+            MushroomSpring, Baseball, SoccerBall, BowlingBall, Battery, Door, ScaredyDoor, Minecart, Teacup, Fan, Key, FlatKey, BubbleKey, GuardedKey, Umbrella, SnailShell, SpringBox, Propeller, Saw, SmallSaw, RedCannon, BlueCannon, PurpleCannon, Ring, SpringRing, Rocket, Yoyo, RedBalloon, BlueBalloon, YellowBalloon,
             SpinRing, FragileSpinRing, PortalRing,
         ];
         var gizmoButtons = gizmoTypes.map(function (a) { return new EditorButtonSprite(a); });
-        var keyIndex = gizmoButtons.findIndex(function (a) { return a instanceof EditorButtonSprite && a.spriteType == BubbleKey; });
+        var keyIndex = gizmoButtons.findIndex(function (a) { return a instanceof EditorButtonSprite && a.spriteType == GuardedKey; });
         gizmoButtons.splice(keyIndex + 1, 0, new EditorButtonTile(TileType.Lock, "Lock block"));
         gizmoButtons.push(new EditorButtonTile(TileType.ConveyorLeft, "Conveyor (left)").AppendImage(tiles["editor"][0][2]));
         gizmoButtons.push(new EditorButtonTile(TileType.ConveyorRight, "Conveyor (right)").AppendImage(tiles["editor"][2][2]));
@@ -156,6 +163,8 @@ var EditorHandler = /** @class */ (function () {
         gizmoButtons.push(new EditorButtonTile(TileType.HangingConveyorRight, "Hanging Conveyor (right)"));
         gizmoButtons.push(new EditorButtonTile(TileType.Barrel, "Barrel"));
         gizmoButtons.push(new EditorButtonTile(TileType.SteelBarrel, "Steel Barrel"));
+        gizmoButtons.push(new EditorButtonSprite(EmptyBarrel));
+        gizmoButtons.push(new EditorButtonSprite(EmptySteelBarrel));
         gizmoButtons.push(new EditorButtonTile(TileType.Pumpkin, "Pumpkin"));
         gizmoButtons.push(new EditorButtonTile(TileType.BubbleBlock1, "Bubble block"));
         gizmoButtons.push(new EditorButtonTile(TileType.HangingVine, "Hanging vines"));
@@ -184,6 +193,8 @@ var EditorHandler = /** @class */ (function () {
         // gizmoButtons.push(new EditorButtonTile(TileType.WallWarpRight, "Warp Wall (right)"));
         gizmoButtons.push(new EditorButtonSprite(Doopster));
         gizmoButtons.push(new EditorButtonSprite(Dabbot));
+        gizmoButtons.push(new EditorButtonSprite(CrashingDragon));
+        gizmoButtons.push(new EditorButtonSprite(Drakkie));
         var gizmoPanel = this.CreateFloatingButtonPanel(gizmoButtons, 5, 8);
         var brushTypeHandle = new EditorButtonDrawerHandle(tiles["editor"][4][0], "Brush types", []);
         var brushButtons = [
@@ -219,6 +230,8 @@ var EditorHandler = /** @class */ (function () {
             new EditorButtonTile(TileType.PowerBlock, "Power source"),
             new EditorButtonTile(TileType.CircuitHurtOff, "Zappy wire"),
             new EditorButtonTile(TileType.CircuitHurtSolidOff, "Zappy block"),
+            new EditorButtonTile(TileType.FirePillarOff, "Fire pillar activator"),
+            new EditorButtonTile(TileType.DragonSwoopOff, "Dragon swoop activator"),
             //new EditorButtonTile(TileType.CircuitMusicOff, "Music block"),
             new EditorButtonSprite(Winch),
             new EditorButtonSprite(ReverseWinch),
@@ -294,6 +307,7 @@ var EditorHandler = /** @class */ (function () {
         this.playerButton = new EditorButtonSprite(Player);
         this.hoverPlayerButton = new EditorButtonSprite(HoverPlayer);
         this.horizontalWrapToggle = new EditorButtonToggle(tiles["editor"][0][9], "Toggle horizontal screen wrap", currentMap.hasHorizontalWrap, function (state) { currentMap.hasHorizontalWrap = state; });
+        this.lowGravityToggle = new EditorButtonToggle(tiles["editor"][3][10], "Toggle low gravity", currentMap.hasLowGravity, function (state) { currentMap.hasLowGravity = state; });
         var levelFlowPanel = this.CreateFloatingButtonPanel([
             this.playerButton,
             this.hoverPlayerButton,
@@ -317,6 +331,11 @@ var EditorHandler = /** @class */ (function () {
             //new EditorButtonSprite(CopperGear),
             //new EditorButtonSprite(IronGear),
             this.horizontalWrapToggle,
+            this.lowGravityToggle,
+            new EditorButtonSprite(SkyChangeTrigger),
+            new EditorButtonSprite(MusicFadeTrigger),
+            new EditorButtonSprite(MusicChangeTrigger),
+            new EditorButtonSprite(FirePillarTrigger),
         ], 4, 6);
         var levelFlowHandle = new EditorButtonDrawerHandle(tiles["editor"][5][3], "Level flow element", [levelFlowPanel]);
         var levelFlowHandlePanel = new Panel(mapSizePanel.x + 160, mapSizePanel.y, 70, 70);
@@ -404,9 +423,12 @@ var EditorHandler = /** @class */ (function () {
         var honeyBrush = new EditorButtonTile(TileType.Honey, "Honey");
         var honeyLeftBrush = new EditorButtonTile(TileType.HoneyLeft, "Honey wall (left)");
         var honeyRightBrush = new EditorButtonTile(TileType.HoneyRight, "Honey wall (right)");
+        var bouncySlimeBrush = new EditorButtonTile(TileType.BouncySlime, "Bouncy Slime");
+        var bouncyLeftBrush = new EditorButtonTile(TileType.BouncyLeft, "Bouncy slime (left)");
+        var bouncyRightBrush = new EditorButtonTile(TileType.BouncyRight, "Bouncy slime (right)");
         var ret = this.CreateFloatingButtonPanel([
             waterBrush, waterfallBrush, quickSandBrush, purpleWaterBrush, poisonGasBrush, bubbleButton,
-            lavaBrush, slimeBrush, honeyBrush, honeyLeftBrush, honeyRightBrush,
+            lavaBrush, slimeBrush, honeyBrush, honeyLeftBrush, honeyRightBrush, bouncySlimeBrush, bouncyLeftBrush, bouncyRightBrush,
             new EditorButtonTile(TileType.InitialWaterLevel, "Initial water level"),
             new EditorButtonTile(TileType.InitialPurpleWaterLevel, "Initial poison water level"),
             new EditorButtonTile(TileType.InitialLavaLevel, "Initial lava level"),
@@ -451,6 +473,7 @@ var EditorHandler = /** @class */ (function () {
         camera.Reset();
     };
     EditorHandler.prototype.SwitchToPlayMode = function () {
+        Random.Reset();
         this.playerFrames = [];
         if (this.isMinimizedMode)
             this.ToggleMinimizeMode();

@@ -9,6 +9,8 @@ abstract class BoardMap {
     abstract fanfare: string;
     latestCompletedMenuId = -1;
     backdropTile: ImageTile = tiles["bgBoard"][0][0];
+    blurTile: ImageTile = tiles["spaceBoardBlur"][0][0];
+
     currentRound = 1;
     finalRound = 15;
     boardSprites: Sprite[] = [];
@@ -532,6 +534,7 @@ class BoardMapIron extends BoardMap {
     fanfare = "ironIntro";
     introText = "Welcome to The Ironlands! This harsh and dangerous landscape is teeming with ancient secrets, terrifying beasts, and untold treasures.";
     backdropTile: ImageTile = tiles["bgBoard"][0][0];
+    blurTile: ImageTile = tiles["ironBoardBlur"][0][0];
     SetupBoardSpaces(): void {
         this.boardSprites = [
             new SimpleSprite(0, 0, tiles["boardIronTerrain"][0][0]),
@@ -544,71 +547,70 @@ class BoardMapIron extends BoardMap {
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 410, 488, "first"),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 351, 533).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 275, 538).ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, 194, 510).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.RedBoardSpace, 194, 510).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 116, 474).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 57, 412).ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, 57, 329, "A").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.ShopSpace, 57, 329, "A").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 50, 265, "B").ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, 2, 218, "C").ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -73, 216, "D").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.MolscSpace, 2, 218, "C").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.MolscSpace, -73, 216, "D").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -154, 258, "E").ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -185, 334, "F").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.RedBoardSpace, -185, 334, "F").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -187, 405).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -206, 500).ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -287, 555).ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -384, 559).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.TwitchSpace, -287, 555).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.DiceUpgradeSpace, -384, 559).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -474, 526).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -521, 457).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -521, 375).ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -467, 303).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.RedBoardSpace, -467, 303).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -389, 251).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -306, 254, "G").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -204, 228, "H").ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -159, 154, "I").ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -164, 92, "J").ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -211, 47, "K").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.MolscSpace, -159, 154, "I").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.MolscSpace, -164, 92, "J").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.DiceUpgradeSpace, -211, 47, "K").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -301, 38, "L").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -377, 40).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -457, 7).ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -500, -62).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.RedBoardSpace, -500, -62).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -488, -130).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -434, -199).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -365, -237).ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -270, -239).ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -199, -197).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.DiceUpgradeSpace, -270, -239).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.RedBoardSpace, -199, -197).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -161, -128).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, -183, -52, "M").ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -154, 9, "N").ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -100, 38, "O").ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, -14, 31, "P").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.ShopSpace, -154, 9, "N").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.MolscSpace, -100, 38, "O").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.MolscSpace, -14, 31, "P").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 81, 12, "Q").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 119, -71, "R").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 142, -140).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 197, -197).ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, 287, -216).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.RedBoardSpace, 287, -216).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 382, -197).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 448, -140).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 472, -66).ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, 457, 17).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.RedBoardSpace, 457, 17).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 393, 73).ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, 299, 78).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.WallopSpace, 299, 78).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 187, 52, "S").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 104, 64, "T").ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, 78, 119, "U").ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, 76, 183, "V").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.MolscSpace, 78, 119, "U").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.MolscSpace, 76, 183, "V").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 102, 239, "W").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 171, 258, "X").ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 263, 251).ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, 341, 268).ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.RedBoardSpace, 341, 268).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 403, 308).ConnectFromPrevious(),
             new BoardSpace(BoardSpaceType.BlueBoardSpace, 431, 360).ConnectFromPrevious(),
-            new BoardSpace(BoardSpaceType.BlueBoardSpace, 436, 424, "last").ConnectFromPrevious(),
+            new BoardSpace(BoardSpaceType.TwitchSpace, 436, 424, "last").ConnectFromPrevious(),
         ];
 
-        // ["2", "16", "29", "38", "48", "59", "66"].forEach(a => {
-        //     let space = this.boardSpaces.find(x => x.label == a);
-        //     if (space) space.isPotentialGearSpace = true;
-        // });
+        [2, 7, 12, 17, 27, 32, 42, 47].forEach(a => {
+            this.boardSpaces[a].isPotentialGearSpace = true;
+        })
 
         BoardSpace.ConnectLabels("last", "first");
         BoardSpace.ConnectLabels("A", "X");
@@ -616,10 +618,10 @@ class BoardMapIron extends BoardMap {
         BoardSpace.ConnectLabels("M", "L");
         BoardSpace.ConnectLabels("S", "R");
         
-        BoardSpace.ConnectLabels("V", "C");
-        BoardSpace.ConnectLabels("D", "I");
-        BoardSpace.ConnectLabels("J", "O");
-        BoardSpace.ConnectLabels("P", "U");
+        // BoardSpace.ConnectLabels("V", "C");
+        // BoardSpace.ConnectLabels("D", "I");
+        // BoardSpace.ConnectLabels("J", "O");
+        // BoardSpace.ConnectLabels("P", "U");
 
         // BoardSpace.ConnectLabels("10", "45");
         // BoardSpace.ConnectLabels("52", "22");

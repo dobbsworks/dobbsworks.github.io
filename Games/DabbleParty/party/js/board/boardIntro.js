@@ -30,7 +30,7 @@ var BoardCutSceneIntro = /** @class */ (function (_super) {
             var xs = GetEndOfGameTokenLocations();
             var tokenSprites = board.players.map(function (p, i) { return new SimpleSprite(xs[i], 380, tiles["boardTokens"][p.avatarIndex][0]).Scale(0.5); });
             var diceSprites = board.players.map(function (p, i) { return new DiceSprite(xs[i], -350, 10, false); });
-            cutsceneService.AddScene(new BoardCutSceneSetBackdrop(tiles["spaceBoardBlur"][0][0]), new BoardCutSceneSingleAction(function () {
+            cutsceneService.AddScene(new BoardCutSceneSetBackdrop(board.blurTile), new BoardCutSceneSingleAction(function () {
                 var _a;
                 (_a = BoardCutScene.sprites).push.apply(_a, __spreadArrays(tokenSprites, diceSprites));
             }), new BoardCutSceneFadeIn(), new BoardCutSceneBoardLogo(), new BoardCutSceneDialog(board.introText + " First, let's decide who goes first."), new BoardCutSceneDecideOrder(), new BoardCutSceneFadeOut(), new BoardCutSceneSetBackdrop(null), new BoardCutSceneFadeIn(), new BoardCutSceneMoveGear(true));

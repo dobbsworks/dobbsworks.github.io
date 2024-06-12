@@ -110,13 +110,12 @@ class RollingBarrel extends Sprite {
 }
 
 class BreakingBarrel extends Sprite {
-
     public height: number = 12;
     public width: number = 12;
     respectsSolidTiles = false;
     canBeHeld = false;
-
     frame = 0;
+    frameRow = 1;
 
     Update(): void { 
         this.frame = Math.floor(this.age / 10);
@@ -125,14 +124,16 @@ class BreakingBarrel extends Sprite {
     
     GetFrameData(frameNum: number): FrameData {
         return {
-            imageTile: tiles["barrel"][this.frame + 4][1],
+            imageTile: tiles["barrel"][this.frame + 4][this.frameRow],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
             yOffset: 0
         };
     }
-
+}
+class BreakingSteelBarrel extends BreakingBarrel {
+    frameRow = 3;
 }
 
 class SteelBarrel extends Barrel {
@@ -154,4 +155,72 @@ class RollingSteelBarrel extends RollingBarrel {
     OnPickup(): Sprite { 
         return this.ReplaceWithSpriteType(SteelBarrel);
     }
+}
+
+class EmptyBarrel extends Sprite {
+
+    public height: number = 12;
+    public width: number = 12;
+    respectsSolidTiles = true;
+    canBeHeld = true;
+    blocksDamage = true;
+    holdRatio = 0; // 0 held high, 1 held over player
+    frameCol = 0;
+    blockType: HeldDamageBlockType = HeldDamageBlockType.Iframe;
+    breakSprite = BreakingBarrel;
+
+    Update(): void {
+        this.ApplyGravity();
+        this.ApplyInertia();
+        this.ReactToWater();
+        this.ReactToPlatformsAndSolids();
+        this.MoveByVelocity();
+
+        if (player) {
+            if (player.heldItem == this) {
+                if (player.isOnGround) {
+                    if (KeyboardHandler.IsKeyPressed(KeyAction.Down, false)) {
+                        this.holdRatio = Utility.Approach(this.holdRatio, 1.0, 0.1);
+                    } else if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false)) {
+                        this.holdRatio = Utility.Approach(this.holdRatio, 0.0, 0.1);
+                    } else {
+                        this.holdRatio = Utility.Approach(this.holdRatio, 0.8, 0.1);
+                    }
+                } else {
+                    this.holdRatio = Utility.Approach(this.holdRatio, 0.8, 0.1);
+                }
+                if (this.holdRatio > 0.5) player.dx *= 0.9;
+            } else {
+                this.holdRatio = 0;
+            }
+        } else {
+            this.holdRatio = 0;
+        }
+
+    }
+
+    OnHolderTakeDamage(): HeldDamageBlockType {
+        if (this.holdRatio == 1) {
+            return HeldDamageBlockType.Invincible;
+        } else if (this.holdRatio > 0.5) {
+            this.ReplaceWithSpriteType(this.breakSprite);
+            return HeldDamageBlockType.Iframe;
+        }
+        return HeldDamageBlockType.Vulnerable;
+    }
+
+    GetFrameData(frameNum: number): FrameData {
+        return {
+            imageTile: tiles["barrel"][this.frameCol][4],
+            xFlip: false,
+            yFlip: false,
+            xOffset: 0,
+            yOffset: this.holdRatio * -9
+        };
+    }
+}
+
+class EmptySteelBarrel extends EmptyBarrel {
+    frameCol = 1;
+    breakSprite = BreakingSteelBarrel;
 }

@@ -7,6 +7,7 @@ class Blaster extends Enemy {
     isPlatform = true;
     canStandOn = true;
     killedByProjectiles = false;
+    immuneToSlideKill = true;
 
     timer = 0;
     stateNum = 0;

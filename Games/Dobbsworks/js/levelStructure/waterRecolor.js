@@ -98,8 +98,6 @@ var WaterRecolor = /** @class */ (function () {
                     }
                 }
             }
-            if (debugMode)
-                document.body.appendChild(tempCanvas);
             targetImage.width = tempCanvas.width;
             targetImage.height = tempCanvas.height;
             targetImage.src = tempCanvas.toDataURL();

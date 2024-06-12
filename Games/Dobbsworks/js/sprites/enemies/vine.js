@@ -28,6 +28,7 @@ var Vinedicator = /** @class */ (function (_super) {
         _this.respectsSolidTiles = true;
         _this.canBeBouncedOn = false;
         _this.killedByProjectiles = false;
+        _this.immuneToSlideKill = true;
         _this.canSpinBounceOn = true;
         _this.hitTimer = 0;
         _this.shootTimer = 0;
@@ -140,6 +141,7 @@ var VineProjectile = /** @class */ (function (_super) {
         _this.width = 4;
         _this.respectsSolidTiles = true;
         _this.killedByProjectiles = false;
+        _this.immuneToSlideKill = true;
         _this.canBeBouncedOn = true;
         _this.colOffset = 0;
         return _this;

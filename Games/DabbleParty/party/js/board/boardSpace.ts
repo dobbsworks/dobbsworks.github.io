@@ -60,9 +60,11 @@ class BoardSpace {
 
     Draw(camera: Camera): void {
         this.spaceType.getImageTile().Draw(camera, this.gameX, this.gameY, 0.2, 0.2, false, false, 0, 1);
-        // let coord1 = camera.GameCoordToCanvas(this.gameX, this.gameY);
-        // camera.ctx.font = `200 ${10}px ${"arial"}`;
-        // camera.ctx.fillText(this.label, coord1.canvasX, coord1.canvasY);
+        if (playmode == PlayMode.none) {
+            let coord1 = camera.GameCoordToCanvas(this.gameX, this.gameY);
+            camera.ctx.font = `200 ${10}px ${"arial"}`;
+            camera.ctx.fillText(this.label, coord1.canvasX, coord1.canvasY);
+        }
     }
 
     DrawConnections(camera: Camera): void {
@@ -205,4 +207,11 @@ class BoardSpaceType {
             player.isInShop = true;
             if (board) board.boardUI.currentMenu = BoardMenu.CreateWarpPointMenu("warp1");
         });
+    static MolscSpace = new BoardSpaceType(
+        () => tiles["partySquares"][1][4],
+        true,
+        (player: Player) => {
+            if (board) cutsceneService.AddScene(new BoardCutSceneMolscRoll());
+        },
+        BoardSpaceType.DoNothing);
 }

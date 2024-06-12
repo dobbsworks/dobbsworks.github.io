@@ -123,6 +123,7 @@ class Player extends Sprite {
     }
 
     PlayerMovement(): void {
+
         if (this.yoyoTimer > 0) {
             this.yoyoTimer--;
             return;
@@ -186,6 +187,17 @@ class Player extends Sprite {
             }
         }
 
+        // jumbo jelly
+        var jellyContainer: JumboJelly | null = null;
+        let jellies = <JumboJelly[]>this.layer.sprites.filter(a => a instanceof JumboJelly)
+        if (jellies.length > 0) {
+            jellyContainer = jellies.find(a => a.Overlaps(this)) ?? null;
+            if (jellyContainer) {
+                this.isInWater = true;
+                isLosingBreath = true;
+            }
+        }
+
 
         if (this.isInWater && !wasInWater) {
             if ((waterTileAtFoot?.isSwimmable) || (globalWaterHeight !== -1 && globalWaterHeight < this.yBottom)) {
@@ -206,11 +218,16 @@ class Player extends Sprite {
             this.floatFramesLeftForThisJump = 0;
         }
         this.coyoteTimer++;
-
         let isJumpHeld = KeyboardHandler.IsKeyPressed(KeyAction.Action1, false);
         if (this.jumpTimer > -1) {
             if (this.windDy > 0) this.jumpTimer += this.windDy;
-            if (isJumpHeld || this.forcedJumpTimer > 0) this.jumpTimer++;
+            if (isJumpHeld || this.forcedJumpTimer > 0) {
+                if (currentMap.hasLowGravity) {
+                    this.jumpTimer += 0.5;
+                } else {
+                    this.jumpTimer++;
+                }
+            }
             if (!isJumpHeld && this.forcedJumpTimer <= 0) {
                 this.jumpTimer = -1;
                 if (this.dy < -1) this.dy = -1;
@@ -272,9 +289,11 @@ class Player extends Sprite {
             this.isSliding = false;
         }
 
-        if ((this.isInWater && (!waterLayerAtMid.isSwimmable && globalWaterHeight > this.yMid) && !currentMap.playerWaterMode)) {
+        if ((this.isInWater && (!waterLayerAtMid.isSwimmable && globalWaterHeight > this.yMid) && !currentMap.playerWaterMode) && (jellyContainer == null || jellyContainer.y > this.yMid)) {
             // break through water surface
-            if (isJumpHeld && this.dy < 0) this.dy = -1.3;
+            if (isJumpHeld && this.dy < 0) {
+                this.dy = -1.3;
+            }
             else if (this.dy < 0) this.dy = 0;
         }
 
@@ -282,6 +301,19 @@ class Player extends Sprite {
         let downPressed = KeyboardHandler.IsKeyPressed(KeyAction.Down, false) && !(this.neutralTimer > 0);
         let leftPressed = KeyboardHandler.IsKeyPressed(KeyAction.Left, false) && !(this.neutralTimer > 0);
         let rightPressed = KeyboardHandler.IsKeyPressed(KeyAction.Right, false) && !(this.neutralTimer > 0);
+
+        if (upPressed) Random.Bump(1);
+        if (downPressed) Random.Bump(2);
+        if (leftPressed) Random.Bump(3);
+        if (rightPressed) Random.Bump(4);
+        if (isJumpHeld) Random.Bump(5);
+
+        if (this.parentSprite && this.parentSprite instanceof Rideable) {
+            upPressed = false;
+            downPressed = false;
+            leftPressed = false;
+            rightPressed = false;
+        }
 
         if (leftPressed && this.dx > 0) this.isSliding = false;
         if (rightPressed && this.dx < 0) this.isSliding = false;
@@ -488,6 +520,11 @@ class Player extends Sprite {
         // very similar to Bounce()
         // if (this.jumpBufferTimer > 0) console.log("BUFFER JUMP", this.jumpBufferTimer);
         // if (this.coyoteTimer > 0) console.log("COYOTE TIME", this.coyoteTimer);
+        if (this.parentSprite && this.parentSprite instanceof Rideable) {
+            var canJump = this.parentSprite.OnTryJump(this);
+            if (!canJump) return;
+        }
+
         this.jumpBufferTimer = -1;
         this.coyoteTimer = 999999;
         this.dy = (Math.abs(this.dx) > 0.3 || this.isSpinJumping) ? -1.5 : -1.2;
@@ -515,6 +552,10 @@ class Player extends Sprite {
         }
         if (this.heldItem?.canHangFrom) {
             this.heldItem.framesSinceThrown = 1;
+            if (this.heldItem instanceof SpringRingHandle) {
+                //this.dxFromPlatform = this.heldItem.dx;
+                if (this.heldItem.dy < 0) this.dyFromPlatform = this.heldItem.dy * 2;
+            }
             this.heldItem = null;
             this.dy = -1.5;
         }
@@ -561,7 +602,7 @@ class Player extends Sprite {
         this.dy = -1.5;
         this.jumpTimer = 0;
         this.isClimbing = false;
-        this.parentSprite = null;
+        if (!(this.parentSprite instanceof Rideable)) this.parentSprite = null;
         this.RefreshFloatTimer();
     }
 
@@ -597,8 +638,8 @@ class Player extends Sprite {
 
     PushByAutoscroll(): void {
         if (camera.isAutoscrollingHorizontally) {
-            if (this.x < camera.GetLeftCameraEdge() && this.dx < camera.autoscrollX) this.dx = camera.autoscrollX
-            if (this.xRight > camera.GetRightCameraEdge() && this.dx > camera.autoscrollX) this.dx = camera.autoscrollX
+            if (this.x <= camera.GetLeftCameraEdge() && this.dx <= camera.autoscrollX) this.dx = camera.autoscrollX
+            if (this.xRight >= camera.GetRightCameraEdge() && this.dx >= camera.autoscrollX) this.dx = camera.autoscrollX
         }
     }
 
@@ -617,12 +658,12 @@ class Player extends Sprite {
 
         if (camera.isAutoscrollingHorizontally || (camera.isAutoscrollingVertically && !currentMap.hasHorizontalWrap)) {
             let leftEdge = camera.GetLeftCameraEdge();
-            if (this.x < leftEdge) {
+            if (this.x <= leftEdge) {
                 if (this.isTouchingRightWall && camera.autoscrollX > 0) this.OnPlayerDead(false);
                 else this.x = leftEdge;
             }
             let rightEdge = camera.GetRightCameraEdge();
-            if (this.xRight > rightEdge) {
+            if (this.xRight >= rightEdge) {
                 if (this.isTouchingLeftWall && camera.autoscrollX < 0) this.OnPlayerDead(false);
                 else this.x = rightEdge - this.width;
             }
@@ -645,6 +686,10 @@ class Player extends Sprite {
     }
 
     HandleEnemies(): void {
+        var rideSprite = this.parentSprite;
+        if (!(rideSprite instanceof Rideable)) rideSprite = null;
+        var isRidingEnemyKiller = rideSprite && rideSprite instanceof Minecart && Math.abs(rideSprite.dx) > 1;
+
         let sprites = this.layer.sprites;
         for (let sprite of sprites) {
             let isHorizontalOverlap = this.xRight > sprite.x && this.x < sprite.xRight;
@@ -675,7 +720,11 @@ class Player extends Sprite {
                         sprite.OnBounce();
                     }
                     sprite.SharedOnBounce(); //enemy-specific method
-                } else if (landingOnTop && sprite.canSpinBounceOn && this.isSpinJumping) {
+                    if (rideSprite) {
+                        this.dy = -2;
+                        rideSprite.dy = this.dy;
+                    }
+                } else if (landingOnTop && sprite.canSpinBounceOn && (this.isSpinJumping || rideSprite)) {
                     this.Bounce();
                     audioHandler.PlaySound("spinBounce", true);
 
@@ -684,9 +733,13 @@ class Player extends Sprite {
                     particle.y = this.yBottom - particle.height / 2;
                     this.layer.sprites.push(particle);
 
+                    if (rideSprite) {
+                        this.dy = -2;
+                        rideSprite.dy = this.dy;
+                    }
                 } else if (sprite.canStandOn && currentlyAbove && isHorizontalOverlap) {
                 } else if (!sprite.isInDeathAnimation && this.xRight > sprite.x && this.x < sprite.xRight && this.yBottom > sprite.y && this.y < sprite.yBottom) {
-                    if (this.isSliding && sprite.killedByProjectiles) {
+                    if ((this.isSliding || isRidingEnemyKiller) && !sprite.immuneToSlideKill) {
                         sprite.isActive = false;
                         let deadSprite = new DeadEnemy(sprite);
                         this.layer.sprites.push(deadSprite);
@@ -768,7 +821,23 @@ class Player extends Sprite {
     }
 
     OnPlayerHurt(): void {
-        if (this.heldItem && this.heldItem instanceof GoldHeart) return;
+        if (this.heldItem) {
+            let takeDamage = this.heldItem.OnHolderTakeDamage();
+            if (takeDamage == HeldDamageBlockType.Invincible) return;
+            if (takeDamage == HeldDamageBlockType.Iframe) {
+                this.ActivateIFrames();
+                return;
+            }
+        }
+
+        if (this.parentSprite && this.parentSprite instanceof Rideable) {
+            let takeDamage = this.parentSprite.OnRiderTakeDamage();
+            if (!takeDamage) {
+                this.ActivateIFrames();
+                return;
+            }
+        }
+
         if (this.iFrames == 0) {
             let nextHeart = this.layer.sprites.find(a => a instanceof ExtraHitHeartSmall && a.parent == this);
             if (nextHeart) {
@@ -905,8 +974,10 @@ class Player extends Sprite {
                     let isYOverlap = Math.abs(spriteYBottom - myY) < 2.5;
                     if (isXOverlap && isYOverlap) {
                         this.heldItem = sprite;
+                        sprite.OnPickup();
                         startedHolding = true;
                         audioHandler.PlaySound("pick-up", true);
+
                         break;
                     }
                 }
@@ -990,7 +1061,7 @@ class Player extends Sprite {
                     if (this.heldItem) {
                         let xDistanceFromTarget = Math.abs(this.heldItem.xMid - this.width / 2 - this.x);
                         let yDistanceFromTarget = Math.abs(this.heldItem.yBottom - this.y);
-                        if (xDistanceFromTarget > 2 || yDistanceFromTarget > 2) {
+                        if (xDistanceFromTarget > this.heldItem.maxHoldDistance || yDistanceFromTarget > this.heldItem.maxHoldDistance) {
                             this.heldItem.framesSinceThrown = 1;
                             this.heldItem = null;
 
@@ -1140,6 +1211,8 @@ class Player extends Sprite {
     }
 
     OnAfterDraw(camera: Camera): void {
+        if (this.heldItem) this.heldItem.Draw(camera, currentMap.frameNum)
+
         let ctx = camera.ctx;
         if (this.currentBreath < this.maxBreath) {
             let x = (this.x - camera.x - 3) * camera.scale + camera.canvas.width / 2;

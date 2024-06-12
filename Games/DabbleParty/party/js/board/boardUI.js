@@ -179,7 +179,7 @@ var BoardUI = /** @class */ (function () {
                 }
             }
         }
-        if (this.dice.length > 0 && this.dice.every(function (a) { return a.IsDoneAnimating(); })) {
+        if (this.dice.length > 0 && this.dice.every(function (a) { return a.IsDoneAnimating(); }) && cutsceneService.cutscenes.length == 0) {
             if (this.combineTimer == 0)
                 this.dice.forEach(function (a) { return a.HideDie(); });
             var moveScale = [1.05, 1.03, 1.01, 0.99, 0.98, 0.95][this.combineTimer] || 0.9;

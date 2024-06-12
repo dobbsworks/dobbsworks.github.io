@@ -121,6 +121,7 @@ var PrickleRock = /** @class */ (function (_super) {
         _this.canBeBouncedOn = false;
         _this.initialized = false;
         _this.killedByProjectiles = false;
+        _this.immuneToSlideKill = true;
         _this.canSpinBounceOn = true;
         return _this;
     }

@@ -24,6 +24,7 @@ var Blaster = /** @class */ (function (_super) {
         _this.isPlatform = true;
         _this.canStandOn = true;
         _this.killedByProjectiles = false;
+        _this.immuneToSlideKill = true;
         _this.timer = 0;
         _this.stateNum = 0;
         return _this;

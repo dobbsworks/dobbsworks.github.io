@@ -5,6 +5,7 @@ class Wallop extends Enemy {
     public width: number = 12;
     respectsSolidTiles = true;
     killedByProjectiles = false;
+    immuneToSlideKill = true;
     canBeBouncedOn = false;
     canSpinBounceOn = true;
     isSolidBox = true;
@@ -193,6 +194,8 @@ class BigWallop extends Wallop {
     peripheryActiveDistance = 36;
     watchDirections: Direction[] = [Direction.Down];
     collideSound = "bigcrash";
+    imageSource = "bigWallop"
+    showArrows = true;
     public static get clockwiseRotationSprite(): (SpriteType | null) { return BigWallopSlider; }
 
     OnSlam(dir: Direction): void {
@@ -236,7 +239,7 @@ class BigWallop extends Wallop {
         
         let ret: FrameData[] = [];
 
-        if (editorHandler.isInEditMode) {
+        if (editorHandler.isInEditMode && this.showArrows) {
             if (this.watchDirections.indexOf(Direction.Down) > -1) {
                 ret.push({ imageTile: tiles["editor"][3][9], xFlip: false, yFlip: false, xOffset: -12, yOffset: 12 });
                 ret.push({ imageTile: tiles["editor"][4][9], xFlip: false, yFlip: false, xOffset: -12, yOffset: -36 });
@@ -248,7 +251,7 @@ class BigWallop extends Wallop {
         }
 
         ret.push({
-            imageTile: tiles["bigWallop"][col][this.frameRow],
+            imageTile: tiles[this.imageSource][col][this.frameRow],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
@@ -405,4 +408,16 @@ class Wallopeño extends Enemy {
             yOffset: yOffset + Math.sin(this.stareTimer / this.maxStareTimer * (Math.PI)) * 5
         };
     }
+}
+
+
+class Klobber extends BigWallop {
+    width = 72;
+    height = 72;
+    maxSpeed = 1.0;
+    accel = 0.1;
+    imageSource = "biggerWallop"
+    public static get clockwiseRotationSprite(): (SpriteType | null) { return null; }
+    showArrows = false;
+    watchDirections: Direction[] = [Direction.Left, Direction.Right];
 }

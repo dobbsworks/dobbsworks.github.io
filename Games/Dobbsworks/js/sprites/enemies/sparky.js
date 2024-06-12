@@ -22,6 +22,7 @@ var Sparky = /** @class */ (function (_super) {
         _this.dir = Direction.Right;
         _this.anchor = null;
         _this.killedByProjectiles = false;
+        _this.immuneToSlideKill = true;
         _this.timer = 0;
         _this.pathingType = null;
         return _this;

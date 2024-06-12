@@ -54,12 +54,20 @@ function Initialize() {
         // live site, let's go!
         isLoggedIn = true;
     }
-    //cutsceneService.AddScene(new CutscenePreTitle());
+    cutsceneService.AddScene(new CutscenePreTitle());
     //currentMinigame = new MinigameRigged();
     // TEMP
-    var boardType = boards[1];
-    board = new boardType(-1);
-    board.Initialize();
+    // playmode = PlayMode.playinghost;
+    // let data = `{"boardId":0,"currentRound":2,"finalRound":10,"currentPlayerIndex":-1,"players":[{"gears":0,"coins":5,"turnOrder":1,"avatarIndex":2,"spaceIndex":0,"items":[1],"userId":8,"userName":"","diceBag":[6,6]}],"currentMinigameIndex":-1,"gearSpaceId":0}`;
+    // let boardType = boards[1];
+    // board = new boardType(-1);
+    // // let player = new Player(1);
+    // // player.token = new BoardToken(player);
+    // // player.token.currentSpace = board.GetStartingSpace();
+    // // player.diceBag = new DiceBag([6, 6])
+    // // board.players = [player];
+    // board.Initialize();
+    // board.FromData(JSON.parse(data));
 }
 function PostgameCleanup() {
     board = null;

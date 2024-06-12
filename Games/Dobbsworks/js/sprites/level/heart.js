@@ -183,6 +183,9 @@ var GoldHeart = /** @class */ (function (_super) {
             }
         }
     };
+    GoldHeart.prototype.OnHolderTakeDamage = function () {
+        return HeldDamageBlockType.Invincible; // no, holder takes no damage
+    };
     GoldHeart.prototype.GetFrameData = function (frameNum) {
         if (this.isBroken && Math.floor(frameNum / 4) % 2 == 0 && this.brokenTimer < 60) {
             return {

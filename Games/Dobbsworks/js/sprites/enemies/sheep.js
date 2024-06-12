@@ -57,22 +57,12 @@ var WoolyBooly = /** @class */ (function (_super) {
         else {
             if (this.state == BoolyState.Patrol) {
                 this.GroundPatrol(0.3, this.turnAtLedges);
-                if (player) {
-                    var isPlayerInLineOfSightVertically = player.yBottom <= this.yBottom + 12 &&
-                        player.yBottom >= this.yBottom - 12;
-                    var numberOfTilesVision = 10;
-                    var isPlayerInLineOfSightHorizontally = this.direction == -1 ?
-                        (player.xMid >= this.xMid - 12 * numberOfTilesVision &&
-                            player.xMid <= this.xMid) :
-                        (player.xMid <= this.xMid + 12 * numberOfTilesVision &&
-                            player.xMid >= this.xMid);
-                    if (isPlayerInLineOfSightVertically && isPlayerInLineOfSightHorizontally) {
-                        this.state = BoolyState.WindUp;
-                        audioHandler.PlaySound("baa", false);
-                        this.windupTimer = 0;
-                        this.dx = 0;
-                        this.direction = (player.xMid < this.xMid ? -1 : 1);
-                    }
+                if (this.IsPlayerInLineOfSight()) {
+                    this.state = BoolyState.WindUp;
+                    audioHandler.PlaySound("baa", false);
+                    this.windupTimer = 0;
+                    this.dx = 0;
+                    this.direction = (player.xMid < this.xMid ? -1 : 1);
                 }
             }
             else if (this.state == BoolyState.WindUp) {

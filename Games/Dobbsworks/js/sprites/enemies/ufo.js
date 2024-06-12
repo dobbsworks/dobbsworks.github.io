@@ -139,6 +139,7 @@ var YufoLaser = /** @class */ (function (_super) {
         _this.respectsSolidTiles = true;
         _this.canBeBouncedOn = false;
         _this.killedByProjectiles = false;
+        _this.immuneToSlideKill = true;
         return _this;
     }
     YufoLaser.prototype.Update = function () {

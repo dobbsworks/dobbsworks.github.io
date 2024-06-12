@@ -53,3 +53,44 @@ class Pow extends Sprite {
 class Twinkle extends Pow {
     imageName = "twinkle";
 }
+
+class BaseParticle extends Sprite {
+    public height: number = 0;
+    public width: number  = 0;
+    public respectsSolidTiles: boolean = false;
+    isExemptFromSilhoutte = true;
+
+    imageName = "pow";
+    animationSpeed = 1; // frames per imageTile, should be >= 1
+
+    Update(): void {
+        if (this.height == 0) {
+            let imageTile: ImageTile = tiles[this.imageName][0][0];
+            this.width = imageTile.width;
+            this.height = imageTile.height;
+            this.x -= this.width / 2;
+            this.y -= this.height / 2;
+        }
+
+        if (this.age >= this.animationSpeed * Object.values(tiles[this.imageName]).length) this.isActive = false;
+        this.MoveByVelocity();
+    }
+    
+
+    GetFrameData(frameNum: number): FrameData {
+        if (this.height == 0) this.Update();
+        let frame = Math.floor(this.age / this.animationSpeed) % Object.values(tiles[this.imageName]).length;
+        return {
+            imageTile: tiles[this.imageName][frame][0],
+            xFlip: false,
+            yFlip: false,
+            xOffset: 0,
+            yOffset: 0
+        };
+    }
+}
+
+class CloudBit extends BaseParticle {
+    imageName = "cloudBits";
+    animationSpeed = 8;
+}

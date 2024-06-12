@@ -30,6 +30,7 @@ var BigYufo = /** @class */ (function (_super) {
         _this.isPlatform = true;
         _this.canStandOn = true;
         _this.killedByProjectiles = false;
+        _this.immuneToSlideKill = true;
         _this.zIndex = 1;
         _this.tractorTiles = 8;
         return _this;

@@ -279,6 +279,7 @@ var LevelLayer = /** @class */ (function () {
             if (sprite instanceof Enemy) {
                 sprite.EnemyUpdate();
             }
+            sprite.OnAfterUpdate();
         }
         this.sprites = this.sprites.filter(function (a) { return a.isActive; });
         if ((_a = this.map) === null || _a === void 0 ? void 0 : _a.hasHorizontalWrap) {
@@ -383,6 +384,10 @@ var LevelLayer = /** @class */ (function () {
             var sprite = orderedSprites_1[_i];
             sprite.Draw(camera, frameNum);
         }
+        for (var _a = 0, orderedSprites_2 = orderedSprites; _a < orderedSprites_2.length; _a++) {
+            var sprite = orderedSprites_2[_a];
+            sprite.OnAfterAllSpritesDraw(camera, frameNum);
+        }
     };
     LevelLayer.prototype.DrawFrame = function (frameData, scale, sprite) {
         var ctx = camera.ctx;
@@ -399,7 +404,6 @@ var LevelLayer = /** @class */ (function () {
         if (!ctx)
             return;
         var imgTile = frameData.imageTile;
-        //if (sprite.isInTractorBeam) frameData.yFlip = !frameData.yFlip;
         var xFlip = frameData.xFlip;
         if (SeasonalService.GetEvent() == SeasonalEvent.AprilFools)
             xFlip = !xFlip;

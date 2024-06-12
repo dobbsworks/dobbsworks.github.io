@@ -62,7 +62,7 @@ var BackgroundLayer = /** @class */ (function () {
         var tileIndex = Math.floor(frameNum / 5) % this.imageTiles.length;
         for (var destX = initialX; destX < camera.canvas.width; destX += dx) {
             for (var destY = initialY; destY < camera.canvas.height && destY + Math.abs(dy) >= 0; destY += dy) {
-                this.imageTiles[tileIndex].Draw(camera.ctx, Math.floor(destX), destY, scale);
+                this.imageTiles[tileIndex].Draw(camera.ctx, Math.floor(destX), Math.floor(destY), scale);
                 if (!this.backgroundSource.yLoop)
                     destY = 99999999;
             }

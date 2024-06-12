@@ -47,7 +47,8 @@ class Baddle extends Enemy {
     public width: number = 5;
     respectsSolidTiles = false;
     damagesPlayer = false;
-    killedByProjectiles = false;
+    killedByProjectiles = true;
+    immuneToSlideKill = true;
 
     target: Baddle | Player | null = null;
     storedFrames: { fd: FrameData, x: number, y: number }[] = [];

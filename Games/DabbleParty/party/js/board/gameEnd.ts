@@ -64,7 +64,7 @@ class BoardCutSceneGameEnd extends BoardCutSceneSingleAction {
 
             cutsceneService.AddScene(
                 new BoardCutSceneFadeOut(),
-                new BoardCutSceneSetBackdrop(tiles["spaceBoardBlur"][0][0]),
+                new BoardCutSceneSetBackdrop(board.blurTile),
                 new BoardCutSceneSingleAction(() => { BoardCutScene.sprites.push(...tokenSprites) }),
                 new BoardCutSceneFadeIn(),
                 new BoardCutSceneDialog("That's the end of the rounds. What a game it's been! Now let's get ready to tally up the results.\\Let's see who wound up with the most gears!"),

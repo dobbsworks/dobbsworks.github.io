@@ -263,6 +263,7 @@ class LevelLayer {
             if (sprite instanceof Enemy) {
                 sprite.EnemyUpdate();
             }
+            sprite.OnAfterUpdate();
         }
         this.sprites = this.sprites.filter(a => a.isActive);
         if (this.map?.hasHorizontalWrap) {
@@ -367,6 +368,9 @@ class LevelLayer {
         for (let sprite of orderedSprites) {
             sprite.Draw(camera, frameNum);
         }
+        for (let sprite of orderedSprites) {
+            sprite.OnAfterAllSpritesDraw(camera, frameNum);
+        }
     }
 
     public DrawFrame(frameData: FrameData, scale: number, sprite: Sprite) {
@@ -383,7 +387,6 @@ class LevelLayer {
 
         if (!ctx) return;
         let imgTile = frameData.imageTile;
-        //if (sprite.isInTractorBeam) frameData.yFlip = !frameData.yFlip;
 
         let xFlip = frameData.xFlip;
         if (SeasonalService.GetEvent() == SeasonalEvent.AprilFools) xFlip = !xFlip;

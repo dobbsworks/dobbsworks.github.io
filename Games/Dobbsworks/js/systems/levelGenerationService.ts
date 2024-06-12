@@ -184,7 +184,7 @@ class LevelGenerator {
             let y = sprite.tileCoord.tileY;
             let additionalProps = sprite.editorProps || [];
 
-            let spriteStr = [spriteIndex, x, y, ...additionalProps].map(a => Utility.toTwoDigitB64(a));
+            let spriteStr = [spriteIndex, x, y, ...additionalProps].map(a => Utility.toTwoDigitB64(+a));
             spriteList.push(spriteStr.join(''));
         }
         return [

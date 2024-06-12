@@ -6,6 +6,7 @@ class Escarghost extends Enemy {
     canBeBouncedOn = false;
     isDestroyedByLight = true;
     killedByProjectiles = false;
+    immuneToSlideKill = true;
 
     patrolTimer = 0;
 

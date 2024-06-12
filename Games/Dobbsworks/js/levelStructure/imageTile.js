@@ -191,6 +191,9 @@ function rgbToHSL(r, g, b) {
 // expects an object and returns a string
 function hslToRGB(hsl) {
     var h = hsl.h, s = hsl.s, l = hsl.l, c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = l - c / 2, r, g, b;
+    if (h < 0)
+        h += 3600;
+    h %= 360;
     if (h < 60) {
         r = c;
         g = x;

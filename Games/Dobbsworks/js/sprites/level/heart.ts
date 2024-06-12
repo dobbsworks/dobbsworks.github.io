@@ -152,6 +152,10 @@ class GoldHeart extends Sprite {
         }
     }
 
+    OnHolderTakeDamage(): HeldDamageBlockType { 
+        return HeldDamageBlockType.Invincible; // no, holder takes no damage
+    }
+
     GetFrameData(frameNum: number): FrameData {
         if (this.isBroken && Math.floor(frameNum / 4) % 2 == 0 && this.brokenTimer < 60) {
             return {

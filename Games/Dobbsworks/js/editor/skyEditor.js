@@ -23,21 +23,21 @@ var SkyEditor = /** @class */ (function (_super) {
         var panelHeight = height - _this.margin * 2;
         _this.topColorPanel = new RgbPanel(200, panelHeight, function (rgb) {
             _this.topRgb = rgb;
-            _this.UpdateSky();
+            currentMap.sky.bgColorTop = _this.topRgb;
         });
         _this.bottomColorPanel = new RgbPanel(200, panelHeight, function (rgb) {
             _this.bottomRgb = rgb;
-            _this.UpdateSky();
+            currentMap.sky.bgColorBottom = _this.bottomRgb;
         });
         var vertSliderHeight = (_this.height - _this.margin * 5);
         var centerPanel = new Panel(0, 0, 200, panelHeight);
-        var leftVertSlider = new Slider(0, 0, 40, vertSliderHeight, function (newValue) { currentMap.bgColorTopPositionRatio = newValue; });
+        var leftVertSlider = new Slider(0, 0, 40, vertSliderHeight, function (newValue) { currentMap.sky.bgColorTopPositionRatio = newValue; });
         leftVertSlider.value = 0;
         leftVertSlider.maxValue = 1;
         leftVertSlider.layout = "vertical";
         leftVertSlider.step = 0.05;
         centerPanel.AddChild(leftVertSlider);
-        var rightVertSlider = new Slider(0, 0, 40, vertSliderHeight, function (newValue) { currentMap.bgColorBottomPositionRatio = newValue; });
+        var rightVertSlider = new Slider(0, 0, 40, vertSliderHeight, function (newValue) { currentMap.sky.bgColorBottomPositionRatio = newValue; });
         rightVertSlider.value = 1;
         rightVertSlider.minValue = 0;
         rightVertSlider.maxValue = 1;
@@ -51,8 +51,8 @@ var SkyEditor = /** @class */ (function (_super) {
         _this.bottomColorPanel.SetColor("#EEEEFF");
         var opacityPanel = new Panel(0, 0, 60, panelHeight);
         ;
-        var opacitySlider = new Slider(0, 0, 40, vertSliderHeight, function (newValue) { currentMap.overlayOpacity = newValue; });
-        opacitySlider.value = currentMap.overlayOpacity;
+        var opacitySlider = new Slider(0, 0, 40, vertSliderHeight, function (newValue) { currentMap.sky.overlayOpacity = newValue; });
+        opacitySlider.value = currentMap.sky.overlayOpacity;
         opacitySlider.minValue = 0;
         opacitySlider.maxValue = 1;
         opacitySlider.step = 0.05;
@@ -61,16 +61,12 @@ var SkyEditor = /** @class */ (function (_super) {
         _this.AddChild(opacityPanel);
         return _this;
     }
-    SkyEditor.prototype.UpdateSky = function () {
-        currentMap.bgColorTop = this.topRgb;
-        currentMap.bgColorBottom = this.bottomRgb;
-    };
     SkyEditor.prototype.Draw = function (ctx) {
         _super.prototype.Draw.call(this, ctx);
         if (!this.isHidden) {
             var grd = camera.ctx.createLinearGradient(0, this.y + this.margin, 0, this.y + this.height - this.margin);
-            grd.addColorStop(currentMap.bgColorTopPositionRatio, currentMap.bgColorTop);
-            grd.addColorStop(currentMap.bgColorBottomPositionRatio, currentMap.bgColorBottom);
+            grd.addColorStop(currentMap.sky.bgColorTopPositionRatio, currentMap.sky.bgColorTop);
+            grd.addColorStop(currentMap.sky.bgColorBottomPositionRatio, currentMap.sky.bgColorBottom);
             camera.ctx.fillStyle = grd;
             camera.ctx.fillRect(this.x + this.width * 0.4, this.y + this.margin * 2, this.width * 0.1, this.height - this.margin * 4);
         }

@@ -69,7 +69,7 @@ var BoardCutSceneGameEnd = /** @class */ (function (_super) {
             }
             var xs = GetEndOfGameTokenLocations();
             var tokenSprites = board.players.map(function (p, i) { return new SimpleSprite(xs[i], 80, tiles["boardTokens"][p.avatarIndex][0]).Scale(0.5); });
-            cutsceneService.AddScene(new BoardCutSceneFadeOut(), new BoardCutSceneSetBackdrop(tiles["spaceBoardBlur"][0][0]), new BoardCutSceneSingleAction(function () {
+            cutsceneService.AddScene(new BoardCutSceneFadeOut(), new BoardCutSceneSetBackdrop(board.blurTile), new BoardCutSceneSingleAction(function () {
                 var _a;
                 (_a = BoardCutScene.sprites).push.apply(_a, tokenSprites);
             }), new BoardCutSceneFadeIn(), new BoardCutSceneDialog("That's the end of the rounds. What a game it's been! Now let's get ready to tally up the results.\\Let's see who wound up with the most gears!"), new BoardCutSceneShowGearOrCoinCounts(tiles["uiLargeIcons"][0][0], 2, function (p) { return p.gears; }), new BoardCutSceneDialog("Next let's take a look at the final coin counts."), new BoardCutSceneShowGearOrCoinCounts(tiles["uiLargeIcons"][0][1], 3, function (p) { return p.coins; }), new BoardCutSceneDialog("But we aren't done yet, we still need to award the three bonus gears!"), new BoardCutSceneDialog("This first bonus is the " + bonusGears[0].title + " award! " + bonusGears[0].description + " The winner is..."), new BoardCutSceneAwardBonusGear(bonusWinnerIndeces[0]), new BoardCutSceneDialog(JoinPlayers(bonusWinnerIndeces[0].map(function (i) { return board === null || board === void 0 ? void 0 : board.players[i]; })) + "!\\" +

@@ -128,6 +128,7 @@ var BreakingBarrel = /** @class */ (function (_super) {
         _this.respectsSolidTiles = false;
         _this.canBeHeld = false;
         _this.frame = 0;
+        _this.frameRow = 1;
         return _this;
     }
     BreakingBarrel.prototype.Update = function () {
@@ -137,7 +138,7 @@ var BreakingBarrel = /** @class */ (function (_super) {
     };
     BreakingBarrel.prototype.GetFrameData = function (frameNum) {
         return {
-            imageTile: tiles["barrel"][this.frame + 4][1],
+            imageTile: tiles["barrel"][this.frame + 4][this.frameRow],
             xFlip: false,
             yFlip: false,
             xOffset: 0,
@@ -146,6 +147,15 @@ var BreakingBarrel = /** @class */ (function (_super) {
     };
     return BreakingBarrel;
 }(Sprite));
+var BreakingSteelBarrel = /** @class */ (function (_super) {
+    __extends(BreakingSteelBarrel, _super);
+    function BreakingSteelBarrel() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.frameRow = 3;
+        return _this;
+    }
+    return BreakingSteelBarrel;
+}(BreakingBarrel));
 var SteelBarrel = /** @class */ (function (_super) {
     __extends(SteelBarrel, _super);
     function SteelBarrel() {
@@ -177,3 +187,82 @@ var RollingSteelBarrel = /** @class */ (function (_super) {
     };
     return RollingSteelBarrel;
 }(RollingBarrel));
+var EmptyBarrel = /** @class */ (function (_super) {
+    __extends(EmptyBarrel, _super);
+    function EmptyBarrel() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.height = 12;
+        _this.width = 12;
+        _this.respectsSolidTiles = true;
+        _this.canBeHeld = true;
+        _this.blocksDamage = true;
+        _this.holdRatio = 0; // 0 held high, 1 held over player
+        _this.frameCol = 0;
+        _this.blockType = HeldDamageBlockType.Iframe;
+        _this.breakSprite = BreakingBarrel;
+        return _this;
+    }
+    EmptyBarrel.prototype.Update = function () {
+        this.ApplyGravity();
+        this.ApplyInertia();
+        this.ReactToWater();
+        this.ReactToPlatformsAndSolids();
+        this.MoveByVelocity();
+        if (player) {
+            if (player.heldItem == this) {
+                if (player.isOnGround) {
+                    if (KeyboardHandler.IsKeyPressed(KeyAction.Down, false)) {
+                        this.holdRatio = Utility.Approach(this.holdRatio, 1.0, 0.1);
+                    }
+                    else if (KeyboardHandler.IsKeyPressed(KeyAction.Up, false)) {
+                        this.holdRatio = Utility.Approach(this.holdRatio, 0.0, 0.1);
+                    }
+                    else {
+                        this.holdRatio = Utility.Approach(this.holdRatio, 0.8, 0.1);
+                    }
+                }
+                else {
+                    this.holdRatio = Utility.Approach(this.holdRatio, 0.8, 0.1);
+                }
+                if (this.holdRatio > 0.5)
+                    player.dx *= 0.9;
+            }
+            else {
+                this.holdRatio = 0;
+            }
+        }
+        else {
+            this.holdRatio = 0;
+        }
+    };
+    EmptyBarrel.prototype.OnHolderTakeDamage = function () {
+        if (this.holdRatio == 1) {
+            return HeldDamageBlockType.Invincible;
+        }
+        else if (this.holdRatio > 0.5) {
+            this.ReplaceWithSpriteType(this.breakSprite);
+            return HeldDamageBlockType.Iframe;
+        }
+        return HeldDamageBlockType.Vulnerable;
+    };
+    EmptyBarrel.prototype.GetFrameData = function (frameNum) {
+        return {
+            imageTile: tiles["barrel"][this.frameCol][4],
+            xFlip: false,
+            yFlip: false,
+            xOffset: 0,
+            yOffset: this.holdRatio * -9
+        };
+    };
+    return EmptyBarrel;
+}(Sprite));
+var EmptySteelBarrel = /** @class */ (function (_super) {
+    __extends(EmptySteelBarrel, _super);
+    function EmptySteelBarrel() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.frameCol = 1;
+        _this.breakSprite = BreakingSteelBarrel;
+        return _this;
+    }
+    return EmptySteelBarrel;
+}(EmptyBarrel));

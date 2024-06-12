@@ -20,10 +20,13 @@ var BasePlatform = /** @class */ (function (_super) {
         _this.height = 2;
         _this.isPlatform = true;
         _this.respectsSolidTiles = false;
+        _this.leftCapCol = 1;
+        _this.rightCapCol = 3;
+        _this.middleCol = 2;
         _this.xRenderOffset = 0;
         _this.yRenderOffset = 0;
         _this.anchor = Direction.Up;
-        var numTiles = editorProps[0] || 3;
+        var numTiles = +(editorProps[0]) || 3;
         _this.width = numTiles * layer.tileWidth;
         return _this;
     }
@@ -53,13 +56,13 @@ var BasePlatform = /** @class */ (function (_super) {
                 }];
         }
         var frames = [{
-                imageTile: tiles[this.sourceImage][1][this.tilesetRow],
+                imageTile: tiles[this.sourceImage][this.leftCapCol][this.tilesetRow],
                 xFlip: false,
                 yFlip: false,
                 xOffset: 0 + this.xRenderOffset,
                 yOffset: 0 + this.yRenderOffset
             }, {
-                imageTile: tiles[this.sourceImage][3][this.tilesetRow],
+                imageTile: tiles[this.sourceImage][this.rightCapCol][this.tilesetRow],
                 xFlip: false,
                 yFlip: false,
                 xOffset: -(this.width - 12) + this.xRenderOffset,
@@ -67,7 +70,7 @@ var BasePlatform = /** @class */ (function (_super) {
             }];
         for (var x = 12; x < this.width - 12; x += 12) {
             frames.push({
-                imageTile: tiles[this.sourceImage][2][this.tilesetRow],
+                imageTile: tiles[this.sourceImage][this.middleCol][this.tilesetRow],
                 xFlip: false,
                 yFlip: false,
                 xOffset: -x + this.xRenderOffset,
