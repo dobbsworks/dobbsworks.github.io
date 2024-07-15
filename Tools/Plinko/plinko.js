@@ -1,6 +1,7 @@
 let w = null;
 
 var ball = null;
+var num = 10;
 
 function StartSim() {
     if (scrambleRequested) ScrambleEntries();
@@ -23,9 +24,9 @@ function StartSim() {
         var bottom = world.createBody();
         bottom.createFixture(pl.Edge(Vec2(-120, -4*scale), Vec2(120, -4*scale)));
 
-        for (let row = 0; row <= 10; row++) {
+        for (let row = 0; row <= num; row++) {
             let y = (row-3)*scale;
-            let columnCount = 10;
+            let columnCount = num;
             if (row%2) columnCount += 1;
             for (let col = 0; col <= columnCount; col++) {
                 let x = (col-5)*scale;
@@ -66,6 +67,7 @@ function Init() {
     var source = params.get("source");
     var streamer = params.get("streamer");
     var items = params.get("items");
+    num = params.get("num") || 10;
     if (params.get("scramble")) {
         scrambleRequested = params.get("scramble").toLowerCase() == "true"; 
     }
@@ -80,6 +82,10 @@ function Init() {
         });
     } else if (items) {
         users = JSON.parse(items);
+        if (users.length > num) {
+            num = users.length;
+            document.getElementById("redraw").width = num * 65 + 20;
+        }
         StartSim();
     } else {
         SetText("Invalid source, url must include one of the following to define user list: <br/> ?source=warpworld&streamer=streamerName <br/> ?source=viewerlevels&streamer=streamerName <br/> ?items=['user1','user2']" );
@@ -151,7 +157,7 @@ function Loop() {
 
     ctx.lineWidth = 8;
     let winnerIndex = FindWinnerIndex();
-    for (let i=0;i<10;i++) {
+    for (let i=0;i<num;i++) {
         ctx.fillStyle = "white";
         if (i===winnerIndex) ctx.fillStyle = "lime";
         let x = 80 + 57*i;
