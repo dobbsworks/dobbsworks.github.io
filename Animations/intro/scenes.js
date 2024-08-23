@@ -195,6 +195,7 @@ function Scene3() {
         new StaticImage(images.snek, 6, -700, 80),
         new StaticImage(images.dove, 3, -700, -100),
         new StaticImage(images.doopu, 6, -850, 20),
+        new StaticImage(images.goomba, 4, -900, 60),
     ];
     sprites.push(...cameos);
     cameos.forEach(a => {

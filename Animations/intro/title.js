@@ -6,6 +6,8 @@ function CreateTitle() {
             //"Gracie",
             //"Lil' Toadette",
             "Rover",
+            "Dabble",
+            "The Dabble Dragon",
             // ]),
             // Rand([
             "Turtle",
@@ -23,7 +25,11 @@ function CreateTitle() {
             "Theron",
             "Popples",
             "Doopu",
+            "Kabs",
+            "Shortfusd",
+            "Panda",
             "Mac",
+            "YouTube Chat",
             Rand([
                 "Torgan",
                 "Serene",
@@ -38,7 +44,10 @@ function CreateTitle() {
         "Snail",
         "Horse",
         "Turtle",
-        "Muncher",
+        Rand([
+            "Muncher",
+            "Biter",
+        ])
     ];
     let animal1 = Rand(animals)
     let animal2 = Rand(animals.filter(a => a !== animal1));
@@ -121,6 +130,16 @@ function CreateTitle() {
         `hehe`,
         `${char1} Mails Turtle a Snail`,
         `${char1} Mails Turtle another Snail`,
+        `${char1} Forgets a Semicolon`,
+        `${char1} Deletes the Database`,
+        `${char1}'); DROP TABLE Intros;--`,
+        `${char1} Skips DDD`,
+        `${char1} Chokes Bowser Throws`,
+        `${char1} Forgets Cape Kill`,
+        `${char1} Gets Three Hands`,
+        `${char1} Gambles All`,
+        `${char1} BLJs for Two Hours`,
+        `Bomberman 64`,
     ]);
 }
 
