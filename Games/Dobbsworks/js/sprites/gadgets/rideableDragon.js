@@ -51,7 +51,7 @@ var Drakkie = /** @class */ (function (_super) {
         return false;
     };
     Drakkie.prototype.OnRiderTakeDamage = function () {
-        return false; // yes, rider takes damage
+        return true; // yes, rider takes damage
     };
     Drakkie.prototype.Update = function () {
         if (!this.WaitForOnScreen()) {

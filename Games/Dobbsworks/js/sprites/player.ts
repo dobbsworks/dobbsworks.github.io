@@ -868,7 +868,7 @@ class Player extends Sprite {
     }
 
     ActivateIFrames(): void {
-        this.iFrames += 130;
+        this.iFrames = 130;
         audioHandler.PlaySound("hurt", true);
     }
 

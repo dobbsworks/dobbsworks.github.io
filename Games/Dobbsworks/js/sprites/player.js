@@ -908,7 +908,7 @@ var Player = /** @class */ (function (_super) {
         }
     };
     Player.prototype.ActivateIFrames = function () {
-        this.iFrames += 130;
+        this.iFrames = 130;
         audioHandler.PlaySound("hurt", true);
     };
     Player.prototype.OnPlayerDead = function (canRespawn) {

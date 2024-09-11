@@ -37,7 +37,7 @@ class Drakkie extends Rideable {
     }
 
     OnRiderTakeDamage(): boolean { 
-        return false; // yes, rider takes damage
+        return true; // yes, rider takes damage
     }
 
     Update(): void {
