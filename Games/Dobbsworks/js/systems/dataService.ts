@@ -90,56 +90,65 @@ class DataService {
 
     static GetMyLevels(): Promise<MyLevelsModel> {
         return new Promise<MyLevelsModel>((resolve, reject) => {
-            DataService.BaseGet("Levels/MyLevels", resolve, reject);
+            resolve(new MyLevelsModel([], 0));
+            //DataService.BaseGet("Levels/MyLevels", resolve, reject);
         })
     }
 
 
     static GetRecentLevels(pageIndex: number): Promise<LevelBrowseResults> {
         return new Promise<LevelBrowseResults>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/RecentLevels?pageIndex=" + pageIndex, resolve, reject);
+            resolve(getLevelsFromDB(pageIndex, (level: LevelDT) => +level.timestamp));
+            //DataService.BaseGet("LevelSearch/RecentLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
 
     static GetOldestLevels(pageIndex: number): Promise<LevelBrowseResults> {
         return new Promise<LevelBrowseResults>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/OldestLevels?pageIndex=" + pageIndex, resolve, reject);
+            resolve(getLevelsFromDB(pageIndex, (level: LevelDT) => -+level.timestamp));
+            //DataService.BaseGet("LevelSearch/OldestLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
 
     static GetMostLikedLevels(pageIndex: number): Promise<LevelBrowseResults> {
         return new Promise<LevelBrowseResults>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/MostLikedLevels?pageIndex=" + pageIndex, resolve, reject);
+            resolve(getLevelsFromDB(pageIndex, (level: LevelDT) => level.numberOfLikes));
+            //DataService.BaseGet("LevelSearch/MostLikedLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
 
     static GetBestRatedLevels(pageIndex: number): Promise<LevelBrowseResults> {
         return new Promise<LevelBrowseResults>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/BestRatedLevels?pageIndex=" + pageIndex, resolve, reject);
+            resolve(getLevelsFromDB(pageIndex, (level: LevelDT) => level.numberOfLikes / level.numberOfUniquePlayers));
+            //DataService.BaseGet("LevelSearch/BestRatedLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
 
     static GetUndiscoveredLevels(pageIndex: number): Promise<LevelBrowseResults> {
         return new Promise<LevelBrowseResults>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/UndiscoveredLevels?pageIndex=" + pageIndex, resolve, reject);
+            resolve(getLevelsFromDB(pageIndex, (level: LevelDT) => -level.numberOfUniquePlayers));
+            //DataService.BaseGet("LevelSearch/UndiscoveredLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
 
     static GetMostPlayedLevels(pageIndex: number): Promise<LevelBrowseResults> {
         return new Promise<LevelBrowseResults>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/MostPlayedLevels?pageIndex=" + pageIndex, resolve, reject);
+            resolve(getLevelsFromDB(pageIndex, (level: LevelDT) => level.numberOfUniquePlayers));
+            //DataService.BaseGet("LevelSearch/MostPlayedLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
 
     static GetEasiestLevels(pageIndex: number): Promise<LevelBrowseResults> {
         return new Promise<LevelBrowseResults>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/EasiestLevels?pageIndex=" + pageIndex, resolve, reject);
+            resolve(getLevelsFromDB(pageIndex, (level: LevelDT) => level.numberOfClears / level.numberOfAttempts));
+            //DataService.BaseGet("LevelSearch/EasiestLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
 
     static GetHardestLevels(pageIndex: number): Promise<LevelBrowseResults> {
         return new Promise<LevelBrowseResults>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/HardestLevels?pageIndex=" + pageIndex, resolve, reject);
+            resolve(getLevelsFromDB(pageIndex, (level: LevelDT) => -level.numberOfClears / level.numberOfAttempts));
+            //DataService.BaseGet("LevelSearch/HardestLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
 
@@ -150,94 +159,108 @@ class DataService {
 
     static UploadLevel(levelUpload: LevelUploadDT): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            DataService.BasePost("Levels/UploadLevel", levelUpload, resolve, reject);
+            reject("Level uploading is currently unavailable through the browser, levels can be manually submitted via Discord");
+            //DataService.BasePost("Levels/UploadLevel", levelUpload, resolve, reject);
         })
     }
 
-    static UploadLevelAuditLog(levelData: string): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            let level = new LevelUploadDT ("x",levelData,"x")
-            DataService.BasePost("Levels/UploadLevelAuditLog", level, resolve, reject);
-        })
-    }
+    // static UploadLevelAuditLog(levelData: string): Promise<string> {
+    //     return new Promise<string>((resolve, reject) => {
+    //         let level = new LevelUploadDT ("x",levelData,"x")
+    //         DataService.BasePost("Levels/UploadLevelAuditLog", level, resolve, reject);
+    //     })
+    // }
 
     static PublishLevel(levelCode: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            DataService.BasePost(`Levels/PublishLevel?levelCode=${levelCode}`, {}, resolve, reject);
+            reject("Level publishing is currently unavailable through the browser, levels can be manually submitted via Discord");
+            //DataService.BasePost(`Levels/PublishLevel?levelCode=${levelCode}`, {}, resolve, reject);
         })
     }
 
     static LikeLevel(levelCode: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            DataService.BasePost(`Levels/LikeLevel?levelCode=${levelCode}`, {}, resolve, reject);
+            reject("Level rating is currently unavailable");
+            //DataService.BasePost(`Levels/LikeLevel?levelCode=${levelCode}`, {}, resolve, reject);
         })
     }
 
     static DislikeLevel(levelCode: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            DataService.BasePost(`Levels/DislikeLevel?levelCode=${levelCode}`, {}, resolve, reject);
+            reject("Level rating is currently unavailable");
+            //DataService.BasePost(`Levels/DislikeLevel?levelCode=${levelCode}`, {}, resolve, reject);
         })
     }
 
     static RemoveLevel(levelCode: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            DataService.BaseDelete(`Levels/RemoveLevel?levelCode=${levelCode}`, resolve, reject);
+            reject("Level management is currently unavailable through the browser");
+            //DataService.BaseDelete(`Levels/RemoveLevel?levelCode=${levelCode}`, resolve, reject);
         })
     }
 
     static LogLevelPlayStarted(levelCode: string): Promise<number> {
         return new Promise<number>((resolve, reject) => {
-            DataService.BasePost("Levels/LogLevelPlayStarted", { levelCode: levelCode }, resolve, reject);
+            reject();
+            //DataService.BasePost("Levels/LogLevelPlayStarted", { levelCode: levelCode }, resolve, reject);
         })
     }
 
     static LogLevelPlayDone(progress: LevelProgressModel): Promise<LevelAwardsModel> {
         return new Promise<LevelAwardsModel>((resolve, reject) => {
-            DataService.BasePost("Levels/LogLevelPlayDone", progress, resolve, reject);
+            reject();
+            //DataService.BasePost("Levels/LogLevelPlayDone", progress, resolve, reject);
         })
     }
 
     static UpdateNameAndAvatar(avatarCode: string, newName: string): Promise<number> {
         return new Promise<number>((resolve, reject) => {
-            DataService.BasePost("Users/UpdateNameAndAvatar?avatarCode=" + avatarCode + "&name=" + newName, {}, resolve, reject);
+            reject("User profile management is currently unavailable through the browser");
+            //DataService.BasePost("Users/UpdateNameAndAvatar?avatarCode=" + avatarCode + "&name=" + newName, {}, resolve, reject);
         })
     }
-
+    
     static GetUserData(): Promise<UserDT> {
         return new Promise<UserDT>((resolve, reject) => {
-            DataService.BaseGet("Users/GetUserData", resolve, reject);
+            resolve(new UserDT(-1, "offline", "", ""));
+            //DataService.BaseGet("Users/GetUserData", resolve, reject);
         })
     }
 
     static LogMarathonRun(difficulty: number, levelsCleared: number, finalFrameCount: number, winnings: number): Promise<number> {
         return new Promise<number>((resolve, reject) => {
-            DataService.BasePost("Marathon/LogRun?difficulty=" + difficulty +
-                "&levelsCleared=" + levelsCleared + "&finalFrameCount=" + finalFrameCount +
-                "&winnings=" + winnings, {}, resolve, reject);
+            reject("3-Ring runs are currently not being logged");
+            // DataService.BasePost("Marathon/LogRun?difficulty=" + difficulty +
+            //     "&levelsCleared=" + levelsCleared + "&finalFrameCount=" + finalFrameCount +
+            //     "&winnings=" + winnings, {}, resolve, reject);
         })
     }
 
     static CheckFor3RingUnlock(difficulty: number): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            DataService.BasePost("Marathon/Log3RingRun?difficulty=" + difficulty, {}, resolve, reject);
+            reject()
+            //DataService.BasePost("Marathon/Log3RingRun?difficulty=" + difficulty, {}, resolve, reject);
         })
     }
 
     static GetUserCurrency(): Promise<number> {
         return new Promise<number>((resolve, reject) => {
-            DataService.BaseGet("Currency/GetCurrency", resolve, reject);
+            reject();
+            //DataService.BaseGet("Currency/GetCurrency", resolve, reject);
         })
     }
 
     static RollForUnlock(cost: number): Promise<AvatarUnlockResultDt> {
         return new Promise<AvatarUnlockResultDt>((resolve, reject) => {
-            DataService.BasePost("Carnival/RollForUnlock?cost=" + cost, {}, resolve, reject);
+            reject();
+            //DataService.BasePost("Carnival/RollForUnlock?cost=" + cost, {}, resolve, reject);
         })
     }
 
     static GetUserStatsByUserId(userId: number): Promise<UserWithStatsDT> {
         return new Promise<UserWithStatsDT>((resolve, reject) => {
-            DataService.BaseGet("Users/GetUserStatsByUserId?userId=" + userId, resolve, reject);
+            reject();
+            //DataService.BaseGet("Users/GetUserStatsByUserId?userId=" + userId, resolve, reject);
         })
     }
 
@@ -245,40 +268,47 @@ class DataService {
 
     static GetCurrentContest(): Promise<ContestDT> {
         return new Promise<ContestDT>((resolve, reject) => {
-            DataService.BaseGet("Contest/GetCurrentContest", resolve, reject);
+            reject();
+            //DataService.BaseGet("Contest/GetCurrentContest", resolve, reject);
         })
     }
 
     static SubmitContestLevel(levelCode: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            DataService.BasePost(`Contest/SubmitContestLevel?levelCode=${levelCode}`, {}, resolve, reject);
+            reject();
+            //DataService.BasePost(`Contest/SubmitContestLevel?levelCode=${levelCode}`, {}, resolve, reject);
         })
     }
     static UnsubmitContestLevel(levelCode: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            DataService.BasePost(`Contest/UnsubmitContestLevel?levelCode=${levelCode}`, {}, resolve, reject);
+            reject();
+            //DataService.BasePost(`Contest/UnsubmitContestLevel?levelCode=${levelCode}`, {}, resolve, reject);
         })
     }
     static GetContestLevels(pageIndex: number): Promise<LevelBrowseResults> {
         return new Promise<LevelBrowseResults>((resolve, reject) => {
-            DataService.BaseGet("LevelSearch/ContestLevels?pageIndex=" + pageIndex, resolve, reject);
+            reject();
+            //DataService.BaseGet("LevelSearch/ContestLevels?pageIndex=" + pageIndex, resolve, reject);
         })
     }
     static SubmitContestVote(levelCode: string, vote: number): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            DataService.BasePost(`Contest/SubmitContestVote?levelCode=${levelCode}&vote=${vote}`, {}, resolve, reject);
+            reject();
+            //DataService.BasePost(`Contest/SubmitContestVote?levelCode=${levelCode}&vote=${vote}`, {}, resolve, reject);
         })
     }
 
 
     static MarkLevelAsGlitch(levelCode: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            DataService.BasePost(`Moderation/MarkLevelAsGlitch?levelCode=${levelCode}`, {}, resolve, reject);
+            reject();
+            //DataService.BasePost(`Moderation/MarkLevelAsGlitch?levelCode=${levelCode}`, {}, resolve, reject);
         })
     }
     static MarkLevelAsNotGlitch(levelCode: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            DataService.BasePost(`Moderation/MarkLevelAsNotGlitch?levelCode=${levelCode}`, {}, resolve, reject);
+            reject();
+            //DataService.BasePost(`Moderation/MarkLevelAsNotGlitch?levelCode=${levelCode}`, {}, resolve, reject);
         })
     }
 }

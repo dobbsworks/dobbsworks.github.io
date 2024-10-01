@@ -3,7 +3,7 @@ class LevelDT
     constructor(
     public code: string,
     public userId: number,
-    public timestamp: Date,
+    public timestamp: number,
     public name: string,
     public description: string,
     public levelData: string,
@@ -22,6 +22,6 @@ class LevelDT
 
     public username: string,
 
-    public isGlitch: string
+    public isGlitch: boolean
     ){}
 }

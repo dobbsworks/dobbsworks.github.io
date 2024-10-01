@@ -80,160 +80,190 @@ var DataService = /** @class */ (function () {
     };
     DataService.GetMyLevels = function () {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("Levels/MyLevels", resolve, reject);
+            resolve(new MyLevelsModel([], 0));
+            //DataService.BaseGet("Levels/MyLevels", resolve, reject);
         });
     };
     DataService.GetRecentLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/RecentLevels?pageIndex=" + pageIndex, resolve, reject);
+            resolve(getLevelsFromDB(pageIndex, function (level) { return +level.timestamp; }));
+            //DataService.BaseGet("LevelSearch/RecentLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
     DataService.GetOldestLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/OldestLevels?pageIndex=" + pageIndex, resolve, reject);
+            resolve(getLevelsFromDB(pageIndex, function (level) { return -+level.timestamp; }));
+            //DataService.BaseGet("LevelSearch/OldestLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
     DataService.GetMostLikedLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/MostLikedLevels?pageIndex=" + pageIndex, resolve, reject);
+            resolve(getLevelsFromDB(pageIndex, function (level) { return level.numberOfLikes; }));
+            //DataService.BaseGet("LevelSearch/MostLikedLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
     DataService.GetBestRatedLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/BestRatedLevels?pageIndex=" + pageIndex, resolve, reject);
+            resolve(getLevelsFromDB(pageIndex, function (level) { return level.numberOfLikes / level.numberOfUniquePlayers; }));
+            //DataService.BaseGet("LevelSearch/BestRatedLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
     DataService.GetUndiscoveredLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/UndiscoveredLevels?pageIndex=" + pageIndex, resolve, reject);
+            resolve(getLevelsFromDB(pageIndex, function (level) { return -level.numberOfUniquePlayers; }));
+            //DataService.BaseGet("LevelSearch/UndiscoveredLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
     DataService.GetMostPlayedLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/MostPlayedLevels?pageIndex=" + pageIndex, resolve, reject);
+            resolve(getLevelsFromDB(pageIndex, function (level) { return level.numberOfUniquePlayers; }));
+            //DataService.BaseGet("LevelSearch/MostPlayedLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
     DataService.GetEasiestLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/EasiestLevels?pageIndex=" + pageIndex, resolve, reject);
+            resolve(getLevelsFromDB(pageIndex, function (level) { return level.numberOfClears / level.numberOfAttempts; }));
+            //DataService.BaseGet("LevelSearch/EasiestLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
     DataService.GetHardestLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/HardestLevels?pageIndex=" + pageIndex, resolve, reject);
+            resolve(getLevelsFromDB(pageIndex, function (level) { return -level.numberOfClears / level.numberOfAttempts; }));
+            //DataService.BaseGet("LevelSearch/HardestLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
     DataService.UploadLevel = function (levelUpload) {
         return new Promise(function (resolve, reject) {
-            DataService.BasePost("Levels/UploadLevel", levelUpload, resolve, reject);
+            reject("Level uploading is currently unavailable through the browser, levels can be manually submitted via Discord");
+            //DataService.BasePost("Levels/UploadLevel", levelUpload, resolve, reject);
         });
     };
-    DataService.UploadLevelAuditLog = function (levelData) {
-        return new Promise(function (resolve, reject) {
-            var level = new LevelUploadDT("x", levelData, "x");
-            DataService.BasePost("Levels/UploadLevelAuditLog", level, resolve, reject);
-        });
-    };
+    // static UploadLevelAuditLog(levelData: string): Promise<string> {
+    //     return new Promise<string>((resolve, reject) => {
+    //         let level = new LevelUploadDT ("x",levelData,"x")
+    //         DataService.BasePost("Levels/UploadLevelAuditLog", level, resolve, reject);
+    //     })
+    // }
     DataService.PublishLevel = function (levelCode) {
         return new Promise(function (resolve, reject) {
-            DataService.BasePost("Levels/PublishLevel?levelCode=" + levelCode, {}, resolve, reject);
+            reject("Level publishing is currently unavailable through the browser, levels can be manually submitted via Discord");
+            //DataService.BasePost(`Levels/PublishLevel?levelCode=${levelCode}`, {}, resolve, reject);
         });
     };
     DataService.LikeLevel = function (levelCode) {
         return new Promise(function (resolve, reject) {
-            DataService.BasePost("Levels/LikeLevel?levelCode=" + levelCode, {}, resolve, reject);
+            reject("Level rating is currently unavailable");
+            //DataService.BasePost(`Levels/LikeLevel?levelCode=${levelCode}`, {}, resolve, reject);
         });
     };
     DataService.DislikeLevel = function (levelCode) {
         return new Promise(function (resolve, reject) {
-            DataService.BasePost("Levels/DislikeLevel?levelCode=" + levelCode, {}, resolve, reject);
+            reject("Level rating is currently unavailable");
+            //DataService.BasePost(`Levels/DislikeLevel?levelCode=${levelCode}`, {}, resolve, reject);
         });
     };
     DataService.RemoveLevel = function (levelCode) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseDelete("Levels/RemoveLevel?levelCode=" + levelCode, resolve, reject);
+            reject("Level management is currently unavailable through the browser");
+            //DataService.BaseDelete(`Levels/RemoveLevel?levelCode=${levelCode}`, resolve, reject);
         });
     };
     DataService.LogLevelPlayStarted = function (levelCode) {
         return new Promise(function (resolve, reject) {
-            DataService.BasePost("Levels/LogLevelPlayStarted", { levelCode: levelCode }, resolve, reject);
+            reject();
+            //DataService.BasePost("Levels/LogLevelPlayStarted", { levelCode: levelCode }, resolve, reject);
         });
     };
     DataService.LogLevelPlayDone = function (progress) {
         return new Promise(function (resolve, reject) {
-            DataService.BasePost("Levels/LogLevelPlayDone", progress, resolve, reject);
+            reject();
+            //DataService.BasePost("Levels/LogLevelPlayDone", progress, resolve, reject);
         });
     };
     DataService.UpdateNameAndAvatar = function (avatarCode, newName) {
         return new Promise(function (resolve, reject) {
-            DataService.BasePost("Users/UpdateNameAndAvatar?avatarCode=" + avatarCode + "&name=" + newName, {}, resolve, reject);
+            reject("User profile management is currently unavailable through the browser");
+            //DataService.BasePost("Users/UpdateNameAndAvatar?avatarCode=" + avatarCode + "&name=" + newName, {}, resolve, reject);
         });
     };
     DataService.GetUserData = function () {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("Users/GetUserData", resolve, reject);
+            resolve(new UserDT(-1, "offline", "", ""));
+            //DataService.BaseGet("Users/GetUserData", resolve, reject);
         });
     };
     DataService.LogMarathonRun = function (difficulty, levelsCleared, finalFrameCount, winnings) {
         return new Promise(function (resolve, reject) {
-            DataService.BasePost("Marathon/LogRun?difficulty=" + difficulty +
-                "&levelsCleared=" + levelsCleared + "&finalFrameCount=" + finalFrameCount +
-                "&winnings=" + winnings, {}, resolve, reject);
+            reject("3-Ring runs are currently not being logged");
+            // DataService.BasePost("Marathon/LogRun?difficulty=" + difficulty +
+            //     "&levelsCleared=" + levelsCleared + "&finalFrameCount=" + finalFrameCount +
+            //     "&winnings=" + winnings, {}, resolve, reject);
         });
     };
     DataService.CheckFor3RingUnlock = function (difficulty) {
         return new Promise(function (resolve, reject) {
-            DataService.BasePost("Marathon/Log3RingRun?difficulty=" + difficulty, {}, resolve, reject);
+            reject();
+            //DataService.BasePost("Marathon/Log3RingRun?difficulty=" + difficulty, {}, resolve, reject);
         });
     };
     DataService.GetUserCurrency = function () {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("Currency/GetCurrency", resolve, reject);
+            reject();
+            //DataService.BaseGet("Currency/GetCurrency", resolve, reject);
         });
     };
     DataService.RollForUnlock = function (cost) {
         return new Promise(function (resolve, reject) {
-            DataService.BasePost("Carnival/RollForUnlock?cost=" + cost, {}, resolve, reject);
+            reject();
+            //DataService.BasePost("Carnival/RollForUnlock?cost=" + cost, {}, resolve, reject);
         });
     };
     DataService.GetUserStatsByUserId = function (userId) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("Users/GetUserStatsByUserId?userId=" + userId, resolve, reject);
+            reject();
+            //DataService.BaseGet("Users/GetUserStatsByUserId?userId=" + userId, resolve, reject);
         });
     };
     DataService.GetCurrentContest = function () {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("Contest/GetCurrentContest", resolve, reject);
+            reject();
+            //DataService.BaseGet("Contest/GetCurrentContest", resolve, reject);
         });
     };
     DataService.SubmitContestLevel = function (levelCode) {
         return new Promise(function (resolve, reject) {
-            DataService.BasePost("Contest/SubmitContestLevel?levelCode=" + levelCode, {}, resolve, reject);
+            reject();
+            //DataService.BasePost(`Contest/SubmitContestLevel?levelCode=${levelCode}`, {}, resolve, reject);
         });
     };
     DataService.UnsubmitContestLevel = function (levelCode) {
         return new Promise(function (resolve, reject) {
-            DataService.BasePost("Contest/UnsubmitContestLevel?levelCode=" + levelCode, {}, resolve, reject);
+            reject();
+            //DataService.BasePost(`Contest/UnsubmitContestLevel?levelCode=${levelCode}`, {}, resolve, reject);
         });
     };
     DataService.GetContestLevels = function (pageIndex) {
         return new Promise(function (resolve, reject) {
-            DataService.BaseGet("LevelSearch/ContestLevels?pageIndex=" + pageIndex, resolve, reject);
+            reject();
+            //DataService.BaseGet("LevelSearch/ContestLevels?pageIndex=" + pageIndex, resolve, reject);
         });
     };
     DataService.SubmitContestVote = function (levelCode, vote) {
         return new Promise(function (resolve, reject) {
-            DataService.BasePost("Contest/SubmitContestVote?levelCode=" + levelCode + "&vote=" + vote, {}, resolve, reject);
+            reject();
+            //DataService.BasePost(`Contest/SubmitContestVote?levelCode=${levelCode}&vote=${vote}`, {}, resolve, reject);
         });
     };
     DataService.MarkLevelAsGlitch = function (levelCode) {
         return new Promise(function (resolve, reject) {
-            DataService.BasePost("Moderation/MarkLevelAsGlitch?levelCode=" + levelCode, {}, resolve, reject);
+            reject();
+            //DataService.BasePost(`Moderation/MarkLevelAsGlitch?levelCode=${levelCode}`, {}, resolve, reject);
         });
     };
     DataService.MarkLevelAsNotGlitch = function (levelCode) {
         return new Promise(function (resolve, reject) {
-            DataService.BasePost("Moderation/MarkLevelAsNotGlitch?levelCode=" + levelCode, {}, resolve, reject);
+            reject();
+            //DataService.BasePost(`Moderation/MarkLevelAsNotGlitch?levelCode=${levelCode}`, {}, resolve, reject);
         });
     };
     return DataService;
