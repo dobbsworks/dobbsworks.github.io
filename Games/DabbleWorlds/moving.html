@@ -1,0 +1,55 @@
+<html>
+
+<head>
+    <title>Dabble Worlds</title>
+    <link rel="stylesheet" href="app.css?v=1.1.1"> 
+</head>
+
+
+<body>
+    <!-- <div id="logo"></div> -->
+    <br />
+
+    <br />
+
+    <div class="p-section version-history">
+        <h3 class="version-header">We're moving!</h3>
+
+        <p>Ahoy, dabblers! We're in the process of moving away from using a back-end database with live level uploading in favor of a more cost-effective static hosting method. Levels can still be submitted manually on <a href="https://discord.gg/cdPmKUP" style="color:black">the Discord</a>, and I'll upload them to the hosting service. You'll still be able to access these new levels via the level browser, but make sure you've got the <a href="https://dobbsworks.github.io/Games/DabbleWorlds/index.html" style="color:black">landing page</a> bookmarked, as the Azure-hosted site will eventually be phased out. 
+        </p>
+
+        <b>Wait, why are we doing this, again?</b>
+
+        <p>Hosting a website with an actual backend costs money, which Dabble Worlds does not make. I've looked ahead at some alternatives (...Steam??) that might make it easier to manage, but it would require a heck of a rewrite. If we go that route, it would likely be a new engine from the ground up. </p>
+
+        <b>What does this mean right now?</b>
+
+        <p>If you have local saves or cloud saves that aren't published, I would recommend exporting those and putting those in a text file or something. When the hosted version is replaced by the static version of the site, it will be a LOT harder to pull those local saves. </p>
+
+        <b>When is this happening?</b>
+
+        <p>I'm starting to get reminders about domain renewal (as of late September 2024), so we'll likely be dropping the .com url soon. I'll keep the hosted site running for a bit longer than that, and the main landing page will always have a link to the up-to-date game.</p>
+
+    </div>
+    
+
+    <br />
+
+    <div id="footer"></div>
+</body>
+
+
+
+<script type="text/javascript">
+    function Init() {
+        let queryString = window.location.search;
+        let urlParams = new URLSearchParams(queryString);
+        let jumpTo = urlParams.get('jump');
+        if (jumpTo) {
+            var top = document.getElementById(jumpTo).offsetTop; //Getting Y of target element
+            window.scrollTo(0, top);
+        }
+    }
+    window.onload = Init;
+
+</script>

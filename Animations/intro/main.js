@@ -7,6 +7,8 @@ var frameNum = 0;
 var musicBeat = 11.7; //magic number for frame updates to match music
 var frames = 1000 / 60;
 
+var targetScene = Scene1;
+
 function Initialize() {
     let htmlImages = document.getElementsByTagName("img");
     for (let image of htmlImages) {
@@ -27,20 +29,27 @@ function Initialize() {
 setTimeout(Start, 100);
 function Start() {
 
-    let month = new Date().getMonth() + 1;
-    let day = new Date().getDate();
-    let isNewYears = (month == 12 && (day >= 29)) || (month == 1 && day == 1);
-
-    if (isNewYears) {
-        window.location.href = "file:///C:/Users/erict/Documents/GitHub/dobbsworks.github.io/Animations/introNewYear/index.html"
-        return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const isTheater = !!urlParams.get('theater');
+    if (isTheater) {
+        targetScene = Scene8Loop;
+    } else {
+        let month = new Date().getMonth() + 1;
+        let day = new Date().getDate();
+        let isNewYears = (month == 12 && (day >= 29)) || (month == 1 && day == 1);
+    
+        if (isNewYears) {
+            window.location.href = "file:///C:/Users/erict/Documents/GitHub/dobbsworks.github.io/Animations/introNewYear/index.html"
+            return;
+        }
     }
+
     canvas.style.opacity = 0;
     setTimeout(() => {
         setTimeout(() => {
             canvas.style.opacity = 1;
         }, 50);
-        Scene1()
+        targetScene()
     }, 30);
     let button = document.getElementById("start");
     button.style.display = "none";

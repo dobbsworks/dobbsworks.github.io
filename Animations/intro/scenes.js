@@ -566,6 +566,86 @@ function Scene8() {
     setTimeout(Scene9, 120 * frames);
 }
 
+
+function Scene8Loop() {
+    camera.zoom = 15;
+    SetInterp(camera, { zoom: 1 - camera.zoom, y: 100 }, 0, 90, "ease-in-out");
+    SetInterp(camera, { y: 100 }, 60, 60, "ease-in-out");
+    sprites.push(new Rect("black", 0, 0, 20000, 20000));
+    for (let i = 0; i < 5; i++) {
+        let projLight = new StaticImage(images.light, 10, 0, 0);
+        projLight.updateRules.push((numFrames) => {
+            if (numFrames % 3 !== 0) return;
+            projLight.xScale = 0.5 + (Math.random())
+            projLight.yScale = 0.5 + (Math.random())
+        })
+        projLight.z = -4;
+        sprites.push(projLight);
+    }
+
+    var crowd = [
+        "vidz", "riddle", "yosh", "jen", "ehnu", "typ",
+        "gfe", "hudson", "mantis", "mushu", "owley", "richard",
+        "crow", "", "", "burger", "mac", "sceptile"
+    ]
+
+    function GetShuffledArray(array) {
+        let scrambled = [];
+        let startArray = [...array]; // copy to avoid editing original array
+        while (startArray.length) {
+            let randomIndex = Math.floor(Math.random() * startArray.length);
+            let item = startArray.splice(randomIndex, 1)[0];
+            scrambled.push(item);
+        }
+        return scrambled;
+    }
+    crowd = GetShuffledArray(crowd);
+
+    for (let row = 0; row < 3; row++) {
+        let y = row * 100 + 280;
+        for (let col = 0; col < 12; col++) {
+            let x = (col - 4) * 150 + (row % 2 ? 70 : 0);
+            let chair = new StaticImage(images.chair, 4, x, y);
+            chair.z = row + 1;
+            sprites.push(chair);
+
+            if (x > -500 && x < 450) {
+                let viewer = crowd.splice(0, 1)[0];
+                if (viewer) {
+                    let image = images["shadow" + viewer];
+                    if (image) {
+                        let sprite = new StaticImage(image, 4, x, y - 20);
+                        sprite.z = row + 1;
+                        sprite.animated = false;
+                        if (viewer === "yosh") {
+                            sprite.animated = true;
+                            sprite.animationSpeed = 0.05;
+                        }
+                        sprites.push(sprite);
+                        let offsetX = Math.random() * 20;
+                        let offsetY = Math.random() * 20;
+                        sprite.updateRules.push((frameNum) => {
+                            sprite.x += Math.cos(frameNum / 10 + offsetX) / 10
+                            sprite.y += Math.cos(frameNum / 10 + offsetY) / 10
+                        })
+                    }
+                    if (viewer == "hudson") {
+                        let popcorn = new StaticImage(images.popcorn, 4, x, y + 40);
+                        popcorn.z = row + 1;
+                        sprites.push(popcorn)
+                    }
+                }
+            }
+        }
+    }
+
+    for (let sprite of sprites) {
+        if (sprite.z) {
+            SetInterp(sprite, { x: sprite.z * 40 }, 120, 120, "linear");
+        }
+    }
+}
+
 // popcorn
 function Scene9() {
     //SetInterp(camera, { zoom: 1, y: 400, x: -400 }, 0, 90, "ease-in-out");
