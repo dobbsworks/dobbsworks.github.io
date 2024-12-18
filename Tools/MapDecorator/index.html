@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Map Decorator</title>
+    <link rel="stylesheet" href="app.css" type="text/css" />
+    <script src="app.js"></script>
+</head>
+<body>
+
+    <div id="step1">
+        <a href="https://donjon.bin.sh/d20/dungeon">donjon dungeon generator</a>
+        <br />
+        <label> <input id="sourceCellSize" type="number" onchange="OnSetupChange()" value="50" /> Pixels per cell in source image </label>
+        <br />
+        <input id="fileLoad" type='file' onchange="OnFileChange()" />
+        <br />
+        <button id="convertToMapData" onclick="ConvertToMapData()">Convert To Map Data</button>
+        <br />
+        <canvas id="canvas" width="800" height="600"></canvas>
+        <img style="display:none" id="loadedImage" />
+    </div>
+
+    <div id="step2" style="display:none">
+        <label> <input id="editCellSize" type="number" onchange="OnEditSetupChange()" value="10" /> Pixels per cell in edit image </label>
+        <br />
+        <label> <input id="outputCellSize" type="number" onchange="OnOutputSetupChange()" value="50" /> Pixels per cell in output image </label>
+        <br />
+        <label> <input type="color" id="backdropColor" value="#341d07" /> Backdrop color </label>
+        <br />
+        <button onclick="AutoPlaceDoors()">Auto-place doors</button>
+        <br />
+        <button onclick="OnOutputSetupChange()">Regenerate output files</button>
+        <br />
+        <span>Left-click: add wall</span>
+        <br />
+        <span>Right-click: clear wall</span>
+        <br />
+        <span>Middle-click: set door (used for Foundry macro)</span>
+        <br />
+        <canvas id="editcanvas" width="800" height="600"></canvas>
+        <canvas id="wallOutputCanvas" width="20" height="20"></canvas>
+        <canvas id="floorOutputCanvas" width="20" height="20"></canvas>
+        <br />
+        <textarea id="commandText" rows = "4" cols = "200"></textarea>
+    </div>
+
+    
+
+
+    <div style="display:none">
+        <img id="floorTexture" src="FlagsDark.jpg" />
+        <img id="baseWallTexture" src="wallVert.png" />
+        <img id="sampleMap" src="sample.png" />
+        <canvas id="upSolidWall" width="300" height="300"></canvas>
+        <canvas id="downSolidWall" width="300" height="300"></canvas>
+        <canvas id="leftSolidWall" width="300" height="300"></canvas>
+        <canvas id="rightSolidWall" width="300" height="300"></canvas>
+    </div>
+</body>
+</html>

@@ -1,22 +1,15 @@
 function CreateTitle() {
-    let char1 = Rand([
+    let characters = [
         "Dobbs",
         Rand([
             "Hover Cat",
-            //"Gracie",
-            //"Lil' Toadette",
             "Rover",
             "Dabble",
             "The Dabble Dragon",
-            // ]),
-            // Rand([
             "Turtle",
             "GQ",
             "Dove",
-
             "Kirbs",
-            //"Tank",
-            //"Shiner",
             "Dae",
             "Hudson",
             "Al",
@@ -36,9 +29,13 @@ function CreateTitle() {
                 "Glain",
                 "Gorj",
                 "The Molsc",
+                "The Pentapod",
+                "The Demolisher",
             ])
         ])
-    ]);
+    ];
+    let char1 = Rand(characters);
+    let char2 = Rand(characters.filter(a => a !== char1));
 
     let animals = [
         "Snail",
@@ -47,6 +44,7 @@ function CreateTitle() {
         Rand([
             "Muncher",
             "Biter",
+            "Pentapod"
         ])
     ];
     let animal1 = Rand(animals)
@@ -58,6 +56,7 @@ function CreateTitle() {
         "YouTube",
         "TikTok",
         "Instagram",
+        "Bluesky",
     ]);
     return Rand([
         `${char1} Finally Snaps`,
@@ -140,6 +139,15 @@ function CreateTitle() {
         `${char1} Gambles All`,
         `${char1} BLJs for Two Hours`,
         `Bomberman 64`,
+        `${char1} Chokes at Flag 3`,
+        `${char1} Tries Pyanodon's`,
+        `${char1} Starts Blue Science`,
+        `${char1} Steals ${char2}'s Boat`,
+        `${char1} Draws a Funny Snail`,
+        `${char1} Meets the Pentapods`,
+        `${char1} Leaves Gleba Forever`,
+        `${char1} Learns About Witches and Goblins`,
+        `${char1} Reaches the Shattered Planet`,
     ]);
 }
 

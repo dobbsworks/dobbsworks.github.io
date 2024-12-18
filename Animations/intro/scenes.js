@@ -845,6 +845,13 @@ function Scene12() {
     factorio.scale = 0.5;
     sprites.push(factorio);
 
+    let starMolsc = new StaticImage(images.starMolsc, 1, -600, -1200);
+    SetInterp(starMolsc, { y: 2000 }, 500, 150, "linear");
+    SetInterp(starMolsc, { isActive: false }, 710, 1, "set");
+    starMolsc.rotation = 1.2;
+    starMolsc.scale = 0.5;
+    sprites.push(starMolsc);
+
 
     let moon = new StaticImage(images.moon, 1, 0, -250);
     SetInterp(moon, { y: 150 }, 460, 200, "linear");

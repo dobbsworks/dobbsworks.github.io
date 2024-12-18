@@ -36,10 +36,16 @@ function Start() {
     } else {
         let month = new Date().getMonth() + 1;
         let day = new Date().getDate();
+        
         let isNewYears = (month == 12 && (day >= 29)) || (month == 1 && day == 1);
-    
         if (isNewYears) {
             window.location.href = "file:///C:/Users/erict/Documents/GitHub/dobbsworks.github.io/Animations/introNewYear/index.html"
+            return;
+        }
+        
+        let isHalloween = (month == 10 && (day >= 21));
+        if (isHalloween) {
+            window.location.href = "file:///C:/Users/erict/Documents/GitHub/dobbsworks.github.io/Animations/introSpooky/index.html"
             return;
         }
     }
