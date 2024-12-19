@@ -57,10 +57,12 @@ window.onload = () => {
     });
     editCanvas.addEventListener("mousemove", (event) => {
         var rect = editCanvas.getBoundingClientRect()
+        var cellX = Math.floor((event.clientX - rect.left) / editGridSize);
+        var cellY = Math.floor((event.clientY - rect.top) / editGridSize);
         if (isLeftClick) {
-            OnClickEditGrid(event.clientX - rect.left, event.clientY - rect.top, cellType.solid);
+            OnClickEditGrid(cellX, cellY, cellType.solid);
         } else if (isRightClick) {
-            OnClickEditGrid(event.clientX - rect.left, event.clientY - rect.top, cellType.open);
+            OnClickEditGrid(cellX, cellY, cellType.open);
         }
     });
     editCanvas.addEventListener("contextmenu", (event) => {
