@@ -1,6 +1,9 @@
 class Dobbs extends Sprite {
     constructor(x, y) {
         super(images.dobbs, x, y);
+        if (holiday == "flipped") {
+            this.rotation = Math.PI;
+        }
     }
 
     scale = 10;

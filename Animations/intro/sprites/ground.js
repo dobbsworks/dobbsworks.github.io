@@ -1,6 +1,6 @@
 class Ground extends Sprite {
     constructor(x, y) {
-        super(images.ground, x, y);
+        super(images["ground" + HolidayFilter("newyears,xmas")], x, y);
     }
 
     scale = 10;

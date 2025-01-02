@@ -58,12 +58,20 @@ function Temp() {
 
 }
 
-
+function HolidayFilter(filter) {
+    if (holiday == "") return ""
+    if (filter.indexOf(holiday) > -1) return "-" + holiday;
+    return "";
+}
 
 
 // Player 1 start
 function Scene1() {
     let song = document.getElementById("theme");
+    if (holiday == "spooky") song = document.getElementById("theme-spooky");
+    if (holiday == "xmas") song = document.getElementById("theme-xmas");
+    if (holiday == "newyears") song = document.getElementById("theme-newyears");
+
     song.volume = 1;
     song.play();
 
@@ -84,8 +92,10 @@ function Scene1() {
     if (Math.random() < 0.2) lifeCount = 6; //mac
     lifeCount++; // doopu
     var lives = lifeCount.toString().padStart(2, "00");
+    if (holiday == "spooky") lives = "-1";
+    
     var lifeCount = [
-        new StaticImage(images.dobbshead, 2, -100, 0),
+        new StaticImage(images["dobbshead" + HolidayFilter("spooky,xmas")], 2, -100, 0),
         new StaticText("x", 50, "white", "black", 0, 0),
         new StaticText(lives, 50, "white", "black", 100, 0)
     ];
@@ -103,20 +113,46 @@ function Scene1() {
 
 // dobbs run, jump, grab coins 
 function Scene2() {
+    if (holiday == "newyears") {
+        for (let i = 0; i < 7000; i += 700 + Math.random() * 300) {
+            let scale = Math.random() * 2 - 1;
+            let x = Math.random() * 800 - 400;
+            let y = Math.random() * 100 - 50;
+            CreateFirework(x, y, i / frames, scale) 
+        }
+    }
+
     let grassGradient = ctx.createLinearGradient(0, 25, 0, -25);
-    grassGradient.addColorStop(0, "#64b87a");
-    grassGradient.addColorStop(1, "#92cddb00");
+    let grassColor = "";
+    if (holiday == "spooky") {
+        grassGradient.addColorStop(0, "#3e221f");
+        grassGradient.addColorStop(1, "#401f3400");
+        grassColor = "#3e221f"
+    } else if (holiday == "xmas") {
+        grassGradient.addColorStop(0, "#EEEEFF");
+        grassGradient.addColorStop(1, "#92cddb00");
+        grassColor = "#EEEEFF"
+    } else if (holiday == "newyears") {
+        grassGradient.addColorStop(0, "#0f5c23");
+        grassGradient.addColorStop(1, "#11165000");
+        grassColor = "#0f5c23"
+    } else {
+        grassGradient.addColorStop(0, "#64b87a");
+        grassGradient.addColorStop(1, "#92cddb00");
+        grassColor = "#64b87a"
+    }
 
     let terrain = [];
     for (let i = 0; i < 10; i++) {
-        terrain.push(new StaticImage(images.flower, 4, 200 + Math.random() * 400, -150 - Math.random() * 50))
+        terrain.push(new StaticImage(images["flower" + HolidayFilter("spooky,xmas")], 4, 200 + Math.random() * 400, -150 - Math.random() * 50))
     }
 
+    let treeImage = images["tree" + HolidayFilter("spooky,xmas,newyears")]
     let trees = [0, 1, 2].flatMap(b => [0, 1, 2].flatMap(a => [
-        new StaticImage(images.tree, 3, 500 - a * 300 + b * 1000, -200),
-        new StaticImage(images.tree, 3, 700 - a * 500 + b * 1000, -150),
-        new StaticImage(images.tree, 2.5, 700 - a * 400 + b * 1000, -150),
-        new StaticImage(images.tree, 2, 300 - a * 250 + b * 1000, -200),
+        new StaticImage(treeImage, 3, 500 - a * 300 + b * 1000, -200),
+        new StaticImage(treeImage, 3, 700 - a * 500 + b * 1000, -150),
+        new StaticImage(treeImage, 2.5, 700 - a * 400 + b * 1000, -150),
+        new StaticImage(treeImage, 2, 300 - a * 250 + b * 1000, -200),
         new StaticImage(images.bush, 3.2, 600 - a * 400 + b * 1000, -140),
         new StaticImage(images.bush, 6, 400 - a * 350 + b * 1200, 100)
     ]));
@@ -133,7 +169,7 @@ function Scene2() {
     let coins = [0, 1, 2].map(x => new Dobbloon(1000 + x * 100, -180));
     let initialS2s = [
         new Rect(grassGradient, 0, -40, 1800, 50),
-        new Rect("#64b87a", 0, 50, 1800, 140),
+        new Rect(grassColor, 0, 50, 1800, 140),
         new Ground(0, 500),
         ...terrain,
         dobbs,
@@ -166,7 +202,7 @@ function Scene2() {
     for (let coinIndex of [0, 1]) {
         setTimeout(() => {
             coins[coinIndex].isActive = false;
-            let points = new StaticImage(images.points, 1, coins[coinIndex].x, coins[coinIndex].y);
+            let points = new StaticImage(images["points" + HolidayFilter("spooky")], 1, coins[coinIndex].x, coins[coinIndex].y);
             points.Update = () => {
                 points.x -= 4;
                 points.y -= 0.2;
@@ -189,11 +225,11 @@ function Scene3() {
     var cameos = [
     //    new StaticImage(images.tank, 10, -600, -100),
         new StaticImage(images.al, 12, -850, -80),
-        new StaticImage(images.gq, 6, -650, 20),
-        new StaticImage(images.kirb, 6, -750, 20),
-        new StaticImage(images.turtle, 6, -800, 80),
-        new StaticImage(images.snek, 6, -700, 80),
-        new StaticImage(images.dove, 3, -700, -100),
+        new StaticImage(images["gq" + HolidayFilter("spooky,xmas")], 6, -650, 20),
+        new StaticImage(images["kirb"+ HolidayFilter("spooky,xmas")], 6, -750, 20),
+        new StaticImage(images["turtle" + HolidayFilter("spooky")], 6, -800, 80),
+        new StaticImage(images["snek" + HolidayFilter("spooky,xmas")], 6, -700, 80),
+        new StaticImage(images["dove" + HolidayFilter("spooky,xmas")], 3, -700, -100),
         new StaticImage(images.doopu, 6, -850, 20),
         new StaticImage(images.goomba, 4, -900, 60),
     ];
@@ -248,33 +284,72 @@ function Scene4() {
     });
     let skyGradient = ctx.createLinearGradient(0, 400, 0, -400);
 
-    skyGradient.addColorStop(0.00, "rgba(255,235,98,0)");
-    skyGradient.addColorStop(0.52, "rgba(255,235,98,1)");
-    skyGradient.addColorStop(0.66, "rgba(255,146,103,1)");
-    skyGradient.addColorStop(0.75, "rgba(255,97,97,1)");
-    skyGradient.addColorStop(1.00, "rgba(22,39,97,1)");
+    if (holiday == "spooky") {
+        skyGradient.addColorStop(0.00, "rgba(255,235,98,0)");
+        skyGradient.addColorStop(0.52, "#a81e58");
+        skyGradient.addColorStop(0.66, "#5c2e77");
+        skyGradient.addColorStop(0.75, "#302260");
+        skyGradient.addColorStop(1.00, "#08143d");
+    } else if (holiday == "xmas") {
+        skyGradient.addColorStop(0.00, "rgba(255,235,98,0)");
+        skyGradient.addColorStop(0.52, "rgba(255,235,98,1)");
+        skyGradient.addColorStop(0.66, "rgba(255,146,103,1)");
+        skyGradient.addColorStop(0.75, "rgba(255,97,97,1)");
+        skyGradient.addColorStop(1.00, "rgba(22,39,97,1)");
+    } else if (holiday == "newyears") {
+        skyGradient.addColorStop(0.00, "rgba(255,235,98,0)");
+        skyGradient.addColorStop(0.10, "rgba(255,146,103,1)");
+        skyGradient.addColorStop(0.30, "rgba(255,97,97,1)");
+        skyGradient.addColorStop(0.55, "rgba(22,39,97,1)");
+    } else {
+        skyGradient.addColorStop(0.00, "rgba(255,235,98,0)");
+        skyGradient.addColorStop(0.52, "rgba(255,235,98,1)");
+        skyGradient.addColorStop(0.66, "rgba(255,146,103,1)");
+        skyGradient.addColorStop(0.75, "rgba(255,97,97,1)");
+        skyGradient.addColorStop(1.00, "rgba(22,39,97,1)");
+    }
+
     let sky = new Rect(skyGradient, 0, 150 - 2400, 1800, 1200)
     sprites.push(sky);
     SetInterp(sky, { y: 2400 }, 0, 60, "ease-in-out");
 
 
-    let hills = new StaticImage(images.smwhills, 1, 800, 150);
-    SetInterp(hills, { x: -2400 }, 60, 600, "linear");
-    sprites.push(hills)
+    if (holiday == "newyears") {
+        for (let i = 0; i < 7000; i += 700 + Math.random() * 300) {
+            let scale = Math.random() * 2 - 1;
+            let x = Math.random() * 800 - 400;
+            let y = Math.random() * 200 - 50;
+            CreateFirework(x, y, i / frames, scale)
+        }
 
-    let mountain = new StaticImage(images.mountain, 2, 800, 250);
-    SetInterp(mountain, { x: -2400 }, 0, 400, "linear");
-    sprites.push(mountain)
-    let flag = new StaticImage(images.flag, 1, 797, 135);
-    SetInterp(flag, { x: -2400 }, 0, 400, "linear");
-    sprites.push(flag)
+        for (let i = 0; i < 100; i++) {
+            let building = new StaticImage(images.skyscraper, i / 50 + 0.8,
+                Math.random() * 2000 + 700,
+                i * 5 + Math.random() * 100 + 100);
+            SetInterp(building, { x: -4800 - i * 20 }, 60, 1200, "linear");
+            building.animated = false;
+            sprites.push(building)
+        }
+    } else {
+        let hills = new StaticImage(images["smwhills" + HolidayFilter("spooky")], 1, 800, 150);
+        SetInterp(hills, { x: -2400 }, 60, 600, "linear");
+        sprites.push(hills)
+    
+        let mountain = new StaticImage(images.mountain, 2, 800, 250);
+        SetInterp(mountain, { x: -2400 }, 0, 400, "linear");
+        sprites.push(mountain)
+        let flag = new StaticImage(images.flag, 1, 797, 135);
+        SetInterp(flag, { x: -2400 }, 0, 400, "linear");
+        sprites.push(flag)
+    }
+
 
     let krobus = new StaticImage(images.krobus, 3, 2497, 235);
     SetInterp(krobus, { x: -3600 }, 0, 600, "linear");
     sprites.push(krobus)
 
 
-    let balloon = new StaticImage(images.balloon, 6, -200, 0);
+    let balloon = new StaticImage(images["balloon" + HolidayFilter("spooky,xmas")], 6, -200, 0);
     balloon.animated = false;
     let hovercat = new StaticImage(images.dobbs, 6, -197, 90);
     hovercat.tile = 4;
@@ -318,7 +393,10 @@ function Scene4() {
     for (let i = 0; i < 9; i++) {
         let pos = Math.ceil(i / 2);
         let sign = i % 2 ? -0.4 : 1;
-        let dove = new StaticImage(images.dove, 3, -1200 - pos * 60, 120 + (pos * 20) * sign);
+        let dove = new StaticImage(images["dove" + HolidayFilter("spooky")], 3, -1200 - pos * 60, 120 + (pos * 20) * sign);
+        if (i === 0 && holiday == "xmas") {
+            dove = new StaticImage(images["dove-xmas"], 3, -1200 - pos * 60, 120 + (pos * 20) * sign);
+        }
         dove.animationOffset += Math.random() * 60;
         SetInterp(dove, { x: 800 }, 0, 240, "ease-in-out");
         SetInterp(dove, { x: 1200 }, 360, 240, "ease-in-out");
@@ -384,9 +462,9 @@ function Scene6(panic, balloon, basket) {
     SetInterp(panelBorder, { x: -1100 }, 0, 30, "ease-in-out");
     SetInterp(camera, { x: 200 }, 0, 30, "ease-in-out");
 
-    let comicPanel1 = new StaticImage(images.dogbg, 1, 40, -47);
-    let rover = new StaticImage(images.rover, 2, 40, -24);
-    let roverwink = new StaticImage(images.roverwink, 2, 40, -44);
+    let comicPanel1 = new StaticImage(images["dogbg" + HolidayFilter("xmas")], 1, 40, -47);
+    let rover = new StaticImage(images["rover" + HolidayFilter("spooky,xmas")], 2, 40, -24);
+    let roverwink = new StaticImage(images["roverwink" + HolidayFilter("spooky")], 2, 40, -44);
     roverwink.animationSpeed = 0.04;
     roverwink.animationOffset = 80;
     let panel1 = [comicPanel1, rover, roverwink];
@@ -396,7 +474,7 @@ function Scene6(panic, balloon, basket) {
     })
 
     let comicPanel2 = new StaticImage(images.dogpanel, 1, 40, 122);
-    let paw = new StaticImage(images.paw, 4, 44, 162);
+    let paw = new StaticImage(images["paw" + HolidayFilter("spooky")], 4, 44, 162);
     paw.y += 150;
     SetInterp(paw, { y: -150 }, 135, 15, "ease-in-out");
     let panel2 = [comicPanel2, paw];
@@ -407,8 +485,20 @@ function Scene6(panic, balloon, basket) {
 
     let comicPanel3 = new Rect("#92cddb", 250, 37, 148, 320);
     let ground = new Rect("#64b87a", 250, 167, 148, 60);
+    if (holiday == "spooky") {
+        comicPanel3 = new Rect("#401f34", 250, 37, 148, 320);
+        ground = new Rect("#3e221f", 250, 167, 148, 60);
+    } else if (holiday == "xmas") {
+        comicPanel3 = new Rect("#92cddb", 250, 37, 148, 320);
+        ground = new Rect("#EEEEFF", 250, 167, 148, 60);
+    } else if (holiday == "newyears") {
+        comicPanel3 = new Rect("#111650", 250, 37, 148, 320);
+        ground = new Rect("#64b87a", 250, 167, 148, 60);
+    }
+
     let readyShip = new StaticImage(images.ship1, 0.2, 250, 100);
     readyShip.rotation = -Math.PI / 2;
+    if (holiday == "flipped") readyShip.rotation = 0;
     readyShip.updateRules.push((frameNum) => {
         readyShip.x += (frameNum % 2 ? -3 : 3);
 
@@ -442,6 +532,7 @@ function Scene6(panic, balloon, basket) {
 
     let ship = new StaticImage(images.ship1, 1, -2000, 250);
     ship.rotation = -0.2;
+    if (holiday == "flipped") ship.rotation = -0.2 - Math.PI/2;
     ship.updateRules.push((frameNum) => {
         if (ship.x > -100 && ship.x < 1000) {
             let smoke = new StaticImage(images.explosion, 2, ship.x - 200, ship.y + 50);
@@ -669,6 +760,10 @@ function Scene10() {
 
     let video = document.getElementById("vid");
     video.playbackRate = 4;
+    if (holiday == "spooky") {
+        video = document.getElementById("vidSpooky");
+        video.playbackRate = 2;
+    }
     video.play();
     let videoScreen = new Rect(video, 0, 200, 1920 / 2, 1080 / 2);
     sprites.push(videoScreen);
@@ -746,12 +841,21 @@ function Scene12() {
     sprites.push(night);
 
     let skyGradient = ctx.createLinearGradient(0, 1200, 0, -800);
-    skyGradient.addColorStop(0.00, "rgba(255,235,98,0)");
-    skyGradient.addColorStop(0.12, "rgba(255,235,98,1)");
-    skyGradient.addColorStop(0.20, "rgba(255,146,103,1)");
-    skyGradient.addColorStop(0.35, "rgba(255,97,97,1)");
-    skyGradient.addColorStop(0.60, "rgba(22,39,97,1)");
-    skyGradient.addColorStop(0.80, "rgba(11,20,50,1)");
+
+    if (holiday == "spooky") {
+        skyGradient.addColorStop(0.00, "rgba(255,235,98,0)");
+        skyGradient.addColorStop(0.52, "#a81e58");
+        skyGradient.addColorStop(0.66, "#5c2e77");
+        skyGradient.addColorStop(0.75, "#302260");
+        skyGradient.addColorStop(1.00, "#08143d");
+    } else {
+        skyGradient.addColorStop(0.00, "rgba(255,235,98,0)");
+        skyGradient.addColorStop(0.12, "rgba(255,235,98,1)");
+        skyGradient.addColorStop(0.20, "rgba(255,146,103,1)");
+        skyGradient.addColorStop(0.35, "rgba(255,97,97,1)");
+        skyGradient.addColorStop(0.60, "rgba(22,39,97,1)");
+        skyGradient.addColorStop(0.80, "rgba(11,20,50,1)");
+    }
 
     let sky = new Rect(skyGradient, 0, 150 - 2400, 2800, 4800)
     sprites.push(sky);
@@ -759,6 +863,17 @@ function Scene12() {
     SetInterp(sky, { y: 2600 }, 0, 800, "ease-in-out");
     SetInterp(sky, { x: 2400 }, 800, 2, "ease-in-out");
 
+    if (holiday == "newyears") {
+        let delays = [0, 1000, 1200];
+        for (let i of delays) {
+            let scale = Math.random() * 2 - 1;
+            let x = Math.random() * 800 - 400;
+            let fireworks = CreateFirework(x, -i / 2, i / frames, scale);
+            fireworks.forEach(a => {
+                SetInterp(a, { y: 4000 }, 0, 800, "linear");
+            });
+        }
+    }
 
 
     for (let layer = 0; layer < 3; layer++) {
@@ -793,10 +908,12 @@ function Scene12() {
     SetInterp(camera, { zoom: 1 }, 120, 120, "ease-in-out");
     SetInterp(camera, { zoom: -1.5 }, 270, 120, "ease-in-out");
     rocket.rotation = -Math.PI / 2;
+    if (holiday == "flipped") rocket.rotation = 0;
     rocket.updateRules.push((frameNum) => {
         rocket.x += Math.cos(frameNum / 50);
         if (camera.zoom > 2.5) rocket.x *= 0.9;
         rocket.rotation = (Math.random() - 0.5) / 60 - Math.PI / 2;
+        if (holiday == "flipped") rocket.rotation = (Math.random() - 0.5) / 60;
 
         if (rocket.x > -1000 && rocket.x < 1000) {
             for (let a = 0; a < 4; a++) {
@@ -853,7 +970,7 @@ function Scene12() {
     sprites.push(starMolsc);
 
 
-    let moon = new StaticImage(images.moon, 1, 0, -250);
+    let moon = new StaticImage(images["moon" + HolidayFilter("spooky")], 1, 0, -250);
     SetInterp(moon, { y: 150 }, 460, 200, "linear");
     moon.rotation = Math.PI;
     moon.scale = 5;
@@ -895,6 +1012,24 @@ function Scene13() {
     let title = CreateTitle();
     let num = (Math.random() * 999 + 1).toFixed(0);
     let color = Rand(["#f6c729", "#03c802", "#04d8f7", "#f73738"])
+
+    if (holiday == "spooky") {
+        num = Rand("13", "666");
+        color = "purple";
+        title = "Night of the Living Dobbs";
+    } else if (holiday == "xmas") {
+        num = "1225";
+        color = "#03c802";
+        title = "It's a Wonderful Dobbs";
+    } else if (holiday == "newyears") {
+        num = new Date().getFullYear();
+        title = Rand(["And a Happy New Dobbs", "Almost a New Year"]);
+    } else if (holiday == "flipped") {
+        num = "0401";
+        title = Rand(["Allan please add title"]);
+    }
+    
+
     let episodeNumber = new StaticText(`Episode ${num}:`, 30, color, "black", 0, 190);
     let episodeTitle = new StaticText(title, 30, color, "black", 0, 230);
     sprites.push(episodeNumber, episodeTitle);
@@ -911,6 +1046,52 @@ function Scene14() {
     }
 }
 
+
+
+function CreateFirework(x, y, delay, scale) {
+    let fireworks = [];
+    for (let dist = 1; dist <= 6; dist++) {
+        for (let d = 0; d < 360; d += 15) {
+            let r = d / 360 * Math.PI * 2 + Math.random();
+            let star = new StaticImage(images.star, 0.01, x, y);
+            star.updateRules.push((frameNum) => {
+                if (star.timer === undefined) star.timer = -delay;
+                star.timer += 1;
+                if (star.timer < 0) return;
+                if (star.timer < 40) {
+                    star.y -= 4;
+                } else if (frameNum == 40) {
+                    star.x += (Math.random() - 0.5) * 3 * scale;
+                    star.y += (Math.random() - 0.5) * 3 * scale;
+                } else {
+                    star.scale = (Math.random() * 2 + 0.2) * scale;
+                    let scaleDown = (star.timer - 30) / 10;
+                    star.x += dist * Math.cos(r) / scaleDown;
+                    star.y += dist * Math.sin(r) / scaleDown;
+                }
+
+                if (star.timer > 120) {
+                    star.scale *= 120 / star.timer;
+                }
+
+                if (star.timer > 360 && Math.random() > 0.95) {
+                    star.isActive = false;
+                }
+            });
+            //SetInterp(star, { y: 2000 }, 0, 2000, "linear");
+            fireworks.push(star);
+        }
+    }
+    sprites.push(...fireworks);
+    return fireworks;
+}
+
+
+
+
 // ending card https://www.beepbox.co/#9n31sbk0l00e03t1Da7g0fj07r0i0o432T1v3ue1f0q0y10n73d4aA0F0B7Q0000Pe600E2bb619T1v1u30f0qwx10r511d08A9F4B0Q19e4Pb631E3b7626637T1v1u30f0qwx10r511d08A9F4B0Q19e4Pb631E3b7626637T4v1uf0f0q011z6666ji8k8k3jSBKSJJAArriiiiii07JCABrzrrrrrrr00YrkqHrsrrrrjr005zrAqzrjzrrqr1jRjrqGGrrzsrsA099ijrABJJJIAzrrtirqrqjqixzsrAjrqjiqaqqysttAJqjikikrizrHtBJJAzArzrIsRCITKSS099ijrAJS____Qg99habbCAYrDzh00E0b4x800000000i4M000000018i0000000000000000000p21PFKDUiegig5dfAEuh7Fw1XxQPYp8ZgZo-Uf83QR3M0-hAzR3O8-Afofjmf0zV683O8ZoUaq_Fn9kOQ98QVdrtjbllQwkPD2uwuywDE7EE9W1Wa2uwuw0
 // https://www.beepbox.co/#8n31sbk0l00e0jt2wm0a7g0oj07i0r1o3210T0v2L4u12q1d1f7y1z1C0w2c0h2T0v0L4u11q0d0f8y0z1C2w1c0h0T0v1L4u10q0d0f8y0z1C2w2c0h0T2v2L4u15q0d1f8y0z1C2w0b4z9000000z91k00000004xc0018j1000018Ocz8Ocz8Ock00000h4h4h8ych4g00000p25XFBQHGo6KCC1wqqo2-CCKGOC2IIFwF6hFwp2hFwqqfj8V0zFI8QR-3AkAth7mhV4zA2eCEzM38F8WieQzRAtx7johU3AnAtF7mhSrQs4Iidd7P3O97ohGufbF02FE-yeAzJbVuPq_kBeU1IAtp7onTjZfH_SeUbTjTW_8pIzIBZlir5ns6MIDjyb05cK8bgbkbgb0yQ2M8J0JoJ0JoJ0I0bgb02Q2XNq1q1q1q1q1q1q1qhq1q1q1q1q1q1q1tMJ0J0J0J0J0J0J0JEJ0J0J0J0J0J0J0JjteKDf2PhD1FEOc-syzaCGszaD8OFOacGqFOaqYELGduCALQBZ9uPnBlhbCzaCCqcCqpFA9uEBl9B52ylahhhhhhgERiCO
 // new years https://www.beepbox.co/#9n51sbk0l00e0jt2wa7g0oj08r0i0o44234T1v2ub5f0q0x10o51d23A5F4B6Q0001PecaaE4b262963979T1v0ub4f20o72laqw131d23A5F4B3Q0001Pfca8E362963479T5v1u51f0qwx10n511d08H-IHyiih9999998h0E1b6T1v4u97f0q0z10t231d4aA9F3B6Q5428Paa74E3ba63975T5v1uc9f10j5q011d23HXQRRJJHJAAArq8h0E0T4v2uf0f0q011z6666ji8k8k3jSBKSJJAArriiiiii07JCABrzrrrrrrr00YrkqHrsrrrrjr005zrAqzrjzrrqr1jRjrqGGrrzsrsA099ijrABJJJIAzrrtirqrqjqixzsrAjrqjiqaqqysttAJqjikikrizrHtBJJAzArzrIsRCITKSS099ijrAJS____Qg99habbCAYrDzh00E0b4z97w6000z99k0001mu04x002h8j1000018Ocz8Ocz8Ock00000i4x8i4x8000c000018ik0oQdN8iyg00004h4h4i8z4h400000p2bPFDQwZRgYx1zOdMYzgfrkfn13Oc4ftpF__3TazRSPfVxePnUepcXtzRofkyfGh3RufnupxfE6pcXq8ZtzM63WK3TufnupxfEvVcWxwYzUZnzSrQs5RtfQ-LSxzW1uWu_n-jp7fbQQ-O9D-DB-rBmrfZju22rdfToXdvxRMzL2275TrI5ADjfOCDNYh9X2tjLDQw1YEDF9Xi-nISLR9vK0r9fmjS5ZQ_jW_qCcKwnKDLR_ASgSi-GAENlT1Ib9QUyMjnjfWfhkf1IPUyEZcQijSjof03T3M8Y4fpHYxn7BYWtdfMoZ0YzUZO9VLbWxYQuALwxU4DwrNRc_LUCCn42Q2R2Q2M8J0I2bgbmbgbmbgb02Q2M0J0Jd7-3j7M7A1V0ug7A1V0ug7AxV0ug7A1V0ug7A1V0ve1V0ug7A1V0ug7A1V0uq7A1V0ug7A1V0ug7A1RdQWWsY2VKDU3F8x0V3KitS0FFYcCvD0sEDwcP0sAuEuKEvdV74yv9ctjLDNg1Wp7jnUn22qvH4pHFI_j7AhQR_YBFkQFF-ASfwrdmTOze_TZhN3kuYPY1M3cPsX0d0efOyRcvk3jjjjjjjjjiCR-jnViWCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCPtelgWuVD0gc4WpOxWa2v8GxYH8Gyva7EE9YyGOqGqYi5Y4qZd9vSHMjXgZ51fAlg-lAlhfB3Qk4-hlpdgiZhaGjGa54GkyyyyyyxhGBbA
+// spooky: https://www.beepbox.co/#8n31sbk0l00e0jt2wm0a7g0oj07i0r1o3210T1v2L4u84q1d4f9y3z1C0c0AcF8B5V1Q0259P8998E0000T3v0L4ughq1d6f5y1z7C0SXi9980000000000T1v1L4u9aq3d5fay1z0C0c0AcF8BeV8Q0259PffffE8543T2v2L4u15q0d1f8y0z1C2w0b4z9000000z91k00000004xc0018j1000018Ocz8Ocz8Ock00000h4h4h8ych4g00000p26QIOWp3vBtMh1tZtRT0zM0ZtRT0zM8ZtRSCn_cOi7HK1890wANWXwxX_ANWXwxV0wANWXwxXd7HA178ohRT0A16PnU91APnp7rF7vV7Ai0zA20zHKTiff_9CKOeKOe178Z_Aswg4ttM90hU8fAP83AsyehT-hSrQs6Uidd7P3i17ohGufbF02FE-yeAzJbVuPq_kBeVKOhRAtxvtfQ-L-oXwLtfvHYxCOeOnRl9IltMj2Ote8c0kOUwJ0JgJ0I0bgb0yQ2RyQ2RyQ2RyQ2M8J0KUmwmwmwmwmwmwmwmQmwmwmwmwmwmwmwnmbgbgbgbgbgbgbgbqbgbgbgbgbgbgbgbkTjHFPwIQpMqqczfD8EOFGD8OFOcGsyzaCGsyCLabWznFFbZ9vinIRVlkiVEOFFCz9CCqp2nG9liphgEBiAkkkkkkadkFIw
+// xmas: https://www.beepbox.co/#8n42sbk0l00e0jt2wm0a7g0oj07i0r1o321200T5v2L4u32q1d5f8y1z7C1c0h0HU7000U0006000ET5v0L4ua0q3d7f7y4z1C0c4h0HTP9Bx99sp99900T1v1L4u9aq3d5fay1z0C0c0AcF8BeV8Q0259PffffE8543T1v1L4u9bq3d6fay0ziC0c2AcF8BeV1Q0245PceceE0000T2v3L4u15q0d1f8y0z1C2w0T4v1L4uf0q1z6666ji8k8k3jSBKSJJAArriiiiii07JCABrzrrrrrrr00YrkqHrsrrrrjr005zrAqzrjzrrqr1jRjrqGGrrzsrsA099ijrABJJJIAzrrtirqrqjqixzsrAjrqjiqaqqysttAJqjikikrizrHtBJJAzArzrIsRCITKSS099ijrAJS____Qg99habbCAYrDzh00b4z9000000z91k00000004xc0018j1000018Ocz8Ocz8Ock0000061M00018Qk00000014h4h400N4h0000014h4h4h4h4h4g0000p27YFBQHGo6KCC1wqqo2-CCKGOC2IIFwF6hFwp2hFwqqfj8V0zFI8QR-3AkAth7mhV4zA2eCEzM38F8WieQzRAtx7johU3AnAtF7mhSrQs4Iidd7T3O97shGufbF02FE-yeAzJbVuPq_kBeU1IAtp7onTjZfHZtzK2ZQZ-LO6r8X9vlkCNlT1Ib9QUyM1jby2Q2R2Q2M8J0I2bgbmbgbmbgb02Q2M0J0KYmwmwmwmwmwmwmwmAmwmwmwmwmwmwmwnsbgbgbgbgbgbgbgbqbgbgbgbgbgbgbgbkTjHFPMDAqqfKyzhakkklQkkkQklkkkq2e18WpaUzI8WyeCGi8Wrz_znjhYAth714uUzL8WrX2eYzG8WqHyfnhghQkk4t5BtBpBWqrGGyeAzH8V0zFcJjhD4tNvjihQAt9vjihQRV9viqZd9vFbWiZCL0qEBPhBjjd6jdcQO4LkiGAOyxhaB8EEEEEEkqFjpIRU4xjdcQPjdcQPjeCqpFCCqpFCCqp0
+

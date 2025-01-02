@@ -3,6 +3,9 @@ class StaticImage extends Sprite {
         super(image, x, y);
         this.scale = scale;
         this.name = Object.keys(images).find(a => images[a] === image)
+        if (holiday == "flipped") {
+            this.rotation = Math.PI;
+        }
     }
     animated = true;
     animationOffset = 0;
