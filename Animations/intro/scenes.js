@@ -198,6 +198,21 @@ function Scene2() {
         statue.x -= 2.5;
         if (statue.x < -1000) statue.isActive = false;
     }
+    
+
+    let bike = new StaticImage(images.bike, 18, 2150, 240);
+    sprites.push(bike);
+    bike.updateRules.push(() => {
+        bike.x -= 5;
+        if (bike.x < -1000) bike.isActive = false;
+    })
+    let dabble = new StaticImage(images.dabble, 18, 2180, 120);
+    dabble.animationSpeed = 0.5;
+    sprites.push(dabble);
+    dabble.updateRules.push(() => {
+        dabble.x -= 5;
+        if (dabble.x < -1000) dabble.isActive = false;
+    })
 
     for (let coinIndex of [0, 1]) {
         setTimeout(() => {
@@ -222,6 +237,8 @@ function Scene2() {
 
 // others in background
 function Scene3() {
+    let dabble = sprites.find(a => a.tileset === images.dabble);
+    sprites = sprites.filter(a => a != dabble);
     var cameos = [
     //    new StaticImage(images.tank, 10, -600, -100),
         new StaticImage(images.al, 12, -850, -80),
@@ -231,9 +248,10 @@ function Scene3() {
         new StaticImage(images["snek" + HolidayFilter("spooky,xmas")], 6, -700, 80),
         new StaticImage(images["dove" + HolidayFilter("spooky,xmas")], 3, -700, -100),
         new StaticImage(images.doopu, 6, -850, 20),
+        new StaticImage(images.ork, 12, -950, 0),
         new StaticImage(images.goomba, 4, -900, 60),
     ];
-    sprites.push(...cameos);
+    sprites.push(...cameos, dabble);
     cameos.forEach(a => {
         SetInterp(a, { x: 400 }, 60, 120, "ease-in-out");
         let offset = Math.random() * 50;
@@ -249,7 +267,7 @@ function Scene3() {
 
     SetInterp(camera, { zoom: 0.2 }, 50, 120, "ease-in-out");
 
-    let chargeTime = (cameos.length + 1) * 45 * frames;
+    let chargeTime = 355 * frames;
     setTimeout(() => {
         camera.focus = null;
         SetInterp(camera, { zoom: -0.2, x: -camera.x, y: -camera.y }, 0, 30, "ease-in-out");
@@ -783,6 +801,7 @@ function Scene10() {
     }
 
     setTimeout(Scene11, 220 * frames);
+    //setTimeout(Scene11, 175 * frames);
 }
 
 // 1 2 1 2 3 lets go

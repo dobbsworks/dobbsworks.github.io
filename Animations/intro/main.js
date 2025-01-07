@@ -55,7 +55,7 @@ function Start() {
         }
         
         let isAprilFools = (month == 4 && (day == 1));
-        if (isHalloween) {
+        if (isAprilFools) {
             holiday = "flipped";
         }
     }
@@ -66,7 +66,7 @@ function Start() {
             canvas.style.opacity = 1;
         }, 50);
         targetScene()
-    }, 30);
+    }, location.href == "http://127.0.0.1:5501/" ? 1000 : 30);
     let button = document.getElementById("start");
     button.style.display = "none";
     canvas.style.display = "unset";

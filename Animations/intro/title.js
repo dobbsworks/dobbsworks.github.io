@@ -23,7 +23,9 @@ function CreateTitle() {
             "Panda",
             "Mac",
             "YouTube Chat",
+            "Willow",
             Rand([
+                "Robert Goblin",
                 "Torgan",
                 "Serene",
                 "Glain",
@@ -41,6 +43,7 @@ function CreateTitle() {
         "Snail",
         "Horse",
         "Turtle",
+        "Frog",
         Rand([
             "Muncher",
             "Biter",
@@ -148,6 +151,19 @@ function CreateTitle() {
         `${char1} Leaves Gleba Forever`,
         `${char1} Learns About Witches and Goblins`,
         `${char1} Reaches the Shattered Planet`,
+        `Because You See,`,
+        `${char1} Gets the Moonberry`,
+        `${char1} Redeemed BIKE`,
+        `${char1} Issues a Citation`,
+        `${char1} Cows`,
+        `${char1} Double-Horses`,
+        `${char1} Dumps Haley`,
+        `${char1} Defends Quest 64`,
+        `${char1} Waits at the Flagpole`,
+        `The Truth About ${char1}`,
+        `Every Episode is Personalized`,
+        `Left Facing Magnifying Glass`,
+
     ]);
 }
 
