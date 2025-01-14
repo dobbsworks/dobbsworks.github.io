@@ -16,3 +16,20 @@ class StaticImage extends Sprite {
             this.tile = Math.floor(this.animationSpeed * (frameNum + this.animationOffset) / musicBeat * 2) % this.tileset.count;
     }
 }
+
+
+class Lizard extends StaticImage {
+    constructor(scale, x, y, rotation, speed) {
+        super(images.lizard, scale, x, y);
+        this.rotation = rotation;
+        this.speed = speed;
+    }
+
+    speed = 1;
+
+    Update(frameNum) {
+        super.Update(frameNum);
+        this.x += this.speed * Math.cos(this.rotation);
+        this.y += this.speed * Math.sin(this.rotation);
+    }
+}

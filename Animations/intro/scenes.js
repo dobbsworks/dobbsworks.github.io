@@ -65,8 +65,37 @@ function HolidayFilter(filter) {
 }
 
 
+
+function InitializeLizards() {
+    var lizardCount = 5;
+    for (let i = 0; i < lizardCount; i ++) {
+        var rnd = Math.random() * 0.8;
+        setTimeout(SpawnLizard, 1000 * 60 * rnd);
+    }
+}
+
+
+
+function SpawnLizard() {
+    var scale = 3 + Math.random() * 2;
+    var speed = 1.5 + 2 * Math.random();
+    var x = 30 + 900 * Math.random();
+    var y = -50;
+    var targetX = 30 + 900 * Math.random();
+    var rotation = Math.atan2(600, targetX - x);
+    if (Math.random() > 0.5) {
+        y = 590;
+        rotation *= -1;
+    }
+    var lizard = new Lizard(scale, x, y, rotation, speed);
+    lizards.push(lizard);
+}
+
+
+
 // Player 1 start
 function Scene1() {
+    InitializeLizards();
     let song = document.getElementById("theme");
     if (holiday == "spooky") song = document.getElementById("theme-spooky");
     if (holiday == "xmas") song = document.getElementById("theme-xmas");

@@ -3,6 +3,7 @@ var canvas;
 var ctx;
 var images = {};
 var sprites = [];
+var lizards = [];
 var frameNum = 0;
 var musicBeat = 11.7; //magic number for frame updates to match music
 var frames = 1000 / 60;
@@ -80,7 +81,7 @@ function Loop() {
 
 function Update() {
     frameNum++;
-    for (let sprite of sprites) {
+    for (let sprite of [...sprites, ...lizards]) {
         for (let rule of sprite.updateRules) {
             rule.bind(sprite, frameNum)();
         }
@@ -111,6 +112,9 @@ function Draw() {
         sprite.Draw(ctx, frameNum);
     }
     onAfterDraw(ctx);
+    for (let lizard of lizards) {
+        lizard.Draw(ctx, frameNum);
+    }
 }
 
 

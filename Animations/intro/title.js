@@ -163,6 +163,7 @@ function CreateTitle() {
         `The Truth About ${char1}`,
         `Every Episode is Personalized`,
         `Left Facing Magnifying Glass`,
+        `lizard`,
 
     ]);
 }
