@@ -67,7 +67,7 @@ function HolidayFilter(filter) {
 
 
 function InitializeLizards() {
-    var lizardCount = 5;
+    var lizardCount = 6;
     for (let i = 0; i < lizardCount; i ++) {
         var rnd = Math.random() * 0.8;
         setTimeout(SpawnLizard, 1000 * 60 * rnd);
