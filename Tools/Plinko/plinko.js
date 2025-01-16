@@ -61,8 +61,11 @@ function StartSim() {
 
 let users = null;
 let scrambleRequested = false;
+let audios = [];
 
 function Init() {
+    audios = document.getElementsByTagName("audio");
+
     var params = new URL(window.location.href).searchParams;
     var source = params.get("source");
     var streamer = params.get("streamer");
@@ -126,7 +129,8 @@ function SetText(text) {
 }
 
 
-
+let prevVelocity = null;
+let prevAccel = 0;
 function Loop() {
     if (!w) return;
 
@@ -145,7 +149,6 @@ function Loop() {
             var shape = f.getShape();
             var userData = f.getUserData();
             if (userData === "pin" || userData === "ball") {
-
                 var r = shape.m_radius;
                 ctx.beginPath();
                 ctx.arc(X(p.x), Y(p.y), R(r), 0, Math.PI * 2);
@@ -165,6 +168,27 @@ function Loop() {
         let user = users[userIndex];
         DrawRotatedText(ctx,x,630,Math.PI/2, user);
     }
+
+    let velocity = ball.c_velocity.v;
+    let oldSpeed = prevVelocity ? Math.sqrt(prevVelocity.x ** 2 + prevVelocity.y ** 2) : 0;
+    let speed = Math.sqrt(velocity.x ** 2 + velocity.y ** 2);
+    let speedChange = Math.abs(speed - oldSpeed);
+
+    let accel = speedChange;
+    
+    let accelChange = Math.abs(prevAccel - accel);
+
+    if (accelChange > 1.5) {
+        let usableAudios = Array.from(audios).filter(a => a.currentTime == 0.0 || a.currentTime > 1.0);
+        if (usableAudios.length > 0) {
+            let audio = usableAudios[Math.floor(Math.random() * usableAudios.length)];
+            audio.currentTime = 0.0;
+            audio.volume = Math.min(accelChange / 3.0, 1.0);
+            audio.play();
+        }
+    }
+    prevAccel = accel;
+    prevVelocity = velocity;
 }
 
 function FindWinnerIndex() {
