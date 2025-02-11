@@ -231,7 +231,7 @@ function CreateTestMap() {
 }
 
 var player: Player;
-var isDemoMode = window.location.href.toLowerCase().indexOf("dobbsworks.github.io") > -1;
+var isDemoMode = false;//window.location.href.toLowerCase().indexOf("dobbsworks.github.io") > -1;
 
 
 var allDemoLevels = [

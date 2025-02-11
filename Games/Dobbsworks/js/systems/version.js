@@ -35,6 +35,6 @@ var Version = /** @class */ (function () {
             return false;
         return Version.Compare("1.11.0", currentMap.mapVersion) == 1;
     };
-    Version.Current = "1.12.1";
+    Version.Current = "1.13.0";
     return Version;
 }());

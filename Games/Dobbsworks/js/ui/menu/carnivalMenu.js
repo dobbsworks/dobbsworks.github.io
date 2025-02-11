@@ -114,14 +114,14 @@ var CarnivalMenu = /** @class */ (function (_super) {
             // attractionButtonPanel.targetX -= 1000;
         });
         var prizeCorner = this.CreateButton("Prize Corner");
-        // prizeCorner.normalBackColor = "#888";
-        // prizeCorner.mouseoverBackColor = "#888";
+        prizeCorner.normalBackColor = "#888";
+        prizeCorner.mouseoverBackColor = "#888";
         mainButtonPanel.AddChild(prizeCorner);
         prizeCorner.onClickEvents.push(function () {
-            //audioHandler.PlaySound("error", true);
+            audioHandler.PlaySound("error", true);
             //mainButtonPanel.targetX -= 1000;
             //attractionButtonPanel.targetX -= 1000;
-            MenuHandler.SubMenu(CarnivalPrizeMenu);
+            //MenuHandler.SubMenu(CarnivalPrizeMenu);
         });
         var backButton = this.CreateButton("Back");
         mainButtonPanel.AddChild(backButton);

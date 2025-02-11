@@ -395,6 +395,13 @@ function Scene4() {
     SetInterp(krobus, { x: -3600 }, 0, 600, "linear");
     sprites.push(krobus)
 
+    let bee = new StaticImage(images.bee, 4, 2697, 135);
+    SetInterp(bee, { x: -3600 }, 0, 600, "linear");
+    bee.updateRules.push((frameNum) => {
+        bee.y += Math.sin(frameNum / 4) * 2;
+    })
+    sprites.push(bee)
+
 
     let balloon = new StaticImage(images["balloon" + HolidayFilter("spooky,xmas")], 6, -200, 0);
     balloon.animated = false;

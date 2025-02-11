@@ -117,14 +117,14 @@ class CarnivalMenu extends Menu {
         });
 
         let prizeCorner = this.CreateButton("Prize Corner");
-        // prizeCorner.normalBackColor = "#888";
-        // prizeCorner.mouseoverBackColor = "#888";
+        prizeCorner.normalBackColor = "#888";
+        prizeCorner.mouseoverBackColor = "#888";
         mainButtonPanel.AddChild(prizeCorner);
         prizeCorner.onClickEvents.push(() => {
-            //audioHandler.PlaySound("error", true);
+            audioHandler.PlaySound("error", true);
             //mainButtonPanel.targetX -= 1000;
             //attractionButtonPanel.targetX -= 1000;
-            MenuHandler.SubMenu(CarnivalPrizeMenu);
+            //MenuHandler.SubMenu(CarnivalPrizeMenu);
         });
 
         let backButton = this.CreateButton("Back");

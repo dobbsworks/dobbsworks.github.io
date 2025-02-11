@@ -20,23 +20,23 @@ class MainMenu extends Menu {
         playButton.isNoisy = true;
         ret.push(playButton);
 
-        let myLevelsButton = new Button(playButtonX, playButtonY + playButtonHeight + 10, playButtonWidth, playButtonHeight);
-        let myLevelsText = new UIText(centerX, playButtonY + 40, "My Levels", 30, "#000");
-        myLevelsButton.AddChild(myLevelsText);
-        myLevelsText.xOffset = playButtonWidth / 2 - 5;
-        myLevelsText.yOffset = 40;
-        myLevelsButton.isNoisy = true;
-        if (!isDemoMode) ret.push(myLevelsButton);
+        // let myLevelsButton = new Button(playButtonX, playButtonY + playButtonHeight + 10, playButtonWidth, playButtonHeight);
+        // let myLevelsText = new UIText(centerX, playButtonY + 40, "My Levels", 30, "#000");
+        // myLevelsButton.AddChild(myLevelsText);
+        // myLevelsText.xOffset = playButtonWidth / 2 - 5;
+        // myLevelsText.yOffset = 40;
+        // myLevelsButton.isNoisy = true;
+        // if (!isDemoMode) ret.push(myLevelsButton);
 
-        let demoLevelsButton = new Button(playButtonX, playButtonY + playButtonHeight + 10, playButtonWidth, playButtonHeight);
-        let demoLevelsText = new UIText(centerX, playButtonY + 40, "Demo Levels", 30, "#000");
-        demoLevelsButton.AddChild(demoLevelsText);
-        demoLevelsText.xOffset = playButtonWidth / 2 - 5;
-        demoLevelsText.yOffset = 40;
-        demoLevelsButton.isNoisy = true;
-        if (isDemoMode) ret.push(demoLevelsButton);
+        // let demoLevelsButton = new Button(playButtonX, playButtonY + playButtonHeight + 10, playButtonWidth, playButtonHeight);
+        // let demoLevelsText = new UIText(centerX, playButtonY + 40, "Demo Levels", 30, "#000");
+        // demoLevelsButton.AddChild(demoLevelsText);
+        // demoLevelsText.xOffset = playButtonWidth / 2 - 5;
+        // demoLevelsText.yOffset = 40;
+        // demoLevelsButton.isNoisy = true;
+        // if (isDemoMode) ret.push(demoLevelsButton);
 
-        let recentLevelsButton = new Button(playButtonX, playButtonY + (playButtonHeight + 10) * 2, playButtonWidth, playButtonHeight);
+        let recentLevelsButton = new Button(playButtonX, playButtonY + (playButtonHeight + 10) * 1, playButtonWidth, playButtonHeight);
         let recentLevelsText = new UIText(centerX, playButtonY + 40, "Browse Levels", 30, "#000");
         recentLevelsButton.AddChild(recentLevelsText);
         recentLevelsText.xOffset = playButtonWidth / 2 - 5;
@@ -44,7 +44,7 @@ class MainMenu extends Menu {
         recentLevelsButton.isNoisy = true;
         if (!isDemoMode) ret.push(recentLevelsButton);
 
-        let singlePlayerButton = new Button(playButtonX, playButtonY + (playButtonHeight + 10) * 3, playButtonWidth, playButtonHeight);
+        let singlePlayerButton = new Button(playButtonX, playButtonY + (playButtonHeight + 10) * 2, playButtonWidth, playButtonHeight);
         let singlePlayerText = new UIText(centerX, playButtonY + 40, "Barker's Carnival", 30, "#000");
         singlePlayerButton.AddChild(singlePlayerText);
         singlePlayerText.xOffset = playButtonWidth / 2 - 5;
@@ -73,7 +73,7 @@ class MainMenu extends Menu {
             contestButton.targetX += 300;
         }
 
-        [playButton, myLevelsButton, recentLevelsButton, demoLevelsButton, singlePlayerButton, contestButton].forEach(b => {
+        [playButton, recentLevelsButton, singlePlayerButton, contestButton].forEach(b => {
             b.normalBackColor = "#fff8";
             b.mouseoverBackColor = "#f73738";
             b.borderColor = "#000";
@@ -90,9 +90,9 @@ class MainMenu extends Menu {
             this.Hide(-1);
         });
 
-        myLevelsButton.onClickEvents.push(() => {
-            MenuHandler.SubMenu(MyLevelsMenu);
-        });
+        // myLevelsButton.onClickEvents.push(() => {
+        //     MenuHandler.SubMenu(MyLevelsMenu);
+        // });
 
         recentLevelsButton.onClickEvents.push(() => {
             MenuHandler.SubMenu(LevelBrowseMenu);
@@ -108,12 +108,12 @@ class MainMenu extends Menu {
             this.DisplayContestPopUp();
         });
 
-        demoLevelsButton.onClickEvents.push(() => {
-            currentDemoIndex = 0;
-            currentMap = LevelMap.FromImportString(allDemoLevels[0]);
-            editorHandler.SwitchToPlayMode();
-            MenuHandler.SubMenu(BlankMenu);
-        });
+        // demoLevelsButton.onClickEvents.push(() => {
+        //     currentDemoIndex = 0;
+        //     currentMap = LevelMap.FromImportString(allDemoLevels[0]);
+        //     editorHandler.SwitchToPlayMode();
+        //     MenuHandler.SubMenu(BlankMenu);
+        // });
 
         return ret;
     }

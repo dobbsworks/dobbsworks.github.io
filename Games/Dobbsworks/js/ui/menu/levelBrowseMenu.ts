@@ -44,9 +44,9 @@ class LevelBrowseMenu extends Menu {
         })
         ret.push(this.backButtonUserPanel);
 
-        this.searchButtons.push(new LevelBrowseSortButton(this, "Newest", DataService.GetRecentLevels));
         //this.searchButtons.push(new LevelBrowseSortButton(this, "Oldest", DataService.GetOldestLevels));
         this.searchButtons.push(new LevelBrowseSortButton(this, "Top Rated", DataService.GetBestRatedLevels));
+        this.searchButtons.push(new LevelBrowseSortButton(this, "Newest", DataService.GetRecentLevels));
         this.searchButtons.push(new LevelBrowseSortButton(this, "Most Liked", DataService.GetMostLikedLevels));
         this.searchButtons.push(new LevelBrowseSortButton(this, "Easiest", DataService.GetEasiestLevels));
         this.searchButtons.push(new LevelBrowseSortButton(this, "Hardest", DataService.GetHardestLevels));
@@ -709,11 +709,12 @@ class LevelBrowseSortButton extends Button {
             let secondsSinceLastSearch = 60;
             if (this.searchTime) secondsSinceLastSearch = (+(new Date()) - +(this.searchTime || 0)) / 1000;
             let cache = this.cachedPages.find(a => a.pageIndex == pageIndex);
-            if ((this.parent.currentSearchButton != this || secondsSinceLastSearch < 60) && cache && cache.levels.length > 0) {
+            if (false) {
+            //if ((this.parent.currentSearchButton != this || secondsSinceLastSearch < 60) && cache && cache.levels.length > 0) {
                 // pull from cache
-                this.parent.levels = cache.levels;
-                this.parent.currentPageIndex = pageIndex;
-                this.parent.PopulateLevelPanel();
+                // this.parent.levels = cache.levels;
+                // this.parent.currentPageIndex = pageIndex;
+                // this.parent.PopulateLevelPanel();
             } else {
                 // run this search function
                 this.parent.isDataLoadInProgress = true;

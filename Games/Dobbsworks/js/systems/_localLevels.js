@@ -2,7 +2,7 @@
 function getLevelsFromDB(pageIndex, ordering) {
     var ret = [];
     var levelsPerPage = 50;
-    var sorted = _levelDB.sort(function (a, b) { return ordering(b) - ordering(a); });
+    var sorted = _levelDB.sort(function (a, b) { return ordering(b) - ordering(a) > 0 ? 1 : (ordering(b) - ordering(a) < 0 ? -1 : (Math.random() > 0.5 ? 1 : -1)); });
     var _loop_1 = function (i) {
         var author = _userDB.find(function (a) { return a.id == sorted[i].userId; }) || new UserDT(0, "unknown", "", "");
         var wr = _userDB.find(function (a) { return a.id == sorted[i].recordUserId; }) || new UserDT(0, "unknown", "", "");
