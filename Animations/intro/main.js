@@ -55,6 +55,11 @@ function Start() {
             holiday = "spooky";
         }
         
+        let isValentines = (month == 2 && (day == 13 || day == 14));
+        if (isValentines) {
+            holiday = "valentines";
+        }
+        
         let isAprilFools = (month == 4 && (day == 1));
         if (isAprilFools) {
             holiday = "flipped";

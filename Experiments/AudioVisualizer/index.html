@@ -1,0 +1,37 @@
+<html><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="user-scalable=no, width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="./page.css">
+  <title>Audio Visualizer</title>
+</head>
+
+<body>
+
+
+	<div id="page1">
+		<input type="file" id="songUpload" accept="audio/*" />
+		<input type="text" id="trackNameUpload" placeholder="Track name" />
+		<button onclick="ButtonStart()">Start recording in 3...</button>
+	</div>
+
+	<div id="page2">
+		<div id="viz"></div>
+		<audio id="src-audio" ></audio>
+		<video id="video" src="dabbleIdle.mov" autoplay="true" loop="true"></video>
+		<script src="./app.js"></script>
+		<div id="text">
+			Paper Robot Soundtrack
+			<br/>
+			<br/>
+			Cassidy’s Records
+			
+			<br/>
+			<br/>
+			<span id="trackName">Title Theme</span>
+		</div>
+	</div>
+
+
+</body>
+
+</html>
