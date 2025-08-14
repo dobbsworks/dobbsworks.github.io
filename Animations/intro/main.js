@@ -27,9 +27,9 @@ function Initialize() {
     ctx.imageSmoothingEnabled = false;
 
     setInterval(Loop, frames);
+    setTimeout(Start, 100);
 }
 
-setTimeout(Start, 100);
 function Start() {
 
     const urlParams = new URLSearchParams(window.location.search);

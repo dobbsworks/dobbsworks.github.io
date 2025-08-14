@@ -288,6 +288,12 @@ function Scene3() {
             a.x += Math.cos((frameNum + offset) / 30);
             if (a.x > 1000) a.isActive = false;
         })
+
+        if (a.tileset == images.doopu) {
+            a.updateRules.push((frameNum) => {
+                a.xScale = Math.sin(frameNum / 10)
+            })
+        }
     });
 
     for (let i = 0; i < cameos.length; i++) {
