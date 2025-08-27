@@ -1,0 +1,179 @@
+html, body {
+  background-color: #fff8bd;
+  /* background: linear-gradient(150deg, #c5deea 0%,#8abbd7 31%,#066dab 100%); */
+  height: 100%;
+  width: 100%;
+  margin: 0;
+
+}
+
+body {
+  transition: filter 1s;
+  max-height: 100%;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+
+#gameContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: stretch;
+  align-content: stretch;
+  height: 100%;
+  width: 100%;
+}
+
+#main-content {
+  flex-grow: 1;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-content: stretch;
+}
+
+#inventory {
+  background-color: rgb(198, 188, 138);
+  filter: drop-shadow(2px 0px 10px #444);
+  width: 100%;
+  height: 50%;
+  flex-grow: 1;
+  padding: 25px;
+}
+
+#logPanel {
+  background-color: rgb(197, 197, 162);
+  filter: drop-shadow(2px 0px 10px #444);
+  height: calc(100% - 50px);
+  padding: 25px;
+  width: 400px;
+  line-height: 1.5em;
+  text-indent: 50px;
+  z-index: 1;
+  overflow-y: auto;  
+  flex-shrink: 0;
+}
+
+/* #logPanel p {  
+  animation-duration: 2s;
+  animation-name: log-appear;
+} */
+
+#logPanel .letter {  
+  animation-duration: .5s;
+  animation-name: log-letter-appear;
+  position: relative;
+}
+
+
+@keyframes log-letter-appear {
+from {
+  opacity: 0.0;
+  font-size: 6pt;
+}
+
+to {
+  opacity: 1.0;
+  font-size: 12pt;
+}
+}
+
+@keyframes button-appear {
+0% {
+  opacity: 0.0;
+  transform: scale(2.0);
+}
+10% {
+  opacity: 0.0;
+}
+100% {
+  opacity: 1.0;
+  transform: scale(1.0);
+}
+}
+
+
+#locations {
+  min-height: 40px;
+  background-color: #fff8bd;
+  filter: drop-shadow(2px 0px 10px #444);
+  padding: 0px;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  position:relative;
+}
+
+#gameButtons {
+  min-height: 500px;
+  background-color: #fff8bd;
+  filter: drop-shadow(2px 0px 10px #444);
+  padding: 25px;
+}
+
+.gameButton {
+  background-color: purple;
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 10px;
+  min-width: 163px;
+  background-image: linear-gradient(to right, #007c4f, #04AA6D);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+
+  animation-duration: .5s;
+  animation-name: button-appear;
+  position: relative;
+  transition: transform .2s;
+  position:relative;
+}
+
+.gameButton:hover {
+  transform: scale(1.1);
+}
+
+#locations > .gameButton {
+  border-radius: 10px;
+  min-width: unset;
+  background-image: linear-gradient(to right, #ccc795, #b1ab7b);
+  border: solid 1px #ccc795;
+  filter: drop-shadow(2px 0px 10px #444);
+}
+
+#locations > .gameButton:disabled {
+  background-image: linear-gradient(to right, #fff8bd, #fff8bd);
+  color: #444;
+  z-index: 10;
+}
+
+#locations > .gameButton:disabled:hover {
+  transform: unset;
+}
+
+
+.gameButton:disabled {
+  background-image: linear-gradient(to right, #be7253, #eb6f6f);
+} 
+
+.instances {
+  position: absolute;
+  top: 39px;
+  left: 0px;
+}
+
+.instances > div {
+  background-color: purple;
+  position: relative;
+  display: inline-block;
+  background-image: linear-gradient(to right, #5662ce, #3e61d4);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin: -2px;
+  background-repeat: no-repeat;
+}
