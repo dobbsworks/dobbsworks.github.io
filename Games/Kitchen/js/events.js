@@ -280,7 +280,8 @@ function RegisterEvents() {
 
             recipes.filter(a => a.key == "buy_employee")[0].stock += 30;
 
-            queuedEvents.push({type: "print", data: ""});
+            queuedEvents.push({type: "print", data: `"How's the farming thing?" they ask me. I always tells 'em, it's growing on me!`});
+            queuedEvents.push({type: "print", data: "Anyway, anybody else feeling like a sandwich or two?"});
             queuedEvents.push({type: "unlock", key: "buy_farmplot"});
             queuedEvents.push({type: "unlock", key: "makeblt"});
 
@@ -297,6 +298,7 @@ function RegisterEvents() {
             LockItem("quest5");
 
             recipes.filter(a => a.key == "buy_employee")[0].stock = undefined;
+            queuedEvents.push({type: "print", data: "This place is basically running itself now! Come to think of it..."});
 
             queuedEvents.push({type: "unlock", key: "buy_sisterLocation"});
 

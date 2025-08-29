@@ -477,11 +477,11 @@ var recipes = [
     {
         key: "managelocation",
         display: "Run restaurant",
-        baseTime: 0.1,
+        baseTime: 1,
         locations: [locations.downtown],
         inputs: [],
-        catalysts: [{item: resources.sisterLocation, amount: 1}],
-        outputs: [{item: resources.money, amount: 10}]
+        catalysts: [{item: resources.sisterLocation, amount: 1}, {item: resources.employee, amount: 10}],
+        outputs: [{item: resources.money, amount: 20}]
     },
 
 
@@ -554,7 +554,7 @@ var recipes = [
         baseTime: 1,
         locations: [locations.downtown],
         inputs: [ {item: resources.toast, amount: 1000000}, {item: resources.cookie, amount: 1000000}, {item: resources.cupcake, amount: 1000000}, {item: resources.breakfastPlatter, amount: 1000000}, {item: resources.joke, amount: 1} ],
-        outputs: [ {text: "Nothing, this is basically the post-credits gag."}],
+        outputs: [ {text: "Nothing, this is the post-credits gag."}],
         onetime: true
     },
 ];

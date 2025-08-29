@@ -3,25 +3,12 @@
 // we've got everything your mouth could be wishin'
 // foooooor
 // and so much moooore
-//
-
-
-
-// todo features
-// eventually have to mill your own flour, grow your own produce
-
-// lettuce and tomato for salads
-// add bacon for blt
-
 
 var gameSpeed = 1.0;
 var buttons = [];
 var gameTime = 0.0;
 
-
-
 var currentLocation = locations.kitchen;
-
 
 window.onload = Init;
 function Init() {
@@ -31,9 +18,7 @@ function Init() {
     RegisterEvents();
     InitSave();
     Loop();
-    
 }
-
 
 function InitializeResources() {
     for (const [key, resource] of Object.entries(resources)) {
