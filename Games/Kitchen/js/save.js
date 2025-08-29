@@ -3,6 +3,7 @@ function SaveState() {
         unlockedLocations: Object.values(locations).filter(a => a.unlocked).map(a => a.key),
         unlockedRecipes: recipes.filter(a => a.unlocked).map(a => a.key),
         recipeCounters: recipes.map(a => ({key: a.key, counter: a.counter})),
+        recipeStocks: recipes.map(a => ({key: a.key, stock: a.stock})),
         resources: Object.values(resources).map(a => ({key: a.key, value: a.value, displayed: a.displayed})),
         gameTime: gameTime,
         loggedMessages: loggedMessages,
@@ -42,6 +43,14 @@ function InitSave() {
                 let recipe = recipes.filter(a => a.key == recipeCounter.key)[0];
                 if (recipe) {
                     recipe.counter = recipeCounter.counter;
+                }
+            }
+        }
+        if (saveObj.recipeStocks) {
+            for (let recipeStock of saveObj.recipeStocks) {
+                let recipe = recipes.filter(a => a.key == recipeStock.key)[0];
+                if (recipe) {
+                    recipe.stock = recipeStock.stock;
                 }
             }
         }

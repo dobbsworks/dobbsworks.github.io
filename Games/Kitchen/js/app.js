@@ -8,13 +8,10 @@
 
 
 // todo features
-// various money thresholds acting as "stage complete"
-// unlocks multiple new recipes and ingredients, may lock existing ones
 // eventually have to mill your own flour, grow your own produce
 
-// need to be able to hire employees at some point
-
-// long-term, to allow for ridiculous levels of automation, only draw the first ~6 progress bars and a +X at the end to show how many undrawn ones there are
+// lettuce and tomato for salads
+// add bacon for blt
 
 
 var gameSpeed = 1.0;
@@ -113,7 +110,10 @@ function Tick(delta) {
     }
     CheckEvents(null);
     RunEvents();
+
+    let maxInstancesDisplayed = 5;
     for (let button of buttons) {
+        let instanceCount = 0;
         for (let instance of button.instances) {
             let actionPercent = Math.floor((button.totalActionTime - instance.remainingActionTime) / button.totalActionTime  * 100);
             instance.remainingActionTime -= delta;
@@ -123,8 +123,13 @@ function Tick(delta) {
                 button.action();
                 button.state = "ready";
                 instance.htmlElement.remove();
+            } else {
+                instanceCount += 1;
+                instance.htmlElement.style.display = (instanceCount > maxInstancesDisplayed) ? "none" : "";
             }
         }
+        button.htmlInstanceOverflow.style.display = (instanceCount > maxInstancesDisplayed) ? "" : "none";
+        button.htmlInstanceOverflow.innerText = "+" + (instanceCount - 3);
         button.instances = button.instances.filter(a => a.remainingActionTime > 0);
     }
 
@@ -225,7 +230,13 @@ function RefreshButtons() {
     // handle tooltips
     for (let button of buttons) {
         if (button.recipe) {
-            let html = `Costs<br/>`;
+            let html = ``;
+
+            if (button.recipe.stock === 0) {
+                html += `<span class="cantAfford">OUT OF STOCK</span><hr/>`;
+            }
+
+            html += `Costs<br/>`;
             for (let cost of button.recipe.inputs) {
                 var line = cost.item.name + ": " + cost.amount
                 if (cost.item.value < cost.amount) {
@@ -279,6 +290,7 @@ function CreateButton(item) {
         key: item.display,
         htmlButton: element,
         htmlInstances: element.getElementsByClassName("instances")[0],
+        htmlInstanceOverflow: element.getElementsByClassName("instancesOverflow")[0],
         htmlEmployees: element.getElementsByClassName("employeeContainer")[0],
         tooltip: element.getElementsByClassName("tooltip")[0],
         costs: [],
@@ -337,6 +349,13 @@ function CreateHtmlButton(item, isTravel) {
     let instancesContainer = document.createElement("div");
     instancesContainer.className = "instances";
     newButton.appendChild(instancesContainer);
+
+    // "+4 more" eg
+    let instancesOverflow = document.createElement("div");
+    instancesOverflow.className = "instancesOverflow";
+    instancesOverflow.style.display = "none";
+    instancesContainer.appendChild(instancesOverflow);
+
     
     let employeeContainer = document.createElement("div");
     employeeContainer.className = "employeeContainer";
@@ -368,8 +387,15 @@ function OnButton(event) {
         for (let cost of buttonObj.costs) {
             AddResource(cost.item, -cost.amount);
         }
+        
+        if (buttonObj.recipe) {
+            if (buttonObj.recipe.stock !== undefined) {
+                buttonObj.recipe.stock -= 1;
+            }
+        }
 
         let htmlElement = document.createElement("div");
+        htmlElement.style.display = "none";
         buttonObj.htmlInstances.appendChild(htmlElement);
         buttonObj.instances.push({
             remainingActionTime: buttonObj.totalActionTime,
@@ -385,6 +411,12 @@ function OnButton(event) {
 }
 
 function IsButtonAffordable(buttonObj) {
+    if (buttonObj.recipe) {
+        if (buttonObj.recipe.stock === 0) {
+            return false;
+        }
+    }
+
     for (let cost of buttonObj.costs) {
         let current = cost.item.value;
         if (current < cost.amount) {
