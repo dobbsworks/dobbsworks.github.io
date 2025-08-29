@@ -39,7 +39,10 @@ function InitSave() {
         }
         if (saveObj.recipeCounters) {
             for (let recipeCounter of saveObj.recipeCounters) {
-                recipes.filter(a => a.key == recipeCounter.key)[0].counter = recipeCounter.counter;
+                let recipe = recipes.filter(a => a.key == recipeCounter.key)[0];
+                if (recipe) {
+                    recipe.counter = recipeCounter.counter;
+                }
             }
         }
         for (let savedResource of saveObj.resources) {

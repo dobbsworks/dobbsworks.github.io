@@ -74,6 +74,12 @@ var resources = {
         price: 10,
         buyQuantity: 10,
     },
+    chocolateChips: {
+        name: "Chocolate Chips",
+        buyLocation: locations.grocery,
+        price: 10,
+        buyQuantity: 200,
+    },
     eggs: {
         name: "Eggs",
         buyLocation: locations.grocery,
@@ -117,6 +123,26 @@ var resources = {
     breakfastPlatter: {
         name: "Breakfast platter",
         sellPrice: 20,
+    },
+    cakeBatter: {
+        name: "Cake batter",
+    },
+    cookieDough: {
+        name: "Cookie dough",
+    },
+    plaincupcake: {
+        name: "Plain cupcakes",
+    },
+    cakeIcing: {
+        name: "Icing",
+    },
+    cupcake: {
+        name: "Cupcakes",
+        sellPrice: 5,
+    },
+    cookie: {
+        name: "Chocolate chip cookies",
+        sellPrice: 3,
     },
     cupOfWater: {
         name: "Cups of water",
@@ -167,6 +193,11 @@ var resources = {
         name: "Sinks",
         buyLocation: locations.appliances,
         price: 200,
+    },
+
+
+    joke: {
+        name: "Your credit card number",
     },
 }
 
@@ -260,7 +291,7 @@ var recipes = [
         outputs: [{item: resources.cookedBacon, amount: 1}]
     },
     {
-        key: "breakfastplatter",
+        key: "makebreakfastplatter",
         display: "Make breakfast platter",
         baseTime: 5,
         locations: [locations.kitchen],
@@ -268,25 +299,65 @@ var recipes = [
         catalysts: [],
         outputs: [{item: resources.breakfastPlatter, amount: 1}]
     },
+    {
+        key: "makecakebatter",
+        display: "Make cake batter",
+        baseTime: 15,
+        locations: [locations.kitchen],
+        inputs: [{item: resources.eggs, amount: 1}, {item: resources.flour, amount: 2}, {item: resources.cupOfWater, amount: 2}, {item: resources.sugar, amount: 2}],
+        catalysts: [{item: resources.mixingBowl, amount: 1}],
+        outputs: [{item: resources.cakeBatter, amount: 1}, {item: resources.cup, amount: 1}]
+    },
+    {
+        key: "bakecupcake",
+        display: "Bake cupcakes",
+        baseTime: 15,
+        locations: [locations.kitchen],
+        inputs: [{item: resources.cakeBatter, amount: 1}],
+        catalysts: [{item: resources.oven, amount: 1}],
+        outputs: [{item: resources.plaincupcake, amount: 6}]
+    },
+    {
+        key: "makecakeicing",
+        display: "Make icing",
+        baseTime: 10,
+        locations: [locations.kitchen],
+        inputs: [{item: resources.sugar, amount: 1}, {item: resources.cupOfWater, amount: 1}],
+        catalysts: [{item: resources.mixingBowl, amount: 1}],
+        outputs: [{item: resources.cakeIcing, amount: 1}, {item: resources.cup, amount: 1}]
+    },
+    {
+        key: "decoratecupcake",
+        display: "Decorate cupcake",
+        baseTime: 12,
+        locations: [locations.kitchen],
+        inputs: [{item: resources.plaincupcake, amount: 1}, {item: resources.cakeIcing, amount: 1}],
+        catalysts: [],
+        outputs: [{item: resources.cupcake, amount: 1}]
+    },
+    {
+        key: "makecookiedough",
+        display: "Make cookie dough",
+        baseTime: 15,
+        locations: [locations.kitchen],
+        inputs: [{item: resources.eggs, amount: 1}, {item: resources.flour, amount: 2}, {item: resources.chocolateChips, amount: 12}, {item: resources.sugar, amount: 2}],
+        catalysts: [{item: resources.mixingBowl, amount: 1}],
+        outputs: [{item: resources.cookieDough, amount: 1}]
+    },
+    {
+        key: "bakecookies",
+        display: "Make cookie dough",
+        baseTime: 30,
+        locations: [locations.kitchen],
+        inputs: [{item: resources.cookieDough, amount: 1}],
+        catalysts: [{item: resources.oven, amount: 1}],
+        outputs: [{item: resources.cookie, amount: 12}]
+    },
 
-    // {
-    //     baseTime: 0.5,
-    //     locations: [locations.grocery],
-    //     inputs: [{item: resources.money, amount: 5}, ],
-    //     outputs: [{item: resources.bread, amount: 1} ]
-    // },
-    // {
-    //     baseTime: 0.5,
-    //     locations: [locations.grocery],
-    //     inputs: [{item: resources.money, amount: 1}, ],
-    //     outputs: [{item: resources.tomato, amount: 1} ]
-    // },
-    // {
-    //     baseTime: 0.5,
-    //     locations: [locations.grocery],
-    //     inputs: [{item: resources.money, amount: 2}, ],
-    //     outputs: [{item: resources.lettuce, amount: 1} ]
-    // },
+
+
+
+
     {
         key: "rummage",
         display: "Sweep up loose change",
@@ -311,6 +382,24 @@ var recipes = [
         locations: [locations.downtown],
         inputs: [ {item: resources.breakfastPlatter, amount: 100} ],
         outputs: [ {text: "Unlocks more items and a new quest!"}],
+        onetime: true
+    },
+    {
+        key: "quest3",
+        display: "Oh my, the mayor herself has requested something to satisfy her sweet tooth! This is your chance to get in with the bigwigs downtown. I can't stress how big these wigs are.",
+        baseTime: 1,
+        locations: [locations.downtown],
+        inputs: [ {item: resources.cookie, amount: 500}, {item: resources.cupcake, amount: 250} ],
+        outputs: [ {text: "Unlocks more items and a new quest!"}],
+        onetime: true
+    },
+    {
+        key: "questdumb",
+        display: "This is a joke.",
+        baseTime: 1,
+        locations: [locations.downtown],
+        inputs: [ {item: resources.toast, amount: 1000000}, {item: resources.cookie, amount: 1000000}, {item: resources.cupcake, amount: 1000000}, {item: resources.breakfastPlatter, amount: 1000000}, {item: resources.joke, amount: 1} ],
+        outputs: [ {text: "Nothing"}],
         onetime: true
     },
 ];

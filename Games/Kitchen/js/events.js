@@ -205,15 +205,62 @@ function RegisterEvents() {
             queuedEvents.push({type: "unlock", key: "buy_rawBacon"});
             queuedEvents.push({type: "unlock", key: "sell_cookedBacon"});
             queuedEvents.push({type: "unlock", key: "cookbacon"});
-            queuedEvents.push({type: "unlock", key: "breakfastplatter"});
+            queuedEvents.push({type: "unlock", key: "makebreakfastplatter"});
             queuedEvents.push({type: "unlock", key: "sell_breakfastPlatter"});
+            
+            queuedEvents.push({type: "unlock", key: "quest2"});
+        }
+    });
+
+    events.push({
+        on: null, 
+        isReady: () => recipes.find(a => a.key == "quest2").counter == 1, 
+        action: async () => {
+            LockItem("quest2");
+
+            queuedEvents.push({type: "print", data: "The festival is really such a beautiful time of year. Shame about the torch thing, but the library was due a remodel anyway!"});
+            queuedEvents.push({type: "print", data: "You decide that it's time to branch out. People want something a bit sweeter."});
+            queuedEvents.push({type: "unlock", key: "buy_sugar"});
+            queuedEvents.push({type: "unlock", key: "makecakebatter"});
+            queuedEvents.push({type: "unlock", key: "bakecupcake"});
+            queuedEvents.push({type: "unlock", key: "makecakeicing"});
+            queuedEvents.push({type: "unlock", key: "decoratecupcake"});
+            queuedEvents.push({type: "unlock", key: "sell_cupcake"});
+            queuedEvents.push({type: "unlock", key: "buy_chocolateChips"});
+            queuedEvents.push({type: "unlock", key: "makecookiedough"});
+            queuedEvents.push({type: "unlock", key: "bakecookies"});
+
+            queuedEvents.push({type: "unlock", key: "quest3"});
+
+
+        }
+    });
+
+    events.push({
+        on: null, 
+        isReady: () => recipes.find(a => a.key == "quest3").counter == 1, 
+        action: async () => {
+            LockItem("quest3");
+
+            queuedEvents.push({type: "print", data: "Anyway, that's the story of how I got elected ruler of the entire world. They made that position especially for me."});
+            queuedEvents.push({type: "print", data: "I skipped a few details, admittedly, but I think you can fill in the blanks, you're a smart kid."});
+            queuedEvents.push({type: "print", data: "How, uh, how's school going. Are you, are you guys learning cursive? Do they still do that? Man, I hope not."});
+            queuedEvents.push({type: "print", data: "What on EARTH was up with lowercase b, am I right? I am. Trust me, you don't want to know."});
+            queuedEvents.push({type: "print", data: "Where was I?"});
+            queuedEvents.push({type: "print", data: "Right, the restaurant. Yeah, Jimothy and the others are still making cookies to this day, I imagine. Should probably swing by and check in on them."});
+            queuedEvents.push({type: "print", data: "Jimothy, Philliam, Pamantha, uh..."});
+            queuedEvents.push({type: "print", data: "That's all I got."});
+            queuedEvents.push({type: "print", data: "Look, I'm not gonna kick you out or anything, you're welcome to hang out, but I don't really have anything else for you to do."});
+            queuedEvents.push({type: "print", data: "Unless...?"});
+
+            queuedEvents.push({type: "unlock", key: "questdumb"});
+
 
         }
     });
 
 
     
-            //queuedEvents.push({type: "unlock", key: "buy_sugar"});
 
 
 
