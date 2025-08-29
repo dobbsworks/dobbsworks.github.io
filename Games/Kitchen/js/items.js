@@ -4,6 +4,14 @@ var locations = {
         name: "In transit",
         filter: "saturate(0)",
     },
+    todo: {
+        name: "Missions",
+        filter: "saturate(3) brightness(0.7) contrast(1.5) hue-rotate(-160deg)",
+    },
+    transit: {
+        name: "In transit",
+        filter: "saturate(0)",
+    },
     kitchen: {
         name: "The Kitchen",
         filter: "",
@@ -17,9 +25,11 @@ var locations = {
         filter: "saturate(1) hue-rotate(150deg)"
     },
     appliances: {
-        name: "Appliance Store",
+        name: "Hardware Store",
         filter: "saturate(0.5) hue-rotate(50deg)"
     },
+
+    // digital: invert() saturate(1) brightness(1.1) contrast(2) hue-rotate(220deg)
 
 }
 
@@ -86,6 +96,7 @@ var resources = {
 
     displayCounter: {
         name: "Display counter",
+        price: 40,
     },
 
     cuttingBoard: {
@@ -203,11 +214,20 @@ var recipes = [
     // },
     {
         key: "rummage",
-        display: "Give incorrect change",
+        display: "Sweep up loose change",
         baseTime: 4,
-        locations: [location.foh],
+        locations: [locations.foh],
         inputs: [],
         outputs: [{item: resources.money, amount: 1} ]
+    },
+    {
+        key: "quest1",
+        display: "The Chamber of Commerce is hosting a breakfast meeting. If you can supply some quality toast, it would reflect well on your business!",
+        baseTime: 1,
+        locations: [locations.todo],
+        inputs: [ {item: resources.toast, amount: 100} ],
+        outputs: [ {text: "Unlocks more items and a new quest!"}],
+        onetime: true
     },
 ];
 

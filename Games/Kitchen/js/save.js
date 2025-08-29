@@ -18,7 +18,11 @@ function SaveState() {
 }
 
 function ClearSave() {
-    localStorage.setItem("save", "");
+    let confirmed = confirm("Are you sure you want to delete your save? You will lose all progess.");
+    if (confirmed) {
+        localStorage.setItem("save", "");
+        window.location.reload();
+    }
 }
 
 function InitSave() {
@@ -54,7 +58,10 @@ function InitSave() {
 
         for (let buttonDatum of saveObj.buttonData) {
             let buttonObj = buttons.filter(a => a.key == buttonDatum.id)[0];
-            if (!buttonObj) continue;
+            if (!buttonObj) {
+                console.log("No button with id ", buttonDatum.id);
+                continue;
+            }
             buttonObj.employees = buttonDatum.employees;
             for (let remainingTime of buttonDatum.remainingTimes) {
                 let htmlElement = document.createElement("div");

@@ -256,3 +256,13 @@ to {
 .cantAfford {
   color: #aa3030;
 }
+
+
+
+
+#deleteSave {
+  position: fixed;
+  top:0;
+  right:0;
+  opacity: 0.6;
+}

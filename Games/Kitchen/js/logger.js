@@ -11,6 +11,9 @@ var loggedMessages = [];
 
 function PrintToLog(message, isInstant = false) {
     loggedMessages.push(message);
+    if (loggedMessages.length > 20) {
+        loggedMessages.splice(0, 1);
+    }
     return new Promise((resolve) => {
         let logPanel = document.getElementById("logPanel");
         let el = document.createElement("p");

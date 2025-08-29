@@ -6,6 +6,17 @@
 //
 
 
+
+// todo features
+// various money thresholds acting as "stage complete"
+// unlocks multiple new recipes and ingredients, may lock existing ones
+// eventually have to mill your own flour, grow your own produce
+
+// need to be able to hire employees at some point
+
+// long-term, to allow for ridiculous levels of automation, only draw the first ~6 progress bars and a +X at the end to show how many undrawn ones there are
+
+
 var gameSpeed = 1.0;
 var buttons = [];
 var gameTime = 0.0;
@@ -145,7 +156,9 @@ function UnlockItem(item) {
             item = Object.values(locations).filter(a => a.key == item)[0];
         }
     }
-    item.unlocked = true;
+    if (item) {
+        item.unlocked = true;
+    }
     RefreshButtons();
 }
 
@@ -175,16 +188,21 @@ function RefreshButtons() {
 
     // then iterate through existing recipes to find ones that SHOULD be displayed
     for (let item of [...recipes, ...Object.values(locations)]) {
-        let isLocationGood = item.locations.indexOf(currentLocation) > -1 || item.locations.length == 0;
-        if (isLocationGood && item.unlocked) {
-            // this one should be visible
+        if (item.unlocked) {
             if (item.button == null) {
                 let buttonObj = CreateButton(item)
                 item.button = buttonObj;
-            } else {
-                item.button.htmlButton.style.display = "";
             }
-        }
+            let isLocationGood = item.locations.indexOf(currentLocation) > -1 || item.locations.length == 0;
+            
+            if (isLocationGood) {
+                item.button.htmlButton.style.display = "";
+            } else {
+                item.button.htmlButton.style.display = "none";
+            }
+        } 
+
+
     }
 
     // finally, iterate through all buttons and see if cost met
@@ -216,17 +234,27 @@ function RefreshButtons() {
                 html += line + "<br/>";
             }
             html += button.recipe.baseTime + " seconds" + "<br/>";
-            html += "<hr/>Tools<br/>";
-            for (let output of button.recipe.catalysts) {
-                var line = output.item.name + ": " + output.amount
-                if (output.item.value < output.amount) {
-                    line = `<span class="cantAfford">${line}</span>`
+
+            if (button.recipe.catalysts && button.recipe.catalysts.length > 0) {
+                html += "<hr/>Tools<br/>";
+                for (let output of button.recipe.catalysts) {
+                    var line = output.item.name + ": " + output.amount
+                    if (output.item.value < output.amount) {
+                        line = `<span class="cantAfford">${line}</span>`
+                    }
+                    html += line + "<br/>";
                 }
-                html += line + "<br/>";
             }
             html += "<hr/>Produces<br/>";
             for (let output of button.recipe.outputs) {
-                var line = output.item.name + ": " + output.amount
+                var line = "";
+                if (output.item) {
+                    line = output.item.name + ": " + output.amount
+                }
+                if (output.text) {
+                    line = output.text;
+                }
+                
                 html += line + "<br/>";
             }
             button.tooltip.innerHTML = html;
@@ -271,7 +299,9 @@ function CreateButton(item) {
         buttonObj.action = () => {
             item.counter += 1;
             for (let output of item.outputs) {
-                AddResource(output.item, output.amount);
+                if (output.item) {
+                    AddResource(output.item, output.amount);
+                }
             }
             for (let output of item.catalysts) {
                 AddResource(output.item, output.amount);
@@ -345,6 +375,10 @@ function OnButton(event) {
             remainingActionTime: buttonObj.totalActionTime,
             htmlElement: htmlElement,
         })
+
+        if (buttonObj.recipe && buttonObj.recipe.onetime) {
+            buttonObj.recipe.unlocked = false;
+        }
         
         RefreshButtons();
     }
@@ -364,10 +398,11 @@ function IsButtonAffordable(buttonObj) {
 async function TravelTo(location) {
     currentLocation = locations.transit;
     RefreshButtons();
-    var secondsToDestination = 0.1;
-    document.body.style.transition = "filter " + secondsToDestination + "s";
-    document.body.style.filter = location.filter;
-    await Wait(secondsToDestination);
+    var secondsToDestination = 1.0;
+    var gameContainer = document.getElementById("gameContainer");
+    gameContainer.style.transition = "filter " + secondsToDestination + "s";
+    gameContainer.style.filter = location.filter;
+    //await Wait(secondsToDestination);
     currentLocation = location;
     RefreshButtons();
 }

@@ -36,9 +36,7 @@ function CheckEvents(trigger) {
         if (JSON.stringify(event.on) == JSON.stringify(trigger)) {
             if (event.isReady()) {
                 event.action();
-                if (event.onetime) {
-                    completedEventIds.push(event.id);
-                }
+                completedEventIds.push(event.id);
             }
         }
     }
@@ -61,7 +59,6 @@ function RegisterEvents() {
     events.push({
         on: null, 
         isReady: () => resources.slicedBread.value > 0, 
-        onetime: true,
         action: async () => {
             queuedEvents.push({type: "print", data: "It's the best thing since regular bread! Oh, and it looks like there's some supplies you forgot to unpack here!"});
             queuedEvents.push({type: "add", key: resources.toaster.key, amount: 2});
@@ -72,7 +69,6 @@ function RegisterEvents() {
     events.push({
         on: null, 
         isReady: () => resources.toast.value >= 1, 
-        onetime: true,
         action: async () => {
             queuedEvents.push({type: "print", data: "Well, it isn't much, but at least you have some food to put out front for people to buy!"});
             queuedEvents.push({type: "unlock", key: "sell_toast"});
@@ -85,7 +81,6 @@ function RegisterEvents() {
     events.push({
         on: null, 
         isReady: () => resources.money.value >= resources.toaster.price, 
-        onetime: true,
         action: async () => {
             queuedEvents.push({type: "print", data: "This might be a bit quicker with more toasters. A quick run to the store!"});
             queuedEvents.push({type: "unlock", key: "buy_toaster"});
@@ -96,9 +91,8 @@ function RegisterEvents() {
     events.push({
         on: null, 
         isReady: () => recipes.find(a => a.key == "buy_toaster").counter >= 2 && resources.bread.value == 0, 
-        onetime: true,
         action: async () => {
-            queuedEvents.push({type: "print", data: "Going to need more bread at this rate..."});
+            queuedEvents.push({type: "print", data: "Going to need more bread at this rate."});
             queuedEvents.push({type: "unlock", key: "buy_bread"});
             queuedEvents.push({type: "unlock", key: locations.grocery.key});
         }
@@ -107,7 +101,6 @@ function RegisterEvents() {
     events.push({
         on: null, 
         isReady: () => recipes.find(a => a.key == "buy_toaster").counter >= 5, 
-        onetime: true,
         action: async () => {
             queuedEvents.push({type: "print", data: "Oh good, your trusted employee Jimothy is here for his shift."});
             queuedEvents.push({type: "add", key: resources.employee.key, amount: 1});
@@ -118,7 +111,6 @@ function RegisterEvents() {
     events.push({
         on: null, 
         isReady: () => recipes.find(a => a.key == "buy_bread").counter >= 3, 
-        onetime: true,
         action: async () => {
             LockItem("buy_bread");
             queuedEvents.push({type: "print", data: "Uh-oh, the bread aisle exploded. There's literally no bread left, just charred toast and panicked screams."});
@@ -138,9 +130,7 @@ function RegisterEvents() {
     events.push({
         on: null, 
         isReady: () => recipes.find(a => a.key == "buy_toaster").counter >= 4, 
-        onetime: true,
         action: async () => {
-            queuedEvents.push({type: "print", data: "The customers have more money than they'd willingly part with."});
             queuedEvents.push({type: "unlock", key: "rummage"});
         }
     });
@@ -148,11 +138,62 @@ function RegisterEvents() {
     events.push({
         on: null, 
         isReady: () => recipes.find(a => a.key == "buy_toaster").counter >= 2, 
-        onetime: true,
         action: async () => {
-            queuedEvents.push({type: "unlock", key: "buy_cuttingBoard"});
+            queuedEvents.push({type: "unlock", key: "buy_displayCounter"});
         }
     });
+
+
+    events.push({
+        on: null, 
+        isReady: () => recipes.find(a => a.key == "buy_flour").counter >= 3, 
+        action: async () => {
+            LockItem("buy_bread");
+            queuedEvents.push({type: "unlock", key: "buy_cup"});
+            queuedEvents.push({type: "unlock", key: "buy_sink"});
+            queuedEvents.push({type: "unlock", key: "buy_mixingBowl"});
+            queuedEvents.push({type: "unlock", key: "buy_oven"});
+        }
+    });
+
+    events.push({
+        on: null, 
+        isReady: () => resources.employee.value == 0 && resources.employee.counter > 0, 
+        action: async () => {
+            queuedEvents.push({type: "unlock", key: locations.todo.key});
+            queuedEvents.push({type: "unlock", key: "quest1"});
+            queuedEvents.push({type: "print", data: "Now the real game starts."});
+        }
+    });
+
+    events.push({
+        on: null, 
+        isReady: () => resources.toast.value == 1, 
+        action: async () => {
+            queuedEvents.push({type: "print", data: "Yeah, more toast! People need their breakfast. And who better to provide it than the smiling faces at Hover Cat Kitchen!"});
+        }
+    });
+
+    events.push({
+        on: null, 
+        isReady: () => recipes.find(a => a.key == "buy_toaster").counter == 1, 
+        action: async () => {
+            queuedEvents.push({type: "print", data: "They've got allen wrenches, gerbil feeders, toilet seats, electric heaters; pretty much everything you could need."});
+        }
+    });
+
+    events.push({
+        on: null, 
+        isReady: () => resources.displayCounter.value == 0 && recipes.find(a => a.key == "buy_toaster").counter >= 1,
+        action: async () => {
+            queuedEvents.push({type: "print", data: "Oh man, already running out of places to store toast. "});
+        }
+    });
+
+
+
+
+
 
     for (let i = 0; i < events.length; i++) {
         events[i].id = i;
