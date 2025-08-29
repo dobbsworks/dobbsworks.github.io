@@ -148,7 +148,6 @@ function RegisterEvents() {
         on: null, 
         isReady: () => recipes.find(a => a.key == "buy_flour").counter >= 3, 
         action: async () => {
-            LockItem("buy_bread");
             queuedEvents.push({type: "unlock", key: "buy_cup"});
             queuedEvents.push({type: "unlock", key: "buy_sink"});
             queuedEvents.push({type: "unlock", key: "buy_mixingBowl"});
@@ -160,7 +159,7 @@ function RegisterEvents() {
         on: null, 
         isReady: () => resources.employee.value == 0 && resources.employee.counter > 0, 
         action: async () => {
-            queuedEvents.push({type: "unlock", key: locations.todo.key});
+            queuedEvents.push({type: "unlock", key: locations.downtown.key});
             queuedEvents.push({type: "unlock", key: "quest1"});
             queuedEvents.push({type: "print", data: "Now the real game starts."});
         }
@@ -192,6 +191,29 @@ function RegisterEvents() {
 
 
 
+    events.push({
+        on: null, 
+        isReady: () => recipes.find(a => a.key == "quest1").counter == 1, 
+        action: async () => {
+            LockItem("quest1");
+            queuedEvents.push({type: "print", data: "The breakfast is a huge success! The plain, dry toast was a big hit with the very few members of the Chamber of Commerce, who averaged about 16 and a half pieces of toast each."});
+            queuedEvents.push({type: "print", data: "You'll have no trouble finding new hires now, and not a moment too soon. Jimothy was going crazy with no one to talk to back in the kitchen."});
+            queuedEvents.push({type: "unlock", key: "buy_eggs"});
+            queuedEvents.push({type: "unlock", key: "buy_skillet"});
+            queuedEvents.push({type: "unlock", key: "scrambleeggs"});
+            queuedEvents.push({type: "unlock", key: "sell_scrambledEggs"});
+            queuedEvents.push({type: "unlock", key: "buy_rawBacon"});
+            queuedEvents.push({type: "unlock", key: "sell_cookedBacon"});
+            queuedEvents.push({type: "unlock", key: "cookbacon"});
+            queuedEvents.push({type: "unlock", key: "breakfastplatter"});
+            queuedEvents.push({type: "unlock", key: "sell_breakfastPlatter"});
+
+        }
+    });
+
+
+    
+            //queuedEvents.push({type: "unlock", key: "buy_sugar"});
 
 
 
