@@ -129,7 +129,7 @@ function Tick(delta) {
             }
         }
         button.htmlInstanceOverflow.style.display = (instanceCount > maxInstancesDisplayed) ? "" : "none";
-        button.htmlInstanceOverflow.innerText = "+" + (instanceCount - 3);
+        button.htmlInstanceOverflow.innerText = "+" + (instanceCount - maxInstancesDisplayed);
         button.instances = button.instances.filter(a => a.remainingActionTime > 0);
     }
 
@@ -496,10 +496,14 @@ function AddResourceDOM(resource) {
 
 function OnDropResourceToButton(ev) {
     ev.preventDefault();
-    _dragResource.value -= 1
-    let buttonObj = buttons.filter( a => a.htmlButton == ev.target)[0];
-    buttonObj.employees += 1;
-    RefreshButtons();
+    if (_dragResource.value > 0) {
+        _dragResource.value -= 1
+        let buttonObj = buttons.filter( a => a.htmlButton == ev.target)[0];
+        if (buttonObj) {
+            buttonObj.employees += 1;
+        }
+        RefreshButtons();
+    }
     _dragResource = null;
 }
 

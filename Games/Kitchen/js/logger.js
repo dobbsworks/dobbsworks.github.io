@@ -2,6 +2,7 @@
 let baseLetterTime = 30;
 let letterPauses = {
     ".": 1000,
+    "?": 1000,
     ";": 1000,
     ",": 400,
     ":": 600,

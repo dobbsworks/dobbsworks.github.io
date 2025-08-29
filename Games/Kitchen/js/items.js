@@ -24,6 +24,10 @@ var locations = {
         name: "Downtown Catsburg",
         filter: "saturate(3) brightness(0.7) contrast(1.5) hue-rotate(-160deg)",
     },
+    farm: {
+        name: "Hover Acres",
+        filter: "saturate(1) brightness(0.7) contrast(1.5) hue-rotate(-10deg)",
+    },
 
     // digital: invert() saturate(1) brightness(1.1) contrast(2) hue-rotate(220deg)
 
@@ -34,6 +38,11 @@ var resources = {
         name: "Money",
     },
 
+    self: {
+        name: "Broom",
+        value: 1
+    },
+
     employee: {
         name: "Employees",
         draggable: true,
@@ -41,20 +50,36 @@ var resources = {
         price: 120,
     },
 
+    sisterLocation: {
+        name: "Sister locations",
+    },
+
     bread: {
         name: "Loaves of bread",
         buyLocation: locations.grocery,
         price: 5,
     },
+    lettuceSeeds: {
+        name: "Letuce seeds",
+        price: 4,
+        buyQuantity: 20,
+    },
+    tomatoSeeds: {
+        name: "Tomato seeds",
+        price: 3,
+        buyQuantity: 20,
+    },
+    harvestableLettuce: {
+        name: "Lettuce crops",
+    },
+    harvestableTomato: {
+        name: "Tomato crops",
+    },
     lettuce: {
         name: "Heads of lettuce",
-        buyLocation: locations.grocery,
-        price: 2,
     },
     tomato: {
         name: "Tomatoes",
-        buyLocation: locations.grocery,
-        price: 1,
     },
     tomato: {
         name: "Potatoes",
@@ -89,7 +114,7 @@ var resources = {
     rawBacon: {
         name: "Raw Bacon",
         buyLocation: locations.grocery,
-        price: 20,
+        price: 10,
         buyQuantity: 4,
     },
     water: {
@@ -144,6 +169,17 @@ var resources = {
         name: "Chocolate chip cookies",
         sellPrice: 3,
     },
+
+    salad: {
+        name: "Salads",
+        sellPrice: 8,
+    },
+
+    blt: {
+        name: "BLTs",
+        sellPrice: 15,
+    },
+
     cupOfWater: {
         name: "Cups of water",
     },
@@ -169,11 +205,11 @@ var resources = {
         //buyLocation: locations.appliances,
         //price: 300,
     },
-    stovetop: {
-        name: "Stovetop",
-        //buyLocation: locations.appliances,
-        //price: 300,
-    },
+    // stovetop: {
+    //     name: "Stovetop",
+    //     //buyLocation: locations.appliances,
+    //     //price: 300,
+    // },
     toaster: {
         name: "Toasters",
         buyLocation: locations.appliances,
@@ -195,6 +231,11 @@ var resources = {
         price: 200,
     },
 
+    farmPlot: {
+        name: "Farm plots",
+        price: 150,
+        buyQuantity: 10,
+    },
 
     joke: {
         name: "Your credit card number",
@@ -209,9 +250,10 @@ var recipes = [
         locations: [locations.appliances],
         inputs: [{item: resources.money, amount: 300}, ],
         catalysts: [],
-        outputs: [{item: resources.oven, amount: 1}, {item: resources.stovetop, amount: 4}]
+        outputs: [{item: resources.oven, amount: 1} /*, {item: resources.stovetop, amount: 4}*/]
     },
     {
+        key: "cutlettuce",
         display: "Cut lettuce",
         baseTime: 10,
         locations: [locations.kitchen],
@@ -220,6 +262,7 @@ var recipes = [
         outputs: [{item: resources.choppedLettuce, amount: 5}]
     },
     {
+        key: "cuttomato",
         display: "Slice tomato",
         baseTime: 10,
         locations: [locations.kitchen],
@@ -306,7 +349,7 @@ var recipes = [
         locations: [locations.kitchen],
         inputs: [{item: resources.eggs, amount: 1}, {item: resources.flour, amount: 2}, {item: resources.cupOfWater, amount: 2}, {item: resources.sugar, amount: 2}],
         catalysts: [{item: resources.mixingBowl, amount: 1}],
-        outputs: [{item: resources.cakeBatter, amount: 1}, {item: resources.cup, amount: 1}]
+        outputs: [{item: resources.cakeBatter, amount: 1}, {item: resources.cup, amount: 2}]
     },
     {
         key: "bakecupcake",
@@ -324,7 +367,7 @@ var recipes = [
         locations: [locations.kitchen],
         inputs: [{item: resources.sugar, amount: 1}, {item: resources.cupOfWater, amount: 1}],
         catalysts: [{item: resources.mixingBowl, amount: 1}],
-        outputs: [{item: resources.cakeIcing, amount: 1}, {item: resources.cup, amount: 1}]
+        outputs: [{item: resources.cakeIcing, amount: 10}, {item: resources.cup, amount: 1}]
     },
     {
         key: "decoratecupcake",
@@ -346,7 +389,7 @@ var recipes = [
     },
     {
         key: "bakecookies",
-        display: "Make cookie dough",
+        display: "Bake cookies",
         baseTime: 30,
         locations: [locations.kitchen],
         inputs: [{item: resources.cookieDough, amount: 1}],
@@ -356,6 +399,90 @@ var recipes = [
 
 
 
+    {
+        key: "plantlettuce",
+        display: "Plant lettuce",
+        baseTime: 60,
+        locations: [locations.farm],
+        inputs: [{item: resources.lettuceSeeds, amount: 1}],
+        catalysts: [{item: resources.farmPlot, amount: 1}],
+        outputs: [{item: resources.harvestableLettuce, amount: 1}]
+    },
+    {
+        key: "planttomato",
+        display: "Plant tomato",
+        baseTime: 60,
+        locations: [locations.farm],
+        inputs: [{item: resources.tomatoSeeds, amount: 1}],
+        catalysts: [{item: resources.farmPlot, amount: 1}],
+        outputs: [{item: resources.harvestableTomato, amount: 1}]
+    },
+    {
+        key: "harvestlettuce",
+        display: "Harvest lettuce",
+        baseTime: 10,
+        locations: [locations.farm],
+        inputs: [{item: resources.harvestableLettuce, amount: 1}],
+        catalysts: [],
+        outputs: [{item: resources.lettuce, amount: 1}]
+    },
+    {
+        key: "harvesttomato",
+        display: "Harvest tomato",
+        baseTime: 10,
+        locations: [locations.farm],
+        inputs: [{item: resources.harvestableTomato, amount: 1}],
+        catalysts: [],
+        outputs: [{item: resources.tomato, amount: 1}]
+    },
+    {
+        key: "makesalad",
+        display: "Make salad",
+        baseTime: 10,
+        locations: [locations.kitchen],
+        inputs: [{item: resources.slicedTomato, amount: 1}, {item: resources.choppedLettuce, amount: 2}],
+        catalysts: [],
+        outputs: [{item: resources.salad, amount: 1}]
+    },
+    {
+        key: "makeblt",
+        display: "Make BLT",
+        baseTime: 20,
+        locations: [locations.kitchen],
+        inputs: [{item: resources.slicedTomato, amount: 1}, {item: resources.choppedLettuce, amount: 1}, {item: resources.cookedBacon, amount: 1}, {item: resources.toast, amount: 2}],
+        catalysts: [],
+        outputs: [{item: resources.blt, amount: 1}]
+    },
+
+
+    {
+        key: "buy_sisterLocation",
+        display: "Open sister location",
+        baseTime: 0.2,
+        locations: [locations.downtown],
+        inputs: [
+            {item: resources.money, amount: 10000}, 
+            {item: resources.oven, amount: 5}, 
+            {item: resources.mixingBowl, amount: 5},
+            {item: resources.cuttingBoard, amount: 5},
+            {item: resources.displayCounter, amount: 5},
+            {item: resources.toaster, amount: 5},
+            {item: resources.skillet, amount: 3},
+            {item: resources.sink, amount: 2},
+        ],
+        catalysts: [],
+        outputs: [{item: resources.sisterLocation, amount: 1}]
+    },
+
+    {
+        key: "managelocation",
+        display: "Run restaurant",
+        baseTime: 0.1,
+        locations: [locations.downtown],
+        inputs: [],
+        catalysts: [{item: resources.sisterLocation, amount: 1}],
+        outputs: [{item: resources.money, amount: 10}]
+    },
 
 
     {
@@ -364,6 +491,7 @@ var recipes = [
         baseTime: 4,
         locations: [locations.foh],
         inputs: [],
+        catalysts: [{item: resources.self, amount: 1}],
         outputs: [{item: resources.money, amount: 1} ]
     },
     {
@@ -380,7 +508,7 @@ var recipes = [
         display: "The Catsburg Festival is starting soon! The city is asking for 100 breakfast samplers for the opening ceremoines where they light the big torch. It's not like the Olympics, Catsburg did it first.",
         baseTime: 1,
         locations: [locations.downtown],
-        inputs: [ {item: resources.breakfastPlatter, amount: 100} ],
+        inputs: [ {item: resources.breakfastPlatter, amount: 50} ],
         outputs: [ {text: "Unlocks more items and a new quest!"}],
         onetime: true
     },
@@ -389,8 +517,35 @@ var recipes = [
         display: "Oh my, the mayor herself has requested something to satisfy her sweet tooth! This is your chance to get in with the bigwigs downtown. I can't stress how big these wigs are.",
         baseTime: 1,
         locations: [locations.downtown],
-        inputs: [ {item: resources.cookie, amount: 500}, {item: resources.cupcake, amount: 250} ],
+        inputs: [ {item: resources.cookie, amount: 100}, {item: resources.cupcake, amount: 150} ],
         outputs: [ {text: "Unlocks more items and a new quest!"}],
+        onetime: true
+    },
+    {
+        key: "quest4",
+        display: "The Vegetarian Conference has been scheduled. Only the freshest ingredients will do, so you'll need to expand your farm quite a bit.",
+        baseTime: 1,
+        locations: [locations.downtown],
+        inputs: [ {item: resources.salad, amount: 500} ],
+        outputs: [ {text: "Unlocks more items and a new quest!"}],
+        onetime: true
+    },
+    {
+        key: "quest5",
+        display: "Sandwichfest is coming up. I hope you know what this means.",
+        baseTime: 1,
+        locations: [locations.downtown],
+        inputs: [ {item: resources.blt, amount: 1000} ],
+        outputs: [ {text: "Unlocks more items and a new quest!"}],
+        onetime: true
+    },
+    {
+        key: "quest6",
+        display: "It's time to retire. You'll need this place running itself.",
+        baseTime: 1,
+        locations: [locations.downtown],
+        inputs: [ {item: resources.money, amount: 1000000} ],
+        outputs: [ {text: "Win the game!"}],
         onetime: true
     },
     {
@@ -399,7 +554,7 @@ var recipes = [
         baseTime: 1,
         locations: [locations.downtown],
         inputs: [ {item: resources.toast, amount: 1000000}, {item: resources.cookie, amount: 1000000}, {item: resources.cupcake, amount: 1000000}, {item: resources.breakfastPlatter, amount: 1000000}, {item: resources.joke, amount: 1} ],
-        outputs: [ {text: "Nothing"}],
+        outputs: [ {text: "Nothing, this is basically the post-credits gag."}],
         onetime: true
     },
 ];

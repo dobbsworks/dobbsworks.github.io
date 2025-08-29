@@ -92,7 +92,7 @@ function RegisterEvents() {
         on: null, 
         isReady: () => recipes.find(a => a.key == "buy_toaster").counter >= 2 && resources.bread.value == 0, 
         action: async () => {
-            recipes.filter(a => a.key == "buy_bread")[0].stock += 3
+            recipes.filter(a => a.key == "buy_bread")[0].stock = 3;
             queuedEvents.push({type: "print", data: "Going to need more bread at this rate."});
             queuedEvents.push({type: "unlock", key: "buy_bread"});
             queuedEvents.push({type: "unlock", key: locations.grocery.key});
@@ -153,6 +153,7 @@ function RegisterEvents() {
             queuedEvents.push({type: "unlock", key: "buy_sink"});
             queuedEvents.push({type: "unlock", key: "buy_mixingBowl"});
             queuedEvents.push({type: "unlock", key: "buy_oven"});
+            queuedEvents.push({type: "unlock", key: "buy_cuttingBoard"});
         }
     });
 
@@ -196,8 +197,9 @@ function RegisterEvents() {
         on: null, 
         isReady: () => recipes.find(a => a.key == "quest1").counter == 1, 
         action: async () => {
-            recipes.filter(a => a.key == "buy_employee")[0].stock += 3;
+            recipes.filter(a => a.key == "buy_employee")[0].stock = 3;
             LockItem("quest1");
+            queuedEvents.push({type: "unlock", key: "buy_employee"});
             queuedEvents.push({type: "print", data: "The breakfast is a huge success! The plain, dry toast was a big hit with the very few members of the Chamber of Commerce, who averaged about 16 and a half pieces of toast each."});
             queuedEvents.push({type: "print", data: "You'll have no trouble finding new hires now, and not a moment too soon. Jimothy was going crazy with no one to talk to back in the kitchen."});
             queuedEvents.push({type: "unlock", key: "buy_eggs"});
@@ -219,23 +221,25 @@ function RegisterEvents() {
         isReady: () => recipes.find(a => a.key == "quest2").counter == 1, 
         action: async () => {
             LockItem("quest2");
+            queuedEvents.push({type: "add", key: resources.displayCounter.key, amount: 5});
 
             recipes.filter(a => a.key == "buy_employee")[0].stock += 3;
-            
+
             queuedEvents.push({type: "print", data: "The festival is really such a beautiful time of year. Shame about the torch thing, but the library was due a remodel anyway!"});
             queuedEvents.push({type: "print", data: "You decide that it's time to branch out. People want something a bit sweeter."});
+
             queuedEvents.push({type: "unlock", key: "buy_sugar"});
             queuedEvents.push({type: "unlock", key: "makecakebatter"});
             queuedEvents.push({type: "unlock", key: "bakecupcake"});
             queuedEvents.push({type: "unlock", key: "makecakeicing"});
             queuedEvents.push({type: "unlock", key: "decoratecupcake"});
             queuedEvents.push({type: "unlock", key: "sell_cupcake"});
+            queuedEvents.push({type: "unlock", key: "sell_cookie"});
             queuedEvents.push({type: "unlock", key: "buy_chocolateChips"});
             queuedEvents.push({type: "unlock", key: "makecookiedough"});
             queuedEvents.push({type: "unlock", key: "bakecookies"});
-
+            
             queuedEvents.push({type: "unlock", key: "quest3"});
-
 
         }
     });
@@ -245,6 +249,75 @@ function RegisterEvents() {
         isReady: () => recipes.find(a => a.key == "quest3").counter == 1, 
         action: async () => {
             LockItem("quest3");
+
+            recipes.filter(a => a.key == "buy_employee")[0].stock += 10;
+
+            queuedEvents.push({type: "print", data: "Absolutely incredible performance! One patron of your sweets is so impressed, they've gifted you a plot of land as if it were a normal thing to do."});
+            queuedEvents.push({type: "print", data: "This might not be a bad time to start diversifying your offerings."});
+            queuedEvents.push({type: "unlock", key: locations.farm.key});
+            queuedEvents.push({type: "add", key: resources.farmPlot.key, amount: 100});
+            queuedEvents.push({type: "unlock", key: "buy_lettuceSeeds"});
+            queuedEvents.push({type: "unlock", key: "buy_tomatoSeeds"});
+            queuedEvents.push({type: "unlock", key: "plantlettuce"});
+            queuedEvents.push({type: "unlock", key: "planttomato"});
+            queuedEvents.push({type: "unlock", key: "harvestlettuce"});
+            queuedEvents.push({type: "unlock", key: "harvesttomato"});
+            queuedEvents.push({type: "unlock", key: "cutlettuce"});
+            queuedEvents.push({type: "unlock", key: "cuttomato"});
+            queuedEvents.push({type: "unlock", key: "makesalad"});
+
+            queuedEvents.push({type: "unlock", key: "quest4"});
+
+        }
+    });
+
+
+    events.push({
+        on: null, 
+        isReady: () => recipes.find(a => a.key == "quest4").counter == 1, 
+        action: async () => {
+            LockItem("quest4");
+
+            recipes.filter(a => a.key == "buy_employee")[0].stock += 30;
+
+            queuedEvents.push({type: "print", data: ""});
+            queuedEvents.push({type: "unlock", key: "buy_farmplot"});
+            queuedEvents.push({type: "unlock", key: "makeblt"});
+
+            queuedEvents.push({type: "unlock", key: "quest5"});
+
+        }
+    });
+
+
+    events.push({
+        on: null, 
+        isReady: () => recipes.find(a => a.key == "quest5").counter == 1, 
+        action: async () => {
+            LockItem("quest5");
+
+            recipes.filter(a => a.key == "buy_employee")[0].stock = undefined;
+
+            queuedEvents.push({type: "unlock", key: "buy_sisterLocation"});
+
+
+            queuedEvents.push({type: "unlock", key: "quest6"});
+
+        }
+    });
+
+
+
+
+
+
+
+
+    events.push({
+        on: null, 
+        isReady: () => recipes.find(a => a.key == "quest6").counter == 1, 
+        action: async () => {
+            LockItem("quest4");
 
             recipes.filter(a => a.key == "buy_employee")[0].stock += 3;
 
@@ -258,6 +331,8 @@ function RegisterEvents() {
             queuedEvents.push({type: "print", data: "That's all I got."});
             queuedEvents.push({type: "print", data: "Look, I'm not gonna kick you out or anything, you're welcome to hang out, but I don't really have anything else for you to do."});
             queuedEvents.push({type: "print", data: "Unless...?"});
+            queuedEvents.push({type: "print", data: "No, that's it."});
+            queuedEvents.push({type: "print", data: "THE END"});
 
             queuedEvents.push({type: "unlock", key: "questdumb"});
 
@@ -266,6 +341,16 @@ function RegisterEvents() {
     });
 
 
+
+
+    events.push({
+        on: null, 
+        isReady: () => recipes.find(a => a.key == "buy_sisterLocation").counter == 1, 
+        action: async () => {
+            queuedEvents.push({type: "unlock", key: "managelocation"});
+
+        }
+    });
     
 
 

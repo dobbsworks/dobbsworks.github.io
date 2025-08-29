@@ -171,6 +171,10 @@ to {
   background-image: linear-gradient(to right, #be7253, #eb6f6f);
 } 
 
+#gameButtons .gameButton {
+  margin-bottom: 30px;
+}
+
 #gameButtons .gameButton:disabled {
   /* text-decoration: line-through; */
   filter: saturate(0.5) brightness(1.5);
