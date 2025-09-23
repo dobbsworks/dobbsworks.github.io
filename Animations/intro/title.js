@@ -61,7 +61,7 @@ function CreateTitle() {
         "Instagram",
         "Bluesky",
     ]);
-    return Rand([
+    var ret = Rand([
         `${char1} Finally Snaps`,
         `${char1} Gets Arrested for Tax Evasion`,
         `${char1} Goes to the Moon`,
@@ -164,8 +164,13 @@ function CreateTitle() {
         `Every Episode is Personalized`,
         `Left Facing Magnifying Glass`,
         `lizard`,
+        `July the Cars`,
 
     ]);
+
+    if (Math.random() < 0.01) ret += " (Understand)";
+
+    return ret;
 }
 
 function Rand(arr) {
