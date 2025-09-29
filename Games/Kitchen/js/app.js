@@ -482,10 +482,10 @@ function AddResourceDOM(resource) {
 function OnDropResourceToButton(ev) {
     ev.preventDefault();
     if (_dragResource.value > 0) {
-        _dragResource.value -= 1
         let buttonObj = buttons.filter( a => a.htmlButton == ev.target)[0];
         if (buttonObj) {
             buttonObj.employees += 1;
+            _dragResource.value -= 1
         }
         RefreshButtons();
     }
