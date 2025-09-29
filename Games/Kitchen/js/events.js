@@ -133,6 +133,7 @@ function RegisterEvents() {
         isReady: () => recipes.find(a => a.key == "buy_toaster").counter >= 4, 
         action: async () => {
             queuedEvents.push({type: "unlock", key: "rummage"});
+            queuedEvents.push({type: "add", key: resources.self.key, amount: 1});
         }
     });
 
