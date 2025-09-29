@@ -80,9 +80,6 @@ var resources = {
     },
     tomato: {
         name: "Tomatoes",
-    },
-    tomato: {
-        name: "Potatoes",
         buyLocation: locations.grocery,
         price: 1,
         buyQuantity: 10,
