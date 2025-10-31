@@ -146,7 +146,8 @@ function InitializeControls() {
 
 function PlaySong(audioElement) {
     var button = Array.from(document.querySelectorAll(".controlButton")).filter(a => a.innerText == audioElement.dataset.name)[0] ;
-
+    if (!button) return; 
+    
     for (let el of document.querySelectorAll(".buttonPlaying")) {
         el.classList.remove("buttonPlaying");
     }
