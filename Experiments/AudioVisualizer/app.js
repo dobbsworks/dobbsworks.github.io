@@ -23,6 +23,7 @@ audioSrc.volume = 0.125;
 audioSrc.addEventListener('ended', LoopAudio, false);
 document.body.appendChild(audioSrc);
 var songList = [];
+var autoplaySkipIndeces = [];
 
 var vizArea = document.getElementById('viz');
 
@@ -81,6 +82,7 @@ function init() {
     analyzer.connect(AUDIO.destination);
     $segs = createSegments(bufferLength)
     loop();
+    LoadSettings();
     InitializeControls();
 }
 
@@ -92,28 +94,55 @@ function loop() {
 }
 
 
-
+var currentFolder = "";
 function InitializeControls() {
     var audioElements = document.querySelectorAll("#audioContainer > *")
     var controls = document.getElementById("controls");
+    controls.innerHTML = "";
+    var folderIter = "";
+    songList = [];
     for (let i = 0; i < audioElements.length; i++) {
         let audioElement = audioElements[i];
-
+        songList.push(audioElement);
         let button = document.createElement("div");
         button.innerText = audioElement.innerText;
+        button.dataset.index = i;
+        button.classList.add("controlButton");
         if (audioElement.tagName == "AUDIO") {
-            songList.push(audioElement);
             button.innerText = audioElement.dataset.name;
             audioElement.volume = 0.25;
             button.dataset.songIndex = i;
-            button.classList.add("controlButton");
-            button.onclick = () => {
-                PlaySong(audioElement);
+            if (autoplaySkipIndeces.indexOf(i) > -1) {
+                button.classList.add("skipped");
             }
+            button.onclick = (e) => {
+                if (e.shiftKey) {
+                    e.preventDefault();
+                    if (autoplaySkipIndeces.indexOf(i) > -1) {
+                        autoplaySkipIndeces.splice(autoplaySkipIndeces.indexOf(i),1);
+                    } else {
+                        autoplaySkipIndeces.push(i);
+                    }
+                    SaveSettings();
+                    InitializeControls();
+                } else {
+                    PlaySong(audioElement);
+                }
+            }
+            if (folderIter == currentFolder) {
+                controls.appendChild(button);
+            }
+        } else {
+            folderIter = audioElement.innerText;
+            button.classList.add("folderButton");
+            button.onclick = () => {
+                OpenFolder(audioElement.innerText);
+            }
+            controls.appendChild(button);
         }
-        controls.appendChild(button);
     }
 }
+
 
 function PlaySong(audioElement) {
     var button = Array.from(document.querySelectorAll(".controlButton")).filter(a => a.innerText == audioElement.dataset.name)[0] ;
@@ -140,9 +169,18 @@ function PlaySong(audioElement) {
     audioSrc.currentTime = 0.0;
 }
 
+function OpenFolder(folderName) {
+    currentFolder = folderName;
+    InitializeControls();
+}
+
 var accruedLoopTime = 0.0;
 function LoopAudio() {
-    if (currentSong.dataset.loops == "false") return;
+    if (currentSong.dataset.loops == "false") {
+        audioSrc.volume = 0.0;
+        NextSong();
+        return;
+    };
     accruedLoopTime += audioSrc.currentTime;
     audioSrc.currentTime = parseFloat(currentSong.dataset.loopPoint);
     audioSrc.play();
@@ -154,10 +192,23 @@ function NextSong() {
     isFading = true;
 
     if (audioSrc.volume <= 0) {
-        audioSrc.volume = targetVolume;
         var currentIndex = songList.indexOf(currentSong);
         var newIndex = (currentIndex + 1) % songList.length;
+        while (autoplaySkipIndeces.indexOf(newIndex) > -1 || songList[newIndex].tagName != "AUDIO" ) {
+            newIndex = (newIndex + 1) % songList.length;
+        }
+
+        audioSrc.volume = targetVolume;
         PlaySong(songList[newIndex]);
         isFading = false;
     }
+}
+
+
+function SaveSettings() {
+    localStorage["autoskips"] = JSON.stringify(autoplaySkipIndeces);
+}
+
+function LoadSettings() {
+    autoplaySkipIndeces = JSON.parse(localStorage["autoskips"] || "[]");
 }

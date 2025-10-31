@@ -69,7 +69,7 @@ body {
 	font-size: 60px;
 	top: 100px;
 	text-align: left;
-	left: 200px;
+	left: 300px;
 	font-family: 'Courier New', Courier, monospace;
 	font-weight: 900;
 	color:white;
@@ -84,7 +84,7 @@ body {
 	top: 20px;
 
 	background-color: #2225;
-	padding: 10px;
+	padding: 10px 30px;
 	color: white;
   }
 
@@ -92,11 +92,16 @@ body {
 	cursor: pointer;
 	padding: 4px;
 	width: 100%;
-	margin: 2px;
+	margin: 2px 22px;
 	text-align: left;
+
   }
   .controlButton:hover {
 	background-color: #0008;
+  }
+  .folderButton {
+	font-weight: bolder;
+	margin-left: 0;
   }
   .buttonPlaying {
 	background-color: #0408;
@@ -109,4 +114,8 @@ body {
 	left: 0;
 	right: 0;
 	width: 100%;
+  }
+
+  .skipped {
+	opacity: 0.2;
   }
