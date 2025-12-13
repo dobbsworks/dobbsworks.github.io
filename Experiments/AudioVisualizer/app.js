@@ -196,6 +196,9 @@ function NextSong() {
         var currentIndex = songList.indexOf(currentSong);
         var newIndex = (currentIndex + 1) % songList.length;
         while (autoplaySkipIndeces.indexOf(newIndex) > -1 || songList[newIndex].tagName != "AUDIO" ) {
+            if (songList[newIndex].tagName != "AUDIO") {
+                OpenFolder(songList[newIndex].innerText)
+            }
             newIndex = (newIndex + 1) % songList.length;
         }
 
