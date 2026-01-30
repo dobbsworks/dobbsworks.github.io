@@ -45,7 +45,7 @@ function Start() {
             holiday = "xmas";
         }
         
-        let isNewYears = (month == 12 && (day >= 29)) || (month == 1 && day == 1);
+        let isNewYears = (month == 12 && (day >= 29)) || (month == 1 && day <= 1);
         if (isNewYears) {
             holiday = "newyears";
         }

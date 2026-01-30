@@ -164,7 +164,14 @@ function CreateTitle() {
         `Every Episode is Personalized`,
         `Left Facing Magnifying Glass`,
         `lizard`,
-        `July the Cars`,
+        `Dobbs Pushes Back the Release Date`,
+        `Show Me Lizard!`,
+        `Feature Bloat-acular`,
+        `Posey Gets Nosey`,
+        `INVASION`,
+        `UWU`,
+        `help im stuck in a title generator`,
+        `Worth Like, Three Doors, Easy`,
 
     ]);
 
