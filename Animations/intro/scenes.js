@@ -1061,7 +1061,11 @@ function Scene13() {
     sprites.push(ground);
     SetInterp(ground, { y: -4050 }, 60, 30, "ease-in-out");
 
-
+    for (let i = 0; i < 7; i++) {
+        sprites.push(new Lizard(2, 100 - i * 60, 50, 0.0, 1.5));
+        sprites.push(new Lizard(2, -100 + i * 60, 50, Math.PI, 1.5));
+    }
+    
     let logo = new StaticImage(images.logo, 5, 0, 0);
     logo.animated = false; //manually animated
     logo.updateRules.push((frameNum) => {
@@ -1081,7 +1085,7 @@ function Scene13() {
     } else if (holiday == "xmas") {
         num = "1225";
         color = "#03c802";
-        title = "It's a Wonderful Dobbs";
+        title = Rand(["It's a Wonderful Dobbs", "Dabble All The Way", "You Want the Moon, Mary?", "A Holly Jolly Stream"]);
     } else if (holiday == "newyears") {
         num = new Date().getFullYear();
         title = Rand(["And a Happy New Dobbs", "Almost a New Year"]);
