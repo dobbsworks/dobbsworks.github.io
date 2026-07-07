@@ -16,7 +16,6 @@ function CreateTitle() {
             "Pixel",
             "Mantis",
             "Theron",
-            "Popples",
             "Doopu",
             "Kabs",
             "Shortfusd",
@@ -33,7 +32,11 @@ function CreateTitle() {
                 "The Molsc",
                 "The Pentapod",
                 "The Demolisher",
-            ])
+            ]),
+            "Photon",
+            "Smol",
+            "Imp",
+            "Ally",
         ])
     ];
     let char1 = Rand(characters);
@@ -172,6 +175,11 @@ function CreateTitle() {
         `UWU`,
         `help im stuck in a title generator`,
         `Worth Like, Three Doors, Easy`,
+        `Free For $15`,
+        `Good Morning!!`,
+        `Do you feel like talking about... INTROS?`,
+        `Do you feel like talking about... ${animal1}?`,
+        `BUY PEN PALS. BUY PEN PALS.`,
 
     ]);
 
