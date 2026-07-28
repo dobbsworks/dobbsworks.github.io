@@ -180,10 +180,13 @@ function CreateTitle() {
         `Do you feel like talking about... INTROS?`,
         `Do you feel like talking about... ${animal1}?`,
         `BUY PEN PALS. BUY PEN PALS.`,
+        `${char1} Wings To The Sky`,
+        `Footrace With ${char1} The Quick`,
 
     ]);
 
     if (Math.random() < 0.01) ret += " (Understand)";
+    else if (Math.random() < 0.06) ret += " For 8 Red Coins";
 
     return ret;
 }
