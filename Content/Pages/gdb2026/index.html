@@ -252,15 +252,19 @@
 			{ day: 0, utcHour: 47, streamer: "dobbsworks", category: "mario" },
 		];
 
+		let timezoneName = Intl.DateTimeFormat(undefined, { timeZoneName: 'short' })
+			.formatToParts(new Date())
+			.find(part => part.type === 'timeZoneName').value;
 
 		let container = document.getElementById("schedule");
 		let tableContents = "";
 		let days = ["Saturday, October 10", "Sunday, October 11", "Monday, October 12"];
 		let timezoneOffset = +((new Date().getTimezoneOffset() / 60).toFixed(0));
+		
 		for (let dayIndex in days) {
 			if (slots.length == 0) break;
 			let day = days[dayIndex];
-			tableContents += `<tr><td colspan="3" class="dayRow">${day}</td></tr>`
+			tableContents += `<tr><td class="dayRow">${timezoneName}</td><td colspan="2" class="dayRow">${day}</td></tr>`
 			let hasPm = false;
 			for (let slot of [...slots]) {
 				let localHour = (24 + slot.utcHour - timezoneOffset) % 24;
