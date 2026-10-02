@@ -251,6 +251,7 @@
 		let days = ["Saturday, October 10", "Sunday, October 11", "Monday, October 12"];
 		let timezoneOffset = +((new Date().getTimezoneOffset() / 60).toFixed(0));
 		for (let dayIndex in days) {
+			if (slots.length == 0) break;
 			let day = days[dayIndex];
 			tableContents += `<tr><td colspan="3" class="dayRow">${day}</td></tr>`
 			let hasPm = false;
