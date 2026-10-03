@@ -656,7 +656,8 @@ function Scene8() {
     var crowd = [
         "vidz", "riddle", "yosh", "jen", "ehnu", "typ",
         "gfe", "hudson", "mantis", "mushu", "owley", "richard",
-        "crow", "", "", "burger", "mac", "sceptile"
+        "crow", "", "", "burger", "mac", "sceptile",
+        "frog", "giraffe", "bird", "penguin"
     ]
 
     function GetShuffledArray(array) {
