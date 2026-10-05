@@ -130,6 +130,10 @@
 			display: block;
 			width: 100%;
 		}
+
+		.placeholder {
+			color: #FFF6;
+		}
 	</style>
 </head>
 
@@ -159,7 +163,7 @@
 		<h2>When is GDB?</h2>
 
 		<p>GDB 2026 will be held October 10th and 11th this year!</p>
-		<p>Stay tuned for the exact schedule of events.</p>
+		<p>Will the schedule below be accurate? There's only one way to find out!</p>
 
 		<div id="schedule"></div>
 
@@ -237,22 +241,22 @@
 	function SetupSchedule() {
 		let slots = [
 			{ day: 0, utcHour: 14, streamer: "", category: "" },
-			{ day: 0, utcHour: 16, streamer: "K2TheCMeNow", category: "Wouldn't you like to know" },
+			{ day: 0, utcHour: 16, streamer: "K2TheCMeNow", category: "Wouldn't you like to know", isPlaceholder: true },
 			{ day: 0, utcHour: 18, streamer: "MacMoragh", category: "Thank Goodness You're Here!" },
 			{ day: 0, utcHour: 20, streamer: "germdove", category: "OMF 2097, Glittermitten Grove" },
-			{ day: 0, utcHour: 23, streamer: "TheBardicPanda", category: "It's a secret to everyone" },
-			{ day: 0, utcHour: 25, streamer: "hover_cat13", category: "Something really cool, probably" },
+			{ day: 0, utcHour: 23, streamer: "TheBardicPanda", category: "It's a secret to everyone", isPlaceholder: true },
+			{ day: 0, utcHour: 25, streamer: "hover_cat13", category: "Something really cool, probably", isPlaceholder: true },
 			{ day: 0, utcHour: 27, streamer: "daesnek", category: "Dreamcore?" },
 			{ day: 0, utcHour: 29, streamer: "", category: "" },
 			{ day: 0, utcHour: 31, streamer: "", category: "" },
 			{ day: 0, utcHour: 33, streamer: "warios_warehouse", category: "Pizza Deathlivery" },
-			{ day: 0, utcHour: 35, streamer: "hulacowstudios", category: "You wouldn't believe me if I told you" },
-			{ day: 0, utcHour: 37, streamer: "HillbillyAl", category: "Alright, keep your secrets, then" },
-			{ day: 0, utcHour: 39, streamer: "WhoIsDoopu", category: "His favorite game, Quest 64" },
+			{ day: 0, utcHour: 35, streamer: "hulacowstudios", category: "You wouldn't believe me if I told you", isPlaceholder: true },
+			{ day: 0, utcHour: 37, streamer: "HillbillyAl", category: "Alright, keep your secrets, then", isPlaceholder: true },
+			{ day: 0, utcHour: 39, streamer: "WhoIsDoopu", category: "His favorite game, Quest 64", isPlaceholder: true },
 			{ day: 0, utcHour: 41, streamer: "BaddaBoomie", category: "Titan Souls" },
 			{ day: 0, utcHour: 43, streamer: "Teddytank13", category: "Surprise Showcase (?) + Zelda 1 Randomizer" },
-			{ day: 0, utcHour: 45, streamer: "Willow_Wanderss", category: "It's a secret, I can't tell you" },
-			{ day: 0, utcHour: 47, streamer: "GameQueued", category: "Just you wait and see" },
+			{ day: 0, utcHour: 45, streamer: "Willow_Wanderss", category: "It's a secret, I can't tell you", isPlaceholder: true },
+			{ day: 0, utcHour: 47, streamer: "GameQueued", category: "Just you wait and see", isPlaceholder: true },
 			{ day: 0, utcHour: 49, streamer: "dobbsworks", category: "mario" },
 		];
 
@@ -282,7 +286,7 @@
 				if (timeText === "0 am") timeText = "Midnight";
 				let streamerLink = `<a href="https://twitch.tv/${slot.streamer}">${slot.streamer}</a>`;
 				if (slot.streamer === "Various") streamerLink = "Various";
-				tableContents += `<tr><td>${timeText}</td><td>${streamerLink}</td><td>${slot.category}</td></tr>`
+				tableContents += `<tr><td>${timeText}</td><td>${streamerLink}</td><td ${slot.isPlaceholder ? 'class="placeholder"' : ''}>${slot.category}</td></tr>`
 				slots.splice(0, 1);
 			}
 		}
