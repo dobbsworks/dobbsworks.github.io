@@ -113,7 +113,7 @@
 
 		table {
 			border-spacing: 5px;
-			width: 550px;
+			width: 700px;
 		}
 
 		td {
@@ -242,7 +242,7 @@
 	function SetupSchedule() {
 		let slots = [
 			{ day: 0, utcHour: 14, streamer: "zoomcakes", category: "I dunno, minesweeper or something", isPlaceholder: true },
-			{ day: 0, utcHour: 16, streamer: "K2TheCMeNow", category: "Wouldn't you like to know", isPlaceholder: true },
+			{ day: 0, utcHour: 16, streamer: "K2TheCMeNow", category: "Wouldn't you like to know", isPlaceholder: true, channelOverride: "LurkingTurtleGaming" },
 			{ day: 0, utcHour: 18, streamer: "MacMoragh", category: "Alone In The Dark" },
 			{ day: 0, utcHour: 20, streamer: "germdove", category: "OMF 2097, Glittermitten Grove" },
 			{ day: 0, utcHour: 23, streamer: "TheBardicPanda", category: "This is blank on purpose", isPlaceholder: true },
@@ -250,7 +250,7 @@
 			{ day: 0, utcHour: 27, streamer: "daesnek", category: "Dreamcore?" },
 			{ day: 0, utcHour: 30, streamer: "hulacowstudios", category: "Cooking Mama, live action version" },
 			{ day: 0, utcHour: 32, streamer: "LurkingTurtleGaming", category: "Dwarf Fortress, full ASCII, please, it would be funny", isPlaceholder: true },
-			{ day: 0, utcHour: 33, streamer: "warios_warehouse", category: "Pizza Deathlivery" },
+			{ day: 0, utcHour: 33, streamer: "warios_warehouse", category: "Pizza Deathlivery", linkOverride: `<a href="https://twitch.tv/warios_warehouse">warios_warehouse</a> <br/> <a href="https://twitch.tv/alittlebatcrazy">alittlebatcrazy</a>` },
 			{ day: 0, utcHour: 35, streamer: "LurkingTurtleGaming", category: "You wouldn't believe me if I told you", isPlaceholder: true },
 			{ day: 0, utcHour: 37, streamer: "HillbillyAl", category: "World of Warcraft" },
 			{ day: 0, utcHour: 39, streamer: "WhoIsDoopu", category: "FTL" },
@@ -285,9 +285,18 @@
 				if (localHour > 12) localHour -= 12;
 				let timeText = localHour + " " + ampm;
 				if (timeText === "0 am") timeText = "Midnight";
-				let streamerLink = `<a href="https://twitch.tv/${slot.streamer}">${slot.streamer}</a>`;
+				let channel = slot.streamer;
+				if (slot.channelOverride) channel = slot.channelOverride;
+				let streamerLink = `<a href="https://twitch.tv/${channel}">${slot.streamer}</a>`;
+				if (slot.linkOverride) streamerLink = slot.linkOverride;
+
 				if (slot.streamer === "Various") streamerLink = "Various";
-				tableContents += `<tr><td>${timeText}</td><td>${streamerLink}</td><td ${slot.isPlaceholder ? 'class="placeholder"' : ''}>${slot.category}</td></tr>`
+				tableContents += `<tr>`;
+				//tableContents += `<td><img class="smallIcon" src="Content/Images/${"dobbsworks.png"}"/></td>`;
+				tableContents += `<td>${timeText}</td>`;
+				tableContents += `<td>${streamerLink}</td>`;
+				tableContents += `<td ${slot.isPlaceholder ? 'class="placeholder"' : ''}>${slot.category}</td>`;
+				tableContents += `</tr>`;
 				slots.splice(0, 1);
 			}
 		}
