@@ -411,7 +411,7 @@
 		container.style.display = "flex";
 		document.getElementById("liveStreamerName").innerText = slot.streamer;
 		document.getElementById("liveStreamerCategory").innerText = slot.category;
-		document.getElementById("liveStreamerLink").href = `https://twitch.tv/${slot.streamer}`;
+		document.getElementById("liveStreamerLink").href = `https://twitch.tv/${slot.channelOverride ? slot.channelOverride : slot.streamer}`;
 		document.getElementById("liveStreamerImage").src = `Content/Images/${slot.streamer}.png`;
 
 		
