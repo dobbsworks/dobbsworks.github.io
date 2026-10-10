@@ -134,6 +134,76 @@
 		.placeholder {
 			color: #FFF6;
 		}
+
+		@media screen and (min-width: 1210px) {
+			#content {
+				display: flex;
+			}
+		}
+
+		#liveContainer {  
+			/* display: flex; */
+			width: 300px;
+			flex-direction: column;
+  			align-items: center;
+			display: none;
+		}
+
+		.onair {
+			color: red;
+			border: 9px solid red;
+			padding: 5px;
+			border-radius: 10px;
+			font-size: 40pt;
+			font-family: sans-serif;
+			font-weight: bold;
+			background-color: white;
+			transform: rotate(15deg);
+			animation-name: blinkAnim;
+			animation-duration: 2s;
+			animation-iteration-count: infinite;
+			max-width: 300px;
+		}
+		@keyframes blinkAnim {
+			0% {filter: brightness(1.0)}
+			50% {filter: brightness(0.4)}
+			100% {filter: brightness(1.0)}
+		}
+
+		#liveContainer > a > img {
+			border-radius: 50%;
+			width: 200px;
+			border: solid 5px black;
+			filter: drop-shadow(0px 0px 10px rgba(255, 255, 255, 0.2));
+		}
+
+		#liveContainer > a {
+			display: flex;
+			flex-direction: column;
+  			align-items: center;
+			text-decoration: none;
+		}
+
+
+		
+
+		#liveStreamer {
+			font-family: sans-serif;
+			font-weight: bolder;
+			font-size: 30pt;
+			background-color: #0005;
+			border-radius: 10px;
+			padding: 15px;
+			text-align: center;
+			color: #999;
+		}
+
+		#liveStreamerCategory {
+			font-family: sans-serif;
+			font-weight: bolder;
+			font-size: 10pt;
+		}
+
 	</style>
 </head>
 
@@ -147,37 +217,53 @@
 			<img class="floatingSticky" src="Content/Images/rotten.png" />
 		</div> -->
 	</div>
-	<div id="mainContainer">
+	<div id="content">
+		<div id="mainContainer">
 
-		<h2>What is GDB?</h2>
+			<h2>What is GDB?</h2>
 
-		<p>Games Done Badly is a yearly <span title="not actually a marathon">marathon*</span> of video game streams.
-			Unlike other gaming marathons that focus on things like extraordinary skill and precise execution, GDB
-			stands out by having no theme at all. Wow. It's more of an excuse to hang out and play video games for a
-			couple of days. </p>
+			<p>Games Done Badly is a yearly <span title="not actually a marathon">marathon*</span> of video game streams.
+				Unlike other gaming marathons that focus on things like extraordinary skill and precise execution, GDB
+				stands out by having no theme at all. Wow. It's more of an excuse to hang out and play video games for a
+				couple of days. </p>
 
-		<p>There is the <em>suggestion</em> of a central theme in that games are played badly, which encompasses being
-			bad at games (offense taken), playing games with some sort of handicap (challenge runs), or playing games
-			that are considered bad (it was good back then, trust me). </p>
+			<p>There is the <em>suggestion</em> of a central theme in that games are played badly, which encompasses being
+				bad at games (offense taken), playing games with some sort of handicap (challenge runs), or playing games
+				that are considered bad (it was good back then, trust me). </p>
 
-		<h2>When is GDB?</h2>
+			<h2>When is GDB?</h2>
 
-		<p>GDB 2026 will be held October 10th and 11th this year!</p>
-		<p>Will the schedule below be accurate? There's only one way to find out!</p>
+			<p>GDB 2026 will be held October 10th and 11th this year!</p>
+			<p>Will the schedule below be accurate? There's only one way to find out!</p>
 
-		<div id="schedule"></div>
-
-
-		<h2>Who is GDB?</h2>
-		<p>Check out all these people that have been involved in GDB! Check out their Twitch channels and give them a follow!</p>
-		<div id="streamerList"></div>
+			<div id="schedule"></div>
 
 
+			<h2>Who is GDB?</h2>
+			<p>Check out all these people that have been involved in GDB! Check out their Twitch channels and give them a follow!</p>
+			<div id="streamerList"></div>
 
-		<h2>I want to know more!</h2>
 
-		<p>Want to know more? Maybe even interested in becoming a part of this nonsense? Join the <a
-				href="https://discord.gg/xq4SDCUMR2">Discord</a> for more information or to get involved!</p>
+
+			<h2>I want to know more!</h2>
+
+			<p>Want to know more? Maybe even interested in becoming a part of this nonsense? Join the <a
+					href="https://discord.gg/xq4SDCUMR2">Discord</a> for more information or to get involved!</p>
+		</div>
+
+
+		<div id="liveContainer">
+			<div class="onair">NOW LIVE</div>
+			<a id="liveStreamerLink" href="">
+				<img id="liveStreamerImage" src="Content/Images/zoomcakes.png" />
+				<div id="liveStreamer">
+					<div id="liveStreamerName">placeholder</div>
+					<div id="liveStreamerCategory">game name here game name here game name here</div>
+				</div>
+			</a>
+			
+		</div>
+		
 	</div>
 
 
@@ -195,12 +281,12 @@
 		let streamers = [
 			{ name: "dobbsworks", avatar: "dobbsworks.png" },
 			{ name: "daesnek", avatar: "daesnek.png" },
-			{ name: "GameQueued", avatar: "gamequeued.jpeg" },
+			{ name: "GameQueued", avatar: "GameQueued.png" },
 			{ name: "germdove", avatar: "germdove.png" },
 			{ name: "hulacowstudios", avatar: "hulacowstudios.png" },
-			{ name: "LurkingTurtleGaming", avatar: "lurkingturtlegamer.png" },
+			{ name: "LurkingTurtleGaming", avatar: "LurkingTurtleGaming.png" },
 			{ name: "mastertank56", avatar: "mastertank56.png" },
-			{ name: "Teddytank13", avatar: "teddaysr.png" },
+			{ name: "Teddytank13", avatar: "Teddytank13.png" },
 			{ name: "TheBardicPanda", avatar: "thebardicpanda.png" },
 			{ name: "maxnooz", avatar: "shinermax.png" },
 			{ name: "AllyKatTime", avatar: "AllyKatTime.png" },
@@ -215,8 +301,8 @@
 			{ name: "BaddaBoomie", avatar: "BaddaBoomie.png" },
 			{ name: "zft96_", avatar: "zft96_.png" },
 			{ name: "MacMoragh", avatar: "MacMoragh.png" },
-			{ name: "Willow_Wanderss", avatar: "Willow_Wanders.png" },
-			{ name: "warios_warehouse", avatar: "wario.png" },
+			{ name: "Willow_Wanderss", avatar: "Willow_Wanderss.png" },
+			{ name: "warios_warehouse", avatar: "warios_warehouse.png" },
 			{ name: "zoomcakes", avatar: "zoomcakes.png" },
 			
 		];
@@ -240,6 +326,12 @@
 	}
 
 	function SetupSchedule() {
+		var currentSlot = null;
+		var startingTime = new Date("October 10 2026, 09:00 GMT-0500");
+		var now = new Date();
+		//now = new Date(+now + 50.0 * (1000 * 60 * 60));
+		var threeHoursAgo = new Date(+now - 3.0 * (1000 * 60 * 60));
+
 		let slots = [
 			{ day: 0, utcHour: 14, streamer: "zoomcakes", category: "I dunno, minesweeper or something", isPlaceholder: true },
 			{ day: 0, utcHour: 16, streamer: "K2TheCMeNow", category: "Wouldn't you like to know", isPlaceholder: true, channelOverride: "LurkingTurtleGaming" },
@@ -292,18 +384,38 @@
 
 				if (slot.streamer === "Various") streamerLink = "Various";
 				tableContents += `<tr>`;
-				//tableContents += `<td><img class="smallIcon" src="Content/Images/${"dobbsworks.png"}"/></td>`;
 				tableContents += `<td>${timeText}</td>`;
 				tableContents += `<td>${streamerLink}</td>`;
 				tableContents += `<td ${slot.isPlaceholder ? 'class="placeholder"' : ''}>${slot.category}</td>`;
 				tableContents += `</tr>`;
 				slots.splice(0, 1);
+
+				var slotTime = new Date(+startingTime + (1000 * 60 * 60) * (slot.utcHour - 14));
+				if (now >= slotTime) {
+					currentSlot = slot;
+					if (threeHoursAgo >= slotTime) currentSlot = null;
+				}
 			}
 		}
-		let tableHtml = `<table>${tableContents}</table>`
-		container.insertAdjacentHTML("afterend", tableHtml);
+		if (currentSlot) {
+			setLiveSlot(currentSlot);
+		}
+		let tableHtml = `<table class="scheduleTable">${tableContents}</table>`
+		container.innerHTML = tableHtml;
+
+		setInterval(SetupSchedule, 1000 * 60 * 5);
 	}
 
+	function setLiveSlot(slot) {
+		var container = document.getElementById("liveContainer");
+		container.style.display = "flex";
+		document.getElementById("liveStreamerName").innerText = slot.streamer;
+		document.getElementById("liveStreamerCategory").innerText = slot.category;
+		document.getElementById("liveStreamerLink").href = `https://twitch.tv/${slot.streamer}`;
+		document.getElementById("liveStreamerImage").src = `Content/Images/${slot.streamer}.png`;
+
+		
+	}
 
 
 </script>
